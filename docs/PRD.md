@@ -1,15 +1,17 @@
 # Learning AI Coding：需求与开发计划
 
-> 版本：v0.3 · 创建日期：2026-09-22 · 更新日期：2026-09-22  
-> 状态：需求规划；任务尚未实施；五语国际化纳入首版，正文互动组件继续按写作需求延期  
-> 技术方向：Next.js + Fumadocs MDX / Core / UI + Tailwind CSS + next-intl  
+> 版本：v0.5 · 创建日期：2026-09-22 · 更新日期：2026-09-23
+> L2 | Parent: [README.md](./README.md)
+> [PROTOCOL]: Update this header when making changes, then check README.md.
+> 状态：站点工程开发及自动验收完成；课程初稿待作者审校，尚未部署；正文互动组件继续延期
+> 技术方向：Next.js + Fumadocs MDX / Core / UI + Tailwind CSS + next-intl
 > 视觉方向：Vercel 式可见网格 + Macintosh 128K 灵感的复古阅读界面
 
 ## 0. 文档用途与仓库基线
 
 本文同时定义产品需求、技术约束、内容协议、验收标准和 Markdown 开发任务。开发任务统一维护在第 13 节，避免 PRD 与另一份 TODO 重复维护而产生冲突。
 
-初次编写时检查的仓库为 `thinkingjimmy/learning-ai-coding`，默认分支为 `main`，初始基线提交为 `dcc592e38bb2871ecdc6f37489cccc15bcaefdcb`，只有 LICENSE。v0.3 修订前重新检查，仓库只有 LICENSE、PRD.md、README.md，尚无应用代码。本次仅更新需求与开发计划，不代表国际化已实现或课程已翻译。下文目录、组件、命令均为计划实现。保留现有 LICENSE。
+初次编写时检查的仓库为 `thinkingjimmy/learning-ai-coding`，默认分支为 `main`，初始基线提交为 `dcc592e38bb2871ecdc6f37489cccc15bcaefdcb`，只有 LICENSE。v0.3 修订前重新检查，仓库只有 LICENSE、PRD.md、README.md，尚无应用代码。v0.4 已完成站点工程实现；实际架构、命令及验收证据见 README 与 docs/implementation-notes.md。中文一门课程、三篇原文初稿保持草稿；其他四语只有完整 UI，暂无正式教程译文。保留现有 LICENSE。
 
 ### 0.1 已明确的需求
 
@@ -60,6 +62,20 @@
 国际化分为两层：网站 UI 使用翻译字典，教程正文使用按语言维护的本地 Markdown / MDX。技术能力与 UI 五语齐备是首版门槛；完整课程的全部译文不是一次性交付前置条件。各语言首页、课程列表和关于页可用，尚无译文的语言显示诚实的本地化空状态。
 
 同步调整路由、目录、稳定 ID、草稿过滤、搜索、进度、SEO、作者文档和验收。没有增加在线翻译服务、CMS、用户语言账号或付费翻译平台，也不以国际化为由恢复延期的教学组件。
+
+### 0.5 v0.4 实现记录
+
+五语技术能力已实现；实际完成状态以第 13 节勾选项和 [工程验收记录](./implementation-notes.md) 为准。未公开作者未审核的内容，工程 fixture 保持在 tests 内；正式构建五语课程均显示空状态，本地显式草稿预览可阅读三篇中文初稿。
+
+实现增加课程 `goals` / `audience` / `prerequisites` 字段，保证总览由内容驱动。保留 Fumadocs 阅读布局与正文，侧栏局部替换以支持进度和既定断点；基础弹窗直接复用 Radix。搜索采用锁定 Fumadocs 实际提供的 ZBSearch 配套静态 API，并共享 CJK / 重音分词配置。
+
+运行时未知页面由同一公开 URL 快照生成 HTTP 404 重写，确保无 JavaScript 仍有完整本地化 HTML；原有内容查询的 notFound 保护继续保留。尚未连接 Vercel 或执行远程 CI；人工 UI 审校、真机检查、作者演练及正式发布仍保留待办。
+
+### 0.6 v0.5 文档与目录整理
+
+项目入口采用英文 [README.md](../README.md) 与中文 [README.zh.md](../README.zh.md)，本文迁入 `docs/PRD.md`，继续作为唯一任务清单。真实内容简化为 `content/<lang>/`，测试样例简化为 `tests/fixtures/<lang>/`；课程 URL、稳定 ID 和发布规则保持一致。
+
+MDX 注册与代码块组件集中在 `src/components/mdx`，学习进度组件统一命名为 `progress`，课程布局归入 `course`。TypeScript 配置回到根目录；测试配置与对应测试放在一起。目录地图、作者指南、构建入口和引用随文件调整同步更新。
 
 ## 1. 产品目标与用户
 
@@ -240,7 +256,7 @@ Vercel Geist Grid 是视觉参考，实现使用本项目的 CSS / Tailwind 组�
 使用 Fumadocs MDX 编译本地 Markdown / MDX，Config API 集中维护 collection 和 schema。[S3][S4] 国际化采用**语言目录方式**，即 Fumadocs 的 dir parser 路线，不与语言后缀文件方式混用；具体接入在 M0 锁定版本验证。[S5][S13]
 
 ```text
-content/courses/
+content/
   zh/
     meta.json
     ai-coding/
@@ -278,7 +294,7 @@ public/images/courses/
 
 目录仅说明职责，不是已存在内容。空语言目录可以没有课程，不能为凑齐结构生成公开占位文章。
 
-`content/courses` 是教学内容唯一扫描根目录；PRD、README、开发文档、字典和测试 fixture 不编译成课程。每种语言的 `.mdx` 也可只写普通 Markdown。同语言同路径不得同时存在 `.md` 与 `.mdx`。
+`content` 是教学内容唯一扫描根目录；PRD、README、开发文档、字典和测试 fixture 不编译成课程。每种语言的 `.mdx` 也可只写普通 Markdown。同语言同路径不得同时存在 `.md` 与 `.mdx`。
 
 ### 5.2 元数据与稳定身份
 
@@ -291,6 +307,7 @@ public/images/courses/
 | `title` / `description` | 全部 | 当前文件语言的非空标题和描述 |
 | `draft` | 全部 | 必须显式为布尔值，独立控制该语言版本发布 |
 | `level` | 课程 | `beginner` / `intermediate` / `advanced`，界面翻译标签 |
+| `goals` / `audience` / `prerequisites` | 课程 | 本语言目标非空数组、受众非空文字、前置要求非空数组 |
 | `durationMinutes` | 课时 | 大于 0 的整数，作者估算，可按译文实际阅读时长调整 |
 | `lessonType` | 课时 | `concept` / `tool` / `practice` |
 | `lastVerified` | 课时 | 有效日期 YYYY-MM-DD；工具操作课必填 |
@@ -339,7 +356,7 @@ public/images/courses/
 
 ### 5.5 首版写作示例
 
-以下是 `content/courses/zh/ai-coding/foundations/first-change.mdx` 的写作模板；所属课程 sourceLocale 为 zh。示例不是已完成的公开课，需作者补齐并复核。
+以下是 `content/zh/ai-coding/foundations/first-change.mdx` 的写作模板；所属课程 sourceLocale 为 zh。示例不是已完成的公开课，需作者补齐并复核。
 
 ````mdx
 ---
@@ -387,7 +404,7 @@ contentRevision: 1
 先定位组件，再限定改动范围，最后检查差异并验证按钮行为。
 ````
 
-英文译文放在 `content/courses/en/ai-coding/foundations/first-change.mdx`，沿用 courseId、lessonId；将标题、简介和正文翻译，使用 `translatedFromRevision: 1` 代替原文的 contentRevision。日、法、西同理，不新增 React 页面。
+英文译文放在 `content/en/ai-coding/foundations/first-change.mdx`，沿用 courseId、lessonId；将标题、简介和正文翻译，使用 `translatedFromRevision: 1` 代替原文的 contentRevision。日、法、西同理，不新增 React 页面。
 
 代码标识符、命令、路径、API 和配置键不因翻译而擅自改变。示例中的用户可见文字如需本地化，必须同步检查上下文、预期结果与截图。
 
@@ -548,9 +565,9 @@ SSR 与首次客户端渲染使用一致待恢复状态，读取前不写默认�
 | 文档 UI | Fumadocs UI | 优先复用，再局部替换 |
 | 国际化 | next-intl + Fumadocs i18n 接口 | 一个 locale 配置源、一个路由策略；不叠加双重中间件 |
 | 样式 | Tailwind CSS v4 + 统一 token | 自定义网格和复古面板 |
-| 基础控件 | shadcn/ui 按需 | 共用主题与本地化文案 |
+| 基础控件 | Radix UI 按需 | 共用主题与本地化文案 |
 | 校验 | schema + Markdown / MDX / 字典检查 | 不运行不可信内容，不预建教学参数平台 |
-| 测试 | Vitest / Testing Library + Playwright | 单元、组件、生产构建 E2E，包含五语 fixture |
+| 测试 | Vitest + Playwright / Axe | 单元、组件、生产构建 E2E，包含五语 fixture |
 | 包管理 | pnpm | 固定 packageManager，提交 lockfile |
 | 发布 | Vercel + GitHub Actions | CI、预览、生产分开 |
 
@@ -578,83 +595,37 @@ next-intl 使用始终带语言前缀的策略，与 Fumadocs 的前缀选项一
 
 不从客户端 import 全内容源、文件系统或全部 MDX。只传必要的序列化课程摘要、当前课时、公开可用语言和该语言所需字典。生产不请求 GitHub API 或远程抓取 Markdown。
 
-### 9.4 首版计划工程结构
+### 9.4 首版实际工程结构
 
 ```text
-app/
-  [lang]/
-    layout.tsx
-    page.tsx
-    courses/
-      page.tsx
-      [course]/
-        layout.tsx
-        page.tsx
-        [...lesson]/page.tsx
-    about/page.tsx
-    not-found.tsx
-  api/search/[lang]/route.ts
-  globals.css
-  sitemap.ts
-  robots.ts
-proxy.ts
-components/
-  layout/
-    grid-frame.tsx
-    course-layout.tsx
-    course-sidebar.tsx
-    language-switcher.tsx
-  course/
-    course-card.tsx
-    lesson-header.tsx
-    lesson-navigation.tsx
-    translation-notice.tsx
-  learning/
-    progress-provider.tsx
-    lesson-completion.tsx
-  ui/
-lib/
-  i18n/
-    config.ts
-    routing.ts
-    request.ts
-    navigation.ts
-    fumadocs.ts
-  content/
-    source.ts
-    schema.ts
-    manifest.ts
-    translations.ts
-    validate.ts
-  progress/
-    storage.ts
-    selectors.ts
-  mdx-components.tsx
-  site-config.ts
-messages/
-  en.json
-  zh.json
-  ja.json
-  fr.json
-  es.json
-config/redirects.ts
-content/courses/
-public/
+src/
+  app/[lang]/
+  app/api/search/[lang]/
+  components/{layout,course,mdx,progress,search}/
+  lib/{content,i18n,progress,search,seo}/
+  messages/
+  styles/
+  proxy.ts
+config/
+  source.config.ts
+  redirects.json
+content/
+public/images/
 scripts/
 tests/
-  unit/
-  e2e/
-  fixtures/i18n/
-docs/
-  authoring.md
-  implementation-notes.md
-source.config.ts
-next.config.mjs
-PRD.md
+  unit/{vitest.config.ts,*.test.ts}
+  e2e/{playwright.config.ts,*.spec.ts}
+  fixtures/{en,zh,ja,fr,es}/
+docs/{templates,evidence}/
+docs/PRD.md
+.github/workflows/
+tsconfig.json
 README.md
+README.zh.md
 ```
 
-目录是职责建议，不是现有代码。语言根布局在服务端正确输出 html lang；全局无效语言 / 404 路径按锁定版本补齐，不能只在客户端修改 lang。根入口由统一路由策略处理，不要求再建一套无前缀页面。[S15]
+
+上方为实际职责分布，完整成员地图见各级 README。语言根布局在服务端正确输出 html lang；全局无效语言 / 404 路径按锁定版本补齐，不能只在客户端修改 lang。根入口由统一路由策略处理，不要求再建一套无前缀页面。[S15]
 
 lib/content 对外提供显式接收 lang 的 getCourses、getCourse、getLesson、getOrderedLessons 和译文映射接口；UI 不直接依赖 .source 内部结构。
 
@@ -704,9 +675,9 @@ lib/content 对外提供显式接收 lang 的 getCourses、getCourse、getLesson
 
 ## 11. 工程质量与发布流程
 
-### 11.1 计划命令
+### 11.1 已实现命令
 
-以下命令需要开发实现，并非当前已可运行。
+以下命令已实现；草稿预览另外使用 pnpm dev:preview。
 
 ```bash
 pnpm dev               # 本地五语预览
@@ -760,17 +731,19 @@ Vercel 预览不改变草稿规则。生产域名、默认语言、语言偏好�
 
 保留原编号：M0-06、M1-07、M3-01–M3-06 已转 T，不复用；原 P1-06 已升为 I，不标记完成也不再留作未来增强。
 
+截至 2026-09-23：**P0 共 65 项，完成 57 项，保留 8 项人工/发布门槛。** 已执行干净 lockfile 安装、check、正式/fixture 构建、38 个单元测试、96 项三浏览器 E2E 和六页各三次移动 Lighthouse。结果、日志与截图见 [实现与验收记录](./implementation-notes.md)。T 与 P1 继续延期，不计入首版完成率。未运行远程 CI 或发布生产环境。
+
 ### M0：初始化与技术验证
 
 依赖：无；与 I-01 / I-02 同步验证，不能先形成单语言路由基线。
 
-- [ ] M0-01 初始化 Next.js App Router、TypeScript、pnpm，保留 LICENSE，配置 gitignore。
-- [ ] M0-02 锁定兼容稳定依赖和 Node / pnpm 版本，包含 next-intl，记录结果并提交 lockfile。
-- [ ] M0-03 接入 Fumadocs MDX / Core / UI 与 Tailwind v4，使用 Config API，验证干净内容生成。
-- [ ] M0-04 用非公开五语 fixture 验证 Markdown / MDX、目录、代码和已复用组件，不开发教学组件。
-- [ ] M0-05 验证浅色主题不随系统变黑，Fumadocs 与按需 shadcn 共用 token。
-- [ ] M0-07 验证静态搜索导出与客户端配套，确认可按语言隔离，记录实际版本 API。
-- [ ] M0-08 建立 check / build / CI 骨架，更新 README 和接入差异记录。
+- [x] M0-01 初始化 Next.js App Router、TypeScript、pnpm，保留 LICENSE，配置 gitignore。
+- [x] M0-02 锁定兼容稳定依赖和 Node / pnpm 版本，包含 next-intl，记录结果并提交 lockfile。
+- [x] M0-03 接入 Fumadocs MDX / Core / UI 与 Tailwind v4，使用 Config API，验证干净内容生成。
+- [x] M0-04 用非公开五语 fixture 验证 Markdown / MDX、目录、代码和已复用组件，不开发教学组件。
+- [x] M0-05 验证浅色主题不随系统变黑，Fumadocs 与按需基础控件（Radix UI）共用 token。
+- [x] M0-07 验证静态搜索导出与客户端配套，确认可按语言隔离，记录实际版本 API。
+- [x] M0-08 建立 check / build / CI 骨架，更新 README 和接入差异记录。
 
 阶段验收：干净安装与构建成功，五语路由与内容读取的最小链路成立，无未记录兼容阻塞，无需教学组件。
 
@@ -778,14 +751,14 @@ Vercel 预览不改变草稿规则。生产域名、默认语言、语言偏好�
 
 依赖：M0、I-01 / I-02；国际化内容细节由 I-03 / I-08 补齐。
 
-- [ ] M1-01 实现课程 / 课时 schema、稳定 ID、日期、时长、归属、原文语言与版本字段。
-- [ ] M1-02 实现显式 meta 排序、统一内容清单与本语言 CourseManifest，派生统计和导航。
-- [ ] M1-03 校验语言内重复 ID / URL、同名 md / mdx、失效目录、遗漏课时、公开零课时课程及错误译文身份。
-- [ ] M1-04 在公开源统一处理草稿、缺失译文和原文下架，限制本地预览，拒绝生产预览开关。
-- [ ] M1-05 实现带 lang 的内容查询、公开静态参数和运行时 notFound 保护。
-- [ ] M1-06 建立 MDX 统一注册，保留已有渲染；未知组件明确失败，不创建未来占位或教学上下文。
-- [ ] M1-08 校验各语言内部链接、锚点、公开引用与图片；加入负向 fixture。
-- [ ] M1-09 编写原文 / 译文模板和 authoring.md，覆盖排序、草稿、图片、链接、翻译更新、发布及互动需求记录。
+- [x] M1-01 实现课程 / 课时 schema、稳定 ID、日期、时长、归属、原文语言与版本字段。
+- [x] M1-02 实现显式 meta 排序、统一内容清单与本语言 CourseManifest，派生统计和导航。
+- [x] M1-03 校验语言内重复 ID / URL、同名 md / mdx、失效目录、遗漏课时、公开零课时课程及错误译文身份。
+- [x] M1-04 在公开源统一处理草稿、缺失译文和原文下架，限制本地预览，拒绝生产预览开关。
+- [x] M1-05 实现带 lang 的内容查询、公开静态参数和运行时 notFound 保护。
+- [x] M1-06 建立 MDX 统一注册，保留已有渲染；未知组件明确失败，不创建未来占位或教学上下文。
+- [x] M1-08 校验各语言内部链接、锚点、公开引用与图片；加入负向 fixture。
+- [x] M1-09 编写原文 / 译文模板和 authoring.md，覆盖排序、草稿、图片、链接、翻译更新、发布及互动需求记录。
 
 阶段验收：新文章和译文通过内容文件接入，无需新页面；语言内顺序一致，翻译关系有效，缺失和草稿无法绕过公开源。
 
@@ -793,14 +766,14 @@ Vercel 预览不改变草稿规则。生产域名、默认语言、语言偏好�
 
 依赖：M1；与 I-04 / I-05 / I-10 联合验收，不等待正式文章或互动组件。
 
-- [ ] M2-01 实现颜色、字体、边框、圆角、布局 token 和对比度检查。
-- [ ] M2-02 实现 GridFrame、交叉标记和信息面板，不预建教学外壳。
-- [ ] M2-03 定制 Fumadocs 课时、正文、代码、提示、目录，控制内部 DOM 覆盖。
-- [ ] M2-04 实现当前语言课程侧栏、折叠和时长，记录复用 item 或替换侧栏的理由。
-- [ ] M2-05 实现 LessonHeader 与前后课时首尾边界，消费当前语言 manifest。
-- [ ] M2-06 完成三种布局、移动菜单、本语言目录锚点偏移和长标题处理。
-- [ ] M2-07 用五语长文 fixture 验证代码、表格、图片、链接、复制反馈及现有组件排版。
-- [ ] M2-08 检查 320 / 390 / 768 / 1024 / 1440px 与 200% 缩放，保存回归截图。
+- [x] M2-01 实现颜色、字体、边框、圆角、布局 token 和对比度检查。
+- [x] M2-02 实现 GridFrame、交叉标记和信息面板，不预建教学外壳。
+- [x] M2-03 定制 Fumadocs 课时、正文、代码、提示、目录，控制内部 DOM 覆盖。
+- [x] M2-04 实现当前语言课程侧栏、折叠和时长，记录复用 item 或替换侧栏的理由。
+- [x] M2-05 实现 LessonHeader 与前后课时首尾边界，消费当前语言 manifest。
+- [x] M2-06 完成三种布局、移动菜单、本语言目录锚点偏移和长标题处理。
+- [x] M2-07 用五语长文 fixture 验证代码、表格、图片、链接、复制反馈及现有组件排版。
+- [x] M2-08 检查 320 / 390 / 768 / 1024 / 1440px 与 200% 缩放，保存回归截图。
 
 阶段验收：五语图文均可阅读，导航文字与正文语言一致，无整页溢出或遮挡，作者可以开始写作。
 
@@ -808,12 +781,12 @@ Vercel 预览不改变草稿规则。生产域名、默认语言、语言偏好�
 
 依赖：M1、M2；跨译文规则见 I-07，不依赖教学互动。
 
-- [ ] M3-07 实现完成标记与最近位置 storage adapter、校验、异常降级、未知数据保护和本地化失败提示。
-- [ ] M3-08 实现 hydration 安全的 Provider、完成 / 取消和当前语言继续学习规则。
-- [ ] M3-09 实现本语言进度分母、侧栏标记，测试标题 / 路径 / 顺序变化、删除、草稿和译文覆盖变化。
-- [ ] M3-10 实现课程重置确认、取消与反馈，不影响其他课程或语言偏好，说明共享记录范围。
-- [ ] M3-11 实现 storage 监听和重新聚焦读取，覆盖不同语言标签页的修改与重置。
-- [ ] M3-12 测试禁用存储、损坏 JSON、写失败和首次恢复误覆盖，不要求教学组件 fixture。
+- [x] M3-07 实现完成标记与最近位置 storage adapter、校验、异常降级、未知数据保护和本地化失败提示。
+- [x] M3-08 实现 hydration 安全的 Provider、完成 / 取消和当前语言继续学习规则。
+- [x] M3-09 实现本语言进度分母、侧栏标记，测试标题 / 路径 / 顺序变化、删除、草稿和译文覆盖变化。
+- [x] M3-10 实现课程重置确认、取消与反馈，不影响其他课程或语言偏好，说明共享记录范围。
+- [x] M3-11 实现 storage 监听和重新聚焦读取，覆盖不同语言标签页的修改与重置。
+- [x] M3-12 测试禁用存储、损坏 JSON、写失败和首次恢复误覆盖，不要求教学组件 fixture。
 
 阶段验收：同一逻辑课时在五语共享状态，各语言继续入口有效，异常不影响阅读，没有作答存储依赖。
 
@@ -821,14 +794,14 @@ Vercel 预览不改变草稿规则。生产域名、默认语言、语言偏好�
 
 依赖：M1–M3；与 I-04 / I-06 联合验收，不依赖 T。
 
-- [ ] M4-01 实现本地化首页、网格区块、学习路径和主要 CTA，移除脚手架内容。
-- [ ] M4-02 实现当前语言课程列表、卡片、统计和无课程空状态。
-- [ ] M4-03 实现课程总览、目标、前置要求、模块、进度与开始 / 继续 / 复习入口。
-- [ ] M4-04 接入当前语言静态搜索索引，首次打开加载，支持失败重试。
-- [ ] M4-05 完成快捷键、移动搜索、中日输入法、空查询、无结果及键盘选择。
-- [ ] M4-06 实现本语言结果归属、摘要与锚点，不预建教学答案过滤。
-- [ ] M4-07 验证五语查询 fixture 及前五条结果，测量每语言索引和实际加载范围。
-- [ ] M4-08 实现五语关于页、统一品牌配置和 404，说明本地进度、偏好与外链。
+- [x] M4-01 实现本地化首页、网格区块、学习路径和主要 CTA，移除脚手架内容。
+- [x] M4-02 实现当前语言课程列表、卡片、统计和无课程空状态。
+- [x] M4-03 实现课程总览、目标、前置要求、模块、进度与开始 / 继续 / 复习入口。
+- [x] M4-04 接入当前语言静态搜索索引，首次打开加载，支持失败重试。
+- [x] M4-05 完成快捷键、移动搜索、中日输入法、空查询、无结果及键盘选择。
+- [x] M4-06 实现本语言结果归属、摘要与锚点，不预建教学答案过滤。
+- [x] M4-07 验证五语查询 fixture 及前五条结果，测量每语言索引和实际加载范围。
+- [x] M4-08 实现五语关于页、统一品牌配置和 404，说明本地进度、偏好与外链。
 
 阶段验收：五语入口可用，内容与空状态真实，搜索不串语言，回访能继续，没有假译文或空壳文章。
 
@@ -836,15 +809,15 @@ Vercel 预览不改变草稿规则。生产域名、默认语言、语言偏好�
 
 依赖：M1–M4；含 I-09 / I-10 / I-11。
 
-- [ ] M5-01 实现本语言 metadata、自引用 canonical、公开译文 hreflang、sitemap 与 robots，校验正式域名。
-- [ ] M5-02 验证草稿、缺译文和原文下架在 URL、RSC、目录、搜索、切换菜单、hreflang、sitemap 与统计中一致排除。
-- [ ] M5-03 检查裸 iframe、外部脚本、危险链接、语言路径注入和敏感数据，不加载未来播放器。
-- [ ] M5-04 完成语言选择、阅读、搜索、完成与重置的键盘和自动无障碍检查。
-- [ ] M5-05 验证无 JS、禁用 Cookie、减少动画、图片 / 复制失败、长内容等降级。
-- [ ] M5-06 记录 Lighthouse 三次中位数、每语言索引体积和首屏请求，去除不必要客户端依赖。
-- [ ] M5-07 从干净环境跑 check、build、生产 E2E，不依赖在线翻译或未开发组件。
-- [ ] M5-08 Chromium、Firefox、WebKit 核心自动化，补实际 Safari / 手机与中日输入法人工检查。
-- [ ] M5-09 配置 Vercel、预览 noindex、语言协商缓存，补环境、部署和回滚说明。
+- [x] M5-01 实现本语言 metadata、自引用 canonical、公开译文 hreflang、sitemap 与 robots，校验正式域名。
+- [x] M5-02 验证草稿、缺译文和原文下架在 URL、RSC、目录、搜索、切换菜单、hreflang、sitemap 与统计中一致排除。
+- [x] M5-03 检查裸 iframe、外部脚本、危险链接、语言路径注入和敏感数据，不加载未来播放器。
+- [x] M5-04 完成语言选择、阅读、搜索、完成与重置的键盘和自动无障碍检查。
+- [x] M5-05 验证无 JS、禁用 Cookie、减少动画、图片 / 复制失败、长内容等降级。
+- [x] M5-06 记录 Lighthouse 三次中位数、每语言索引体积和首屏请求，去除不必要客户端依赖。
+- [x] M5-07 从干净环境跑 check、build、生产 E2E，不依赖在线翻译或未开发组件。
+- [ ] M5-08 Chromium、Firefox、WebKit 核心自动化，补实际 Safari / 手机与中日输入法人工检查。 **进展：三浏览器自动化已通过；实际 Safari、手机和系统输入法仍待人工验收。**
+- [ ] M5-09 配置 Vercel、预览 noindex、语言协商缓存，补环境、部署和回滚说明。 **进展：仓库配置、环境保护和部署/回滚文档已完成；Vercel 项目接入及线上验证未执行。**
 
 阶段验收：CI、五语验收和构建通过，无草稿泄露或串语言，部署可回滚。缺失的正常译文和未开发互动不视为实现失败。
 
@@ -852,13 +825,13 @@ Vercel 预览不改变草稿规则。生产域名、默认语言、语言偏好�
 
 依赖：M0–M5、I 系列和真实原文就绪；不依赖 T 或完整五语课程翻译。
 
-- [ ] M6-01 复核至少一门课程、三个完整原文课时，填写真实验证信息；不要求互动或一次翻完。
-- [ ] M6-02 示范课使用真实图片、代码和步骤，移除未知组件、占位素材、虚构信息及假译文。
-- [ ] M6-03 作者按 authoring.md 完成新增原文、增加译文草稿、排序、预览、检查和发布演练。
-- [ ] M6-04 执行第 14 节全部 P0 验收并关联证据；不要求未启动的第 14.1 节。
-- [ ] M6-05 确认品牌、正式域名、作者、首批原文及实际译文覆盖，不把视频或全量翻译作为前置条件。
-- [ ] M6-06 发布通过检查的提交，执行多语言冒烟，记录部署、版本和上一可用部署。
-- [ ] M6-07 更新 README 真实能力、启动方式和语言覆盖；互动延期与其他 P1 清楚可见。
+- [ ] M6-01 复核至少一门课程、三个完整原文课时，填写真实验证信息；不要求互动或一次翻完。 **进展：一门课程、三篇完整中文初稿已提供并保持草稿；等待作者复核与实际操作验收。**
+- [x] M6-02 示范课使用真实图片、代码和步骤，移除未知组件、占位素材、虚构信息及假译文。
+- [ ] M6-03 作者按 authoring.md 完成新增原文、增加译文草稿、排序、预览、检查和发布演练。 **进展：模板和作者指南已完成；作者本人演练待执行。**
+- [ ] M6-04 执行第 14 节全部 P0 验收并关联证据；不要求未启动的第 14.1 节。 **进展：工程自动化与性能证据已记录；人工/内容/上线门槛未全部完成。**
+- [ ] M6-05 确认品牌、正式域名、作者、首批原文及实际译文覆盖，不把视频或全量翻译作为前置条件。 **进展：继续使用临时品牌；正式域名、作者及首发内容待确认。**
+- [ ] M6-06 发布通过检查的提交，执行多语言冒烟，记录部署、版本和上一可用部署。 **进展：未创建发布提交、远程部署或执行线上冒烟。**
+- [x] M6-07 更新 README 真实能力、启动方式和语言覆盖；互动延期与其他 P1 清楚可见。默认英文，提供中文 README；目录地图与实际工程结构同步。
 
 阶段验收：五语站点基础可用、原文真实完整、已发布译文经过审核，作者能持续更新。没有互动组件也可上线。
 
@@ -866,18 +839,18 @@ Vercel 预览不改变草稿规则。生产域名、默认语言、语言偏好�
 
 以下任务承接原 P1-06，不是独立于主路线的延后阶段。与 M 任务引用同一实现和测试证据，不再维护第二份国际化 TODO。
 
-- [ ] I-01 在 M0 建立 en / zh / ja / fr / es 单一配置、语言自称、zh-Hans 标记、默认 zh 与合法值校验。
-- [ ] I-02 在 M0 接入 next-intl 和 Fumadocs，统一前缀、协商、Cookie、资源排除、静态渲染与 html lang；验证无双重重定向和无效语言 404。
-- [ ] I-03 在 M1 实现语言目录 parser、语言内唯一性、稳定译文身份、原文顺序子集、本语言 manifest 和公开 TranslationMap，禁止正文静默 fallback。
-- [ ] I-04 在 M2 / M4 完成五语 messages 和 Fumadocs 控件文案，覆盖错误、空状态、aria-label、日期、数字、ICU 复数，并校验键与参数。
-- [ ] I-05 在 M2 实现桌面 / 手机切换、同课时映射、缺译文说明、明确降级入口和有效 hash 处理；直达缺译文保持真实 404。
-- [ ] I-06 在 M4 完成按语言导出、加载、缓存和查询搜索；验证中日分词 / 输入法、法西重音、错误重试与异步响应不串语言。
-- [ ] I-07 在 M3 验证跨译文共享完成、当前语言分母、零课时、缺译文继续入口、跨语言标签同步和全课程重置范围。
-- [ ] I-08 在 M1 实现原文 revision、译文来源 revision 校验、过期报告与本地化提示，补翻译写作 / 审校 / 发布流程，不做翻译后台。
-- [ ] I-09 在 M5 关闭无条件全语 alternate links，根据公开译文生成自引用 canonical、双向 hreflang 与 sitemap，测试原文下架和单译文草稿。
-- [ ] I-10 在 M2 / M5 验证中日字体回退、法西重音与长文案、五语读屏标签、窄屏和无 JS 语言入口，不加载全部语言大字体包。
-- [ ] I-11 在 M5 建立五语 fixture 与自动化矩阵，覆盖语言优先级、URL 直达、字典缺键、译文错配、内容缓存、搜索缓存及无效语言。
-- [ ] I-12 在 M6 审校全部五语首版 UI，记录各语言真实内容覆盖；工程 fixture 不公开，实际译文未完成时验收空状态和原文入口而非制造译文。
+- [x] I-01 在 M0 建立 en / zh / ja / fr / es 单一配置、语言自称、zh-Hans 标记、默认 zh 与合法值校验。
+- [x] I-02 在 M0 接入 next-intl 和 Fumadocs，统一前缀、协商、Cookie、资源排除、静态渲染与 html lang；验证无双重重定向和无效语言 404。
+- [x] I-03 在 M1 实现语言目录 parser、语言内唯一性、稳定译文身份、原文顺序子集、本语言 manifest 和公开 TranslationMap，禁止正文静默 fallback。
+- [x] I-04 在 M2 / M4 完成五语 messages 和 Fumadocs 控件文案，覆盖错误、空状态、aria-label、日期、数字、ICU 复数，并校验键与参数。
+- [x] I-05 在 M2 实现桌面 / 手机切换、同课时映射、缺译文说明、明确降级入口和有效 hash 处理；直达缺译文保持真实 404。
+- [x] I-06 在 M4 完成按语言导出、加载、缓存和查询搜索；验证中日分词 / 输入法、法西重音、错误重试与异步响应不串语言。
+- [x] I-07 在 M3 验证跨译文共享完成、当前语言分母、零课时、缺译文继续入口、跨语言标签同步和全课程重置范围。
+- [x] I-08 在 M1 实现原文 revision、译文来源 revision 校验、过期报告与本地化提示，补翻译写作 / 审校 / 发布流程，不做翻译后台。
+- [x] I-09 在 M5 关闭无条件全语 alternate links，根据公开译文生成自引用 canonical、双向 hreflang 与 sitemap，测试原文下架和单译文草稿。
+- [x] I-10 在 M2 / M5 验证中日字体回退、法西重音与长文案、五语读屏标签、窄屏和无 JS 语言入口，不加载全部语言大字体包。
+- [x] I-11 在 M5 建立五语 fixture 与自动化矩阵，覆盖语言优先级、URL 直达、字典缺键、译文错配、内容缓存、搜索缓存及无效语言。
+- [ ] I-12 在 M6 审校全部五语首版 UI，记录各语言真实内容覆盖；工程 fixture 不公开，实际译文未完成时验收空状态和原文入口而非制造译文。 **进展：96 个消息键的五语实现与自动校验完成；五语人工审校仍待完成。**
 
 阶段验收：五语是一套真实可工作的站点和内容流程，不是只有语言菜单；UI 五语齐备，正文可逐篇补齐，缺失处理明确，不恢复教学组件开发。
 

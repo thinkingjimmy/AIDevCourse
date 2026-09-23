@@ -1,55 +1,91 @@
-# Learning AI Coding
+# Learning AI Coding — AI coding lessons, written locally
 
-一个以本地 Markdown / MDX 内容为核心的多语言 AI coding 教程网站，后续根据实际文章需要逐步增加互动组件。
+**English** · [简体中文](./README.zh.md)
 
-视觉方向：**Vercel 式可见网格 + Macintosh 128K 灵感的复古阅读界面**。技术方向：**Next.js + Fumadocs MDX / Core / UI + Tailwind CSS + next-intl**，优先复用文档基础能力，按需定制课程布局。
+Next.js 16.3.6 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-intl 4.14.6 + Tailwind CSS 4.3.3
 
-## 项目状态
+A five-language learning site with local Markdown / MDX courses, language-specific search, and learning progress stored in your browser. The interface uses warm paper colors, full-height grid rails, Newsreader and IBM Plex Mono (self-hosted via `next/font`), and restrained retro details. No accounts, database, model API keys, or translation service are required.
 
-当前处于需求规划阶段，尚未初始化应用或实现网站功能。开发命令、目录和接口以需求文档中的计划为准，不代表已经可运行；列出的语言也不代表课程译文已经完成。
+**Current status:** the application is implemented. One Chinese course with three complete lesson drafts is available in local preview; all lessons await author review. The other four languages have localized interfaces and no published lessons. Production therefore shows an empty course library in every language. Author review, device checks, and deployment remain pending; see the [PRD and todo](./docs/PRD.md#13-markdown-开发任务).
 
-当前需求基线为 **PRD v0.3**。开发顺序：**先完成支持五种语言的站点与写作流程 → 作者开始编写真实文章 → 根据具体文章需求逐个开发互动组件**。不需要先开发选择题或播放器才能写文章、验收阅读页或发布首版。
+## Quick start
 
-## 开发文档
+Use Node **22.17.0** and pnpm **10.30.3**.
 
-**[阅读完整需求与开发计划：PRD.md](./PRD.md)**
+```bash
+pnpm install --frozen-lockfile
+pnpm dev:preview
+```
 
-文档包含首版范围、复古视觉、语言路由、本地内容与翻译协议、课时进度、搜索、SEO、工程方案、发布流程，以及 Markdown 开发任务和验收标准。
+Open [localhost:3000/zh](http://localhost:3000/zh). `pnpm dev:preview` includes local drafts; `pnpm dev` follows the production publication rules. Restart after changing frontmatter, file structure, or `meta.json` order. Body edits support hot reload. Run only one development mode at a time.
 
-- [开发任务：M0–M6、国际化 I 系列、按需 T 系列与其他 P1](./PRD.md#13-markdown-开发任务)
-- [首版验收矩阵](./PRD.md#14-首版验收矩阵)
-- [Markdown / MDX 与翻译写作协议](./PRD.md#5-内容系统与作者协议)
-- [语言切换与缺失译文](./PRD.md#45-语言切换与缺失译文)
-- [正文互动组件的启动条件](./PRD.md#6-正文互动组件后续按写作需求开发)
+## Commands
 
-任务只在 PRD.md 维护，实现、测试与验收完成后再勾选。**国际化 I 系列属于 P0，穿插主阶段开发；正文互动 T 系列仍为按需 P1。** 原 P1-06 国际化任务已迁入 I 系列，不是尚待未来实现的单语站增强。
+| Command | Purpose |
+| --- | --- |
+| `pnpm dev` | Develop with published content only |
+| `pnpm dev:preview` | Read and edit local drafts |
+| `pnpm check` | Run lint, TypeScript, content, dictionary, and unit checks |
+| `pnpm build` | Validate content and dictionaries, then build for production |
+| `pnpm start` | Serve the production build |
+| `pnpm test:e2e` | Test the production build in Chromium, Firefox, and WebKit |
 
-## 首版国际化
+Install the test browsers once, then validate both publication modes:
 
-| 语言 | URL 前缀 | 界面语言名称 |
-| --- | --- | --- |
-| 英文 | `/en` | English |
-| 简体中文 | `/zh` | 简体中文 |
-| 日语 | `/ja` | 日本語 |
-| 法语 | `/fr` | Français |
-| 西班牙语 | `/es` | Español |
+```bash
+pnpm exec playwright install chromium firefox webkit
+pnpm check
+pnpm build
+pnpm test:e2e
+CONTENT_TEST=1 pnpm build
+CONTENT_TEST=1 pnpm test:e2e
+```
 
-默认入口语言暂沿用 `zh`；中文按简体规划，HTML / hreflang 使用 `zh-Hans`。已带语言前缀的 URL 优先，不因浏览器偏好改变正文语言。具体入口协商与缺失处理见 PRD。
+E2E uses port **3310**; set `E2E_PORT` if needed. Test courses live in `tests/fixtures/<lang>/` and compile into `.next-test`. This test mode cannot deploy to Vercel. For performance measurements, run `CONTENT_TEST=1 pnpm start --port 3200` in another terminal, then `node scripts/measure-performance.mjs`.
 
-网站 UI 使用本地 messages 字典；教程按 `content/courses/<lang>/...` 维护独立 Markdown / MDX。同一课时的译文沿用稳定 courseId / lessonId，语言切换打开对应已发布版本。
+## Repository map
 
-**五语界面和技术能力纳入首版；正文译文可逐篇补齐，不要求所有课程一次翻完五种语言。** 缺少译文时明确提示并提供有效入口，不能把原文复制到目标语言 URL 冒充译文，也不公开草稿或工程 fixture。原文与译文的审校、更新及下架边界见 PRD。
+<directory>
 
-搜索按当前语言隔离；同一逻辑课时共享本地完成标记，进度分母只统计本语言已发布课时。多语言 metadata、canonical、hreflang、空状态、错误提示、无障碍和排版均在首版验收范围。
+| Directory | Responsibility |
+| --- | --- |
+| [`src/`](./src/README.md) | Application code: `app`, `components`, `lib`, `messages`, and `styles` |
+| [`content/`](./content/README.md) | Real course sources, organized directly by language: `en`, `zh`, `ja`, `fr`, `es` |
+| [`config/`](./config/README.md) | MDX compilation, ESLint, environment reference, and URL redirects |
+| [`tests/`](./tests/README.md) | `unit` and `e2e` suites with their configurations; isolated `fixtures` |
+| [`scripts/`](./scripts/README.md) | Content checks, dictionary checks, and performance measurement |
+| [`public/`](./public/README.md) | Public favicon and lesson images |
+| [`docs/`](./docs/README.md) | PRD, authoring and deployment guides, templates, and validation evidence |
+| [`.github/`](./.github/README.md) | Quality workflow for GitHub Actions |
 
-## 首版方向与延期范围
+</directory>
 
-本地写作、Git 管理、免登录阅读；支持多语言课程总览、章节导航、图文代码、搜索，以及当前浏览器内的课时完成和最近学习位置。
+<config>
 
-保留 MDX 渲染与统一组件注册入口，但**暂不开发 Quiz、VideoEmbed、Exercise / Hint / Solution、PromptCompare 等自定义教学组件**，也不预建作答存储、参数校验平台或视频适配器。视频先用普通外链，练习可先用 Markdown 任务与验收标准。没有互动组件的图文课程可以正常发布。
+- `package.json` — pinned dependencies, runtime requirements, commands, and PostCSS configuration.
+- `pnpm-lock.yaml` — reproducible dependency resolution.
+- `next.config.mjs` — framework integrations, publication guards, and security headers.
+- `tsconfig.json` — editor-discoverable TypeScript configuration and source aliases.
+- `.gitignore` — excludes dependencies, local environment files, generated content, and build/test output.
+- `README.md` / `README.zh.md` — English and Chinese project entry points; keep them in sync.
+- `LICENSE` — project license.
 
-国际化、搜索、移动导航、代码复制和本地进度不属于延期范围。首版不做认证、支付、数据库、在线代码执行、AI 助教、在线机器翻译或翻译管理后台。品牌、域名、首批原文和实际译文覆盖在公开发布前确认；互动与视频平台等真实写作需要时再决定。
+</config>
 
-## 许可
+Routes stay in `src/app`; UI components are grouped by responsibility in `src/components/{course,layout,mdx,progress,search}`; shared domain logic stays in `src/lib`. MDX rendering has one registry at `src/components/mdx/components.tsx`. Each directory README maps its members, and source headers describe their input, output, and role. Generated `.source` and `.next*` directories are not committed.
 
-保留仓库现有的 [LICENSE](./LICENSE)。
+## Languages and learning data
+
+The interface supports English (`/en`), Simplified Chinese (`/zh`), Japanese (`/ja`), French (`/fr`), and Spanish (`/es`). Explicit language URLs take priority. Unprefixed entry routes negotiate using the language cookie, `Accept-Language`, then `zh`; Chinese HTML and hreflang use `zh-Hans`.
+
+Missing translations have explained fallback links; direct requests still return 404. Search downloads only the current language's index, on demand. Translations with the same `courseId` / `lessonId` share completion records, while counts and continue links use only lessons available in the current language. Progress stays in the current browser; reading remains available when storage fails.
+
+## Authoring and deployment
+
+The [documentation index](./docs/README.md) links to the [authoring guide](./docs/authoring.md), [deployment guide](./docs/deployment.md), and [implementation and validation notes](./docs/implementation-notes.md). These detailed guides are currently in Chinese.
+
+Set `SITE_URL` to the verified production HTTPS origin; see `config/.env.example`. Vercel previews filter drafts and use `noindex`. Production rejects local draft preview, and Vercel rejects test content. Deployment still requires the review gates recorded in the PRD.
+
+Quiz, video embeds, interactive exercises, hint/solution controls, prompt comparisons, and other P1 features remain deferred until actual authoring needs justify them.
+
+[PROTOCOL]: Update this header when making changes, then check README.md.

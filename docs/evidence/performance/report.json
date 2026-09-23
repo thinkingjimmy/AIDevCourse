@@ -1,0 +1,365 @@
+{
+  "measuredAt": "2026-09-23T03:54:35.150Z",
+  "origin": "http://127.0.0.1:3200",
+  "build": "isolated nonpublic production fixture",
+  "environment": {
+    "os": "darwin 25.4.0 arm64",
+    "cpu": "Apple M3 Max",
+    "node": "v22.17.0",
+    "browser": "153.0.8010.12"
+  },
+  "methodology": "Sequential cold navigations; Lighthouse default simulated mobile throttling; median of three runs. Local results are not field Core Web Vitals.",
+  "searchIndexes": [
+    {
+      "lang": "en",
+      "bytes": 30440,
+      "gzipBytes": 3393
+    },
+    {
+      "lang": "zh",
+      "bytes": 110161,
+      "gzipBytes": 8154
+    },
+    {
+      "lang": "ja",
+      "bytes": 51056,
+      "gzipBytes": 5054
+    },
+    {
+      "lang": "fr",
+      "bytes": 38785,
+      "gzipBytes": 3827
+    },
+    {
+      "lang": "es",
+      "bytes": 34056,
+      "gzipBytes": 3610
+    }
+  ],
+  "pages": [
+    {
+      "path": "/zh",
+      "medianPerformance": 100,
+      "medianLcpMs": 1804.3320000000003,
+      "medianCls": 0,
+      "runs": [
+        {
+          "run": 1,
+          "performance": 100,
+          "lcpMs": 1804.476,
+          "fcpMs": 904.4760000000001,
+          "cls": 0,
+          "tbtMs": 36,
+          "warnings": [],
+          "requestCount": 25,
+          "transferBytes": 296353,
+          "initialSearchRequests": []
+        },
+        {
+          "run": 2,
+          "performance": 100,
+          "lcpMs": 1803.9456,
+          "fcpMs": 903.9456,
+          "cls": 0,
+          "tbtMs": 2,
+          "warnings": [],
+          "requestCount": 25,
+          "transferBytes": 296353,
+          "initialSearchRequests": []
+        },
+        {
+          "run": 3,
+          "performance": 100,
+          "lcpMs": 1804.3320000000003,
+          "fcpMs": 904.3320000000001,
+          "cls": 0,
+          "tbtMs": 8,
+          "warnings": [],
+          "requestCount": 25,
+          "transferBytes": 296353,
+          "initialSearchRequests": []
+        }
+      ],
+      "evidenceFile": "zh-home-runs.json"
+    },
+    {
+      "path": "/zh/courses/ai-coding",
+      "medianPerformance": 99,
+      "medianLcpMs": 2109.6723999999995,
+      "medianCls": 0,
+      "runs": [
+        {
+          "run": 1,
+          "performance": 99,
+          "lcpMs": 2107.2713999999996,
+          "fcpMs": 903.6357,
+          "cls": 0,
+          "tbtMs": 8.5,
+          "warnings": [],
+          "requestCount": 26,
+          "transferBytes": 301460,
+          "initialSearchRequests": []
+        },
+        {
+          "run": 2,
+          "performance": 99,
+          "lcpMs": 2109.6723999999995,
+          "fcpMs": 904.8362,
+          "cls": 0,
+          "tbtMs": 8.5,
+          "warnings": [],
+          "requestCount": 26,
+          "transferBytes": 301543,
+          "initialSearchRequests": []
+        },
+        {
+          "run": 3,
+          "performance": 99,
+          "lcpMs": 2112.6134,
+          "fcpMs": 906.3067000000001,
+          "cls": 0,
+          "tbtMs": 9,
+          "warnings": [],
+          "requestCount": 26,
+          "transferBytes": 301460,
+          "initialSearchRequests": []
+        }
+      ],
+      "evidenceFile": "zh-overview-runs.json"
+    },
+    {
+      "path": "/zh/courses/ai-coding/foundations/first-change",
+      "medianPerformance": 99,
+      "medianLcpMs": 2183.266125,
+      "medianCls": 0,
+      "runs": [
+        {
+          "run": 1,
+          "performance": 99,
+          "lcpMs": 2185.5950249999996,
+          "fcpMs": 906.0543,
+          "cls": 0,
+          "tbtMs": 12.5,
+          "warnings": [],
+          "requestCount": 27,
+          "transferBytes": 304945,
+          "initialSearchRequests": []
+        },
+        {
+          "run": 2,
+          "performance": 99,
+          "lcpMs": 2182.383075,
+          "fcpMs": 904.2189000000001,
+          "cls": 0,
+          "tbtMs": 9.5,
+          "warnings": [],
+          "requestCount": 27,
+          "transferBytes": 304945,
+          "initialSearchRequests": []
+        },
+        {
+          "run": 3,
+          "performance": 99,
+          "lcpMs": 2183.266125,
+          "fcpMs": 904.7235000000001,
+          "cls": 0,
+          "tbtMs": 10,
+          "warnings": [],
+          "requestCount": 27,
+          "transferBytes": 304945,
+          "initialSearchRequests": []
+        }
+      ],
+      "evidenceFile": "zh-lesson-runs.json"
+    },
+    {
+      "path": "/ja",
+      "medianPerformance": 100,
+      "medianLcpMs": 1803.8435999999997,
+      "medianCls": 0,
+      "runs": [
+        {
+          "run": 1,
+          "performance": 100,
+          "lcpMs": 1802.9917,
+          "fcpMs": 902.9917,
+          "cls": 0,
+          "tbtMs": 11.000000000000227,
+          "warnings": [],
+          "requestCount": 25,
+          "transferBytes": 296485,
+          "initialSearchRequests": []
+        },
+        {
+          "run": 2,
+          "performance": 100,
+          "lcpMs": 1804.5980999999997,
+          "fcpMs": 904.5980999999999,
+          "cls": 0,
+          "tbtMs": 9,
+          "warnings": [],
+          "requestCount": 25,
+          "transferBytes": 296485,
+          "initialSearchRequests": []
+        },
+        {
+          "run": 3,
+          "performance": 100,
+          "lcpMs": 1803.8435999999997,
+          "fcpMs": 903.8435999999999,
+          "cls": 0,
+          "tbtMs": 9.5,
+          "warnings": [],
+          "requestCount": 25,
+          "transferBytes": 296485,
+          "initialSearchRequests": []
+        }
+      ],
+      "evidenceFile": "ja-home-runs.json"
+    },
+    {
+      "path": "/ja/courses/ai-coding",
+      "medianPerformance": 99,
+      "medianLcpMs": 2108.2610000000004,
+      "medianCls": 0,
+      "runs": [
+        {
+          "run": 1,
+          "performance": 99,
+          "lcpMs": 2108.7947999999997,
+          "fcpMs": 904.3974000000001,
+          "cls": 0,
+          "tbtMs": 9,
+          "warnings": [],
+          "requestCount": 29,
+          "transferBytes": 310194,
+          "initialSearchRequests": []
+        },
+        {
+          "run": 2,
+          "performance": 99,
+          "lcpMs": 2107.3628,
+          "fcpMs": 903.6813999999999,
+          "cls": 0,
+          "tbtMs": 8.5,
+          "warnings": [],
+          "requestCount": 29,
+          "transferBytes": 310194,
+          "initialSearchRequests": []
+        },
+        {
+          "run": 3,
+          "performance": 99,
+          "lcpMs": 2108.2610000000004,
+          "fcpMs": 904.1305,
+          "cls": 0,
+          "tbtMs": 9,
+          "warnings": [],
+          "requestCount": 29,
+          "transferBytes": 310194,
+          "initialSearchRequests": []
+        }
+      ],
+      "evidenceFile": "ja-overview-runs.json"
+    },
+    {
+      "path": "/ja/courses/ai-coding/foundations/first-change",
+      "medianPerformance": 99,
+      "medianLcpMs": 2181.9383999999995,
+      "medianCls": 0,
+      "runs": [
+        {
+          "run": 1,
+          "performance": 99,
+          "lcpMs": 2181.9383999999995,
+          "fcpMs": 903.9648,
+          "cls": 0,
+          "tbtMs": 7.5,
+          "warnings": [],
+          "requestCount": 30,
+          "transferBytes": 316160,
+          "initialSearchRequests": []
+        },
+        {
+          "run": 2,
+          "performance": 99,
+          "lcpMs": 2181.4379,
+          "fcpMs": 903.6787999999999,
+          "cls": 0,
+          "tbtMs": 10.5,
+          "warnings": [],
+          "requestCount": 30,
+          "transferBytes": 316160,
+          "initialSearchRequests": []
+        },
+        {
+          "run": 3,
+          "performance": 99,
+          "lcpMs": 2182.8190000000004,
+          "fcpMs": 904.4680000000001,
+          "cls": 0,
+          "tbtMs": 9,
+          "warnings": [],
+          "requestCount": 30,
+          "transferBytes": 316160,
+          "initialSearchRequests": []
+        }
+      ],
+      "evidenceFile": "ja-lesson-runs.json"
+    }
+  ],
+  "lighthouseVersion": "13.5.0",
+  "settings": {
+    "output": "json",
+    "maxWaitForFcp": 30000,
+    "maxWaitForLoad": 45000,
+    "pauseAfterFcpMs": 1000,
+    "pauseAfterLoadMs": 1000,
+    "networkQuietThresholdMs": 1000,
+    "cpuQuietThresholdMs": 1000,
+    "formFactor": "mobile",
+    "throttling": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 562.5,
+      "downloadThroughputKbps": 1474.5600000000002,
+      "uploadThroughputKbps": 675,
+      "cpuSlowdownMultiplier": 4
+    },
+    "throttlingMethod": "simulate",
+    "screenEmulation": {
+      "mobile": true,
+      "width": 412,
+      "height": 823,
+      "deviceScaleFactor": 1.75,
+      "disabled": false
+    },
+    "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+    "auditMode": false,
+    "gatherMode": false,
+    "clearStorageTypes": [
+      "file_systems",
+      "shader_cache",
+      "service_workers",
+      "cache_storage"
+    ],
+    "disableStorageReset": false,
+    "debugNavigation": false,
+    "channel": "node",
+    "usePassiveGathering": false,
+    "disableFullPageScreenshot": false,
+    "skipAboutBlank": false,
+    "blankPage": "about:blank",
+    "ignoreStatusCode": false,
+    "locale": "en-US",
+    "blockedUrlPatterns": null,
+    "additionalTraceCategories": null,
+    "extraHeaders": null,
+    "precomputedLanternData": null,
+    "onlyAudits": null,
+    "onlyCategories": [
+      "performance"
+    ],
+    "skipAudits": null
+  }
+}

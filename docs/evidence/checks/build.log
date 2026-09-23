@@ -1,0 +1,75 @@
+
+> learning-ai-coding@0.1.0 build /private/tmp/lac-clean-a4tjz_vo
+> pnpm content:check && pnpm i18n:check && next build
+
+
+> learning-ai-coding@0.1.0 content:check /private/tmp/lac-clean-a4tjz_vo
+> node --import tsx scripts/check-content.ts
+
+en: 0 courses, 0 published lessons
+zh: 0 courses, 0 published lessons
+ja: 0 courses, 0 published lessons
+fr: 0 courses, 0 published lessons
+es: 0 courses, 0 published lessons
+Content validation passed (4f53cda18c2b).
+
+> learning-ai-coding@0.1.0 i18n:check /private/tmp/lac-clean-a4tjz_vo
+> node --import tsx scripts/check-i18n.ts
+
+5 dictionaries × 96 valid messages; translation identities checked.
+▲ Next.js 16.3.6 (Turbopack)
+[MDX] generated files in 6.247792000000004ms
+✓ Running next.config.mjs took 310ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1687ms
+  Running TypeScript ...
+  Finished TypeScript in 7.4s ...
+  Collecting page data using 13 workers ...
+  Generating static pages using 13 workers (0/29) ...
+  Generating static pages using 13 workers (7/29) 
+  Generating static pages using 13 workers (14/29) 
+  Generating static pages using 13 workers (21/29) 
+✓ Generating static pages using 13 workers (29/29) in 5.3s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /_not-found
+├   /[lang]
+│ ├ ● /en
+│ ├ ● /zh
+│ ├ ● /ja
+│ └ ● [+2 more paths]
+├ ƒ /[lang]/[...missing]
+├   /[lang]/about
+│ ├ ● /en/about
+│ ├ ● /zh/about
+│ ├ ● /ja/about
+│ └ ● [+2 more paths]
+├   /[lang]/courses
+│ ├ ● /en/courses
+│ ├ ● /zh/courses
+│ ├ ● /ja/courses
+│ └ ● [+2 more paths]
+├ ● /[lang]/courses/[course]
+├ ● /[lang]/courses/[course]/[...lesson]
+├   /[lang]/unavailable
+│ ├ ● /en/unavailable
+│ ├ ● /zh/unavailable
+│ ├ ● /ja/unavailable
+│ └ ● [+2 more paths]
+├   /api/search/[lang]
+│ ├ ● /api/search/en
+│ ├ ● /api/search/zh
+│ ├ ● /api/search/ja
+│ └ ● [+2 more paths]
+├ ○ /robots.txt
+└ ○ /sitemap.xml
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+

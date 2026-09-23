@@ -1,0 +1,473 @@
+{
+  "path": "/ja/courses/ai-coding",
+  "runs": [
+    {
+      "run": 1,
+      "performance": 99,
+      "lcpMs": 2108.7947999999997,
+      "fcpMs": 904.3974000000001,
+      "cls": 0,
+      "tbtMs": 9,
+      "requests": [
+        {
+          "path": "/ja/courses/ai-coding",
+          "transferSize": 9563,
+          "resourceType": "Document"
+        },
+        {
+          "path": "/_next/static/chunks/0p1alyfw_t_g0.css",
+          "transferSize": 19964,
+          "resourceType": "Stylesheet"
+        },
+        {
+          "path": "/_next/static/chunks/1_lt-pgsw47rj.js",
+          "transferSize": 2728,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/2bs7xske5iwfn.js",
+          "transferSize": 9490,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/3i3c1y7c4cl6z.js",
+          "transferSize": 72319,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/2klpcvrmuwip0.js",
+          "transferSize": 44894,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/turbopack-1d1he887pa0hb.js",
+          "transferSize": 5004,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/30kp31ygthe6q.js",
+          "transferSize": 4356,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/2sjumwl8p4d8l.js",
+          "transferSize": 1198,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/2ksqgf2odepin.js",
+          "transferSize": 16653,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/3u8h7c11kb7hd.js",
+          "transferSize": 12842,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/0_ep0d6t3wwvq.js",
+          "transferSize": 2319,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/0cgk-l_kyk4o5.js",
+          "transferSize": 15846,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/25-oc_qe684f0.js",
+          "transferSize": 12486,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/0pehge--ksmqm.js",
+          "transferSize": 29122,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/0d22n537bktsk.js",
+          "transferSize": 2433,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/1ecvxn0wcv9jj.js",
+          "transferSize": 19365,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/182dnfbl-djwv.js",
+          "transferSize": 1088,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/ja",
+          "transferSize": 951,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja/courses",
+          "transferSize": 963,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/zh/courses/ai-coding",
+          "transferSize": 984,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja/courses/ai-coding/foundations/first-change",
+          "transferSize": 1013,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja",
+          "transferSize": 4329,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja",
+          "transferSize": 3217,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja/courses",
+          "transferSize": 2424,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/zh/courses/ai-coding",
+          "transferSize": 4332,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/zh/courses/ai-coding",
+          "transferSize": 3277,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja/courses/ai-coding/foundations/first-change",
+          "transferSize": 5667,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/_next/static/chunks/1ux986vi2bcta.js",
+          "transferSize": 1367,
+          "resourceType": "Script"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "run": 2,
+      "performance": 99,
+      "lcpMs": 2107.3628,
+      "fcpMs": 903.6813999999999,
+      "cls": 0,
+      "tbtMs": 8.5,
+      "requests": [
+        {
+          "path": "/ja/courses/ai-coding",
+          "transferSize": 9563,
+          "resourceType": "Document"
+        },
+        {
+          "path": "/_next/static/chunks/0p1alyfw_t_g0.css",
+          "transferSize": 19964,
+          "resourceType": "Stylesheet"
+        },
+        {
+          "path": "/_next/static/chunks/1_lt-pgsw47rj.js",
+          "transferSize": 2728,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/2bs7xske5iwfn.js",
+          "transferSize": 9490,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/3i3c1y7c4cl6z.js",
+          "transferSize": 72319,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/2klpcvrmuwip0.js",
+          "transferSize": 44894,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/turbopack-1d1he887pa0hb.js",
+          "transferSize": 5004,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/30kp31ygthe6q.js",
+          "transferSize": 4356,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/2sjumwl8p4d8l.js",
+          "transferSize": 1198,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/2ksqgf2odepin.js",
+          "transferSize": 16653,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/3u8h7c11kb7hd.js",
+          "transferSize": 12842,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/0_ep0d6t3wwvq.js",
+          "transferSize": 2319,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/0cgk-l_kyk4o5.js",
+          "transferSize": 15846,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/25-oc_qe684f0.js",
+          "transferSize": 12486,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/0pehge--ksmqm.js",
+          "transferSize": 29122,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/0d22n537bktsk.js",
+          "transferSize": 2433,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/1ecvxn0wcv9jj.js",
+          "transferSize": 19365,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/182dnfbl-djwv.js",
+          "transferSize": 1088,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/ja",
+          "transferSize": 951,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja/courses",
+          "transferSize": 963,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/zh/courses/ai-coding",
+          "transferSize": 984,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja/courses/ai-coding/foundations/first-change",
+          "transferSize": 1013,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja",
+          "transferSize": 4329,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja",
+          "transferSize": 3217,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja/courses",
+          "transferSize": 2424,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/zh/courses/ai-coding",
+          "transferSize": 4332,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/zh/courses/ai-coding",
+          "transferSize": 3277,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja/courses/ai-coding/foundations/first-change",
+          "transferSize": 5667,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/_next/static/chunks/1ux986vi2bcta.js",
+          "transferSize": 1367,
+          "resourceType": "Script"
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "run": 3,
+      "performance": 99,
+      "lcpMs": 2108.2610000000004,
+      "fcpMs": 904.1305,
+      "cls": 0,
+      "tbtMs": 9,
+      "requests": [
+        {
+          "path": "/ja/courses/ai-coding",
+          "transferSize": 9563,
+          "resourceType": "Document"
+        },
+        {
+          "path": "/_next/static/chunks/0p1alyfw_t_g0.css",
+          "transferSize": 19964,
+          "resourceType": "Stylesheet"
+        },
+        {
+          "path": "/_next/static/chunks/1_lt-pgsw47rj.js",
+          "transferSize": 2728,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/2bs7xske5iwfn.js",
+          "transferSize": 9490,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/3i3c1y7c4cl6z.js",
+          "transferSize": 72319,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/2klpcvrmuwip0.js",
+          "transferSize": 44894,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/turbopack-1d1he887pa0hb.js",
+          "transferSize": 5004,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/30kp31ygthe6q.js",
+          "transferSize": 4356,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/2sjumwl8p4d8l.js",
+          "transferSize": 1198,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/2ksqgf2odepin.js",
+          "transferSize": 16653,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/3u8h7c11kb7hd.js",
+          "transferSize": 12842,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/0_ep0d6t3wwvq.js",
+          "transferSize": 2319,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/0cgk-l_kyk4o5.js",
+          "transferSize": 15846,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/25-oc_qe684f0.js",
+          "transferSize": 12486,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/0pehge--ksmqm.js",
+          "transferSize": 29122,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/0d22n537bktsk.js",
+          "transferSize": 2433,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/1ecvxn0wcv9jj.js",
+          "transferSize": 19365,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/_next/static/chunks/182dnfbl-djwv.js",
+          "transferSize": 1088,
+          "resourceType": "Script"
+        },
+        {
+          "path": "/ja",
+          "transferSize": 951,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja/courses",
+          "transferSize": 963,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/zh/courses/ai-coding",
+          "transferSize": 984,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja/courses/ai-coding/foundations/first-change",
+          "transferSize": 1013,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja/courses",
+          "transferSize": 4329,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja/courses",
+          "transferSize": 2424,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja",
+          "transferSize": 3217,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/zh/courses/ai-coding",
+          "transferSize": 4332,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/zh/courses/ai-coding",
+          "transferSize": 3277,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/ja/courses/ai-coding/foundations/first-change",
+          "transferSize": 5667,
+          "resourceType": "Fetch"
+        },
+        {
+          "path": "/_next/static/chunks/1ux986vi2bcta.js",
+          "transferSize": 1367,
+          "resourceType": "Script"
+        }
+      ],
+      "warnings": []
+    }
+  ]
+}

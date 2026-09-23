@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320">
+  <rect width="1200" height="320" fill="#e9e5da"/>
+  <g fill="#f4f1e8" stroke="#39372f" stroke-width="2">
+    <rect x="35" y="84" width="250" height="152"/><rect x="325" y="84" width="250" height="152"/><rect x="615" y="84" width="250" height="152"/><rect x="905" y="84" width="250" height="152"/>
+  </g>
+  <g fill="#24231f" font-family="monospace" font-size="25" text-anchor="middle">
+    <text x="160" y="135">01</text><text x="160" y="185">INTENT</text>
+    <text x="450" y="135">02</text><text x="450" y="185">CONTEXT</text>
+    <text x="740" y="135">03</text><text x="740" y="185">CHANGE</text>
+    <text x="1030" y="135">04</text><text x="1030" y="185">VERIFY</text>
+  </g>
+  <g fill="#304a91"><path d="M292 155h16v-6l12 11-12 11v-6h-16z"/><path d="M582 155h16v-6l12 11-12 11v-6h-16z"/><path d="M872 155h16v-6l12 11-12 11v-6h-16z"/></g>
+</svg>
