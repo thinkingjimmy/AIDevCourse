@@ -20,6 +20,7 @@ if (process.env.VERCEL_ENV === 'production') {
 const withMDX = createMDX({ configPath: 'config/source.config.ts' });
 const withIntl = createNextIntlPlugin('./src/lib/i18n/request.ts');
 export default withMDX(withIntl({
+  allowedDevOrigins: ['192.168.0.107'],
   agentRules: false,
   turbopack: { root: process.cwd() },
   distDir: process.env.CONTENT_TEST === '1' ? '.next-test' : '.next',
