@@ -89,7 +89,7 @@ body:has(#nd-docs-layout) .header-inner { width: min(1440px, 100%); padding-inli
 .home-sub { max-width: 38rem; margin: 0 0 24px; color: var(--muted); font-size: 16px; line-height: 1.6; }
 .home-cta { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid #09090b; border-radius: 8px; background: #09090b; color: #fff; font-size: 14px; font-weight: 500; line-height: 1; text-decoration: none; }
 .home-cta:hover { background: #18181b; }
-.home-deco { justify-self: end; width: 100%; max-width: 228px; background: transparent; }
+.home-deco { justify-self: center; width: 100%; max-width: 228px; background: transparent; }
 .home-deco img { display: block; width: 100%; height: auto; background: transparent; }
 .home-rule { height: 0; margin: 0; border: 0; border-top: 1px solid var(--line); }
 .home-catalog { flex: 1 0 auto; padding-block: 48px 72px; }
