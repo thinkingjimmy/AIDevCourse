@@ -8,5 +8,4 @@ export const site = {
   name: 'Learning AI Coding',
   origin: process.env.SITE_URL ?? 'http://localhost:3000',
   indexable: process.env.VERCEL_ENV === 'production',
-  preview: process.env.CONTENT_PREVIEW === '1',
 };

@@ -6,7 +6,7 @@ Next.js 16.3.6 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-
 
 A five-language learning site with local Markdown / MDX courses, language-specific search, and learning progress stored in your browser. The interface uses warm paper colors, full-height grid rails, Newsreader and IBM Plex Mono (self-hosted via `next/font`), and restrained retro details. No accounts, database, model API keys, or translation service are required.
 
-**Current status:** the application is implemented. One Chinese course with three complete lesson drafts is available in local preview; all lessons await author review. The other four languages have localized interfaces and no published lessons. Production therefore shows an empty course library in every language. Author review, device checks, and deployment remain pending; see the [PRD and todo](./docs/PRD.md#13-markdown-开发任务).
+**Current status:** the application is implemented. One Chinese course and its three lessons are public. The other four languages have localized interfaces and no courses yet, so those course lists are empty. Device checks and deployment remain pending; see the [PRD and todo](./docs/PRD.md#13-markdown-开发任务).
 
 ## Quick start
 
@@ -14,17 +14,16 @@ Use Node **22.17.0** and pnpm **10.30.3**.
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm dev:preview
+pnpm dev
 ```
 
-Open [localhost:3000/zh](http://localhost:3000/zh). `pnpm dev:preview` includes local drafts; `pnpm dev` follows the production publication rules. Restart after changing frontmatter, file structure, or `meta.json` order. Body edits support hot reload. Run only one development mode at a time.
+Open [localhost:3000/zh](http://localhost:3000/zh). Restart after changing frontmatter, file structure, or `meta.json` order. Body edits support hot reload.
 
 ## Commands
 
 | Command | Purpose |
 | --- | --- |
-| `pnpm dev` | Develop with published content only |
-| `pnpm dev:preview` | Read and edit local drafts |
+| `pnpm dev` | Start the local site with the public courses |
 | `pnpm check` | Run lint, TypeScript, content, dictionary, and unit checks |
 | `pnpm build` | Validate content and dictionaries, then build for production |
 | `pnpm start` | Serve the production build |
@@ -84,7 +83,7 @@ Missing translations have explained fallback links; direct requests still return
 
 The [documentation index](./docs/README.md) links to the [authoring guide](./docs/authoring.md), [deployment guide](./docs/deployment.md), and [implementation and validation notes](./docs/implementation-notes.md). These detailed guides are currently in Chinese.
 
-Set `SITE_URL` to the verified production HTTPS origin; see `config/.env.example`. Vercel previews filter drafts and use `noindex`. Production rejects local draft preview, and Vercel rejects test content. Deployment still requires the review gates recorded in the PRD.
+Set `SITE_URL` to the verified production HTTPS origin; see `config/.env.example`. Vercel previews use `noindex` and serve the same courses as production. Vercel rejects test content. Deployment still requires the remaining gates recorded in the PRD.
 
 Quiz, video embeds, interactive exercises, hint/solution controls, prompt comparisons, and other P1 features remain deferred until actual authoring needs justify them.
 

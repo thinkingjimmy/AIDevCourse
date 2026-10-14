@@ -1,7 +1,7 @@
 /**
  * [INPUT]: Public catalog and the same alternate-link derivation as metadata.
  * [OUTPUT]: Actual public language URLs and reciprocal hreflang entries.
- * [POS]: Search-engine discovery boundary; excludes drafts, fixtures, and redirects.
+ * [POS]: Search-engine discovery boundary; lists catalogued lessons and skips redirects.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import type { MetadataRoute } from 'next';

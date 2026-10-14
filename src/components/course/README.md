@@ -6,7 +6,7 @@ course-card.tsx: Course card with facts, a progress-aware continue action, and t
 
 course-layout.tsx: ReadingLayout: Fumadocs lesson shell with course sidebar, mobile drawer, reading progress line, and mobile lesson bar.
 
-empty-courses.tsx: Honest in-review empty state, an about link, and valid alternate-language entries.
+empty-courses.tsx: Empty course library, an about link, and valid alternate-language entries.
 
 lesson-navigation.tsx: Previous/next links with explicit first/last boundaries; the next lesson is the prominent card.
 

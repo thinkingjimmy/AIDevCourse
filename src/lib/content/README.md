@@ -14,6 +14,6 @@ source.ts: Explicit-language course/lesson queries and compiled article lookup.
 
 types.ts: Serializable public content, manifest, and translation types.
 
-validate.ts: Identity/revision validation, publication filtering, and safe links.
+validate.ts: Identity/revision validation, public catalog rules, and safe links.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

@@ -1,5 +1,5 @@
 /**
- * [INPUT]: The validated public catalog and optional local draft-preview flag.
+ * [INPUT]: The validated public catalog.
  * [OUTPUT]: Actionable authoring errors and public coverage counts.
  * [POS]: Content quality gate used by check, build, and CI.
  * [PROTOCOL]: Update this header when making changes, then check README.md.

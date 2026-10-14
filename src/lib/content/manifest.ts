@@ -1,5 +1,5 @@
 /**
- * [INPUT]: Filesystem scan, central publication policy, and explicit ordering.
+ * [INPUT]: Filesystem scan, publication policy, and explicit ordering.
  * [OUTPUT]: One public catalog with localized manifests and translation maps.
  * [POS]: Framework-independent content builder shared by checks and the app.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
@@ -10,11 +10,9 @@ import { scanContent, contentRoot } from './scan';
 import { publishDocuments, validateReferences } from './validate';
 import { identity, type Catalog, type CourseManifest, type LessonSummary } from './types';
 
-export function readCatalog(options: { root?: string; preview?: boolean; publicRoot?: string } = {}): Catalog {
-  const preview = options.preview ?? process.env.CONTENT_PREVIEW === '1';
-  if (preview && process.env.NODE_ENV === 'production') throw new Error('Draft preview is local-development only');
+export function readCatalog(options: { root?: string; publicRoot?: string } = {}): Catalog {
   const scan = scanContent(options.root ?? contentRoot());
-  const { visible, warnings } = publishDocuments(scan.documents, scan.order, preview);
+  const { visible, warnings } = publishDocuments(scan.documents, scan.order);
   validateReferences(visible, options.publicRoot ?? join(process.cwd(), 'public'));
   const courses: CourseManifest[] = [];
   const translations: Catalog['translations'] = {};

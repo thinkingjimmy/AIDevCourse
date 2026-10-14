@@ -10,11 +10,11 @@
 
 生产环境设置 `SITE_URL` 为最终 HTTPS origin，不带路径、查询参数或片段。代码在 `VERCEL_ENV=production` 时拒绝缺失、占位或非 HTTPS 域名。`config/.env.example` 说明本地变量，实际环境文件不提交。
 
-预览默认使用本地/预览 origin 并返回 noindex，公开范围与生产相同。不要设置 `CONTENT_PREVIEW` 或 `CONTENT_TEST`：前者在生产构建中被拒绝，后者在 Vercel 中被拒绝。noindex 不是身份验证。
+预览默认使用本地/预览 origin 并返回 noindex，课程范围与生产相同。不要设置 `CONTENT_TEST`：它在 Vercel 中被拒绝。noindex 不是身份验证。
 
 ## 发布门槛
 
-1. 作者确认品牌、域名、作者身份与首发文章；审校五语 UI，并将准备好的原文、译文显式公开。
+1. 作者确认品牌、域名、作者身份与首发文章，并确认准备发布的原文和译文已在 `content/` 中。
 2. 执行 `pnpm check`、`pnpm build`、`pnpm test:e2e`。隔离内容能力另用 `CONTENT_TEST=1 pnpm build` 和 `CONTENT_TEST=1 pnpm test:e2e` 验证。
 3. 推送经检查的提交，在 GitHub 检查 Quality 工作流。分支保护需仓库管理员设置，本文不宣称已启用。
 4. 在 Vercel Preview 复查五语入口、真实课程、缺译文空状态、SEO、搜索和进度，再将同一提交提升为生产。
@@ -24,9 +24,9 @@
 
 ## 上线冒烟
 
-检查 `/` 的 Cookie / Accept-Language 协商仅返回私有 307，明确的语言 URL 不改语言。检查五语首页、列表、关于页；只有已审核译文应有文章链接。逐一检查真实原文、已发布译文、缺译文 404、搜索、标记完成、刷新恢复、跨语言共享、课程重置和移动布局。
+检查 `/` 的 Cookie / Accept-Language 协商仅返回私有 307，明确的语言 URL 不改语言。检查五语首页、列表、关于页；只有已有译文的语言应有文章链接。逐一检查真实原文、已有译文、缺译文 404、搜索、标记完成、刷新恢复、跨语言共享、课程重置和移动布局。
 
-生产 canonical 使用最终域名，hreflang 只列真实公开版本；sitemap 不含草稿或测试标记，robots 允许正式站点抓取。实际 Safari、手机和系统中日输入法仍须人工检查，Playwright WebKit 和合成 composition 事件不能替代这一步。
+生产 canonical 使用最终域名，hreflang 只列真实存在的版本；sitemap 只含实际课程，不含测试标记，robots 允许正式站点抓取。实际 Safari、手机和系统中日输入法仍须人工检查，Playwright WebKit 和合成 composition 事件不能替代这一步。
 
 ## 回滚
 

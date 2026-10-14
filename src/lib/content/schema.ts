@@ -13,7 +13,7 @@ const date = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine((value) => {
   return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
 }, 'Expected a real calendar date');
 const common = {
-  courseId: id, title: text, description: text, draft: z.boolean(),
+  courseId: id, title: text, description: text,
   contentRevision: z.number().int().positive().optional(),
   translatedFromRevision: z.number().int().positive().optional(),
 };

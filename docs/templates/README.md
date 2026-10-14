@@ -6,7 +6,7 @@ course-original.mdx: Noncompiled original-course template; replace sample identi
 
 course-translation.mdx: Noncompiled course-translation template; preserve original identity and source revision.
 
-lesson-original.mdx: Noncompiled original-lesson template with a stable ID and explicit draft status.
+lesson-original.mdx: Noncompiled original-lesson template with a stable ID.
 
 lesson-translation.mdx: Noncompiled translated-lesson template for reviewed target-language content.
 

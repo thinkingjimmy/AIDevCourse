@@ -3,7 +3,7 @@
 > 版本：v0.5 · 创建日期：2026-09-22 · 更新日期：2026-09-23
 > L2 | Parent: [README.md](./README.md)
 > [PROTOCOL]: Update this header when making changes, then check README.md.
-> 状态：站点工程开发及自动验收完成；课程初稿待作者审校，尚未部署；正文互动组件继续延期
+> 状态：站点工程开发及自动验收完成；中文一门课程与三篇课时已公开，不再使用审校状态；尚未部署；正文互动组件继续延期
 > 技术方向：Next.js + Fumadocs MDX / Core / UI + Tailwind CSS + next-intl
 > 视觉方向：Vercel 式可见网格 + Macintosh 128K 灵感的复古阅读界面
 
@@ -11,7 +11,7 @@
 
 本文同时定义产品需求、技术约束、内容协议、验收标准和 Markdown 开发任务。开发任务统一维护在第 13 节，避免 PRD 与另一份 TODO 重复维护而产生冲突。
 
-初次编写时检查的仓库为 `thinkingjimmy/learning-ai-coding`，默认分支为 `main`，初始基线提交为 `dcc592e38bb2871ecdc6f37489cccc15bcaefdcb`，只有 LICENSE。v0.3 修订前重新检查，仓库只有 LICENSE、PRD.md、README.md，尚无应用代码。v0.4 已完成站点工程实现；实际架构、命令及验收证据见 README 与 docs/implementation-notes.md。中文一门课程、三篇原文初稿保持草稿；其他四语只有完整 UI，暂无正式教程译文。保留现有 LICENSE。
+初次编写时检查的仓库为 `thinkingjimmy/learning-ai-coding`，默认分支为 `main`，初始基线提交为 `dcc592e38bb2871ecdc6f37489cccc15bcaefdcb`，只有 LICENSE。v0.3 修订前重新检查，仓库只有 LICENSE、PRD.md、README.md，尚无应用代码。v0.4 已完成站点工程实现；实际架构、命令及验收证据见 README 与 docs/implementation-notes.md。中文一门课程、三篇课时已列入公开目录；其他四语只有完整 UI，暂无教程译文。保留现有 LICENSE。
 
 ### 0.1 已明确的需求
 
@@ -65,7 +65,7 @@
 
 ### 0.5 v0.4 实现记录
 
-五语技术能力已实现；实际完成状态以第 13 节勾选项和 [工程验收记录](./implementation-notes.md) 为准。未公开作者未审核的内容，工程 fixture 保持在 tests 内；正式构建五语课程均显示空状态，本地显式草稿预览可阅读三篇中文初稿。
+五语技术能力已实现；实际完成状态以第 13 节勾选项和 [工程验收记录](./implementation-notes.md) 为准。工程 fixture 保持在 tests 内。正式构建公开中文课程及其三篇课时；没有课程的语言显示空状态。
 
 实现增加课程 `goals` / `audience` / `prerequisites` 字段，保证总览由内容驱动。保留 Fumadocs 阅读布局与正文，侧栏局部替换以支持进度和既定断点；基础弹窗直接复用 Radix。搜索采用锁定 Fumadocs 实际提供的 ZBSearch 配套静态 API，并共享 CJK / 重音分词配置。
 
@@ -305,7 +305,6 @@ public/images/courses/
 | `lessonId` | 课时 | 逻辑课时稳定 ID，所有译文沿用，不由标题或序号生成 |
 | `sourceLocale` | 课程 | 原文语言，必须在五语白名单中；各语言课程声明一致，首批默认 `zh` |
 | `title` / `description` | 全部 | 当前文件语言的非空标题和描述 |
-| `draft` | 全部 | 必须显式为布尔值，独立控制该语言版本发布 |
 | `level` | 课程 | `beginner` / `intermediate` / `advanced`，界面翻译标签 |
 | `goals` / `audience` / `prerequisites` | 课程 | 本语言目标非空数组、受众非空文字、前置要求非空数组 |
 | `durationMinutes` | 课时 | 大于 0 的整数，作者估算，可按译文实际阅读时长调整 |
@@ -340,23 +339,21 @@ public/images/courses/
 
 总览、侧栏、前后导航、时长、进度分母、继续学习、搜索和 SEO 使用这些数据，不各维护顺序或翻译数组。缓存必须带 lang；查找课时不能忽略语言后返回遇到的第一份文件。
 
-校验失效目录项、重复 URL / 语言内 ID、错误归属、缺少原文身份、译文错配和遗漏的公开课时。草稿可暂不加入目录；公开课时在本语言目录中恰好出现一次。
+校验失效目录项、重复 URL / 语言内 ID、错误归属、缺少原文身份、译文错配和未列入目录的课时。每个内容文件在本语言目录中恰好出现一次。
 
-### 5.4 草稿、独立发布与原文下架
+### 5.4 公开范围与原文下架
 
-单一译文 `draft: true` 只排除该译文；某语言课程介绍为草稿时，该语言课程及课时不可公开。过滤后没有课时的模块不显示，宣告公开却零公开课时的课程版本校验失败。某语言完全没有课程是正常空状态，不是构建错误。
+`content/` 中列入 `meta.json` 的课程和课时都是公开内容。没有单独的审校或草稿状态。某语言完全没有课程是正常空状态，不是构建错误。没有课时的课程版本校验失败；过滤后没有课时的模块不显示。
 
-原文语言的课程或课时设为草稿，视为该逻辑内容整体下架：它的译文也不再公开。原文文件缺失但译文仍引用时校验失败。译文独立发布不能绕过原文下架；下架和普通 revision 更新是不同操作。
+下架是删除文件，不是切换状态。原文文件缺失但译文仍引用时校验失败。译文不能在原文已删除后继续公开。
 
-过滤贯穿路由、静态参数、RSC、目录、首页、搜索、sitemap、语言切换、hreflang、统计和前后导航。仅隐藏菜单或 noindex 不等于未发布。直接请求仍须从过滤后的内容源查询。
+公开清单贯穿路由、静态参数、RSC、目录、首页、搜索、sitemap、语言切换、hreflang、统计和前后导航。仅隐藏菜单或 noindex 不等于未发布。直接请求仍须从这份清单查询。
 
-草稿只在本地显式开启预览，例如 CONTENT_PREVIEW=1。公开 Vercel Preview 默认也不展示草稿；生产误开预览时失败。未来私密协作预览须另设计访问控制。
-
-不允许内容源、框架语言 fallback 或缓存把原文补到缺失译文 URL。即使底层有回退能力，公开清单也必须以实际语言文件为依据。草稿和缺失译文不得进入可公开请求的数据；public 中的素材始终按公开资源处理，不存敏感草稿素材或密钥。
+不允许内容源、框架语言 fallback 或缓存把原文补到缺失译文 URL。即使底层有回退能力，公开清单也必须以实际语言文件为依据。缺失译文不得进入可公开请求的数据；public 中的素材始终按公开资源处理，不存密钥。
 
 ### 5.5 首版写作示例
 
-以下是 `content/zh/ai-coding/foundations/first-change.mdx` 的写作模板；所属课程 sourceLocale 为 zh。示例不是已完成的公开课，需作者补齐并复核。
+以下是课时写作模板，字段与公开课 `content/zh/ai-coding/foundations/first-change.mdx` 相同；所属课程 sourceLocale 为 zh。
 
 ````mdx
 ---
@@ -365,7 +362,6 @@ courseId: ai-coding
 lessonId: first-change
 title: 用 AI 完成第一次代码修改
 description: 描述一个小任务，并检查修改是否符合预期。
-draft: true
 durationMinutes: 12
 lessonType: practice
 contentRevision: 1
@@ -665,7 +661,7 @@ lib/content 对外提供显式接收 lang 的 getCourses、getCourse、getLesson
 
 每个公开语言版本有本语言 title、description、分享信息和指向自身的 canonical。不能把五语 canonical 全指到中文。[S18]
 
-根据真实公开译文生成 hreflang，包含当前版本及对等版本并双向一致，使用 en、zh-Hans、ja、fr、es。缺失、草稿或已下架版本不生成链接。不能依赖框架默认把五个前缀都列为存在；HTTP Link 与 HTML head 不能互相矛盾。[S16][S18]
+根据真实存在的译文生成 hreflang，包含当前版本及对等版本并双向一致，使用 en、zh-Hans、ja、fr、es。缺失或已删除的版本不生成链接。不能依赖框架默认把五个前缀都列为存在；HTTP Link 与 HTML head 不能互相矛盾。[S16][S18]
 
 首页的 x-default 指向语言协商入口 `/`；课程与课时仅在原文公开时可将 x-default 指向该逻辑内容的原文，不把所有课时的 x-default 都指到首页。sitemap 列出所有实际公开的语言 URL，不包含重定向、404 或占位译文。使用同一清单生成 metadata 与 sitemap，不维护重复映射。
 
@@ -677,7 +673,7 @@ lib/content 对外提供显式接收 lang 的 getCourses、getCourse、getLesson
 
 ### 11.1 已实现命令
 
-以下命令已实现；草稿预览另外使用 pnpm dev:preview。
+以下命令已实现。
 
 ```bash
 pnpm dev               # 本地五语预览
@@ -825,7 +821,7 @@ Vercel 预览不改变草稿规则。生产域名、默认语言、语言偏好�
 
 依赖：M0–M5、I 系列和真实原文就绪；不依赖 T 或完整五语课程翻译。
 
-- [ ] M6-01 复核至少一门课程、三个完整原文课时，填写真实验证信息；不要求互动或一次翻完。 **进展：一门课程、三篇完整中文初稿已提供并保持草稿；等待作者复核与实际操作验收。**
+- [ ] M6-01 复核至少一门课程、三个完整原文课时，填写真实验证信息；不要求互动或一次翻完。 **进展：一门课程、三篇中文课时已公开；作者复核与实际操作验收仍待完成。**
 - [x] M6-02 示范课使用真实图片、代码和步骤，移除未知组件、占位素材、虚构信息及假译文。
 - [ ] M6-03 作者按 authoring.md 完成新增原文、增加译文草稿、排序、预览、检查和发布演练。 **进展：模板和作者指南已完成；作者本人演练待执行。**
 - [ ] M6-04 执行第 14 节全部 P0 验收并关联证据；不要求未启动的第 14.1 节。 **进展：工程自动化与性能证据已记录；人工/内容/上线门槛未全部完成。**

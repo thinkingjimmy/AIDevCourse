@@ -8,9 +8,6 @@ import { createMDX } from 'fumadocs-mdx/next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import redirects from './config/redirects.json' with { type: 'json' };
 
-if (process.env.CONTENT_PREVIEW === '1' && process.env.NODE_ENV === 'production') {
-  throw new Error('CONTENT_PREVIEW is restricted to local development.');
-}
 if (process.env.CONTENT_TEST === '1' && process.env.VERCEL) {
   throw new Error('Test content must never be deployed.');
 }

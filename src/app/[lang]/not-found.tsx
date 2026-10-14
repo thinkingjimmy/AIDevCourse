@@ -1,7 +1,7 @@
 /**
  * [INPUT]: Current language translation context and actual alternate courses.
  * [OUTPUT]: Localized unavailable-page explanation without false article metadata.
- * [POS]: Missing/draft route boundary within a valid locale.
+ * [POS]: Missing-route boundary within a valid locale.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import Link from 'next/link';

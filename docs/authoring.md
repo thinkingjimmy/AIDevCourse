@@ -6,14 +6,14 @@
 
 ## 本地启动
 
-使用 Node 22.17.0 与 pnpm 10.30.3，执行 `pnpm install --frozen-lockfile`。`pnpm dev` 与部署遵循相同公开规则；`pnpm dev:preview` 显式显示本地草稿并展示提示条。先停止另一个开发服务，再切换模式。新增文件、修改 frontmatter 或 meta 后重启开发服务以刷新公开清单；正文编辑支持热更新。
+使用 Node 22.17.0 与 pnpm 10.30.3，执行 `pnpm install --frozen-lockfile`。`pnpm dev` 与部署展示同一份课程。新增文件、修改 frontmatter 或 meta 后重启开发服务以刷新公开清单；正文编辑支持热更新。
 
-`CONTENT_PREVIEW=1` 不能用于生产构建。Vercel Preview 也只展示已发布内容。`CONTENT_TEST=1` 仅用于非公开工程验收，连接 Vercel 时会直接拒绝启动。
+`CONTENT_TEST=1` 仅用于非公开工程验收，连接 Vercel 时会直接拒绝启动。
 
 ## 新增原文课程
 
 1. 在 `content/zh/<course>/` 建立目录，复制 [课程模板](./templates/course-original.mdx) 为 `index.mdx`。更换所有示例文字与 ID；课程原文也可以使用其他受支持语言。
-2. 填写 `sourceLocale`、本语言标题、简介、难度、目标 `goals`、受众 `audience` 和前置要求 `prerequisites`。保持 `draft: true`。
+2. 填写 `sourceLocale`、本语言标题、简介、难度、目标 `goals`、受众 `audience` 和前置要求 `prerequisites`。写入 `content/` 并列入 `meta.json` 的文件即公开。
 3. 为课程与每一层模块新增 `meta.json`，在语言根 meta 的 `pages` 中加入课程目录。每层 `pages` 只写直接成员的 ASCII 文件名或目录名，不带扩展名。
 4. 从 [课时模板](./templates/lesson-original.mdx) 新增课时。`courseId` 匹配课程，`lessonId` 永久代表这一逻辑课时；修改标题、排序或路径时保留 ID。
 5. 在模块 meta 中按教学顺序列出课时。课程 meta 包含 `index` 和各模块。不要通过文件名排序、通配符或数字前缀推断顺序。
@@ -45,35 +45,34 @@ Read the diff and verify the actual behavior.
 ![The steps from a goal to a verified change](/images/courses/change-cycle.svg)
 ```
 
-站内链接使用最终语言路径或当前文章 `#heading`。跨语言链接文字必须包含目标语言自称，例如 `[English: first change](/en/courses/ai-coding/foundations/first-change)`，且目标已公开。不可链接草稿、未发布译文或不存在的锚点。外部资料可用 HTTPS 链接，不做视频嵌入。
+站内链接使用最终语言路径或当前文章 `#heading`。跨语言链接文字必须包含目标语言自称，例如 `[English: first change](/en/courses/ai-coding/foundations/first-change)`，且目标文件已经存在。不可链接不存在的课时或锚点。外部资料可用 HTTPS 链接，不做视频嵌入。
 
 `durationMinutes` 是正整数阅读时长；`lessonType` 为 concept / practice / tool。工具操作课必须填写亲自验证的 `lastVerified` 和 `testedWith`。概念和文字练习不假造验证日期，不把编写日期当作工具验证日期。
 
 ```bash
 pnpm content:check
 pnpm i18n:check
-CONTENT_PREVIEW=1 pnpm content:check
 pnpm check
 pnpm build
 ```
 
-前两项校验全部文件的格式、身份和字典，并验证公开内容的引用；显式预览检查会额外校验草稿之间的引用。发布前两种内容检查都应通过。错误会带文件路径；缺译文是正常状态，落后于原文的译文会报告提醒。
+这些命令校验全部文件的格式、身份、目录和字典，并验证课程引用。错误会带文件路径；缺译文是正常状态，落后于原文的译文会报告提醒。
 
 ## 新增译文
 
 在目标语言建立相同课程、模块与课时路径，复制 [课程译文模板](./templates/course-translation.mdx) 和 [课时译文模板](./templates/lesson-translation.mdx)。保留原文的 `courseId`、`lessonId`、`sourceLocale` 和 ASCII 路径；翻译标题、正文、简介、目录名称、alt 与相关 UI 内容。
 
-原文使用 `contentRevision`；译文只使用 `translatedFromRevision`，记录真正审校依据的原文版本。译文不能引用未来版本。目标语言 meta 只列已有文件，顺序是原文顺序的子序列。
+原文使用 `contentRevision`；译文只使用 `translatedFromRevision`，记录译文依据的原文版本。译文不能引用未来版本。目标语言 meta 只列已有文件，顺序是原文顺序的子序列。
 
-先创建 `draft: true` 的译文并本地预览；经审校后再公开。缺译文的课时不存在，不复制原文到另一种语言目录冒充译文。切换菜单会明确说明将前往目标语言课程总览或课程列表。
+缺译文的课时不存在，不复制原文到另一种语言目录冒充译文。切换菜单会明确说明将前往目标语言课程总览或课程列表。
 
 原文发生实质变化时增加 `contentRevision`。旧译文可继续公开，但显示本地化更新提示和原文链接；译者核对后再更新 `translatedFromRevision`。改错字不需要重置学习记录。
 
 ## 发布、下架与改 URL
 
-作者复核内容和工具验证记录后，将课程介绍及准备好的课时设为 `draft: false`，检查 meta 完整，执行 check / build / 生产 E2E。请按 [部署指南](./deployment.md) 发布通过检查的提交。
+课程文件列入对应 `meta.json` 后即公开。检查 meta 完整，执行 check / build / 生产 E2E。请按 [部署指南](./deployment.md) 发布通过检查的提交。
 
-单一译文设为草稿仅撤下该译文；某语言课程介绍设为草稿会撤下该语言整门课程。原文课程或课时设为草稿会撤下对应的全部译文。原文文件不能在译文仍引用时直接移除；撤下后所有语言课时为零的课程介绍也应设为草稿。
+下架时删除该语言的文件，并同步删除仍引用它的译文；目录中不再保留已删除的条目。原文文件不能在译文仍引用时直接移除。没有课时的课程介绍无法通过校验。
 
 已发布 URL 变化时同步所有语言的相对路径，保持稳定 ID，并在 `config/redirects.json` 添加旧 URL 到实际公开新 URL 的映射。不能有链式跳转、环、动态匹配或外部目标。
 
