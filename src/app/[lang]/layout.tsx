@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Validated route locale, current dictionary, and shared site shell.
- * [OUTPUT]: Static locale-specific HTML, self-hosted Latin fonts, site footer, and narrowly scoped client providers.
+ * [OUTPUT]: Static locale-specific HTML, self-hosted Latin fonts, conditional site chrome, and narrowly scoped client providers.
  * [POS]: Public language root; language-prefixed pages never consult cookies.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -13,6 +13,7 @@ import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server
 import { locales, isLocale, htmlLanguages } from '@/lib/i18n/config';
 import { fumadocsMessages } from '@/lib/i18n/fumadocs';
 import { Providers } from '@/components/layout/providers';
+import { SiteChrome } from '@/components/layout/site-chrome';
 import { SiteHeader } from '@/components/layout/site-header';
 import { site } from '@/lib/site-config';
 import '@/styles/globals.css';
@@ -31,10 +32,10 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   return <html lang={htmlLanguages[lang]} className={`light ${serif.variable} ${mono.variable}`}><body>
     <Providers locale={lang} messages={clientMessages} translations={fumadocsMessages(messages.Ui as Record<string, string>)}>
       <a href="#main-content" className="skip-link">{ui('skip')}</a>
-      <SiteHeader locale={lang} />
-      <noscript><style>{'.search-trigger, .copy-button, .mobile-course-bar > button, [data-toc-popover], .prose button { display: none !important; }'}</style><p className="nojs-notice">{ui('noJs')}</p></noscript>
-      {children}
-      <footer className="site-footer"><div className="footer-inner"><span className="brand-small">Learning AI Coding</span><p>{ui('footer')}</p><Link href={`/${lang}/about`}>{ui('about')}</Link></div></footer>
+      <SiteChrome locale={lang} header={<SiteHeader locale={lang} />} footer={<footer className="site-footer"><div className="footer-inner"><span className="brand-small">{site.name}</span><p>{ui('footer')}</p><Link href={`/${lang}/about`}>{ui('about')}</Link></div></footer>}>
+        <noscript><style>{'.search-trigger, .copy-button, .mobile-course-bar > button, [data-toc-popover], .prose button { display: none !important; }'}</style><p className="nojs-notice">{ui('noJs')}</p></noscript>
+        {children}
+      </SiteChrome>
     </Providers>
   </body></html>;
 }

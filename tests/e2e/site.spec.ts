@@ -89,8 +89,10 @@ test('reading and native language links work without JavaScript or cookies', asy
   }
   await context.close();
 });
-test('keeps the paper theme when the system requests dark mode', async ({ page }) => {
+test('keeps a light background when the system requests dark mode', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
   await page.goto('/en');
+  expect(await page.locator('body').evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(255, 255, 255)');
+  await page.goto('/en/about');
   expect(await page.locator('body').evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(244, 241, 232)');
 });

@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Public identity-to-translation map and the current URL.
- * [OUTPUT]: Native language links with explicit fallback, valid hashes, and preference saving.
+ * [OUTPUT]: Native language links with explicit fallback, valid hashes, and preference saving. Compact mode shows 中 / EN.
  * [POS]: Progressive-enhancement language control shared by desktop and mobile.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -11,7 +11,8 @@ import { useTranslations } from 'next-intl';
 import { Globe, ChevronDown, Check } from 'lucide-react';
 import { locales, languageNames, htmlLanguages, localeCookie, type Locale } from '@/lib/i18n/config';
 import type { Catalog } from '@/lib/content/types';
-export function LanguageSwitcher({ locale, translations }: { locale: Locale; translations: Catalog['translations'] }) {
+const pairMark: Partial<Record<Locale, string>> = { ja: '日', fr: 'FR', es: 'ES' };
+export function LanguageSwitcher({ locale, translations, compact = false }: { locale: Locale; translations: Catalog['translations']; compact?: boolean }) {
   const t = useTranslations('Language');
   const pathname = usePathname();
   const ref = useRef<HTMLDetailsElement>(null);
@@ -21,13 +22,16 @@ export function LanguageSwitcher({ locale, translations }: { locale: Locale; tra
     document.addEventListener('pointerdown', close);
     return () => document.removeEventListener('pointerdown', close);
   }, []);
-  return <details className="language-picker" ref={ref} onKeyDown={(event) => {
+  const extra = pairMark[locale];
+  return <details className={compact ? 'language-picker lang-compact' : 'language-picker'} ref={ref} onKeyDown={(event) => {
     if (event.key === 'Escape' && ref.current) { ref.current.open = false; ref.current.querySelector('summary')?.focus(); }
   }} onBlur={(event) => {
     // WebKit may blur a summary to no focus target before dispatching a link click.
     if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget as Node) && ref.current) ref.current.open = false;
   }}>
-    <summary aria-label={t('label')}><Globe size={16} aria-hidden /><span lang={htmlLanguages[locale]}>{languageNames[locale]}</span><ChevronDown size={13} aria-hidden /></summary>
+    <summary aria-label={t('label')}>{compact
+      ? <span className="lang-pair" lang={htmlLanguages[locale]}>中<span aria-hidden> / </span>EN{extra ? <><span aria-hidden> · </span><span data-current="">{extra}</span></> : null}</span>
+      : <><Globe size={16} aria-hidden /><span lang={htmlLanguages[locale]}>{languageNames[locale]}</span><ChevronDown size={13} aria-hidden /></>}</summary>
     <nav className="language-options" aria-label={t('label')}>
       {locales.map((lang) => {
         const samePage = current?.[1].find((version) => version.locale === lang);

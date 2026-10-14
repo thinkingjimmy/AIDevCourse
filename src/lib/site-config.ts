@@ -5,7 +5,7 @@
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 export const site = {
-  name: 'Learning AI Coding',
+  name: 'aidevcourse',
   origin: process.env.SITE_URL ?? 'http://localhost:3000',
   indexable: process.env.VERCEL_ENV === 'production',
 };

@@ -8,6 +8,6 @@ course.css: Course cards, progress-aware syllabus rows, and the banded course ov
 
 reading.css: 1024/1280 lesson layouts, course sidebar, bounded prose, completion card, and mobile lesson bar.
 
-surfaces.css: Site shell (full-height rails, header, footer), full-bleed bands, home, library, about, dialogs, and search.
+surfaces.css: Site shell (full-height rails, header, footer), the homepage zinc frame, full-bleed bands, library, about, dialogs, and search.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

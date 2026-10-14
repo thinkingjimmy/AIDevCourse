@@ -12,6 +12,7 @@ import { CourseCard } from '@/components/course/course-card';
 import { EmptyCourses } from '@/components/course/empty-courses';
 import { GridFrame } from '@/components/layout/grid-frame';
 import { pageMetadata } from '@/lib/seo/metadata';
+import { site } from '@/lib/site-config';
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params; if (!isLocale(lang)) return {};
   const t = await getTranslations({ locale: lang, namespace: 'Course' });
@@ -22,7 +23,7 @@ export default async function CoursesPage({ params }: { params: Promise<{ lang: 
   const t = await getTranslations({ locale: lang, namespace: 'Course' });
   const courses = getCourses(lang);
   return <main id="main-content" className="site-main" tabIndex={-1}>
-    <GridFrame><header className="page-heading"><p className="eyebrow"><span className="square-dot" aria-hidden />Learning AI Coding</p><h1 className="serif">{t('title')}</h1><p>{t('intro')}</p></header></GridFrame>
+    <GridFrame><header className="page-heading"><p className="eyebrow"><span className="square-dot" aria-hidden />{site.name}</p><h1 className="serif">{t('title')}</h1><p>{t('intro')}</p></header></GridFrame>
     <GridFrame>{courses.length ? courses.map((course, index) => <CourseCard key={course.id} course={course} index={index} />) : <EmptyCourses locale={lang} />}</GridFrame>
   </main>;
 }

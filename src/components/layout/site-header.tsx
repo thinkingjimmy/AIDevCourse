@@ -16,7 +16,7 @@ export async function SiteHeader({ locale }: { locale: Locale }) {
   const t = await getTranslations({ locale, namespace: 'Ui' });
   const catalog = getCatalog();
   return <header className="site-header"><div className="header-inner">
-    <Link href={`/${locale}`} className="brand" aria-label={`${site.name} · ${t('home')}`}><span className="brand-mark" aria-hidden>ai<span>_</span></span><span className="brand-text">Learning AI Coding</span></Link>
+    <Link href={`/${locale}`} className="brand" aria-label={`${site.name} · ${t('home')}`}><span className="brand-mark" aria-hidden>ai<span>_</span></span><span className="brand-text">{site.name}</span></Link>
     <PrimaryNav locale={locale} />
     <div className="header-tools"><SearchTrigger locale={locale} version={catalog.version} /><LanguageSwitcher locale={locale} translations={catalog.translations} /></div>
   </div></header>;
