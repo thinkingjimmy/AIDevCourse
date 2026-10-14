@@ -19,6 +19,8 @@ pnpm dev
 
 打开 [localhost:3000/zh](http://localhost:3000/zh)。修改 frontmatter、文件结构或 `meta.json` 排序后重启服务；正文编辑支持热更新。
 
+首页设计稿不替换 `/zh`：[/design/a](http://localhost:3000/design/a)（目录）、[/design/b](http://localhost:3000/design/b)（课页）、[/design/c](http://localhost:3000/design/c)（工作台）。三份稿都读取 `content/zh/ai-coding` 里已经公开的课。
+
 ## 常用命令
 
 | 命令 | 用途 |

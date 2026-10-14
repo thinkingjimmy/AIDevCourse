@@ -19,6 +19,8 @@ pnpm dev
 
 Open [localhost:3000/zh](http://localhost:3000/zh). Restart after changing frontmatter, file structure, or `meta.json` order. Body edits support hot reload.
 
+Homepage studies, which do not replace `/zh`, are at [/design/a](http://localhost:3000/design/a) (catalog), [/design/b](http://localhost:3000/design/b) (course page), and [/design/c](http://localhost:3000/design/c) (studio). They read the published course in `content/zh/ai-coding`.
+
 ## Commands
 
 | Command | Purpose |

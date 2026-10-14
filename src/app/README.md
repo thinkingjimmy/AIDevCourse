@@ -6,6 +6,8 @@
 
 api/: Nested module; see [api/README.md](./api/README.md).
 
+design/: Homepage studies at /design, /design/a, /design/b, and /design/c. They do not replace the live home.
+
 layout.tsx: A shared root boundary without imposing a fallback content language.
 
 not-found.tsx: A real global 404 with accessible language entry links.

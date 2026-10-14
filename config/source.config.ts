@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Validated publication catalog and Fumadocs Config API.
- * [OUTPUT]: A local MDX collection containing only allowed content files.
+ * [OUTPUT]: A local MDX collection containing only allowed content files, plus allowlisted /design preview routes.
  * [POS]: Build-time compiler boundary; fixtures require an isolated test build.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -17,6 +17,8 @@ writeFileSync('.source/catalog.json', JSON.stringify(catalog));
 writeFileSync('.source/routes.json', JSON.stringify([
   ...locales.flatMap((locale) => [`/${locale}`, `/${locale}/courses`, `/${locale}/about`]),
   ...catalog.documents.map((doc) => doc.url),
+  // Homepage studies. Not catalog pages, and not a replacement for /[lang].
+  '/design', '/design/a', '/design/b', '/design/c',
 ]));
 export const courses = defineDocs({
   dir: contentRoot(),
