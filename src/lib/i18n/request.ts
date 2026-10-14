@@ -1,5 +1,5 @@
 /**
- * [INPUT]: next-intl request locale, its dictionary, and explicit local preview mode.
+ * [INPUT]: next-intl request locale and its dictionary.
  * [OUTPUT]: Server translation configuration with deterministic date handling.
  * [POS]: Dictionary boundary; never loads all languages into a client bundle.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
@@ -10,9 +10,6 @@ import { isLocale } from './config';
 export default getRequestConfig(async ({ requestLocale }) => {
   const locale = await requestLocale;
   if (!isLocale(locale)) notFound();
-  const dictionary = (await import(`../../messages/${locale}.json`)).default;
-  const messages = process.env.CONTENT_PREVIEW === '1'
-    ? { ...dictionary, Ui: { ...dictionary.Ui, lessons: dictionary.Ui.previewLessons } }
-    : dictionary;
+  const messages = (await import(`../../messages/${locale}.json`)).default;
   return { locale, timeZone: 'UTC', messages };
 });

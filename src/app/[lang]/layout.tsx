@@ -31,7 +31,6 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   return <html lang={htmlLanguages[lang]} className={`light ${serif.variable} ${mono.variable}`}><body>
     <Providers locale={lang} messages={clientMessages} translations={fumadocsMessages(messages.Ui as Record<string, string>)}>
       <a href="#main-content" className="skip-link">{ui('skip')}</a>
-      {site.preview && <div className="preview-banner">{ui('preview')}</div>}
       <SiteHeader locale={lang} />
       <noscript><style>{'.search-trigger, .copy-button, .mobile-course-bar > button, [data-toc-popover], .prose button { display: none !important; }'}</style><p className="nojs-notice">{ui('noJs')}</p></noscript>
       {children}

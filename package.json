@@ -9,7 +9,6 @@
   },
   "scripts": {
     "dev": "next dev",
-    "dev:preview": "CONTENT_PREVIEW=1 next dev",
     "content:generate": "fumadocs-mdx config/source.config.ts .source",
     "content:check": "node --import tsx scripts/check-content.ts",
     "i18n:check": "node --import tsx scripts/check-i18n.ts",

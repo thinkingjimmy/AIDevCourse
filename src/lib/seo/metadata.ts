@@ -1,7 +1,7 @@
 /**
  * [INPUT]: Public translation map, locale, and configured site origin.
  * [OUTPUT]: Self-canonical metadata and reciprocal public-only alternates.
- * [POS]: Shared SEO derivation for pages and sitemap, excluding drafts and missing translations.
+ * [POS]: Shared SEO derivation for pages and sitemap, using only catalogued lessons.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import type { Metadata } from 'next';

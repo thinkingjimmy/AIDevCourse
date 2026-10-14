@@ -4,7 +4,7 @@
 
 Build and publication settings. TypeScript uses the root `tsconfig.json`; each test suite owns its configuration. PostCSS plugins are declared in `package.json`.
 
-- `.env.example`: Local draft-preview and production-origin environment reference.
+- `.env.example`: Production-origin environment reference.
 - `eslint.config.mjs`: Next.js, TypeScript, and accessibility lint rules, loaded by `pnpm lint`.
 - `redirects.json`: Reviewed one-hop URL migrations; currently empty.
 - `source.config.ts`: Validated Fumadocs collection, frozen public catalog/routes, and code highlighting.

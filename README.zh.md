@@ -6,7 +6,7 @@ Next.js 16.3.6 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-
 
 五语学习网站，支持本地 Markdown / MDX 课程、按语言搜索和浏览器本地学习进度。界面采用暖纸白、贯通的网格纵线、Newsreader 与 IBM Plex Mono（经 `next/font` 自托管）和简洁复古细节，无需账号、数据库、模型 API Key 或在线翻译服务。
 
-**当前状态：**站点工程已实现。一门中文课程、三篇完整课时初稿可在本地预览，均等待作者审核；其他四语已提供完整界面，尚无正式教程。正常生产构建的五语课程列表均显示空状态。作者审校、真机检查和部署仍待完成，任务统一维护在 [PRD 与 todo](./docs/PRD.md#13-markdown-开发任务)。
+**当前状态：**站点工程已实现。一门中文课程及其三篇课时已经公开。其他四语已提供完整界面，尚无课程，因此这些语言的课程列表为空。真机检查和部署仍待完成，任务统一维护在 [PRD 与 todo](./docs/PRD.md#13-markdown-开发任务)。
 
 ## 快速启动
 
@@ -14,17 +14,16 @@ Next.js 16.3.6 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm dev:preview
+pnpm dev
 ```
 
-打开 [localhost:3000/zh](http://localhost:3000/zh)。`pnpm dev:preview` 显示本地草稿；`pnpm dev` 遵循生产公开规则。修改 frontmatter、文件结构或 `meta.json` 排序后重启服务；正文编辑支持热更新。两种开发模式不要同时运行。
+打开 [localhost:3000/zh](http://localhost:3000/zh)。修改 frontmatter、文件结构或 `meta.json` 排序后重启服务；正文编辑支持热更新。
 
 ## 常用命令
 
 | 命令 | 用途 |
 | --- | --- |
-| `pnpm dev` | 按正式公开范围启动开发服务 |
-| `pnpm dev:preview` | 阅读和编辑本地草稿 |
+| `pnpm dev` | 启动本地站点并展示公开课程 |
 | `pnpm check` | 执行 lint、类型、内容、字典和单元检查 |
 | `pnpm build` | 校验内容与字典，再构建生产版本 |
 | `pnpm start` | 启动生产构建 |
@@ -84,7 +83,7 @@ E2E 默认使用 **3310** 端口，冲突时设置 `E2E_PORT`。工程样例位�
 
 [文档索引](./docs/README.md) 汇总 [作者指南](./docs/authoring.md)、[部署指南](./docs/deployment.md) 和 [实现与验收记录](./docs/implementation-notes.md)。详细指南目前使用中文。
 
-生产 `SITE_URL` 应为已确认的 HTTPS 域名，环境变量见 `config/.env.example`。Vercel Preview 同样过滤草稿并使用 `noindex`。生产环境拒绝本地草稿预览，Vercel 拒绝工程测试内容。正式部署前仍需完成 PRD 中的审校与发布门槛。
+生产 `SITE_URL` 应为已确认的 HTTPS 域名，环境变量见 `config/.env.example`。Vercel Preview 使用 `noindex`，课程范围与生产相同。Vercel 拒绝工程测试内容。正式部署前仍需完成 PRD 中剩余的发布门槛。
 
 Quiz、视频嵌入、交互练习、提示与答案展开、提示词对比及其他 P1 继续延期，待真实写作需求明确后开发。
 

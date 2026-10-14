@@ -17,7 +17,13 @@ test('shares completion across translations and synchronizes reset between tabs'
   await expect(complete).toBeEnabled(); await complete.focus(); await page.keyboard.press('Space');
   await expect(page.getByRole('button', { name: '取消完成标记', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await page.reload(); await expect(page.getByRole('button', { name: '取消完成标记', exact: true })).toBeEnabled();
+  await page.goto(path('zh', 'useful-context'));
+  const second = page.getByRole('button', { name: '标记为已完成', exact: true });
+  await expect(second).toBeEnabled(); await second.click();
+  await expect(page.getByRole('button', { name: '取消完成标记', exact: true })).toHaveAttribute('aria-pressed', 'true');
   const other = await context.newPage(); await other.goto(path('en'));
+  await expect(other.getByRole('button', { name: 'Mark as incomplete', exact: true })).toBeEnabled();
+  await other.goto(path('en', 'useful-context'));
   await expect(other.getByRole('button', { name: 'Mark as incomplete', exact: true })).toBeEnabled();
   await other.goto('/en/courses/ai-coding');
   await expect(other.getByRole('link', { name: 'Review this course' })).toBeVisible();
@@ -30,19 +36,19 @@ test('shares completion across translations and synchronizes reset between tabs'
   await expect(page.getByRole('button', { name: '标记为已完成', exact: true })).toHaveAttribute('aria-pressed', 'false');
 });
 test('explains missing translations and keeps direct access a real 404', async ({ page, request }) => {
-  await page.goto(path('zh', 'useful-context'));
+  await page.goto(path('zh', 'verify-results'));
   await page.locator('.language-picker summary').click();
   const english = page.locator('.language-options a[href="/en/courses/ai-coding"]');
   await expect(english).toContainText('此课暂无译文'); await english.click();
   await expect(page).toHaveURL(/\/en\/courses\/ai-coding$/);
-  const missing = await request.get(path('en', 'useful-context'));
-  expect(missing.status()).toBe(404); expect(await missing.text()).not.toContain('DRAFT_TRANSLATION_SECRET');
+  const missing = await request.get(path('en', 'verify-results'));
+  expect(missing.status()).toBe(404); expect(await missing.text()).not.toContain('WITHDRAWN_SECRET');
   for (const lang of locales) {
     const body = await (await request.get(`/api/search/${lang}`)).text();
     expect(body).not.toContain('WITHDRAWN_SECRET'); expect(body).not.toContain('DRAFT_TRANSLATION_SECRET');
   }
   const sitemap = await (await request.get('/sitemap.xml')).text();
-  expect(sitemap).not.toContain('/en/courses/ai-coding/foundations/useful-context');
+  expect(sitemap).not.toContain('/en/courses/ai-coding/foundations/verify-results');
   await page.goto(path('fr'));
   const alternates = await page.locator('link[rel="alternate"]').evaluateAll((links) => links.map((link) => link.getAttribute('hreflang')));
   expect(alternates).toEqual(expect.arrayContaining(['en', 'zh-Hans', 'ja', 'fr', 'es', 'x-default']));

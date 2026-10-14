@@ -8,8 +8,6 @@ meta.json: Explicit localized directory title and teaching order.
 
 useful-context.mdx: Local article content; publication is controlled by explicit frontmatter and catalog validation.
 
-verify-results.mdx: Local article content; publication is controlled by explicit frontmatter and catalog validation.
-
-withdrawn.mdx: Local article content; publication is controlled by explicit frontmatter and catalog validation.
+verify-results.mdx: Local article content used by catalog validation.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

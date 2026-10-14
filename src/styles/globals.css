@@ -91,7 +91,6 @@ kbd { padding: 1px 6px; border: 1px solid var(--line); border-radius: 2px; backg
 
 /* Labels and learning states */
 .chip { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 9px; border: 1px solid var(--line); border-radius: 2px; background: var(--surface); color: var(--strong); font-size: 12px; line-height: 1; white-space: nowrap; }
-.chip.review { background: var(--review-soft); border-color: var(--review-line); color: var(--review); }
 .state-icon { display: inline-grid; place-content: center; flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; font: 500 11px/1 var(--font-mono); }
 .state-icon[data-state='done'] { background: var(--done); color: var(--sheet); }
 .state-icon[data-state='current'] { border: 1.5px solid var(--link); }
@@ -107,7 +106,7 @@ kbd { padding: 1px 6px; border: 1px solid var(--line); border-radius: 2px; backg
 /* Shell utilities */
 .skip-link { position: fixed; top: -100px; left: 16px; padding: 12px 18px; z-index: 100; color: white; background: var(--link); }
 .skip-link:focus { top: 12px; }
-.nojs-notice, .preview-banner { position: relative; z-index: 2; padding: 8px 24px; font-size: 14px; text-align: center; background: var(--surface); border-bottom: 1px solid var(--line); }
+.nojs-notice { position: relative; z-index: 2; padding: 8px 24px; font-size: 14px; text-align: center; background: var(--surface); border-bottom: 1px solid var(--line); }
 .notice { padding: 16px 20px; border: 1px solid var(--line); font-size: 15px; background: var(--sheet); }
 .notice a { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
 .notice.warning { border-color: var(--review-line); background: var(--review-soft); }

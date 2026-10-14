@@ -48,18 +48,26 @@ test('negotiates only supported unprefixed entries with private 307 responses', 
     expect(await missing.text()).toContain(`lang="${htmlLanguages[locale]}"`);
   }
 });
-test('production excludes drafts and never publishes engineering fixtures', async ({ request }) => {
+test('production publishes the Chinese course and never publishes engineering fixtures', async ({ request }) => {
   test.skip(process.env.CONTENT_TEST === '1', 'The isolated fixture build is covered separately.');
-  const paths = ['/zh', '/zh/courses', '/zh/courses/ai-coding', '/zh/courses/ai-coding/foundations/first-change', '/sitemap.xml', ...locales.map((lang) => `/api/search/${lang}`)];
+  const paths = ['/zh', '/zh/courses', '/zh/courses/ai-coding', '/zh/courses/ai-coding/foundations/first-change', '/sitemap.xml', ...locales.map((lang) => `/api/search/${lang}`), ...locales.map((lang) => `/${lang}/courses`)];
   for (const path of paths) {
     const response = await request.get(path);
     const body = await response.text();
-    expect(body).not.toContain('INTERNAL_FIXTURE_DO_NOT_PUBLISH');
-    expect(body).not.toContain('先把任务缩小');
-    if (path.startsWith('/zh/courses/ai-coding')) expect(response.status()).toBe(404);
+    expect(body, path).not.toContain('INTERNAL_FIXTURE_DO_NOT_PUBLISH');
+    expect(body, path).not.toMatch(/审校中|In review|校閲中|En relecture|En revisión/);
+    if (path.startsWith('/zh/courses/ai-coding')) expect(response.status(), path).toBe(200);
   }
+  const courses = await (await request.get('/zh/courses')).text();
+  expect(courses).toContain('AI coding，从一个小任务开始');
+  expect(courses).toContain('用 AI 完成第一次小修改');
+  expect(courses).toContain('给 AI 有用的上下文');
+  expect(courses).toContain('检查代码，验证结果');
+  const lesson = await request.get('/zh/courses/ai-coding/foundations/first-change');
+  expect(lesson.status()).toBe(200);
+  expect(await lesson.text()).toContain('先把任务缩小');
   const rsc = await request.get('/zh/courses/ai-coding/foundations/first-change', { headers: { RSC: '1' } });
-  expect(await rsc.text()).not.toContain('先把任务缩小');
+  expect(await rsc.text()).toContain('先把任务缩小');
 });
 test('reading and native language links work without JavaScript or cookies', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false, reducedMotion: 'reduce', viewport: { width: 390, height: 844 } });

@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Parsed language documents, explicit order, and local public assets.
- * [OUTPUT]: Identity/revision validation, publication filtering, and safe links.
+ * [OUTPUT]: Identity/revision validation, public catalog rules, and safe links.
  * [POS]: Central publication policy used before any route, search, or SEO output.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -9,7 +9,7 @@ import { resolve, sep } from 'node:path';
 import { identity, type ContentDocument } from './types';
 import { isLocale, languageNames, type Locale } from '../i18n/config';
 
-export function publishDocuments(documents: ContentDocument[], order: Map<Locale, string[]>, preview: boolean) {
+export function publishDocuments(documents: ContentDocument[], order: Map<Locale, string[]>) {
   const byKey = new Map<string, ContentDocument>();
   const byURL = new Map<string, ContentDocument>();
   const courses = documents.filter((doc) => doc.data.kind === 'course');
@@ -64,7 +64,7 @@ export function publishDocuments(documents: ContentDocument[], order: Map<Locale
       previous = position;
     }
   }
-  const visible = documents.filter((doc) => preview || ![doc, parentOf(doc), sourceOf(doc), parentOf(sourceOf(doc))].some((item) => item.data.draft));
+  const visible = documents;
   for (const course of visible.filter((doc) => doc.data.kind === 'course')) {
     if (!visible.some((doc) => doc.locale === course.locale && doc.data.kind === 'lesson' && doc.data.courseId === course.data.courseId)) {
       fail(course, 'Published course must contain at least one public lesson');
@@ -93,7 +93,7 @@ export function validateReferences(documents: ContentDocument[], publicRoot: str
       const locale = targetPath.split('/')[1];
       if (!isLocale(locale)) fail('Invalid target language');
       const simplePage = new RegExp(`^/${locale}(?:/courses|/about)?$`).test(targetPath);
-      if (!target && !simplePage) fail('Target is missing, a draft, or unpublished');
+      if (!target && !simplePage) fail('Target is missing');
       if (fragment && !target?.headings.some((heading) => heading.id === decodeURIComponent(fragment))) fail('Missing heading anchor');
       if (locale !== doc.locale && !link.label.includes(languageNames[locale as Locale])) fail('Cross-language links must name their target language');
     }

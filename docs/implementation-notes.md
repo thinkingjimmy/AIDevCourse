@@ -4,7 +4,7 @@
 
 ## 交付边界
 
-本次从只有文档的仓库实现五语站点基础、内容管线、阅读体验、搜索、本地进度和发布检查。真实内容为一门中文课程与三篇完整初稿，全部为草稿；en / ja / fr / es 暂无正式教程译文。未生成假作者、验证日期、已审核译文或生产域名。
+本次从只有文档的仓库实现五语站点基础、内容管线、阅读体验、搜索、本地进度和发布检查。真实内容为一门已公开的中文课程与三篇课时；en / ja / fr / es 暂无教程译文。未生成假作者、验证日期或生产域名。
 
 PRD 的 M6 内容审校与公开发布、I-12 人工语言审校、M5-08 真机与系统输入法检查尚需负责人完成。CI 工作流已编写，但没有推送提交、执行 GitHub 远程 CI、连接 Vercel 或部署。延期的 T / P1 教学组件保持未实现。
 
@@ -37,7 +37,7 @@ PRD 的 M6 内容审校与公开发布、I-12 人工语言审校、M5-08 真机�
 | `tsconfig.json` | 根目录提供编辑器和 TypeScript 默认可发现的入口 |
 | `package.json` | 简单 PostCSS 插件配置集中于 `postcss` 字段，减少一个根配置文件 |
 
-Next.js 支持从 [package.json 的 postcss 字段](https://nextjs.org/docs/pages/guides/post-css) 读取插件配置；当前锁定版本的 Turbopack 生产构建已实际通过。根目录保留 8 个维护文件，各目录 README 与源文件契约同步调整；内容稳定 ID、公开 URL、草稿过滤和学习记录协议没有变化。
+Next.js 支持从 [package.json 的 postcss 字段](https://nextjs.org/docs/pages/guides/post-css) 读取插件配置；当前锁定版本的 Turbopack 生产构建已实际通过。根目录保留 8 个维护文件，各目录 README 与源文件契约同步调整；内容稳定 ID、公开 URL 和学习记录协议没有变化。课程不再使用草稿过滤。
 
 2026-09-23，整理后重新执行 `pnpm check`，38 个单元测试通过；`pnpm build`、`CONTENT_TEST=1 pnpm build` 均通过。三浏览器正式公开矩阵 27 项通过、隔离五语矩阵 69 项通过，共 96 项；仅跳过另一种构建专属测试。课程、样例和排序共 42 个文件与整理前逐字一致，文档本地链接、目录成员清单、L2/L3 契约、每目录文件数和 `git diff --check` 均通过。以下干净安装及性能数据属于 v0.4 的原始验收证据；此次整理未重测 Lighthouse。
 
@@ -58,15 +58,14 @@ Next.js 支持从 [package.json 的 postcss 字段](https://nextjs.org/docs/page
 
 | 验证 | 命令 / 证据 |
 | --- | --- |
-| 静态、内容、字典、单元 | `pnpm check`；5 份字典各 96 个消息键；38 个单元测试 |
-| 草稿预览引用 | `CONTENT_PREVIEW=1 pnpm content:check` |
-| 正式公开边界 | `pnpm build` 与 `pnpm test:e2e`；真实草稿 URL、RSC、索引与 sitemap 排除 |
+| 静态、内容、字典、单元 | `pnpm check`；5 份字典各 124 个消息键；35 个单元测试 |
+| 正式公开边界 | `pnpm build` 与 `pnpm test:e2e`；中文课程进入页面、RSC、索引与 sitemap |
 | 隔离五语课程 | `CONTENT_TEST=1 pnpm build` 与 `CONTENT_TEST=1 pnpm test:e2e` |
 | 布局 | [五语、五视口截图](./evidence/screenshots/README.md)，320 / 390 / 768 / 1024 / 1440px 与 200% 等效缩放 |
 | 性能 | [性能报告](./evidence/performance/report.json)，测量脚本记录环境、三次结果、中位数、请求与 gzip 索引 |
 | CI 定义 | [.github/workflows/ci.yml](../.github/workflows/ci.yml)，远程执行待推送 |
 
-单元覆盖身份/顺序/草稿/引用/危险 MDX/日期、字典 ICU、语言优先级、索引分词、重定向和存储异常。浏览器矩阵覆盖五语真实页面、canonical/hreflang、缺译文、跨窗口完成与重置、搜索前五/锚点/重试/合成 IME、Axe、无 JS、图片失败、复制失败和暗色系统偏好。
+单元覆盖身份/顺序/目录/引用/危险 MDX/日期、字典 ICU、语言优先级、索引分词、重定向和存储异常。浏览器矩阵覆盖五语真实页面、canonical/hreflang、缺译文、跨窗口完成与重置、搜索前五/锚点/重试/合成 IME、Axe、无 JS、图片失败、复制失败和暗色系统偏好。
 
 自动化的 200% 等效缩放采用 1280px 物理宽度对应 640 CSS px、deviceScaleFactor 2 的视口，不声称完成物理手机、系统浏览器缩放或真实中文/日语输入法人工验证。Playwright WebKit 不能等同于用户设备上的 Safari；Lighthouse 本地模拟不是线上 Core Web Vitals。
 
@@ -76,7 +75,7 @@ Next.js 支持从 [package.json 的 postcss 字段](https://nextjs.org/docs/page
 
 三浏览器正式公开矩阵 27 项通过，五语 fixture 矩阵 69 项通过，共 96 项。两个矩阵中只跳过另一种构建专属测试，没有跳过当前模式的验收项。最终矩阵含五语的五视口与 200% 等效缩放截图，共 30 张。直接 404 的实际 HTTP 状态、服务端 lang 和无 JS 正文都已验证。
 
-五项部署保护验证分别拒绝生产草稿预览、Vercel fixture 模式、缺失生产域名、占位域名和带查询的生产 URL。完整执行输出见 [checks](./evidence/checks/README.md)。本地预览另经界面检查，课程与三篇初稿正常显示，计数明确标为预览。没有修改其他项目的服务；E2E 默认使用独立 3310 端口，冲突时可设 E2E_PORT。
+部署保护会拒绝 Vercel fixture 模式、缺失生产域名、占位域名和带查询的生产 URL。完整执行输出见 [checks](./evidence/checks/README.md)。没有修改其他项目的服务；E2E 默认使用独立 3310 端口，冲突时可设 E2E_PORT。
 
 GitHub Actions 文件已完成；以上记录均为实际本机执行，不能解读为远程 CI 或 Vercel 部署已完成。工作区改动尚未提交 Git commit。
 
@@ -104,6 +103,6 @@ GitHub Actions 文件已完成；以上记录均为实际本机执行，不能�
 
 ## 待发布前完成
 
-按 PRD 保留未勾选的内容/审校/发布任务。作者需复核三篇中文初稿、实际操作和素材，审校五语 UI，完成一次文档写作流程演练，确认品牌与域名；之后通过远程 CI 和 Vercel Preview，执行真机与正式站冒烟。所有正常缺译文仍显示本语言空状态。
+按 PRD 保留未勾选的发布任务。作者仍需复核三篇中文课时、实际操作和素材，检查五语 UI，完成一次文档写作流程演练，确认品牌与域名；之后通过远程 CI 和 Vercel Preview，执行真机与正式站冒烟。没有译文的语言仍显示本语言空状态。
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

@@ -51,7 +51,7 @@ export function scanContent(root: string) {
       }
       const isIndex = parts.length === 3 && name === 'index';
       if ((data.kind === 'course') !== isIndex) throw new Error(`${file}: only course/index may have kind: course`);
-      if ((!ordered || !meta.pages.includes(name)) && !data.draft) throw new Error(`${file}: public content missing from explicit directory order`);
+      if (!ordered || !meta.pages.includes(name)) throw new Error(`${file}: content missing from explicit directory order`);
       const slug = isIndex ? [] : parts.slice(2);
       const url = `/${locale}/courses/${parts[1]}${slug.length ? `/${slug.join('/')}` : ''}`;
       const { headings, links } = inspectMarkdown(parsed.content, file);
