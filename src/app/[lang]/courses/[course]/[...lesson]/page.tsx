@@ -36,7 +36,7 @@ export default async function LessonPage({ params }: Props) {
   const toc = (article.data.toc ?? []).filter((item) => item.depth === 2);
   const verified = doc.data.lastVerified && ui('verified', { date: new Intl.DateTimeFormat(htmlLanguages[lang], { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date(`${doc.data.lastVerified}T00:00:00Z`)) });
   return <>
-    <article id="main-content" className="learn-main learn-lesson" tabIndex={-1}>
+    <article id="main-content" className="learn-main learn-reading" tabIndex={-1}>
       <nav className="learn-crumb" aria-label={ui('courses')}><Link href={`/${lang}/courses`}>{ui('courses')}</Link><span aria-hidden>/</span><Link href={course.url}>{courseLabel(course.slug)}</Link><span aria-hidden>/</span><b aria-current="page">{doc.data.title}</b></nav>
       {group && <p className="learn-kicker">{String(groupIndex + 1).padStart(2, '0')} · {group.title} · {ui('lessonNumber', { number })}</p>}
       <h1>{doc.data.title}</h1>

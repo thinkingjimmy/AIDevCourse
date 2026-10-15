@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Language/course parameters, the zinc header, and the shared progress context.
- * [OUTPUT]: Course and lesson shell: full-bleed header, 80rem frame, sticky sidebar, and page content.
+ * [OUTPUT]: Course and lesson shell: full-bleed header, 64rem frame, sticky sidebar, and page content.
  * [POS]: Runtime publication boundary for the course overview and all lesson routes.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */

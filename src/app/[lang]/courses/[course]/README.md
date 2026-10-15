@@ -4,7 +4,7 @@
 
 [...lesson]/: Nested module; see [[...lesson]/README.md](./[...lesson]/README.md).
 
-layout.tsx: Zinc course shell with one shared learning context for the overview and lessons.
+layout.tsx: 64rem zinc course shell with one shared learning context for the overview and lessons.
 
 page.tsx: Course overview inside that shell: breadcrumb, facts, syllabus rows, then the introduction.
 
