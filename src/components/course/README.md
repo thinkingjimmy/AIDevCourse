@@ -8,7 +8,7 @@ chip-explode-markup.ts: Inline SVG for that animation, generated from the anatom
 
 chip-explode.module.css: Light grayscale kit styles, scoped to the course figure, matching the homepage Mac.
 
-course-layout.tsx: Full-bleed lesson wiki. Desktop shows an always-visible aside; mobile ≤960px shows a closed 课程目录 details. Both render one shared side body: logo, course title, progress, and collapsible modules. Search is a footer button, not a field in the tree.
+course-layout.tsx: Full-bleed lesson wiki. A shadcn Sidebar holds the logo, course title, progress, and collapsible modules, with search and language in SidebarFooter. At ≤960px the same sidebar opens from a 课程目录 button as a sheet. Search is not a field in the tree.
 
 empty-courses.tsx: Empty course library, an about link, and links to courses published in other languages.
 

@@ -10,5 +10,6 @@ Shared content, language, and browser-state logic. Rendering components live in 
 - [search/](./search/README.md): Deterministic CJK and accent-aware tokenization shared by index and client.
 - [seo/](./seo/README.md): Localized metadata, canonical/alternate URLs, and redirect validation.
 - `site-config.ts`: Brand and metadata configuration with a safe local default.
+- `utils.ts`: `cn` class merger for the shadcn UI primitives.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

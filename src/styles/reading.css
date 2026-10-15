@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Fumadocs layout slots, shared tokens, and state primitives from globals.css.
- * [OUTPUT]: 1024/1280 lesson layouts, course sidebar, bounded prose, completion card, and the lesson wiki (desktop aside with tools pinned to the viewport, mobile details).
+ * [OUTPUT]: 1024/1280 lesson layouts, course sidebar, bounded prose, completion card, and the lesson wiki (shadcn sidebar, article, 220px on-this-page list).
  * [POS]: Minimal documented overrides around the reused document renderer; lesson routes only.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -127,37 +127,40 @@ html:lang(zh-Hans) .prose, html:lang(ja) .prose { line-height: 1.95; }
   body:has(.lesson-bar) .site-footer { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
 }
 
-/* Lesson wiki: full-bleed columns, no site header, no 64rem rails. */
-.wiki { display: grid; grid-template-columns: 280px minmax(0, 1fr) 220px; align-items: start; min-height: 100vh; background: #fff; color: #09090b; }
-.wiki-side-desktop { display: block; grid-column: 1; grid-row: 1; align-self: stretch; min-height: 100vh; background: #fafafa; border-right: 1px solid #e4e4e7; }
-.wiki-side-mobile.mobile-course-bar { display: none; grid-area: auto; }
+/* Lesson wiki: shadcn sidebar, article, and on-this-page list. No site header. */
+.wiki { background: #fff; color: #09090b; }
+.wiki-stage { min-width: 0; background: #fff; }
+.wiki-stage-grid { display: grid; grid-template-columns: minmax(0, 1fr) 220px; align-items: start; min-width: 0; }
+[data-slot="sidebar-container"] { border-right: 1px solid #e4e4e7; background: #fafafa; }
+[data-slot="sidebar-inner"], [data-mobile="true"] { background: #fafafa; color: #09090b; }
+[data-mobile="true"] .mobile-course-bar { display: flex; position: static; grid-area: auto; min-height: 0; height: 100%; padding: 0; gap: 0; border: 0; background: transparent; top: auto; }
 .wiki-side-toggle { display: none; }
-.wiki-side-body { display: flex; flex-direction: column; gap: 14px; height: 100vh; overflow: hidden; padding: 20px 14px 16px; position: sticky; top: 0; }
+.wiki-side-head { gap: 14px; padding: 20px 14px 8px; }
 .wiki-logo { color: inherit; font-size: 15px; }
 .wiki-course { color: inherit; font-size: 16px; font-weight: 600; line-height: 1.4; text-decoration: none; }
 .wiki-course:hover { color: var(--ink); }
 .wiki-progress p { margin: 0 0 8px; color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
 .wiki-meter { height: 2px; background: #e4e4e7; }
 .wiki-meter span { display: block; height: 100%; background: #09090b; }
-.wiki-tree { flex: 1; min-height: 0; overflow: auto; margin: 4px 0 0; }
-.wiki-module { margin: 0; }
-.wiki-module > summary { display: flex; align-items: baseline; gap: 8px; padding: 7px 8px; list-style: none; color: var(--ink); font-size: 14px; line-height: 1.4; }
-.wiki-module > summary::-webkit-details-marker { display: none; }
+.wiki-tree { margin: 4px 0 0; }
+.wiki-module-button { height: auto; justify-content: flex-start; gap: 8px; padding: 7px 8px; border-radius: 6px; color: #09090b; font-size: 14px; font-weight: 500; line-height: 1.4; }
 .wiki-chevron { flex: none; width: 12px; color: var(--muted); font-size: 11px; }
 .wiki-chevron::before { content: '▸'; }
-.wiki-module[open] > summary .wiki-chevron::before { content: '▾'; }
+.wiki-chevron[data-open]::before { content: '▾'; }
 .wiki-mod-num { flex: none; color: var(--muted); font-family: var(--font-mono); font-size: 12px; font-weight: 400; }
 .wiki-mod-title { min-width: 0; font-weight: 500; }
-.wiki-tree ol { margin: 0 0 6px; padding: 0 0 4px; list-style: none; }
-.wiki-tree a { display: block; margin: 1px 0; padding: 6px 8px 6px 28px; border-radius: 6px; color: #3f3f46; font-size: 13.5px; line-height: 1.45; text-decoration: none; }
-.wiki-tree a:hover { background: #f4f4f5; color: var(--ink); }
-.wiki-tree a.is-current { background: #f4f4f5; color: var(--ink); font-weight: 700; }
-.wiki-tools { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 12px; border-top: 1px solid #e4e4e7; }
-.wiki .search-trigger { width: auto; height: auto; min-height: 28px; padding: 2px 8px; border: 1px solid #e4e4e7; border-radius: 6px; background: transparent; color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
-.wiki .lang-compact { position: relative; }
-.wiki .lang-compact > summary { min-height: 28px; padding: 0; color: var(--muted); font-size: 13px; background: transparent; }
-.wiki .language-options { top: auto; right: auto; bottom: calc(100% + 8px); left: 0; border: 1px solid #e4e4e7; background: #fff; box-shadow: 0 12px 32px #09090b14; }
-.wiki .learn-main { grid-column: 2; display: block; min-width: 0; padding: 36px 48px 80px; }
+[data-sidebar="menu"] { gap: 0; }
+[data-sidebar="menu-sub"] { margin: 0 0 6px; translate: none; border: 0; padding: 0; gap: 0; }
+[data-sidebar="menu-sub-button"] { height: auto; margin: 1px 0; padding: 6px 8px 6px 28px; border-radius: 6px; color: #3f3f46; font-size: 13.5px; font-weight: 400; line-height: 1.45; }
+[data-sidebar="menu-sub-button"]:hover { background: #f4f4f5; color: #09090b; }
+[data-sidebar="menu-sub-button"][data-active="true"] { background: #f4f4f5; color: #09090b; font-weight: 700; }
+.wiki-tools { display: flex; flex-direction: row; align-items: center; gap: 12px; margin-top: 0; padding: 12px 14px 16px; border-top: 1px solid #e4e4e7; }
+.wiki .search-trigger, [data-slot="sidebar-inner"] .search-trigger, [data-mobile="true"] .search-trigger { width: auto; height: auto; min-height: 28px; padding: 2px 8px; border: 1px solid #e4e4e7; border-radius: 6px; background: transparent; color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
+.wiki .search-trigger > span, [data-slot="sidebar-inner"] .search-trigger > span, [data-mobile="true"] .search-trigger > span { display: inline; flex: none; }
+.wiki .lang-compact, [data-slot="sidebar-inner"] .lang-compact, [data-mobile="true"] .lang-compact { position: relative; }
+.wiki .lang-compact > summary, [data-slot="sidebar-inner"] .lang-compact > summary, [data-mobile="true"] .lang-compact > summary { min-height: 28px; padding: 0; color: var(--muted); font-size: 13px; background: transparent; }
+.wiki .language-options, [data-slot="sidebar-inner"] .language-options, [data-mobile="true"] .language-options { top: auto; right: auto; bottom: calc(100% + 8px); left: 0; border: 1px solid #e4e4e7; background: #fff; box-shadow: 0 12px 32px #09090b14; }
+.wiki .learn-main { grid-column: 1; display: block; min-width: 0; padding: 36px 48px 80px; }
 .wiki .learn-kicker { margin: 0 0 10px; color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
 .wiki .learn-lead { max-width: none; margin: 0 0 20px; color: var(--muted); font-size: 16px; line-height: 1.7; }
 .wiki .learn-note { margin: -8px 0 16px; color: var(--muted); font-size: 13px; }
@@ -172,22 +175,19 @@ html:lang(zh-Hans) .prose, html:lang(ja) .prose { line-height: 1.95; }
 .wiki .learn-pager a:hover { background: transparent; color: var(--ink); }
 .wiki .learn-pager a:last-child { margin-left: auto; text-align: right; }
 .wiki .learn-pager small { display: block; margin-bottom: 4px; color: var(--muted); font-size: 12px; }
-.wiki-toc { grid-column: 3; position: sticky; top: 28px; padding: 36px 18px 48px 16px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.wiki-toc { grid-column: 2; position: sticky; top: 28px; padding: 36px 18px 48px 16px; color: var(--muted); font-size: 13px; line-height: 1.55; }
 .wiki-toc b { display: block; margin: 0 0 8px; color: var(--ink); font-size: 12px; font-weight: 600; }
 .wiki-toc a { display: block; padding: 4px 0; color: var(--muted); text-decoration: none; }
 .wiki-toc a:hover { color: var(--ink); }
 @media (max-width: 1100px) {
-  .wiki { grid-template-columns: 280px minmax(0, 1fr); }
+  .wiki-stage-grid { grid-template-columns: minmax(0, 1fr); }
   .wiki-toc { display: none; }
 }
 @media (max-width: 960px) {
-  .wiki { display: block; }
-  .wiki-side-desktop { display: none; }
-  .wiki-side-mobile.mobile-course-bar { display: block; position: sticky; top: 0; z-index: 30; min-height: 0; padding: 0; gap: 0; border: 0; border-bottom: 1px solid #e4e4e7; background: #fafafa; grid-area: auto; }
-  .wiki-side-toggle { display: flex; align-items: center; min-height: 48px; padding: 0 16px; color: var(--ink); font-size: 14px; font-weight: 500; list-style: none; cursor: pointer; }
+  .wiki-side-toggle { display: flex; align-items: center; width: 100%; min-height: 48px; padding: 0 16px; border: 0; border-bottom: 1px solid #e4e4e7; background: #fafafa; color: #09090b; font-size: 14px; font-weight: 500; text-align: left; position: sticky; top: 0; z-index: 30; }
   .wiki-side-toggle::-webkit-details-marker { display: none; }
-  .wiki-side-body { position: static; height: auto; max-height: 70vh; overflow: auto; border-top: 1px solid #e4e4e7; }
-  .wiki-tree { flex: none; min-height: auto; overflow: visible; }
+  .wiki-noscript-nav { position: sticky; top: 0; z-index: 30; background: #fafafa; border-bottom: 1px solid #e4e4e7; }
+  .wiki-noscript-nav .course-navigation { max-height: 70vh; overflow: auto; padding: 8px 14px 16px; }
   .wiki .learn-main { padding: 28px 20px 72px; }
   .wiki .learn-pager { flex-direction: column; }
   .wiki .learn-pager a:last-child { margin-left: 0; text-align: left; }

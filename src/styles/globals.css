@@ -1,10 +1,11 @@
 /**
  * [INPUT]: Tailwind v4, Fumadocs typography, next/font variables, and sibling style layers.
- * [OUTPUT]: One light-only token system, shared primitives (buttons, chips, lesson states, segments), and anchor clearance for the sticky header.
+ * [OUTPUT]: One light-only token system, shared primitives (buttons, chips, lesson states, segments), shadcn sidebar colors, and anchor clearance for the sticky header.
  * [POS]: Global visual contract; all languages share the same design tokens.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 @import 'tailwindcss';
+@import 'tw-animate-css';
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 @import './surfaces.css';
@@ -12,6 +13,28 @@
 @import './reading.css';
 @source '../../node_modules/fumadocs-ui/dist/**/*.js';
 
+@theme inline {
+  --color-background: #ffffff;
+  --color-foreground: #09090b;
+  --color-primary: #09090b;
+  --color-primary-foreground: #fafafa;
+  --color-secondary: #f4f4f5;
+  --color-secondary-foreground: #09090b;
+  --color-accent: #f4f4f5;
+  --color-accent-foreground: #09090b;
+  --color-border: #e4e4e7;
+  --color-input: #e4e4e7;
+  --color-ring: #a1a1aa;
+  --color-destructive: #7a2e17;
+  --color-sidebar: #fafafa;
+  --color-sidebar-foreground: #3f3f46;
+  --color-sidebar-primary: #09090b;
+  --color-sidebar-primary-foreground: #fafafa;
+  --color-sidebar-accent: #f4f4f5;
+  --color-sidebar-accent-foreground: #09090b;
+  --color-sidebar-border: #e4e4e7;
+  --color-sidebar-ring: #a1a1aa;
+}
 @theme {
   --color-fd-background: #f4f1e8;
   --color-fd-foreground: #1f1e1a;

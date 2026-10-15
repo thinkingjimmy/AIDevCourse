@@ -3,7 +3,8 @@
 > L2 | Parent: [../README.md](../README.md)
 
 - [app/](./app/README.md): Next.js routes, locale layouts, search endpoints, and discovery metadata.
-- [components/](./components/README.md): Reusable course, layout, MDX, progress, and search UI.
+- [components/](./components/README.md): Reusable course, layout, MDX, progress, search, and shadcn UI.
+- [hooks/](./hooks/README.md): Viewport hook for the lesson sidebar.
 - [lib/](./lib/README.md): Content, locale, progress, search, and SEO domain logic.
 - [messages/](./messages/README.md): Five localized UI dictionaries.
 - [styles/](./styles/README.md): Global tokens, reading styles, and interface surfaces.
