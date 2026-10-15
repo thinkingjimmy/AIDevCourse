@@ -144,9 +144,6 @@ html:lang(zh-Hans) .prose, html:lang(ja) .prose { line-height: 1.95; }
 .wiki-meter span { display: block; height: 100%; background: #09090b; }
 .wiki-tree { margin: 4px 0 0; }
 .wiki-module-button { height: auto; justify-content: flex-start; gap: 8px; padding: 7px 8px; border-radius: 6px; color: #09090b; font-size: 14px; font-weight: 500; line-height: 1.4; }
-.wiki-chevron { flex: none; width: 12px; color: var(--muted); font-size: 11px; }
-.wiki-chevron::before { content: '▸'; }
-.wiki-chevron[data-open]::before { content: '▾'; }
 .wiki-mod-num { flex: none; color: var(--muted); font-family: var(--font-mono); font-size: 12px; font-weight: 400; }
 .wiki-mod-title { min-width: 0; font-weight: 500; }
 [data-sidebar="menu"] { gap: 0; }
