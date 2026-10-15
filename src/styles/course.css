@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Shared tokens, band layout from surfaces.css, and state primitives from globals.css.
- * [OUTPUT]: Course cards, progress-aware syllabus rows, and the zinc course/lesson shell.
+ * [OUTPUT]: Course cards, progress-aware syllabus rows, and the zinc course/lesson shell aligned to the homepage rails.
  * [POS]: Course discovery and overview presentation; lesson reading lives in reading.css.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -107,9 +107,10 @@
   .empty-courses { padding: 32px var(--gutter); } .empty-courses h3 { font-size: 24px; }
 }
 
-/* The 64rem rails come from .home-shell::before. This frame holds only the main column. */
-.learn-page { min-height: 100vh; background: #fff; color: #09090b; font-size: 15px; line-height: 1.6; }
-.learn-frame { position: relative; width: min(64rem, 100%); margin-inline: auto; align-self: center; min-height: calc(100vh - 56px); }
+/* The 64rem rails come from .home-shell::before. This frame holds only the main column.
+   The left offset matches the rails when a scrollbar shrinks the content box. */
+.learn-page { min-height: 100vh; overflow-x: clip; background: #fff; color: #09090b; font-size: 15px; line-height: 1.6; }
+.learn-frame { position: relative; left: calc((100vw - 100%) / 2); width: min(64rem, 100%); margin-inline: auto; align-self: center; min-height: calc(100vh - 56px); }
 .learn-out { position: absolute; top: 0; bottom: 0; width: 200px; padding-top: 48px; }
 .learn-lnav { right: calc(100% + 28px); }
 .learn-toc.learn-out { left: calc(100% + 28px); border: 0; padding-top: 48px; color: var(--muted); font-size: 13px; line-height: 2; }
