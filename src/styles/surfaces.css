@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Shared paper, ink, column, and gutter tokens from globals.css.
- * [OUTPUT]: Site shell (rails, header, footer), the zinc homepage and course frames (viewport-centered rails), library, about, dialogs, and search.
+ * [OUTPUT]: Site shell (rails, header, footer), the zinc homepage and course frames (viewport-centered rails, hero slot for the exploded Mac), library, about, dialogs, and search.
  * [POS]: Non-reading presentation layer shared by all locales; course.css and reading.css extend it.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -82,7 +82,7 @@ body:has(#nd-docs-layout) .header-inner { width: min(1440px, 100%); padding-inli
 .home-top .lang-compact > summary:hover { background: transparent; color: var(--ink); }
 .lang-pair { white-space: nowrap; }
 .lang-pair [data-current] { color: var(--ink); font-weight: 500; }
-.home-hero-wrap { padding-block: 56px 48px; }
+.home-hero-wrap { padding-block: 56px 48px; overflow-x: clip; }
 .home-hero { display: grid; grid-template-columns: 1.15fr .85fr; gap: 8px; align-items: center; }
 .home-copy h1 { margin: 0 0 14px; color: #09090b; font-family: var(--font-sans); font-size: 40px; font-weight: 600; line-height: 1.15; letter-spacing: -.03em; white-space: pre-line; }
 .home-eyebrow { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 16px; color: var(--muted); font-family: var(--font-sans); font-size: 13px; font-weight: 400; letter-spacing: 0; text-transform: none; }
@@ -90,8 +90,7 @@ body:has(#nd-docs-layout) .header-inner { width: min(1440px, 100%); padding-inli
 .home-sub { max-width: 38rem; margin: 0 0 24px; color: var(--muted); font-size: 16px; line-height: 1.6; }
 .home-cta { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid #09090b; border-radius: 8px; background: #09090b; color: #fff; font-size: 14px; font-weight: 500; line-height: 1; text-decoration: none; }
 .home-cta:hover { background: #18181b; }
-.home-deco { justify-self: center; width: 100%; max-width: 228px; background: transparent; }
-.home-deco img { display: block; width: 100%; height: auto; background: transparent; }
+.home-deco { position: relative; justify-self: center; width: 100%; max-width: 228px; aspect-ratio: 606 / 747; background: transparent; }
 .home-rule { height: 0; margin: 0; border: 0; border-top: 1px solid var(--line); }
 .home-catalog { flex: 1 0 auto; padding-block: 48px 72px; }
 .home-chapter { margin-bottom: 28px; }
@@ -174,7 +173,7 @@ body:has(#nd-docs-layout) .header-inner { width: min(1440px, 100%); padding-inli
 }
 @media (max-width: 840px) {
   .home-hero { grid-template-columns: 1fr; }
-  .home-deco { justify-self: center; }
+  .home-deco { justify-self: center; overflow: hidden; }
   .home-copy h1 { font-size: 32px; }
 }
 @media (max-width: 720px) {

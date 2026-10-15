@@ -1,16 +1,16 @@
 /**
  * [INPUT]: Active locale and its published course manifests.
- * [OUTPUT]: Framed homepage: zinc hero, empty-screen Mac, and a dense catalog of real courses.
+ * [OUTPUT]: Framed homepage: zinc hero, looping exploded Mac, and a dense catalog of real courses.
  * [POS]: Public entry surface; counts and destinations derive from the catalog.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { isLocale } from '@/lib/i18n/config';
 import { getCourses } from '@/lib/content/source';
 import type { CourseManifest } from '@/lib/content/types';
+import { MacExplode } from '@/components/home/mac-explode';
 import { HomeHeader } from '@/components/layout/home-header';
 import { EmptyCourses } from '@/components/course/empty-courses';
 import { pageMetadata } from '@/lib/seo/metadata';
@@ -59,7 +59,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             ? <Link className="home-cta" href={first}>{t('start')}<span aria-hidden> →</span></Link>
             : <Link className="home-cta" href={`/${lang}/about`}>{course('aboutSite')}</Link>}
         </div>
-        <div className="home-deco"><Image src="/images/mac1984.png" alt="" width={606} height={747} priority /></div>
+        <div className="home-deco"><MacExplode /></div>
       </section>
     </div>
     <hr className="home-rule" />
