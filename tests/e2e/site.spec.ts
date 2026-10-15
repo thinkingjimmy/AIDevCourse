@@ -50,7 +50,7 @@ test('negotiates only supported unprefixed entries with private 307 responses', 
 });
 test('production publishes the Chinese course and never publishes engineering fixtures', async ({ request }) => {
   test.skip(process.env.CONTENT_TEST === '1', 'The isolated fixture build is covered separately.');
-  const paths = ['/zh', '/zh/courses', '/zh/courses/ai-101', '/zh/courses/ai-101/models/strengths', '/sitemap.xml', ...locales.map((lang) => `/api/search/${lang}`), ...locales.map((lang) => `/${lang}/courses`)];
+  const paths = ['/zh', '/zh/courses', '/zh/courses/ai-101', '/zh/courses/ai-101/strengths', '/sitemap.xml', ...locales.map((lang) => `/api/search/${lang}`), ...locales.map((lang) => `/${lang}/courses`)];
   for (const path of paths) {
     const response = await request.get(path);
     const body = await response.text();
@@ -63,17 +63,15 @@ test('production publishes the Chinese course and never publishes engineering fi
   expect(courses).toContain('AI 擅长做什么');
   expect(courses).toContain('写一个好用的提示词');
   expect(courses).toContain('验证结果');
-  const lesson = await request.get('/zh/courses/ai-101/models/strengths');
+  const lesson = await request.get('/zh/courses/ai-101/strengths');
   expect(lesson.status()).toBe(200);
   expect(await lesson.text()).toContain('先看任务，不看口号');
-  const rsc = await request.get('/zh/courses/ai-101/models/strengths', { headers: { RSC: '1' } });
+  const rsc = await request.get('/zh/courses/ai-101/strengths', { headers: { RSC: '1' } });
   expect(await rsc.text()).toContain('先看任务，不看口号');
-  const redirected = await request.get('/zh/courses/ai-coding', { maxRedirects: 0 });
-  expect(redirected.status()).toBe(308);
-  expect(redirected.headers().location).toContain('/zh/courses/ai-101');
-  const oldLesson = await request.get('/zh/courses/ai-coding/workflow/verify-results', { maxRedirects: 0 });
-  expect(oldLesson.status()).toBe(308);
-  expect(oldLesson.headers().location).toContain('/zh/courses/ai-101/checking/verify-results');
+  for (const path of ['/zh/courses/ai-coding', '/zh/courses/ai-coding/workflow/verify-results', '/zh/courses/ai-101/models/strengths', '/zh/courses/ai-101/models']) {
+    const missing = await request.get(path, { maxRedirects: 0 });
+    expect(missing.status(), path).toBe(404);
+  }
 });
 test('reading and native language links work without JavaScript or cookies', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false, reducedMotion: 'reduce', viewport: { width: 390, height: 844 } });
@@ -87,7 +85,7 @@ test('reading and native language links work without JavaScript or cookies', asy
   expect(missing?.status()).toBe(404);
   await expect(page.locator('h1')).toHaveText('Cette page n’est pas disponible');
   if (process.env.CONTENT_TEST === '1') {
-    await page.goto('/fr/courses/ai-coding/foundations/first-change');
+    await page.goto('/fr/courses/ai-coding/first-change');
     await expect(page.locator('article > .prose')).toBeVisible();
     await expect(page.locator('.search-trigger')).not.toBeVisible();
     await page.locator('.mobile-course-bar summary').first().click();

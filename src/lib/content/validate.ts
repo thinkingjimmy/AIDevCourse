@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Parsed language documents, explicit order, and local public assets.
- * [OUTPUT]: Identity/revision validation, public catalog rules, and safe links.
+ * [OUTPUT]: Identity, unique lesson-slug, and revision validation, plus public catalog rules and safe links.
  * [POS]: Central publication policy used before any route, search, or SEO output.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -15,9 +15,16 @@ export function publishDocuments(documents: ContentDocument[], order: Map<Locale
   const courses = documents.filter((doc) => doc.data.kind === 'course');
   const warnings: string[] = [];
   const fail = (doc: ContentDocument, reason: string): never => { throw new Error(`${doc.file}: ${reason}`); };
+  const lessonSlugs = new Map<string, ContentDocument>();
   for (const doc of documents) {
     const key = `${doc.locale}:${identity(doc)}`;
     if (byKey.has(key)) fail(doc, `Duplicate identity ${key}`);
+    if (doc.data.kind === 'lesson') {
+      const name = doc.slug[doc.slug.length - 1];
+      const slugKey = `${doc.locale}:${doc.courseSlug}:${name}`;
+      if (lessonSlugs.has(slugKey)) fail(doc, `Duplicate lesson slug ${name}`);
+      lessonSlugs.set(slugKey, doc);
+    }
     if (byURL.has(doc.url)) fail(doc, `Duplicate URL ${doc.url}`);
     byKey.set(key, doc);
     byURL.set(doc.url, doc);

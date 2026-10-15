@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Public lesson, current-language manifest, MDX registry, and progress controls.
- * [OUTPUT]: Lesson article with eyebrow, prose, completion row, prev/next cards, and an h2 table of contents.
+ * [OUTPUT]: Lesson article at /{lang}/courses/{course}/{lesson}, with eyebrow, prose, completion row, prev/next cards, and an h2 table of contents.
  * [POS]: Lesson route inside the shared course shell; both static generation and runtime access enforce publication policy.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -17,7 +17,7 @@ import { LessonNavigation } from '@/components/course/lesson-navigation';
 import { pageMetadata } from '@/lib/seo/metadata';
 import { TranslationNotice } from '@/components/course/translation-notice';
 type Props = { params: Promise<{ lang: string; course: string; lesson: string[] }> };
-export function generateStaticParams() { return getCatalog().documents.filter((doc) => doc.data.kind === 'lesson').map((doc) => ({ lang: doc.locale, course: doc.courseSlug, lesson: doc.slug })); }
+export function generateStaticParams() { return getCatalog().documents.filter((doc) => doc.data.kind === 'lesson').map((doc) => ({ lang: doc.locale, course: doc.courseSlug, lesson: [doc.slug.at(-1)!] })); }
 export async function generateMetadata({ params }: Props) {
   const { lang, course, lesson } = await params; if (!isLocale(lang)) return {};
   const doc = getLesson(lang, course, lesson); return doc ? pageMetadata(lang, doc.url, doc.data.title, doc.data.description, identity(doc)) : {};

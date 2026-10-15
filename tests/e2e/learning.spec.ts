@@ -9,7 +9,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { mkdirSync, readFileSync } from 'node:fs';
 import { locales, type Locale } from '../../src/lib/i18n/config';
 test.skip(process.env.CONTENT_TEST !== '1', 'Requires the isolated nonpublic fixture build.');
-const path = (locale: string, slug = 'first-change') => `/${locale}/courses/ai-coding/foundations/${slug}`;
+const path = (locale: string, slug = 'first-change') => `/${locale}/courses/ai-coding/${slug}`;
 const dictionary = (locale: Locale) => JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
 test('shares completion across translations and synchronizes reset between tabs', async ({ page, context }) => {
   await page.goto(path('zh'));
@@ -90,7 +90,7 @@ for (const locale of locales) {
       await input.fill(query);
       await expect(page.locator('.search-result').first()).toBeVisible();
       const urls = await page.locator('.search-result').evaluateAll((links) => links.slice(0, 5).map((link) => link.getAttribute('href')));
-      expect(urls.some((url) => url?.includes('/foundations/first-change'))).toBe(true);
+      expect(urls.some((url) => url?.includes('/ai-coding/first-change'))).toBe(true);
       expect(urls.every((url) => url?.startsWith(`/${locale}/courses/`))).toBe(true);
     }
     expect(indexes.every((url) => url.includes(`/api/search/${locale}?`))).toBe(true);

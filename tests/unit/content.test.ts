@@ -1,11 +1,11 @@
 /**
  * [INPUT]: Five-language courses in tests/fixtures/ and temporary authoring mutations.
- * [OUTPUT]: Publication, identity, ordering, revision, and unsafe-content regression coverage.
+ * [OUTPUT]: Publication, identity, unique lesson-slug, ordering, revision, and unsafe-content regression coverage.
  * [POS]: Content-policy tests independent of compiled framework caches.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import { afterEach, describe, expect, it } from 'vitest';
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { readCatalog } from '../../src/lib/content/manifest';
@@ -29,6 +29,18 @@ describe('publication catalog', () => {
     expect(catalog.courses.find((course) => course.locale === 'en')?.lessons).toHaveLength(2);
     expect(catalog.documents.some((doc) => doc.body.includes('WITHDRAWN_SECRET') || doc.body.includes('DRAFT_TRANSLATION_SECRET'))).toBe(false);
     expect(catalog.warnings.length).toBeGreaterThan(0);
+    const lesson = catalog.courses.find((course) => course.locale === 'zh')?.lessons.find((item) => item.id === 'first-change');
+    expect(lesson?.url).toBe('/zh/courses/ai-coding/first-change');
+    expect(lesson?.module).toBe('foundations');
+  });
+  it('rejects two lessons that share a slug inside one course', () => {
+    const root = fixture();
+    const extra = join(root, 'zh/ai-coding/extra');
+    mkdirSync(extra);
+    writeFileSync(join(extra, 'meta.json'), `${JSON.stringify({ title: 'Extra', pages: ['first-change'] }, null, 2)}\n`);
+    writeFileSync(join(extra, 'first-change.mdx'), readFileSync(join(root, `zh/${first}`), 'utf8').replace('lessonId: first-change', 'lessonId: extra-change'));
+    edit(root, 'zh/ai-coding/meta.json', (value) => value.replace('"foundations"', '"foundations",\n    "extra"'));
+    expect(() => readCatalog({ root })).toThrow('Duplicate lesson slug');
   });
   it('rejects a course with no lessons', () => {
     const root = fixture();

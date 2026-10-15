@@ -45,7 +45,7 @@ Read the diff and verify the actual behavior.
 ![The steps from a goal to a verified change](/images/courses/change-cycle.svg)
 ```
 
-站内链接使用最终语言路径或当前文章 `#heading`。跨语言链接文字必须包含目标语言自称，例如 `[English: first change](/en/courses/ai-coding/foundations/first-change)`，且目标文件已经存在。不可链接不存在的课时或锚点。外部资料可用 HTTPS 链接，不做视频嵌入。
+站内链接使用最终语言路径或当前文章 `#heading`。课时公开地址不含模块，例如 `/zh/courses/ai-101/strengths`；同一课程内课时 slug 必须唯一。跨语言链接文字必须包含目标语言自称，例如 `[English: What AI is good at](/en/courses/ai-101/strengths)`，且目标文件已经存在。不可链接不存在的课时或锚点。外部资料可用 HTTPS 链接，不做视频嵌入。
 
 `durationMinutes` 是正整数阅读时长；`lessonType` 为 concept / practice / tool。工具操作课必须填写亲自验证的 `lastVerified` 和 `testedWith`。概念和文字练习不假造验证日期，不把编写日期当作工具验证日期。
 
@@ -79,18 +79,18 @@ pnpm build
 ```json
 [
   {
-    "source": "/en/courses/ai-coding/foundations/old-name",
-    "destination": "/en/courses/ai-coding/foundations/first-change"
+    "source": "/en/courses/ai-101/old-name",
+    "destination": "/en/courses/ai-101/strengths"
   }
 ]
 ```
 
-上面的 JSON 只说明字段形状。真实迁移写在 `config/redirects.json`：目前是 `ai-coding` 到 `ai-101`。不要用示例覆盖这份映射。只有发生新的 URL 迁移时才追加条目。
+上面的 JSON 只说明字段形状。真实迁移写在 `config/redirects.json`。这份文件目前是空数组：以前的地址没有对外分享，所以不做跳转。只有发生新的 URL 迁移时才追加条目。不要用示例覆盖这份映射。
 
 ## 互动需求
 
 选择题、视频播放器、交互练习、答案展开和提示词对比继续延期。先用文字写清文章目标，再在 PRD 的 T 系列记录具体需求、真实材料、预期行为和验收条件；不要提前创建空组件。
 
-公开课程是 `content/zh/ai-101`（AI 入门）：六个模块、31 篇课时，列入目录的课都按普通课时公开。其中六篇参考课文和两篇并入的旧课有全文；其余课时目前是两句摘要。英文对应课文有全文或摘要，日文、法文、西班牙文目前是标题和摘要。旧地址在 `config/redirects.json`：`/zh/courses/ai-coding` 以及原来的三篇课时，分别跳到 `ai-101` 的课程页、`safety/first-workflow`、`context/useful-context` 和 `checking/verify-results`。工程 fixture 仍使用 `tests/fixtures` 里的 `ai-coding`，只用于测试。
+公开课程是 `content/zh/ai-101`（AI 入门）：六个模块、31 篇课时，列入目录的课都按普通课时公开。课时 URL 是 `/{lang}/courses/ai-101/{lesson}`，模块只留在目录、大纲和 `meta.json` 里。其中六篇参考课文和两篇并入的旧课有全文；其余课时目前是两句摘要。英文对应课文有全文或摘要，日文、法文、西班牙文目前是标题和摘要。工程 fixture 仍使用 `tests/fixtures` 里的 `ai-coding`，只用于测试。
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

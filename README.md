@@ -6,7 +6,7 @@ Next.js 16.3.6 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-
 
 A five-language learning site with local Markdown / MDX courses, language-specific search, and learning progress stored in your browser. The interface uses warm paper colors, full-height grid rails, Newsreader and IBM Plex Mono (self-hosted via `next/font`), and restrained retro details. No accounts, database, model API keys, or translation service are required.
 
-**Current status:** the application is implemented. The public course is AI 101 (`ai-101`): six modules and 31 lessons. Chinese is the source. English has full text for the finished lessons and summaries for the rest. Japanese, French, and Spanish publish titles and summaries. Old `/ai-coding` URLs redirect to `/ai-101`. Device checks and deployment remain pending; see the [PRD and todo](./docs/PRD.md#13-markdown-开发任务).
+**Current status:** the application is implemented. The public course is AI 101 (`ai-101`): six modules and 31 lessons. Chinese is the source. English has full text for the finished lessons and summaries for the rest. Japanese, French, and Spanish publish titles and summaries. A lesson URL is `/{lang}/courses/ai-101/{lesson}` and does not include the module folder. Device checks and deployment remain pending; see the [PRD and todo](./docs/PRD.md#13-markdown-开发任务).
 
 ## Quick start
 

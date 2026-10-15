@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Public catalog, generated Fumadocs MDX, and locale configuration.
- * [OUTPUT]: Explicit-language course/lesson queries and compiled article lookup.
+ * [OUTPUT]: Explicit-language course/lesson queries by public URL, and compiled article lookup by file path.
  * [POS]: Server-only facade; public consumers cannot bypass the catalog.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -20,13 +20,16 @@ export function getCourses(lang: Locale) { return getCatalog().courses.filter((c
 export function getCourse(lang: Locale, slug: string) { return getCourses(lang).find((course) => course.slug === slug); }
 export function getOrderedLessons(lang: Locale, slug: string) { return getCourse(lang, slug)?.lessons ?? []; }
 export function getLesson(lang: Locale, course: string, slug: string[]) {
-  return getCatalog().documents.find((doc) => doc.locale === lang && doc.courseSlug === course && doc.data.kind === 'lesson' && doc.slug.join('/') === slug.join('/'));
+  const url = `/${lang}/courses/${course}/${slug.join('/')}`;
+  return getCatalog().documents.find((doc) => doc.locale === lang && doc.courseSlug === course && doc.data.kind === 'lesson' && doc.url === url);
 }
 export function getArticle(lang: Locale, course: string, slug: string[] = []) {
   const url = `/${lang}/courses/${course}${slug.length ? `/${slug.join('/')}` : ''}`;
-  if (!getCatalog().documents.some((doc) => doc.url === url)) return undefined;
-  const page = compiled.getPage([course, ...slug], lang);
+  const doc = getCatalog().documents.find((item) => item.locale === lang && item.url === url);
+  if (!doc) return undefined;
+  const page = compiled.getPage([course, ...doc.slug], lang);
+  const fileUrl = `/${lang}/courses/${course}${doc.slug.length ? `/${doc.slug.join('/')}` : ''}`;
   // Fumadocs may provide language fallback; the public catalog above never does.
-  if (!page || page.url !== url) return undefined;
+  if (!page || page.url !== fileUrl) return undefined;
   return page;
 }

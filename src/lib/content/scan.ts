@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Locale folders in content/ or tests/fixtures/, frontmatter schemas, and Markdown inspection.
- * [OUTPUT]: Parsed documents, explicit per-language ordering, and module labels.
+ * [OUTPUT]: Parsed documents whose public lesson URLs omit the module, plus explicit per-language ordering and module labels.
  * [POS]: Filesystem adapter; no UI consumer reads content directories directly.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -53,7 +53,8 @@ export function scanContent(root: string) {
       if ((data.kind === 'course') !== isIndex) throw new Error(`${file}: only course/index may have kind: course`);
       if (!ordered || !meta.pages.includes(name)) throw new Error(`${file}: content missing from explicit directory order`);
       const slug = isIndex ? [] : parts.slice(2);
-      const url = `/${locale}/courses/${parts[1]}${slug.length ? `/${slug.join('/')}` : ''}`;
+      const publicSlug = isIndex ? '' : slug[slug.length - 1];
+      const url = `/${locale}/courses/${parts[1]}${publicSlug ? `/${publicSlug}` : ''}`;
       const { headings, links } = inspectMarkdown(parsed.content, file);
       documents.push({ file: relative(root, file), locale, courseSlug: parts[1], slug, url, data, body: parsed.content, headings, links, stale: false, sourceUrl: '' });
     }

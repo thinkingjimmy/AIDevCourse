@@ -1,6 +1,6 @@
 /**
  * [INPUT]: One validated language and its public compiled article structure.
- * [OUTPUT]: Pre-rendered Fumadocs search export, isolated per language.
+ * [OUTPUT]: Pre-rendered Fumadocs search export of public URLs, isolated per language.
  * [POS]: Static search endpoint; no dynamic query API or full-language download.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -15,7 +15,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ lan
   if (!isLocale(lang)) return new Response('Not found', { status: 404 });
   const catalog = getCatalog();
   const indexes = catalog.documents.filter((doc) => doc.locale === lang).map((doc) => {
-    const article = getArticle(lang, doc.courseSlug, doc.slug);
+    const article = getArticle(lang, doc.courseSlug, doc.data.kind === 'lesson' ? [doc.slug.at(-1)!] : []);
     if (!article) throw new Error(`Missing compiled article: ${doc.url}`);
     return { id: doc.url, url: doc.url, title: doc.data.title, description: doc.data.description,
       breadcrumbs: [catalog.courses.find((course) => course.locale === lang && course.id === doc.data.courseId)!.title], structuredData: article.data.structuredData };
