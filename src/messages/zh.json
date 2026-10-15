@@ -49,6 +49,7 @@
     "title": "把 AI 开发，\n一块一块拆开学",
     "intro": "从写代码、调模型到搭 Agent，每一课只拆一个零件，亲手做一个小任务。拆完再装回去，整台机器就懂了。",
     "start": "从第一课开始",
+    "browseAll": "看全部课程",
     "courseTitle": "课程",
     "courseIntro": "按方向排好，挑一门就能开始",
     "navLabel": "主导航",

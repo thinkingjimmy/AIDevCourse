@@ -55,9 +55,12 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
           <p className="home-eyebrow"><span className="home-dot" aria-hidden />{t('eyebrow')}</p>
           <h1>{t('title')}</h1>
           <p className="home-sub">{t('intro')}</p>
-          {first
-            ? <Link className="home-cta" href={first}>{t('start')}<span aria-hidden> →</span></Link>
-            : <Link className="home-cta" href={`/${lang}/about`}>{course('aboutSite')}</Link>}
+          <div className="home-ctas">
+            {first
+              ? <Link className="home-cta" href={first}>{t('start')}<span aria-hidden> →</span></Link>
+              : <Link className="home-cta" href={`/${lang}/about`}>{course('aboutSite')}</Link>}
+            <Link className="home-cta home-cta-secondary" href="#catalog">{t('browseAll')}</Link>
+          </div>
         </div>
         <div className="home-deco"><MacExplode /></div>
       </section>
