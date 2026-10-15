@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Language/course parameters, the zinc header, and the shared progress context.
- * [OUTPUT]: Course and lesson shell sharing the homepage frame, whose side rules run through the header.
+ * [OUTPUT]: Homepage frame around the main column; the course nav and lesson TOC sit outside it.
  * [POS]: Runtime publication boundary for the course overview and all lesson routes.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */

@@ -83,7 +83,8 @@
     "learn": "You'll learn",
     "who": "Who it's for",
     "before": "Before you start",
-    "doneMark": "Completed"
+    "doneMark": "Completed",
+    "contents": "Contents"
   },
   "Learning": {
     "loading": "Restoring learning records…",

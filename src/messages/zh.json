@@ -83,7 +83,8 @@
     "learn": "你会学到",
     "who": "适合谁",
     "before": "开始前",
-    "doneMark": "已完成"
+    "doneMark": "已完成",
+    "contents": "目录"
   },
   "Learning": {
     "loading": "正在恢复学习记录…",

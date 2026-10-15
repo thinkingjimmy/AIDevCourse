@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Course and progress from progress/progress-provider, and module groups from lib/content/modules.
- * [OUTPUT]: Shared course shell nav, the course-page continue link, and syllabus rows.
+ * [OUTPUT]: Outside course nav, the narrow contents strip, the continue link, and syllabus rows.
  * [POS]: Client learning chrome for the course overview and every lesson; article content stays server rendered.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Check } from 'lucide-react';
-import { groupModules } from '@/lib/content/modules';
+import { courseLabel, groupModules } from '@/lib/content/modules';
 import { useProgress, useLessonStates } from '../progress/progress-provider';
 function CourseNav({ onNavigate }: { onNavigate?: () => void }) {
   const ui = useTranslations('Ui');
@@ -38,25 +38,39 @@ function CourseNav({ onNavigate }: { onNavigate?: () => void }) {
         return <li key={lesson.id}><Link href={lesson.url} onClick={onNavigate} className={`learn-lesson${done ? ' is-done' : ''}${current ? ' is-current' : ''}`} aria-current={pathname === lesson.url ? 'page' : undefined}>
           <span className="idx">{part}</span>
           <span className="ttl">{lesson.title}</span>
-          {done && <Check className="mark" size={14} strokeWidth={1.6} aria-hidden />}
+          {done && <Check className="mark" size={13} strokeWidth={1.6} aria-hidden />}
         </Link></li>;
       })}</ol>
     </section>)}
   </nav>;
 }
-export function LearnShell({ children }: { children: ReactNode }) {
+function LessonStrip() {
+  const t = useTranslations('Course');
+  const ui = useTranslations('Ui');
   const { course } = useProgress();
   const { summary, ready } = useLessonStates();
+  const pathname = usePathname();
+  const index = course.lessons.findIndex((lesson) => lesson.url === pathname);
+  const lesson = course.lessons[index];
   const doneCount = ready ? summary.done : 0;
-  return <>
-    <details className="mobile-course-bar">
-      <summary><span>{course.title}</span><span className="count">{doneCount} / {summary.total}</span></summary>
-      <CourseNav />
-    </details>
-    <div className="learn-shell">
-      <aside className="learn-side"><CourseNav /></aside>
-      {children}
+  return <div className="learn-strip mobile-course-bar">
+    <p className="learn-strip-crumb">{lesson
+      ? <>{courseLabel(course.slug)}<span aria-hidden> / </span><b>{ui('lessonNumber', { number: index + 1 })} · {lesson.title}</b></>
+      : <b>{course.title}</b>}</p>
+    <div className="learn-strip-tools">
+      <details>
+        <summary>{t('contents')}<span aria-hidden> ▾</span></summary>
+        <CourseNav />
+      </details>
+      <span className="count">{doneCount} / {summary.total}</span>
     </div>
+  </div>;
+}
+export function LearnShell({ children }: { children: ReactNode }) {
+  return <>
+    <LessonStrip />
+    <aside className="learn-out learn-lnav"><div className="learn-out-in"><CourseNav /></div></aside>
+    {children}
   </>;
 }
 export function CourseContinue() {

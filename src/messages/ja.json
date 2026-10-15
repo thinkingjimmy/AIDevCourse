@@ -83,7 +83,8 @@
     "learn": "学べること",
     "who": "対象",
     "before": "始める前に",
-    "doneMark": "完了"
+    "doneMark": "完了",
+    "contents": "目次"
   },
   "Learning": {
     "loading": "学習記録を復元中…",

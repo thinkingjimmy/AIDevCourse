@@ -48,6 +48,6 @@ export default async function LessonPage({ params }: Props) {
       <LessonCompletion lessonId={doc.data.lessonId} />
       <LessonNavigation course={course} lessonId={doc.data.lessonId} />
     </article>
-    {toc.length > 0 && <aside className="learn-toc"><b>{t('onThisPage')}</b><nav aria-label={t('onThisPage')}>{toc.map((item) => <a key={item.url} href={item.url}>{item.title}</a>)}</nav></aside>}
+    {toc.length > 0 && <aside className="learn-out learn-toc"><div className="learn-out-in"><b>{t('onThisPage')}</b><nav aria-label={t('onThisPage')}>{toc.map((item) => <a key={item.url} href={item.url}>{item.title}</a>)}</nav></div></aside>}
   </>;
 }

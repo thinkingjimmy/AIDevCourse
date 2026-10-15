@@ -4,7 +4,7 @@
 
 course-card.tsx: Course card with facts, a progress-aware continue action, and the compact lesson path.
 
-course-layout.tsx: Shared course shell nav, continue link, and syllabus rows inside the zinc frame.
+course-layout.tsx: Course nav and lesson TOC outside the frame, plus the narrow contents strip, continue link, and syllabus rows.
 
 empty-courses.tsx: Empty course library, an about link, and valid alternate-language entries.
 

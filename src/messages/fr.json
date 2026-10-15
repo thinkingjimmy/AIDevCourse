@@ -83,7 +83,8 @@
     "learn": "Vous apprendrez",
     "who": "Pour qui",
     "before": "Avant de commencer",
-    "doneMark": "Terminé"
+    "doneMark": "Terminé",
+    "contents": "Plan"
   },
   "Learning": {
     "loading": "Restauration de la progression…",

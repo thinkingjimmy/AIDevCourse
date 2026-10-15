@@ -83,7 +83,8 @@
     "learn": "Aprenderás",
     "who": "Para quién",
     "before": "Antes de empezar",
-    "doneMark": "Completado"
+    "doneMark": "Completado",
+    "contents": "Índice"
   },
   "Learning": {
     "loading": "Restaurando el progreso…",
