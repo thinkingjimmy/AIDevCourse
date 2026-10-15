@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Shared tokens, band layout from surfaces.css, and state primitives from globals.css.
- * [OUTPUT]: Course cards, progress-aware syllabus rows, and the zinc course/lesson shell aligned to the homepage rails.
+ * [OUTPUT]: Course cards, the course-hero syllabus, and the zinc course/lesson shell aligned to the homepage rails.
  * [POS]: Course discovery and overview presentation; lesson reading lives in reading.css.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -196,4 +196,55 @@
   .learn-facts > div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
   .learn-pager { grid-template-columns: 1fr; }
   .learn-pager a:last-child { text-align: left; }
+}
+
+/* Course overview reuses the homepage hero grid. The rule breaks out of the 64rem frame to the viewport edges. */
+.course-overview .home-hero-wrap { padding-inline: 28px; }
+.course-overview .home-sub { margin-bottom: 22px; }
+.course-crumb { display: flex; flex-wrap: wrap; gap: 0; margin: 0 0 20px; color: var(--muted); font-family: var(--font-mono); font-size: 12px; line-height: 1.5; }
+.course-crumb a { color: inherit; text-decoration: none; }
+.course-crumb a:hover { color: var(--ink); }
+.course-learn { margin: 0 0 6px; color: var(--faint); font-family: var(--font-mono); font-size: 11px; }
+.course-goals { margin: 0; padding: 0; list-style: none; }
+.course-goals li { display: flex; gap: 10px; margin: 7px 0; font-size: 15px; line-height: 1.5; }
+.course-overview .home-ctas { margin-top: 28px; gap: 18px; }
+.course-stats { margin: 0; color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
+.course-overview .notice { margin-top: 20px; }
+.course-chip { position: relative; justify-self: center; width: min(100%, 420px); aspect-ratio: 720 / 570; overflow: hidden; background: transparent; }
+.course-bleed-rule { height: 0; margin: 0; border: 0; border-top: 1px solid var(--line); width: 100vw; position: relative; left: 50%; margin-left: -50vw; }
+.course-syllabus { padding: 56px 28px 96px; }
+.course-syllabus-label { margin: 0 0 24px; color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
+.course-modules { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.course-module { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; }
+.course-module h2 { display: flex; align-items: baseline; gap: 12px; margin: 0; padding: 16px; color: var(--ink); font-family: var(--font-sans); font-size: 16px; font-weight: 600; line-height: 1.4; }
+.course-module h2 .mono { color: var(--faint); font-size: 13px; font-weight: 500; }
+.course-module ol { margin: 0; padding: 0; list-style: none; }
+.course-module a { display: flex; align-items: center; gap: 16px; padding: 11px 16px; border-top: 1px solid var(--line-soft); color: inherit; text-decoration: none; }
+.course-module a:hover { background: #fafafa; }
+.course-module .idx { flex: none; width: 28px; color: var(--faint); font-family: var(--font-mono); font-size: 12px; }
+.course-module .ttl { flex: 1; min-width: 0; font-size: 15px; }
+.course-module .mins { flex: none; color: var(--faint); font-family: var(--font-mono); font-size: 12px; }
+
+/* Lesson index: no card, right-aligned toward the frame, only the current module open. */
+.learn-lnav { width: 220px; border: 0; background: transparent; text-align: right; }
+.learn-lnav .learn-out-in { top: 48px; }
+.learn-nav.learn-index .learn-modline { display: block; margin: 0; padding: 5px 0; color: var(--muted); font-size: 13px; font-weight: 400; line-height: 1.45; text-decoration: none; }
+.learn-nav.learn-index .learn-modline:hover { color: var(--ink); }
+.learn-nav.learn-index .num { margin-left: .2em; color: var(--faint); font-family: var(--font-mono); font-size: 12px; font-weight: 400; }
+.learn-nav.learn-index .is-open { margin: 6px 0 10px; }
+.learn-nav.learn-index .is-open > .learn-modline { color: var(--ink); font-size: 13.5px; font-weight: 600; }
+.learn-nav.learn-index ol { margin: 0; padding: 0; list-style: none; }
+.learn-nav.learn-index .learn-lesson { display: block; position: static; padding: 6px 0; color: var(--muted); font-size: 13.5px; font-weight: 400; line-height: 1.45; text-align: inherit; text-decoration: none; }
+.learn-nav.learn-index .learn-lesson:hover { color: var(--ink); }
+.learn-nav.learn-index .learn-lesson.is-current { color: var(--ink); font-weight: 600; }
+.learn-nav.learn-index .learn-lesson.is-current::before { content: none; }
+.learn-strip .learn-index { text-align: left; }
+
+@media (max-width: 840px) {
+  .course-modules { grid-template-columns: 1fr; }
+  .course-chip { width: min(100%, 320px); }
+}
+@media (max-width: 720px) {
+  .course-overview .home-hero-wrap { padding-inline: 16px; }
+  .course-syllabus { padding: 36px 16px 72px; }
 }

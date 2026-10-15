@@ -6,6 +6,6 @@
 
 layout.tsx: Shared header, centered content frame, and progress context; navigation belongs to lesson routes.
 
-page.tsx: Course overview with breadcrumb, facts, syllabus rows, and introduction; no sidebar or top contents strip.
+page.tsx: Course overview with a homepage-style hero, exploded chip, full-bleed rule, and two-column module cards. No sidebar.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

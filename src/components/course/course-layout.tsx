@@ -1,7 +1,7 @@
 /**
  * [INPUT]: Course and progress from progress/progress-provider, and module groups from lib/content/modules.
- * [OUTPUT]: Lesson course nav and contents strip, plus the course continue link and syllabus rows.
- * [POS]: Client course controls and lesson-only navigation; article content stays server rendered.
+ * [OUTPUT]: Lesson course index (current module only) and the compact contents strip.
+ * [POS]: Client lesson navigation; article content stays server rendered. Course overviews do not mount this.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 'use client';
@@ -9,39 +9,28 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Check } from 'lucide-react';
 import { courseLabel, groupModules } from '@/lib/content/modules';
 import { useProgress, useLessonStates } from '../progress/progress-provider';
 function CourseNav({ onNavigate }: { onNavigate?: () => void }) {
   const ui = useTranslations('Ui');
-  const learning = useTranslations('Learning');
-  const { course, progress, ready } = useProgress();
-  const { stateOf, summary } = useLessonStates();
+  const { course } = useProgress();
   const pathname = usePathname();
-  const viewing = course.lessons.some((lesson) => lesson.url === pathname);
-  const doneCount = ready ? summary.done : 0;
-  return <nav aria-label={ui('menu')} className="course-navigation learn-nav">
-    <div className="learn-course-head">
-      <Link href={course.url} onClick={onNavigate}>{course.title}</Link>
-      <p className="learn-meter">
-        <span className="track" role="progressbar" aria-valuemin={0} aria-valuemax={summary.total || 1} aria-valuenow={doneCount} aria-label={learning('progress', { done: doneCount, total: summary.total })}>
-          <span className="fill" style={{ width: `${ready ? summary.percent : 0}%` }} />
-        </span>
-        <span className="count">{doneCount} / {summary.total}</span>
-      </p>
-    </div>
-    {groupModules(course.lessons).map((group, index) => <section key={group.module}>
-      <p className="learn-mod">{String(index + 1).padStart(2, '0')} · {group.title}</p>
-      <ol>{group.lessons.map(({ lesson, part }) => {
-        const done = ready && !!progress.completed[lesson.id];
-        const current = viewing ? pathname === lesson.url : stateOf(lesson) === 'current';
-        return <li key={lesson.id}><Link href={lesson.url} onClick={onNavigate} className={`learn-lesson${done ? ' is-done' : ''}${current ? ' is-current' : ''}`} aria-current={pathname === lesson.url ? 'page' : undefined}>
-          <span className="idx">{part}</span>
-          <span className="ttl">{lesson.title}</span>
-          {done && <Check className="mark" size={13} strokeWidth={1.6} aria-hidden />}
-        </Link></li>;
-      })}</ol>
-    </section>)}
+  return <nav aria-label={ui('menu')} className="course-navigation learn-nav learn-index">
+    {groupModules(course.lessons).map((group, index) => {
+      const num = String(index + 1).padStart(2, '0');
+      const open = group.lessons.some(({ lesson }) => lesson.url === pathname);
+      const first = group.lessons[0]?.lesson;
+      if (!open) {
+        return first ? <Link key={group.module} href={first.url} onClick={onNavigate} className="learn-modline">{group.title}<span className="num"> {num}</span></Link> : null;
+      }
+      return <div key={group.module} className="is-open">
+        <p className="learn-modline">{group.title}<span className="num"> {num}</span></p>
+        <ol>{group.lessons.map(({ lesson }) => {
+          const current = pathname === lesson.url;
+          return <li key={lesson.id}><Link href={lesson.url} onClick={onNavigate} className={`learn-lesson${current ? ' is-current' : ''}`} aria-current={current ? 'page' : undefined}>{lesson.title}{current ? ' —' : ''}</Link></li>;
+        })}</ol>
+      </div>;
+    })}
   </nav>;
 }
 function LessonStrip() {
@@ -72,31 +61,4 @@ export function LearnShell({ children }: { children: ReactNode }) {
     <aside className="learn-out learn-lnav"><div className="learn-out-in"><CourseNav /></div></aside>
     {children}
   </>;
-}
-export function CourseContinue() {
-  const course = useTranslations('Course');
-  const learning = useTranslations('Learning');
-  const { summary, ready } = useLessonStates();
-  if (!summary.next) return null;
-  const action = ready ? summary.action : 'start';
-  const label = action === 'continue' ? course('continueNamed', { title: summary.next.title }) : action === 'review' ? learning('review') : course('startFirst');
-  return <Link className="home-cta learn-start" href={summary.next.url}>{label}<span aria-hidden> →</span></Link>;
-}
-export function CourseCatalog() {
-  const t = useTranslations('Course');
-  const ui = useTranslations('Ui');
-  const { course, progress, ready } = useProgress();
-  return <div className="learn-catalog">
-    <p className="learn-catalog-title">{t('catalog')}</p>
-    {groupModules(course.lessons).map((group, index) => <section key={group.module}>
-      <p className="learn-mod">{String(index + 1).padStart(2, '0')} · {group.title}</p>
-      {group.lessons.map(({ lesson, part }) => {
-        const done = ready && !!progress.completed[lesson.id];
-        const meta = `${done ? `${t('doneMark')} · ` : ''}${ui(lesson.type)} · ${ui('minutes', { count: lesson.durationMinutes })}`;
-        return <Link key={lesson.id} href={lesson.url} className={`learn-row${done ? ' is-done' : ''}`}>
-          <span className="idx">{part}</span><span className="ttl">{lesson.title}</span><span className="meta">{meta}</span>
-        </Link>;
-      })}
-    </section>)}
-  </div>;
 }

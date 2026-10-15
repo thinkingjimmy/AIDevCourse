@@ -2,7 +2,7 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-layout.tsx: Lesson-only course sidebar and compact contents strip inside the parent course frame.
+layout.tsx: Lesson-only course index (outside the left rail) and compact contents strip inside the parent course frame.
 
 page.tsx: Lesson article with eyebrow, prose, completion row, prev/next cards, and an h2 table of contents.
 
