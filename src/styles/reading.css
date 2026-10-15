@@ -168,8 +168,10 @@ html:lang(zh-Hans) .prose, html:lang(ja) .prose { line-height: 1.95; }
 .wiki .completion-box, .wiki .completion-box[data-done='true'] { display: block; max-width: none; margin: 40px 0 0; padding: 0; border: 0; background: transparent; }
 .wiki .learn-finish { border-top: 0; padding-top: 0; }
 .wiki .learn-pager { display: flex; justify-content: space-between; gap: 24px; max-width: none; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
-.wiki .learn-pager a { display: block; padding: 4px 0; border: 0; border-radius: 0; background: transparent; color: inherit; font-size: 14px; text-decoration: none; }
-.wiki .learn-pager a:hover { background: transparent; color: var(--ink); }
+.wiki .learn-pager a { display: block; padding: 8px 10px; border: 0; border-radius: 8px; background: transparent; color: inherit; font-size: 14px; text-decoration: none; transition: background-color .15s, color .15s; }
+.wiki .learn-pager a:hover, .wiki .learn-pager a:focus-visible { background: #f4f4f5; color: #09090b; }
+.wiki .learn-pager a:hover span, .wiki .learn-pager a:focus-visible span { text-decoration: underline; text-underline-offset: 3px; }
+.wiki .learn-pager a:hover small, .wiki .learn-pager a:focus-visible small { color: #18181b; }
 .wiki .learn-pager a:last-child { margin-left: auto; text-align: right; }
 .wiki .learn-pager small { display: block; margin-bottom: 4px; color: var(--muted); font-size: 12px; }
 .wiki-toc { grid-column: 2; position: sticky; top: 28px; padding: 36px 18px 48px 16px; color: var(--muted); font-size: 13px; line-height: 1.55; }
