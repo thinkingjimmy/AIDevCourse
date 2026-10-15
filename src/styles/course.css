@@ -107,9 +107,9 @@
   .empty-courses { padding: 32px var(--gutter); } .empty-courses h3 { font-size: 24px; }
 }
 
-/* Course and lesson shell. The sidebar border runs the full column; the nav inside it sticks. */
+/* Course and lesson shell. The 64rem side rules come from .home-shell::before so they run through the header. */
 .learn-page { min-height: 100vh; background: #fff; color: #09090b; font-size: 15px; line-height: 1.6; }
-.learn-frame { max-width: 64rem; margin: 0 auto; border-inline: 1px solid var(--line); min-height: calc(100vh - 56px); }
+.learn-frame { width: min(64rem, 100%); margin-inline: auto; align-self: center; min-height: calc(100vh - 56px); }
 .learn-page .mobile-course-bar { display: none; }
 .learn-shell { display: grid; grid-template-columns: 220px minmax(0, 1fr); align-items: stretch; min-height: calc(100vh - 56px); }
 .learn-shell:has(.learn-toc) { grid-template-columns: 220px minmax(0, 1fr) 180px; }
