@@ -1,0 +1,10 @@
+{
+  "title": "Use AI safely",
+  "pages": [
+    "hallucination",
+    "secrets",
+    "review-generated-code",
+    "first-workflow",
+    "check-safety"
+  ]
+}

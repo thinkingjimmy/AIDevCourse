@@ -85,12 +85,12 @@ pnpm build
 ]
 ```
 
-该配置是说明示例，不应直接替换项目的空映射。只有发生真实 URL 迁移时才新增条目。
+上面的 JSON 只说明字段形状。真实迁移写在 `config/redirects.json`：目前是 `ai-coding` 到 `ai-101`。不要用示例覆盖这份映射。只有发生新的 URL 迁移时才追加条目。
 
 ## 互动需求
 
 选择题、视频播放器、交互练习、答案展开和提示词对比继续延期。先用文字写清文章目标，再在 PRD 的 T 系列记录具体需求、真实材料、预期行为和验收条件；不要提前创建空组件。
 
-当前三篇中文课程是可预览的完整初稿，尚未经过作者内容复核。其他四语没有正式教程译文，工程 fixture 只用于测试。
+公开课程是 `content/zh/ai-101`（AI 入门）：六个模块、31 篇课时。其中六篇参考课文和两篇并入的旧课有全文；其余课时是带「草稿」标记的摘要，目录和路由仍然公开。英文对应课文有全文或草稿，日文、法文、西班牙文目前是标题和摘要。旧地址在 `config/redirects.json`：`/zh/courses/ai-coding` 以及原来的三篇课时，分别跳到 `ai-101` 的课程页、`safety/first-workflow`、`context/useful-context` 和 `checking/verify-results`。工程 fixture 仍使用 `tests/fixtures` 里的 `ai-coding`，只用于测试。
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

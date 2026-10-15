@@ -1,0 +1,10 @@
+{
+  "title": "Check the result",
+  "pages": [
+    "small-steps",
+    "read-before-edit",
+    "tests-as-feedback",
+    "verify-results",
+    "check-verification"
+  ]
+}

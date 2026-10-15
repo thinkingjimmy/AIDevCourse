@@ -2,7 +2,7 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-ai-coding/: Nested module; see [ai-coding/README.md](./ai-coding/README.md).
+ai-101/: Nested module; see [ai-101/README.md](./ai-101/README.md).
 
 meta.json: Explicit localized directory title and teaching order.
 

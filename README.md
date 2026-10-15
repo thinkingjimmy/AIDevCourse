@@ -6,7 +6,7 @@ Next.js 16.3.6 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-
 
 A five-language learning site with local Markdown / MDX courses, language-specific search, and learning progress stored in your browser. The interface uses warm paper colors, full-height grid rails, Newsreader and IBM Plex Mono (self-hosted via `next/font`), and restrained retro details. No accounts, database, model API keys, or translation service are required.
 
-**Current status:** the application is implemented. One Chinese course and its three lessons are public. The other four languages have localized interfaces and no courses yet, so those course lists are empty. Device checks and deployment remain pending; see the [PRD and todo](./docs/PRD.md#13-markdown-开发任务).
+**Current status:** the application is implemented. The public course is AI 101 (`ai-101`): six modules and 31 lessons. Chinese is the source. English has full text for the finished lessons and drafts for the rest. Japanese, French, and Spanish publish titles and summaries. Old `/ai-coding` URLs redirect to `/ai-101`. Device checks and deployment remain pending; see the [PRD and todo](./docs/PRD.md#13-markdown-开发任务).
 
 ## Quick start
 
@@ -19,7 +19,7 @@ pnpm dev
 
 Open [localhost:3000/zh](http://localhost:3000/zh). Restart after changing frontmatter, file structure, or `meta.json` order. Body edits support hot reload.
 
-Homepage studies, which do not replace `/zh`, are at [/design/a](http://localhost:3000/design/a) (catalog), [/design/b](http://localhost:3000/design/b) (course page), and [/design/c](http://localhost:3000/design/c) (studio). They read the published course in `content/zh/ai-coding`.
+Homepage studies, which do not replace `/zh`, are at [/design/a](http://localhost:3000/design/a) (catalog), [/design/b](http://localhost:3000/design/b) (course page), and [/design/c](http://localhost:3000/design/c) (studio). They read the published course in `content/zh/ai-101`.
 
 ## Commands
 

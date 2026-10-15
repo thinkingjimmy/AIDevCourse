@@ -4,7 +4,7 @@
 
 Homepage studies for AIDevCourse. These routes do not replace `/[lang]`.
 
-- `catalog.ts`: Reads the published `content/zh/ai-coding` course for the previews only.
+- `catalog.ts`: Reads the published `content/zh/ai-101` course for the previews only.
 - `design.css`: Zinc tokens scoped to `html.design`.
 - `layout.tsx`: Geist document shell, separate from the live site header.
 - `ui.tsx`: Wordmark, variant switch, header, and footer.

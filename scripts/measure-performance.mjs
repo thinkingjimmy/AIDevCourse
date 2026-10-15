@@ -12,7 +12,7 @@ import { gzipSync } from 'node:zlib';
 const origin = process.env.PERFORMANCE_URL || 'http://127.0.0.1:3200';
 const repetitions = Number(process.env.PERFORMANCE_RUNS || 3);
 const paths = process.env.PERFORMANCE_PATH ? [process.env.PERFORMANCE_PATH] : ['zh', 'ja'].flatMap((lang) => [
-  `/${lang}`, `/${lang}/courses/ai-coding`, `/${lang}/courses/ai-coding/foundations/first-change`,
+  `/${lang}`, `/${lang}/courses/ai-101`, `/${lang}/courses/ai-101/models/strengths`,
 ]);
 const directory = 'docs/evidence/performance';
 mkdirSync(directory, { recursive: true });

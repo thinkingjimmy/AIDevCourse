@@ -1,0 +1,10 @@
+{
+  "title": "Utiliser l’IA en sécurité",
+  "pages": [
+    "hallucination",
+    "secrets",
+    "review-generated-code",
+    "first-workflow",
+    "check-safety"
+  ]
+}

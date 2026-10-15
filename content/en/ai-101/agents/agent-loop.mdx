@@ -1,0 +1,57 @@
+---
+kind: lesson
+courseId: ai-101
+lessonId: agent-loop
+title: "The agent loop"
+description: "The agent loop is observe, act, and look again, until a stop condition appears."
+durationMinutes: 10
+lessonType: concept
+translatedFromRevision: 1
+---
+
+## Chat stops at a reply. A loop stops at a condition
+
+Chat is one message from you and one reply. You still choose the next step. An agent continues on its own: it looks at the current state, picks an action, calls a tool, reads the tool result, and decides whether to continue or stop. That round trip is the agent loop.
+
+A loop is not a smarter chat. What it adds is the right to act. Without a boundary, that right edits files you have not seen, or retries until the environment is a mess.
+
+## What actually happens in one round
+
+You can fold it into four steps. The screen differs by product, but the order is roughly this:
+
+1. Observe: read your task, the rules, and the open files or the previous tool result.
+2. Decide: choose whether the next step is a reply to you or a tool call.
+3. Act: actually read, write, search, or run a command. An action without permission should stop.
+4. Observe again: put the tool output back into the window and judge the stop condition.
+
+The stop condition has to exist before you start. For example: “change only this button’s label, and the diff contains no other file.” Without one, the loop treats “try again” as progress.
+
+### What you check at each step
+
+| Step | What you confirm | What slipping looks like |
+| --- | --- | --- |
+| Observe | It cites the file you named | It starts editing a file that does not exist |
+| Decide | The next step is still inside the task | It refactors a neighboring module on the way |
+| Act | The tool is allowed | It installs or deletes without your agreement |
+| Observe again | The result is checked, not ignored | The same error is retried many times |
+
+<Callout title="You can stop the loop" type="info">
+You do not have to wait for it to declare success. When an action leaves the task, stop and write the allowed next step as a new constraint.
+</Callout>
+
+## Read a short trace
+
+This is not a real log from a product. It only helps you recognize the four steps. When you use a tool, trust the tool names and output that tool actually shows.
+
+```text
+Observe: primary button label is "Browse courses"; href is /zh/courses.
+Decide: edit the label only.
+Act: replace the visible text with "Start learning".
+Observe: href unchanged. Stop.
+```
+
+If `Act` touches a file the task never named, the loop has already left the boundary. Stop. Do not let it “fix that too.” The extra step is often harder to undo than the original task, because you have not read the diff yet.
+
+## Try it
+
+In your own words, write a stop condition for a small task: what may change, what must not, and how many diff hunks you will look at. Then imagine three steps of the loop and write the evidence you would check at each one. A step with no evidence is not a step to leave on automatic.

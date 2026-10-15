@@ -1,0 +1,72 @@
+---
+kind: lesson
+courseId: ai-101
+lessonId: first-workflow
+title: "Finish your first AI workflow"
+description: "Finish one small change: context, constraints, the diff, the behavior, then a safety pass."
+durationMinutes: 12
+lessonType: practice
+translatedFromRevision: 1
+---
+
+## Finish a loop you can explain
+
+The first time you change code with an AI, the point is not to ship a whole product. The point is to finish a loop you can explain: goal, context, constraints, the edit, verification, and a safety pass. Pick a page you can already run, such as a practice page with a title and a button.
+
+The task in this lesson stays small: change the primary button’s label to `Start learning` and keep the click behavior. Small means every layer of the check is visible.
+
+![The loop of a small change: goal, context, edit, verification, and a safety pass](/images/courses/change-cycle.svg)
+
+## Write the task so it can be checked
+
+“Improve the page” never says what better means. “Change the primary button’s label to Start learning, and keep the click that opens the course list” draws the boundary.
+
+You can hand over a note like this:
+
+> Find the primary learning button. Change its visible label to “Start learning”. Keep its destination and all other behavior unchanged. Explain which file you changed and how you checked the result.
+
+Also say which page shows the button. If you already know the component path, include it. Do not paste the whole project to look thorough.
+
+### Read the smallest diff
+
+Before, it might be:
+
+```tsx
+export function LearningLink() {
+  return <a href="/zh/courses">Browse courses</a>;
+}
+```
+
+The result you want:
+
+```tsx
+export function LearningLink() {
+  return <a href="/zh/courses">Start learning</a>;
+}
+```
+
+Compare the two: the visible text changed, the address did not. The task did not ask for a new color, a split component, or a new route. Those edits do not belong.
+
+<Callout title="Understand it before you accept it" type="info">
+If you cannot explain why a change is necessary, ask the model first. Running is not the same as a correct scope.
+</Callout>
+
+## Do the four steps in order
+
+1. Context: where it is, the current label, the label you want, and the link that must stay.
+2. Constraints: do not change the address, do not add a dependency, and do not restyle unrelated parts.
+3. Verification: read the label on the page, activate it with the pointer and the keyboard, and confirm the diff is only this change.
+4. Safety pass: no secret was pasted, no extra request or dependency appeared, and no unfamiliar file showed up.
+
+Open the page the way the project’s own notes already describe. When you read the diff, check that only the relevant file moved. Run the project’s existing check and keep the real output. If a check fails, decide whether this edit caused it or whether the environment already failed.
+
+## Try it
+
+In a practice project you can run locally, change only the label of one link or button. Leave four sentences: the context, the constraints, the verification you actually saw, and the limit that the safety pass still has.
+
+- [ ] The new label matches the task.
+- [ ] The old destination is unchanged.
+- [ ] The keyboard can still focus and activate it.
+- [ ] The diff has no unrelated edit and no secret.
+
+If one item has no evidence, keep looking. After you are sure, use the completion control at the bottom of the page. Reaching this paragraph does not complete the lesson by itself.

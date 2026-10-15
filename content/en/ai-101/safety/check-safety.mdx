@@ -1,0 +1,58 @@
+---
+kind: lesson
+courseId: ai-101
+lessonId: check-safety
+title: "Check yourself: using AI safely"
+description: "Use a checklist to review hallucination, data, and generated code."
+durationMinutes: 8
+lessonType: practice
+translatedFromRevision: 1
+---
+
+## Check a box only when you have evidence
+
+This check is not scored. A mark means you can point at evidence, not that you read the heading. Do one very small AI-assisted edit first, then come back through the items. If you cannot do an item, return to the earlier lesson. Do not guess an answer here.
+
+## Checklist
+
+- [ ] I can point at one specific claim the model may have invented, and I wrote how I would check it.
+- [ ] The prompt, the rules, the logs, and the screenshots contain no real secret or personal data.
+- [ ] I read the diff and can name files that should not be there.
+- [ ] The generated code adds no dependency, permission, or network call I do not recognize.
+- [ ] I tried the main path and one easy failure myself.
+- [ ] Anything I have not checked is written down as a limit, not left blank.
+
+If you cannot name evidence for even one item, this session is not closed. A reply that says “confirmed safe” is not evidence for any item.
+
+### What counts as evidence
+
+Evidence is something you can show someone else: a diff, a sentence on the page, a command’s exit status, an API name in the docs. A feeling that it “should be fine” is not evidence.
+
+## Four situations, and the steadier move
+
+| Situation | The steadier move |
+| --- | --- |
+| The model names an API you have never seen | Check the docs or the existing code before you keep the name and the parameters |
+| It asks you to paste a token into the chat “to debug” | Refuse, use a placeholder, and rotate any secret already exposed |
+| The diff adds an install script or a new dependency | Stop, and find out whether the package is needed and where it comes from |
+| Tests are green and you have not opened the page | Try it yourself before you decide it can land |
+
+<Callout title="Stop when you are not sure" type="warning">
+If you cannot say where the data goes or what the code will call, do not accept the change yet.
+</Callout>
+
+## Use the list on one real change
+
+Go in order. Do not skip ahead to the boxes:
+
+1. Find one statement from the model that you have not checked on your own.
+2. Search the conversation and the diff for secrets.
+3. Open the file list and mark edits that are outside the task.
+4. Ask of the generated code: which permission or outbound call did it add?
+5. Write the checks you have not done into the limits, not into “done.”
+
+> Using AI safely is not using it less. It is still being able to explain, at the end, why the result can stay.
+
+## Try it
+
+Pick the checklist item you trust least. Write three sentences: what the risk is, where you will look, and what “checked” means. If any sentence says “the model said it was fine,” cross it out and name a place you can open yourself.

@@ -6,7 +6,7 @@ Next.js 16.3.6 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-
 
 五语学习网站，支持本地 Markdown / MDX 课程、按语言搜索和浏览器本地学习进度。界面采用暖纸白、贯通的网格纵线、Newsreader 与 IBM Plex Mono（经 `next/font` 自托管）和简洁复古细节，无需账号、数据库、模型 API Key 或在线翻译服务。
 
-**当前状态：**站点工程已实现。一门中文课程及其三篇课时已经公开。其他四语已提供完整界面，尚无课程，因此这些语言的课程列表为空。真机检查和部署仍待完成，任务统一维护在 [PRD 与 todo](./docs/PRD.md#13-markdown-开发任务)。
+**当前状态：**站点工程已实现。公开课程是 AI 入门（`ai-101`）：六个模块、31 篇课时。简体中文是原文。英文里写完的课有全文，其余是草稿。日文、法文和西班牙文公开标题和摘要。旧的 `/ai-coding` 地址会跳到 `/ai-101`。真机检查和部署仍待完成，任务统一维护在 [PRD 与 todo](./docs/PRD.md#13-markdown-开发任务)。
 
 ## 快速启动
 
@@ -19,7 +19,7 @@ pnpm dev
 
 打开 [localhost:3000/zh](http://localhost:3000/zh)。修改 frontmatter、文件结构或 `meta.json` 排序后重启服务；正文编辑支持热更新。
 
-首页设计稿不替换 `/zh`：[/design/a](http://localhost:3000/design/a)（目录）、[/design/b](http://localhost:3000/design/b)（课页）、[/design/c](http://localhost:3000/design/c)（工作台）。三份稿都读取 `content/zh/ai-coding` 里已经公开的课。
+首页设计稿不替换 `/zh`：[/design/a](http://localhost:3000/design/a)（目录）、[/design/b](http://localhost:3000/design/b)（课页）、[/design/c](http://localhost:3000/design/c)（工作台）。三份稿都读取 `content/zh/ai-101` 里已经公开的课。
 
 ## 常用命令
 

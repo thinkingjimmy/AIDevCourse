@@ -3,7 +3,7 @@
 > 版本：v0.5 · 创建日期：2026-09-22 · 更新日期：2026-09-23
 > L2 | Parent: [README.md](./README.md)
 > [PROTOCOL]: Update this header when making changes, then check README.md.
-> 状态：站点工程开发及自动验收完成；中文一门课程与三篇课时已公开，不再使用审校状态；尚未部署；正文互动组件继续延期
+> 状态：站点工程开发及自动验收完成；公开课程为 AI 入门（ai-101），六个模块、31 篇课时；不再使用审校状态；尚未部署；正文互动组件继续延期
 > 技术方向：Next.js + Fumadocs MDX / Core / UI + Tailwind CSS + next-intl
 > 视觉方向：Vercel 式可见网格 + Macintosh 128K 灵感的复古阅读界面
 
@@ -11,7 +11,7 @@
 
 本文同时定义产品需求、技术约束、内容协议、验收标准和 Markdown 开发任务。开发任务统一维护在第 13 节，避免 PRD 与另一份 TODO 重复维护而产生冲突。
 
-初次编写时检查的仓库为 `thinkingjimmy/learning-ai-coding`，默认分支为 `main`，初始基线提交为 `dcc592e38bb2871ecdc6f37489cccc15bcaefdcb`，只有 LICENSE。v0.3 修订前重新检查，仓库只有 LICENSE、PRD.md、README.md，尚无应用代码。v0.4 已完成站点工程实现；实际架构、命令及验收证据见 README 与 docs/implementation-notes.md。中文一门课程、三篇课时已列入公开目录；其他四语只有完整 UI，暂无教程译文。保留现有 LICENSE。
+初次编写时检查的仓库为 `thinkingjimmy/learning-ai-coding`，默认分支为 `main`，初始基线提交为 `dcc592e38bb2871ecdc6f37489cccc15bcaefdcb`，只有 LICENSE。v0.3 修订前重新检查，仓库只有 LICENSE、PRD.md、README.md，尚无应用代码。v0.4 已完成站点工程实现；实际架构、命令及验收证据见 README 与 docs/implementation-notes.md。v0.4 当时公开的是中文一门课程、三篇课时。当前公开目录是 `content/<lang>/ai-101`：简体中文为原文，英文含已完成课文的全文，日文、法文和西班牙文是标题与摘要。保留现有 LICENSE。
 
 ### 0.1 已明确的需求
 

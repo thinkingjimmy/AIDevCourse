@@ -1,0 +1,12 @@
+{
+  "title": "Introducción a la IA",
+  "pages": [
+    "index",
+    "models",
+    "access",
+    "context",
+    "agents",
+    "checking",
+    "safety"
+  ]
+}

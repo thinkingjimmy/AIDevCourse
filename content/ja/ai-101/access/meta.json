@@ -1,0 +1,10 @@
+{
+  "title": "モデルを選び、接続する",
+  "pages": [
+    "compare-models",
+    "model-names",
+    "subscription-or-key",
+    "cloud-or-local",
+    "check-access"
+  ]
+}

@@ -1,0 +1,74 @@
+---
+kind: lesson
+courseId: ai-101
+lessonId: verify-results
+title: "Check the result"
+description: "Use the diff, a hands-on try, and the project’s existing checks as three layers of evidence."
+durationMinutes: 12
+lessonType: practice
+translatedFromRevision: 1
+---
+
+## Treat generated output as a change still to be checked
+
+A model can help you change code. It can also misread the goal, miss an edge, or change behavior outside the files you care about. Your job is not to rewrite its answer line by line. Your job is to decide whether this change actually meets the goal.
+
+This lesson uses three layers of evidence: the scope of the diff, the behavior you try yourself, and the checks the project already has. Each layer needs something you saw. “It said it passed” is not a substitute.
+
+## First layer: did the diff stay inside the task?
+
+Open the file diff. Look at the file list, then at the edits. Every change should map to the task, or to a fix that was required to finish the task.
+
+| Question | Why ask it |
+| --- | --- |
+| Did it touch the file you expected? | You might have edited a similar page instead |
+| Are there unrelated config edits? | Environment tweaks should not ride along with the feature |
+| Did an existing branch disappear? | The happy path can work while an edge regresses |
+| Was a dependency added? | Confirm it is necessary and allowed by the project |
+
+If you cannot tell why a hunk exists, ask the model to explain it with one concrete input and output. If the explanation still misses the goal, shrink the scope. Do not add another feature.
+
+### Second layer: walk through it yourself
+
+Run the main path on the real page, then one case that fails easily. For a button label, check the text and the click. For “continue learning,” check no record, a record, and a last lesson that is already complete.
+
+Do not stop on the happy path. Use the keyboard once, narrow the window, and try again after a refresh. Saved state has to survive leaving and coming back, not only the screen you are looking at.
+
+> A successful build only means the project still compiles. A button can point at the wrong place and the build can still be green.
+
+## Third layer: run the checks the project already has
+
+Read the project’s own notes and find the commands that are already configured. Scripts differ. Do not treat the next two lines as commands every repository has:
+
+```bash
+pnpm check
+pnpm build
+```
+
+Those lines apply only when `package.json` defines the scripts. Keep the real output and the exit status. A command you did not run, a run you interrupted, or a missing dependency is not “passed.”
+
+<Callout title="A passing test still needs the goal" type="info">
+Automatic checks cover only the conditions they define. You still have to try the behavior.
+</Callout>
+
+## When it fails, change one variable
+
+Write down the first useful error and the step that triggered it. Reproduce it, then ask the model for a likely cause and the place it wants to edit. Do not change code and upgrade a pile of dependencies in the same turn. The causes will stack.
+
+After the fix, rerun the check that failed and walk the main path that the change affects. You do not have to repeat every unrelated check each time. Do not shrink the check so that an unsolved failure disappears.
+
+## Leave a note someone else can recheck
+
+Three lines: what changed, which checks you actually ran, and what is still limited.
+
+```text
+Changed: the primary link now says Start learning.
+Checked: label, destination, keyboard activation, and the project build.
+Remaining: mobile Safari has not been checked on a physical device.
+```
+
+`Remaining` is not a failure. It is the part you do not have evidence for yet. Writing it down is safer than pretending you covered everything.
+
+## Try it
+
+Take a task you have already written and turn each acceptance line into an action. After the edit, fill in what you observed, not what you predicted. Mark the task done only when that evidence is enough to say the goal is met.
