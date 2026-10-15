@@ -4,8 +4,8 @@
 
 [...lesson]/: Nested module; see [[...lesson]/README.md](./[...lesson]/README.md).
 
-layout.tsx: Protected course boundary with one shared learning context for overview and lessons.
+layout.tsx: Zinc course shell with one shared learning context for the overview and lessons.
 
-page.tsx: Banded overview outside the reading shell: hero with progress, goals/prerequisites/audience, introduction, and syllabus.
+page.tsx: Course overview inside that shell: breadcrumb, facts, syllabus rows, then the introduction.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

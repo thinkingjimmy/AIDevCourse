@@ -72,7 +72,18 @@
     "syllabus": "Tu recorrido",
     "aboutSite": "Sobre este sitio",
     "pathTitle": "En orden, un ciclo por lección",
-    "pathNote": "Las marcas de completado son un registro, no una calificación."
+    "pathNote": "Las marcas de completado son un registro, no una calificación.",
+    "startFirst": "Empezar la primera lección",
+    "continueNamed": "Continuar: {title}",
+    "free": "Gratis",
+    "moduleCount": "{count, plural, one {# módulo} other {# módulos}}",
+    "catalog": "Temario",
+    "onThisPage": "En esta página",
+    "finishedPrompt": "¿Terminaste?",
+    "learn": "Aprenderás",
+    "who": "Para quién",
+    "before": "Antes de empezar",
+    "doneMark": "Completado"
   },
   "Learning": {
     "loading": "Restaurando el progreso…",

@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Shared paper, ink, column, and gutter tokens from globals.css.
- * [OUTPUT]: Site shell (rails, header, footer), full-bleed bands, home, library, about, dialogs, and search.
+ * [OUTPUT]: Site shell (rails, header, footer), the zinc homepage and course frames, library, about, dialogs, and search.
  * [POS]: Non-reading presentation layer shared by all locales; course.css and reading.css extend it.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -9,7 +9,7 @@
 body:has(.site-main)::before { content: ''; position: fixed; inset: 0 auto; left: 50%; width: var(--column); translate: -50% 0; border-inline: 1px solid var(--line); pointer-events: none; z-index: 1; }
 body:has(.site-main) :is(.header-inner, .footer-inner) { border-inline: 1px solid var(--line); }
 /* Homepage uses the locked zinc frame instead of the paper rails. */
-body:has(.home-shell) {
+body:has(.home-shell), body:has(.learn-page) {
   background: #fff; color: #09090b;
   --paper: #fff; --sheet: #fff; --surface: #fafafa; --hover: #f4f4f5;
   --ink: #09090b; --body: #09090b; --strong: #18181b; --muted: #71717a; --faint: #a1a1aa;
@@ -74,11 +74,11 @@ body:has(#nd-docs-layout) .header-inner { width: min(1440px, 100%); padding-inli
 .home-nav a { color: var(--muted); text-decoration: none; }
 .home-nav a:hover { color: var(--ink); }
 .home-tools { display: flex; align-items: center; gap: 10px; margin-left: auto; color: var(--muted); font-size: 13px; }
-.home-shell .home-kbd { width: auto; height: auto; min-height: 0; justify-content: center; padding: 2px 8px; border: 1px solid var(--line); border-radius: 6px; background: transparent; color: var(--muted); font-family: var(--font-mono); font-size: 12px; line-height: 1.4; }
-.home-shell .home-kbd > span { display: inline; flex: none; }
-.home-shell .lang-compact { position: relative; }
-.home-shell .lang-compact > summary { min-height: 28px; padding: 0; gap: 0; color: var(--muted); font-size: 13px; background: transparent; }
-.home-shell .lang-compact > summary:hover { background: transparent; color: var(--ink); }
+.home-top .home-kbd { width: auto; height: auto; min-height: 0; justify-content: center; padding: 2px 8px; border: 1px solid var(--line); border-radius: 6px; background: transparent; color: var(--muted); font-family: var(--font-mono); font-size: 12px; line-height: 1.4; }
+.home-top .home-kbd > span { display: inline; flex: none; }
+.home-top .lang-compact { position: relative; }
+.home-top .lang-compact > summary { min-height: 28px; padding: 0; gap: 0; color: var(--muted); font-size: 13px; background: transparent; }
+.home-top .lang-compact > summary:hover { background: transparent; color: var(--ink); }
 .lang-pair { white-space: nowrap; }
 .lang-pair [data-current] { color: var(--ink); font-weight: 500; }
 .home-hero-wrap { padding-block: 56px 48px; }
@@ -157,7 +157,7 @@ body:has(#nd-docs-layout) .header-inner { width: min(1440px, 100%); padding-inli
 
 @media (max-width: 1023px) {
   .header-inner { gap: 24px; } .search-trigger { width: 200px; }
-  .home-shell .home-kbd { width: auto; }
+  .home-top .home-kbd { width: auto; }
 }
 @media (max-width: 767px) {
   .search-trigger { width: 44px; height: 44px; justify-content: center; padding: 0; border-color: transparent; background: transparent; color: var(--ink); }

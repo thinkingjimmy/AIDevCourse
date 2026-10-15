@@ -1,11 +1,10 @@
 /**
- * [INPUT]: Lesson children and the course progress context from the parent course layout.
- * [OUTPUT]: The components/course reading shell around every lesson route.
- * [POS]: Lesson-only layout; the course overview stays outside the sidebar shell.
+ * [INPUT]: Lesson children already wrapped by the parent course shell.
+ * [OUTPUT]: The lesson route unchanged; the sidebar lives on the course layout.
+ * [POS]: Pass-through so overview and lessons share one frame.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import type { ReactNode } from 'react';
-import { ReadingLayout } from '@/components/course/course-layout';
 export default function LessonLayout({ children }: { children: ReactNode }) {
-  return <ReadingLayout>{children}</ReadingLayout>;
+  return children;
 }

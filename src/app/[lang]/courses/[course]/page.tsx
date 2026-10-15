@@ -1,18 +1,16 @@
 /**
- * [INPUT]: Public course introduction, components/mdx registry, course syllabus, and progress controls.
- * [OUTPUT]: Banded overview: hero with progress, goals/prerequisites/audience, introduction, and ordered syllabus.
- * [POS]: Course overview route outside the reading shell; introduction never counts as a lesson.
+ * [INPUT]: Public course introduction, MDX registry, syllabus rows, and the continue action.
+ * [OUTPUT]: Course overview: breadcrumb, facts, ordered syllabus, then the introduction.
+ * [POS]: Course overview inside the shared learning shell; the introduction never counts as a lesson.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { Check } from 'lucide-react';
 import { isLocale } from '@/lib/i18n/config';
+import { courseLabel, groupModules } from '@/lib/content/modules';
 import { getCatalog, getCourse, getArticle } from '@/lib/content/source';
-import { CourseProgress } from '@/components/progress/progress-controls';
-import { Syllabus } from '@/components/course/syllabus';
-import { GridFrame } from '@/components/layout/grid-frame';
+import { CourseCatalog, CourseContinue } from '@/components/course/course-layout';
 import { getMDXComponents } from '@/components/mdx/components';
 import { pageMetadata } from '@/lib/seo/metadata';
 import { TranslationNotice } from '@/components/course/translation-notice';
@@ -28,25 +26,26 @@ export default async function CoursePage({ params }: Props) {
   const t = await getTranslations({ locale: lang, namespace: 'Course' });
   const ui = await getTranslations({ locale: lang, namespace: 'Ui' });
   const Body = article.data.body;
-  return <main id="main-content" className="site-main" tabIndex={-1}>
-    <GridFrame className="course-hero">
-      <div className="course-hero-copy">
-        <nav className="breadcrumb" aria-label={ui('courses')}><Link href={`/${lang}/courses`}>{ui('courses')}</Link><span aria-hidden>/</span><span aria-current="page">{course.title}</span></nav>
-        <div className="chip-row"><span className="chip">{ui(course.level)}</span><span className="chip">{ui('lessonCount', { count: course.lessons.length })}</span><span className="chip">{ui('minutes', { count: course.durationMinutes })}</span></div>
-        <h1 className="serif">{course.title}</h1><p>{course.description}</p>
-        <TranslationNotice document={getCatalog().documents.find((doc) => doc.url === course.url)!} sourceLocale={course.sourceLocale} />
-      </div>
-      <div className="course-hero-progress"><CourseProgress /></div>
-    </GridFrame>
-    <GridFrame className="course-facts">
-      <section><h2>{t('goals')}</h2><ul>{course.goals.map((goal) => <li key={goal}><Check size={16} aria-hidden />{goal}</li>)}</ul></section>
-      <section><h2>{t('prerequisites')}</h2><ul>{course.prerequisites.map((item, index) => <li key={item}><span className="mono" aria-hidden>{String.fromCharCode(97 + index)}.</span>{item}</li>)}</ul></section>
-      <section><h2>{t('audience')}</h2><p>{course.audience}</p></section>
-    </GridFrame>
-    <GridFrame className="course-intro"><div className="prose"><Body components={getMDXComponents()} /></div></GridFrame>
-    <GridFrame className="course-path">
-      <header><div><p className="eyebrow">{t('syllabus')}</p><h2 className="serif">{t('pathTitle')}</h2></div><p>{t('pathNote')}</p></header>
-      <Syllabus variant="full" />
-    </GridFrame>
+  const document = getCatalog().documents.find((doc) => doc.url === course.url);
+  return <main id="main-content" className="learn-main" tabIndex={-1}>
+    <nav className="learn-crumb" aria-label={ui('courses')}><Link href={`/${lang}/courses`}>{ui('courses')}</Link><span aria-hidden>/</span><b aria-current="page">{courseLabel(course.slug)}</b></nav>
+    <h1>{course.title}</h1>
+    <p className="learn-lead">{course.description}</p>
+    <p className="learn-meta">
+      <span>{ui(course.level)}</span>
+      <span>{t('moduleCount', { count: groupModules(course.lessons).length })}</span>
+      <span>{ui('lessonCount', { count: course.lessons.length })}</span>
+      <span>{ui('minutes', { count: course.durationMinutes })}</span>
+      <span>{t('free')}</span>
+    </p>
+    <CourseContinue />
+    {document && <TranslationNotice document={document} sourceLocale={course.sourceLocale} />}
+    <div className="learn-facts">
+      <div><h2>{t('learn')}</h2><p>{course.goals.join(' · ')}</p></div>
+      <div><h2>{t('who')}</h2><p>{course.audience}</p></div>
+      <div><h2>{t('before')}</h2><p>{course.prerequisites.join(' · ')}</p></div>
+    </div>
+    <CourseCatalog />
+    <div className="prose"><Body components={getMDXComponents()} /></div>
   </main>;
 }

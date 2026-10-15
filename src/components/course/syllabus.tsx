@@ -1,24 +1,16 @@
 /**
- * [INPUT]: Course lessons from progress/progress-provider and its restored lesson states.
- * [OUTPUT]: groupModules helper, LessonStateIcon, and the compact/full Syllabus list.
- * [POS]: Shared lesson path for course cards, the course overview, and the reading sidebar.
+ * [INPUT]: Course lessons from progress/progress-provider, module groups, and restored lesson states.
+ * [OUTPUT]: LessonStateIcon and the compact/full Syllabus list. Module grouping lives in lib/content/modules.
+ * [POS]: Compact lesson path on course cards.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 'use client';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { ArrowRight, Check } from 'lucide-react';
-import type { LessonSummary } from '@/lib/content/types';
+import { groupModules } from '@/lib/content/modules';
 import { useProgress, useLessonStates, type LessonState } from '../progress/progress-provider';
-export function groupModules(lessons: LessonSummary[]) {
-  const groups: { module: string; title: string; lessons: { lesson: LessonSummary; number: number }[] }[] = [];
-  lessons.forEach((lesson, index) => {
-    const group = groups.find((item) => item.module === lesson.module);
-    const entry = { lesson, number: index + 1 };
-    if (group) group.lessons.push(entry); else groups.push({ module: lesson.module, title: lesson.moduleTitle, lessons: [entry] });
-  });
-  return groups;
-}
+export { groupModules };
 export function LessonStateIcon({ state, number, large = false }: { state: LessonState; number: number; large?: boolean }) {
   const t = useTranslations('Learning');
   return <span className={large ? 'state-icon large' : 'state-icon'} data-state={state} role={state === 'done' ? 'img' : undefined} aria-label={state === 'done' ? t('completed') : undefined}>

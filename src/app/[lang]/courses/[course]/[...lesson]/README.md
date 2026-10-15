@@ -2,8 +2,8 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-layout.tsx: Mounts the components/course reading shell around every lesson route.
+layout.tsx: Pass-through; the sidebar shell lives on the parent course layout.
 
-page.tsx: Static lesson with number/type/duration meta, current-language TOC, verification metadata, and footer controls.
+page.tsx: Lesson article with eyebrow, prose, completion row, prev/next cards, and an h2 table of contents.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

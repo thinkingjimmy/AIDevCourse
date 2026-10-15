@@ -1,78 +1,88 @@
 /**
- * [INPUT]: Course and progress from progress/progress-provider, sibling syllabus.tsx states, and lesson children.
- * [OUTPUT]: ReadingLayout: Fumadocs docs layout with the course sidebar, mobile drawer, reading progress, and mobile lesson bar.
- * [POS]: Lesson reading shell mounted by the lesson route layout; the course overview renders outside it.
+ * [INPUT]: Course and progress from progress/progress-provider, and module groups from lib/content/modules.
+ * [OUTPUT]: Shared course shell nav, the course-page continue link, and syllabus rows.
+ * [POS]: Client learning chrome for the course overview and every lesson; article content stays server rendered.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 'use client';
-import { Fragment, useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import { useTranslations } from 'next-intl';
-import * as Dialog from '@radix-ui/react-dialog';
-import { List, X, Check, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Check } from 'lucide-react';
+import { groupModules } from '@/lib/content/modules';
 import { useProgress, useLessonStates } from '../progress/progress-provider';
-import { ProgressSegments } from '../progress/progress-controls';
-import { groupModules, LessonStateIcon } from './syllabus';
-function CourseNavigation({ onNavigate }: { onNavigate?: () => void }) {
+function CourseNav({ onNavigate }: { onNavigate?: () => void }) {
   const ui = useTranslations('Ui');
   const learning = useTranslations('Learning');
-  const { course } = useProgress();
-  const { stateOf, summary, ready } = useLessonStates();
+  const { course, progress, ready } = useProgress();
+  const { stateOf, summary } = useLessonStates();
   const pathname = usePathname();
-  return <nav aria-label={ui('menu')} className="course-navigation">
-    <Link href={course.url} className="back-link" onClick={onNavigate}><ArrowLeft size={14} aria-hidden />{ui('overview')}</Link>
-    <div className="sidebar-course">
-      <Link href={course.url} className="sidebar-course-title" onClick={onNavigate}>{course.title}</Link>
-      <ProgressSegments />
-      <small>{ready ? learning('progressShort', { done: summary.done, total: summary.total }) : learning('loading')}</small>
+  const viewing = course.lessons.some((lesson) => lesson.url === pathname);
+  const doneCount = ready ? summary.done : 0;
+  return <nav aria-label={ui('menu')} className="course-navigation learn-nav">
+    <div className="learn-course-head">
+      <Link href={course.url} onClick={onNavigate}>{course.title}</Link>
+      <p className="learn-meter">
+        <span className="track" role="progressbar" aria-valuemin={0} aria-valuemax={summary.total || 1} aria-valuenow={doneCount} aria-label={learning('progress', { done: doneCount, total: summary.total })}>
+          <span className="fill" style={{ width: `${ready ? summary.percent : 0}%` }} />
+        </span>
+        <span className="count">{doneCount} / {summary.total}</span>
+      </p>
     </div>
-    {groupModules(course.lessons).map((group, index) => <Fragment key={group.module}>
-      <p className="module-label">{ui('moduleNumber', { number: index + 1 })} · {group.title}</p>
-      <ol>{group.lessons.map(({ lesson, number }) => {
-        const current = pathname === lesson.url;
-        const state = stateOf(lesson) === 'done' ? 'done' : current ? 'current' : 'todo';
-        return <li key={lesson.id}><Link href={lesson.url} onClick={onNavigate} className="nav-lesson" aria-current={current ? 'page' : undefined}>
-          <LessonStateIcon state={state} number={number} />
-          <span>{lesson.title}<small>{ui(lesson.type)} · {ui('minutes', { count: lesson.durationMinutes })}</small></span>
+    {groupModules(course.lessons).map((group, index) => <section key={group.module}>
+      <p className="learn-mod">{String(index + 1).padStart(2, '0')} · {group.title}</p>
+      <ol>{group.lessons.map(({ lesson, part }) => {
+        const done = ready && !!progress.completed[lesson.id];
+        const current = viewing ? pathname === lesson.url : stateOf(lesson) === 'current';
+        return <li key={lesson.id}><Link href={lesson.url} onClick={onNavigate} className={`learn-lesson${done ? ' is-done' : ''}${current ? ' is-current' : ''}`} aria-current={pathname === lesson.url ? 'page' : undefined}>
+          <span className="idx">{part}</span>
+          <span className="ttl">{lesson.title}</span>
+          {done && <Check className="mark" size={14} strokeWidth={1.6} aria-hidden />}
         </Link></li>;
       })}</ol>
-    </Fragment>)}
+    </section>)}
   </nav>;
 }
-function LessonBar({ onMenu }: { onMenu: () => void }) {
-  const ui = useTranslations('Ui');
-  const t = useTranslations('Learning');
-  const { course, progress, ready, complete } = useProgress();
-  const pathname = usePathname();
-  const index = course.lessons.findIndex((lesson) => lesson.url === pathname);
-  if (index < 0) return null;
-  const lesson = course.lessons[index];
-  const next = course.lessons[index + 1];
-  const done = !!progress.completed[lesson.id];
-  return <div className="lesson-bar">
-    <button type="button" className="bar-item" onClick={onMenu}><List size={18} aria-hidden />{ui('menu')}</button>
-    <button type="button" className={`button ${done ? 'done' : 'primary'}`} disabled={!ready} aria-pressed={done} onClick={() => complete(lesson.id, !done)}><Check size={17} aria-hidden />{t(done ? 'completed' : 'markDone')}</button>
-    <Link href={next?.url ?? course.url}><ArrowRight size={18} aria-hidden />{ui(next ? 'next' : 'overview')}</Link>
-  </div>;
-}
-export function ReadingLayout({ children }: { children: ReactNode }) {
-  const t = useTranslations('Ui');
+export function LearnShell({ children }: { children: ReactNode }) {
   const { course } = useProgress();
-  const [open, setOpen] = useState(false);
-  const tree = { name: course.title, children: course.lessons.map((lesson) => ({ type: 'page' as const, name: lesson.title, url: lesson.url })) };
-  return <DocsLayout tree={tree} nav={{ enabled: false }} sidebar={{ enabled: false }} tabs={false} i18n={false} themeSwitch={{ enabled: false }} searchToggle={{ enabled: false }} containerProps={{ className: 'reading-layout' }}>
-    <div className="reading-progress" aria-hidden />
-    <aside className="course-sidebar"><CourseNavigation /></aside>
-    <div className="mobile-course-bar"><Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger className="text-button"><List size={17} aria-hidden />{t('menu')}</Dialog.Trigger>
-      <Dialog.Portal><Dialog.Overlay className="dialog-overlay" /><Dialog.Content className="course-drawer" aria-describedby={undefined}>
-        <div className="drawer-heading"><Dialog.Title>{t('menu')}</Dialog.Title><Dialog.Close className="icon-button" aria-label={t('close')}><X size={20} /></Dialog.Close></div>
-        <CourseNavigation onNavigate={() => setOpen(false)} />
-      </Dialog.Content></Dialog.Portal>
-    </Dialog.Root><ProgressSegments /><noscript><details><summary>{t('menu')}</summary><CourseNavigation /></details></noscript></div>
-    {children}
-    <LessonBar onMenu={() => setOpen(true)} />
-  </DocsLayout>;
+  const { summary, ready } = useLessonStates();
+  const doneCount = ready ? summary.done : 0;
+  return <>
+    <details className="mobile-course-bar">
+      <summary><span>{course.title}</span><span className="count">{doneCount} / {summary.total}</span></summary>
+      <CourseNav />
+    </details>
+    <div className="learn-shell">
+      <aside className="learn-side"><CourseNav /></aside>
+      {children}
+    </div>
+  </>;
+}
+export function CourseContinue() {
+  const course = useTranslations('Course');
+  const learning = useTranslations('Learning');
+  const { summary, ready } = useLessonStates();
+  if (!summary.next) return null;
+  const action = ready ? summary.action : 'start';
+  const label = action === 'continue' ? course('continueNamed', { title: summary.next.title }) : action === 'review' ? learning('review') : course('startFirst');
+  return <Link className="home-cta learn-start" href={summary.next.url}>{label}<span aria-hidden> →</span></Link>;
+}
+export function CourseCatalog() {
+  const t = useTranslations('Course');
+  const ui = useTranslations('Ui');
+  const { course, progress, ready } = useProgress();
+  return <div className="learn-catalog">
+    <p className="learn-catalog-title">{t('catalog')}</p>
+    {groupModules(course.lessons).map((group, index) => <section key={group.module}>
+      <p className="learn-mod">{String(index + 1).padStart(2, '0')} · {group.title}</p>
+      {group.lessons.map(({ lesson, part }) => {
+        const done = ready && !!progress.completed[lesson.id];
+        const meta = `${done ? `${t('doneMark')} · ` : ''}${ui(lesson.type)} · ${ui('minutes', { count: lesson.durationMinutes })}`;
+        return <Link key={lesson.id} href={lesson.url} className={`learn-row${done ? ' is-done' : ''}`}>
+          <span className="idx">{part}</span><span className="ttl">{lesson.title}</span><span className="meta">{meta}</span>
+        </Link>;
+      })}
+    </section>)}
+  </div>;
 }

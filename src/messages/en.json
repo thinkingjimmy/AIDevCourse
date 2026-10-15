@@ -72,7 +72,18 @@
     "syllabus": "Your learning path",
     "aboutSite": "About this site",
     "pathTitle": "Learn in order, one loop per lesson",
-    "pathNote": "Completion marks are learning records, not grades."
+    "pathNote": "Completion marks are learning records, not grades.",
+    "startFirst": "Start the first lesson",
+    "continueNamed": "Continue: {title}",
+    "free": "Free",
+    "moduleCount": "{count, plural, one {# module} other {# modules}}",
+    "catalog": "Syllabus",
+    "onThisPage": "On this page",
+    "finishedPrompt": "Finished reading?",
+    "learn": "You'll learn",
+    "who": "Who it's for",
+    "before": "Before you start",
+    "doneMark": "Completed"
   },
   "Learning": {
     "loading": "Restoring learning records…",

@@ -72,7 +72,18 @@
     "syllabus": "Votre parcours",
     "aboutSite": "À propos de ce site",
     "pathTitle": "Dans l’ordre, une boucle par leçon",
-    "pathNote": "Les marques de fin sont un suivi, pas une note."
+    "pathNote": "Les marques de fin sont un suivi, pas une note.",
+    "startFirst": "Commencer la première leçon",
+    "continueNamed": "Continuer : {title}",
+    "free": "Gratuit",
+    "moduleCount": "{count, plural, one {# module} other {# modules}}",
+    "catalog": "Sommaire",
+    "onThisPage": "Sur cette page",
+    "finishedPrompt": "Lu ?",
+    "learn": "Vous apprendrez",
+    "who": "Pour qui",
+    "before": "Avant de commencer",
+    "doneMark": "Terminé"
   },
   "Learning": {
     "loading": "Restauration de la progression…",

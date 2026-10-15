@@ -1,7 +1,7 @@
 /**
  * [INPUT]: Locale, shared header and footer, and the active route.
- * [OUTPUT]: Default chrome on interior pages, and none on the homepage shell.
- * [POS]: Keeps the framed homepage from mounting a second header, search shortcut, or footer.
+ * [OUTPUT]: Default chrome on interior pages, and none on the homepage or course shell.
+ * [POS]: Keeps the zinc frames from mounting a second header, search shortcut, or footer.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 'use client';
@@ -13,5 +13,7 @@ export function SiteChrome({ locale, header, footer, children }: {
 }) {
   const pathname = usePathname();
   const home = pathname === `/${locale}` || pathname === `/${locale}/`;
-  return <>{home ? null : header}{children}{home ? null : footer}</>;
+  const learning = pathname.startsWith(`/${locale}/courses/`);
+  const bare = home || learning;
+  return <>{bare ? null : header}{children}{bare ? null : footer}</>;
 }

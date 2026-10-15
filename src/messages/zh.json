@@ -72,7 +72,18 @@
     "syllabus": "学习路径",
     "aboutSite": "关于这个网站",
     "pathTitle": "按顺序学，每课一个闭环",
-    "pathNote": "完成标记只是学习记录，不是考试成绩。"
+    "pathNote": "完成标记只是学习记录，不是考试成绩。",
+    "startFirst": "开始第一课",
+    "continueNamed": "继续：{title}",
+    "free": "免费",
+    "moduleCount": "{count} 个模块",
+    "catalog": "课程目录",
+    "onThisPage": "本页内容",
+    "finishedPrompt": "读完了？",
+    "learn": "你会学到",
+    "who": "适合谁",
+    "before": "开始前",
+    "doneMark": "已完成"
   },
   "Learning": {
     "loading": "正在恢复学习记录…",

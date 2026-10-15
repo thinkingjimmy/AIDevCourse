@@ -4,13 +4,13 @@
 
 course-card.tsx: Course card with facts, a progress-aware continue action, and the compact lesson path.
 
-course-layout.tsx: ReadingLayout: Fumadocs lesson shell with course sidebar, mobile drawer, reading progress line, and mobile lesson bar.
+course-layout.tsx: Shared course shell nav, continue link, and syllabus rows inside the zinc frame.
 
 empty-courses.tsx: Empty course library, an about link, and valid alternate-language entries.
 
-lesson-navigation.tsx: Previous/next links with explicit first/last boundaries; the next lesson is the prominent card.
+lesson-navigation.tsx: Previous and next cards; the first lesson's previous card returns to the course introduction.
 
-syllabus.tsx: groupModules, LessonStateIcon, and the compact/full Syllabus list with restored lesson states.
+syllabus.tsx: LessonStateIcon and the compact/full Syllabus list with restored lesson states.
 
 translation-notice.tsx: Localized stale-translation notice with a valid original link.
 

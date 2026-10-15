@@ -28,7 +28,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   setRequestLocale(lang);
   const messages = await getMessages({ locale: lang });
   const ui = await getTranslations({ locale: lang, namespace: 'Ui' });
-  const clientMessages = Object.fromEntries(['Ui', 'Language', 'Learning', 'Search'].map((namespace) => [namespace, messages[namespace]]));
+  const clientMessages = Object.fromEntries(['Ui', 'Language', 'Learning', 'Search', 'Course'].map((namespace) => [namespace, messages[namespace]]));
   return <html lang={htmlLanguages[lang]} className={`light ${serif.variable} ${mono.variable}`}><body>
     <Providers locale={lang} messages={clientMessages} translations={fumadocsMessages(messages.Ui as Record<string, string>)}>
       <a href="#main-content" className="skip-link">{ui('skip')}</a>
