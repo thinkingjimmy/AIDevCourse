@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Fumadocs layout slots, shared tokens, and state primitives from globals.css.
- * [OUTPUT]: 1024/1280 lesson layouts, course sidebar, bounded prose, completion card, and mobile lesson bar.
+ * [OUTPUT]: 1024/1280 lesson layouts, course sidebar, bounded prose, completion card, and the lesson wiki (desktop aside, mobile details).
  * [POS]: Minimal documented overrides around the reused document renderer; lesson routes only.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -129,9 +129,10 @@ html:lang(zh-Hans) .prose, html:lang(ja) .prose { line-height: 1.95; }
 
 /* Lesson wiki: full-bleed columns, no site header, no 64rem rails. */
 .wiki { display: grid; grid-template-columns: 280px minmax(0, 1fr) 220px; align-items: start; min-height: 100vh; background: #fff; color: #09090b; }
-.wiki-side, .wiki-side.mobile-course-bar { display: block; position: static; grid-area: auto; grid-column: 1; grid-row: 1; min-height: 100vh; padding: 0; gap: 0; background: #fafafa; border-right: 1px solid #e4e4e7; border-bottom: 0; top: auto; }
+.wiki-side-desktop { display: block; grid-column: 1; grid-row: 1; align-self: stretch; min-height: 100vh; background: #fafafa; border-right: 1px solid #e4e4e7; }
+.wiki-side-mobile.mobile-course-bar { display: none; grid-area: auto; }
 .wiki-side-toggle { display: none; }
-.wiki-side-body { display: flex; flex-direction: column; gap: 14px; max-height: 100vh; padding: 20px 14px 16px; position: sticky; top: 0; }
+.wiki-side-body { display: flex; flex-direction: column; gap: 14px; max-height: 100vh; overflow: auto; padding: 20px 14px 16px; position: sticky; top: 0; }
 .wiki-logo { color: inherit; font-size: 15px; }
 .wiki-course { color: inherit; font-size: 16px; font-weight: 600; line-height: 1.4; text-decoration: none; }
 .wiki-course:hover { color: var(--ink); }
@@ -175,18 +176,15 @@ html:lang(zh-Hans) .prose, html:lang(ja) .prose { line-height: 1.95; }
 .wiki-toc b { display: block; margin: 0 0 8px; color: var(--ink); font-size: 12px; font-weight: 600; }
 .wiki-toc a { display: block; padding: 4px 0; color: var(--muted); text-decoration: none; }
 .wiki-toc a:hover { color: var(--ink); }
-@media (min-width: 961px) {
-  .wiki-side > .wiki-side-body { display: flex !important; }
-  .wiki-side > .wiki-side-toggle { display: none !important; }
-}
 @media (max-width: 1100px) {
   .wiki { grid-template-columns: 280px minmax(0, 1fr); }
   .wiki-toc { display: none; }
 }
 @media (max-width: 960px) {
   .wiki { display: block; }
-  .wiki-side.mobile-course-bar { display: block; position: sticky; top: 0; z-index: 30; min-height: 0; border-right: 0; border-bottom: 1px solid #e4e4e7; background: #fafafa; }
-  .wiki-side-toggle { display: flex; align-items: center; min-height: 48px; padding: 0 16px; color: var(--ink); font-size: 14px; font-weight: 500; list-style: none; }
+  .wiki-side-desktop { display: none; }
+  .wiki-side-mobile.mobile-course-bar { display: block; position: sticky; top: 0; z-index: 30; min-height: 0; padding: 0; gap: 0; border: 0; border-bottom: 1px solid #e4e4e7; background: #fafafa; grid-area: auto; }
+  .wiki-side-toggle { display: flex; align-items: center; min-height: 48px; padding: 0 16px; color: var(--ink); font-size: 14px; font-weight: 500; list-style: none; cursor: pointer; }
   .wiki-side-toggle::-webkit-details-marker { display: none; }
   .wiki-side-body { position: static; max-height: 70vh; overflow: auto; border-top: 1px solid #e4e4e7; }
   .wiki .learn-main { padding: 28px 20px 72px; }

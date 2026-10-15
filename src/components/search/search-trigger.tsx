@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Current locale and the public content build version.
- * [OUTPUT]: Accessible search entry and Cmd/Ctrl+K shortcut, with a compact ⌘ K mark for the header.
+ * [OUTPUT]: Accessible search entry and Cmd/Ctrl+K shortcut, with a compact ⌘ K mark for the header. A second mounted trigger ignores a shortcut the first already handled.
  * [POS]: Lightweight header control; the search engine loads only after opening.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -18,7 +18,8 @@ export function SearchTrigger({ locale, version, lessons, compact = false }: { l
   const ref = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const handle = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k' && !event.isComposing) { event.preventDefault(); setOpen((value) => !value); }
+      if (event.defaultPrevented || !((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') || event.isComposing) return;
+      event.preventDefault(); setOpen((value) => !value);
     };
     window.addEventListener('keydown', handle);
     return () => window.removeEventListener('keydown', handle);

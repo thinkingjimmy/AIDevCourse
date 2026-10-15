@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Course and progress from progress/progress-provider, plus search and language data for the sidebar footer.
- * [OUTPUT]: Full-bleed wiki shell: collapsible module tree, progress, and article slot. No search field in the tree.
+ * [OUTPUT]: Full-bleed wiki shell. Desktop left nav is an always-open aside; mobile ≤960px uses a closed details toggle. Both share one side body. No search field in the tree.
  * [POS]: Client lesson navigation; article content stays server rendered. Course overviews do not mount this.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -44,7 +44,7 @@ function ModuleTree() {
     })}
   </nav>;
 }
-function WikiSide({ locale, version, lessons, translations }: {
+function SideBody({ locale, version, lessons, translations }: {
   locale: Locale; version: string; lessons: Record<string, SearchLessonMeta>; translations: Catalog['translations'];
 }) {
   const ui = useTranslations('Ui');
@@ -52,25 +52,32 @@ function WikiSide({ locale, version, lessons, translations }: {
   const { course } = useProgress();
   const { summary, ready } = useLessonStates();
   const done = ready ? summary.done : 0;
-  return <details className="wiki-side mobile-course-bar" onKeyDown={(event) => { if (event.key === 'Escape') event.currentTarget.open = false; }}>
-    <summary className="wiki-side-toggle">{ui('menu')}</summary>
-    <div className="wiki-side-body">
-      <Link href={`/${locale}`} className="home-logo wiki-logo" aria-label={`${site.name} · ${ui('home')}`}><span className="home-mark" aria-hidden="true" /><span>aidevcourse</span></Link>
-      <Link href={course.url} className="wiki-course">{course.title}</Link>
-      <div className="wiki-progress">
-        <p>{courseCopy('progressLabel', { done, total: summary.total })}</p>
-        <div className="wiki-meter" aria-hidden="true"><span style={{ width: `${ready ? summary.percent : 0}%` }} /></div>
-      </div>
-      <ModuleTree />
-      <div className="wiki-tools">
-        <SearchTrigger locale={locale} version={version} lessons={lessons} compact />
-        <LanguageSwitcher locale={locale} translations={translations} compact />
-      </div>
+  return <div className="wiki-side-body">
+    <Link href={`/${locale}`} className="home-logo wiki-logo" aria-label={`${site.name} · ${ui('home')}`}><span className="home-mark" aria-hidden="true" /><span>aidevcourse</span></Link>
+    <Link href={course.url} className="wiki-course">{course.title}</Link>
+    <div className="wiki-progress">
+      <p>{courseCopy('progressLabel', { done, total: summary.total })}</p>
+      <div className="wiki-meter" aria-hidden="true"><span style={{ width: `${ready ? summary.percent : 0}%` }} /></div>
     </div>
-  </details>;
+    <ModuleTree />
+    <div className="wiki-tools">
+      <SearchTrigger locale={locale} version={version} lessons={lessons} compact />
+      <LanguageSwitcher locale={locale} translations={translations} compact />
+    </div>
+  </div>;
 }
 export function LearnShell({ locale, version, lessons, translations, children }: {
   locale: Locale; version: string; lessons: Record<string, SearchLessonMeta>; translations: Catalog['translations']; children: ReactNode;
 }) {
-  return <div className="wiki"><WikiSide locale={locale} version={version} lessons={lessons} translations={translations} />{children}</div>;
+  const ui = useTranslations('Ui');
+  const side = { locale, version, lessons, translations };
+  return <div className="wiki">
+    <aside className="wiki-side-desktop"><SideBody {...side} /></aside>
+    <details className="wiki-side-mobile mobile-course-bar" onKeyDown={(event) => { if (event.key === 'Escape') event.currentTarget.open = false; }}>
+      {/* display:flex on summary drops its implicit button role; the lesson e2e clicks that button. */}
+      <summary className="wiki-side-toggle" role="button">{ui('menu')}</summary>
+      <SideBody {...side} />
+    </details>
+    {children}
+  </div>;
 }

@@ -6,7 +6,7 @@ globals.css: One light-only token system plus shared primitives: buttons, chips,
 
 course.css: Course overview inside the homepage frame, plus the older lesson column rules the wiki overrides.
 
-reading.css: Shared prose, and the full-bleed lesson wiki (280px sidebar, article, 220px on-this-page list).
+reading.css: Shared prose, and the full-bleed lesson wiki (always-visible 280px aside, article, 220px on-this-page list; ≤960px a closed details toggle).
 
 surfaces.css: Site shell (full-height rails, sticky header, footer), the zinc homepage and course frames (viewport-centered so a scrollbar does not shift them), the exploded-Mac hero, about, 404, dialogs, and search.
 
