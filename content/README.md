@@ -4,7 +4,7 @@
 
 The only real course-content root. Each locale contains course folders, then `index.mdx`, lesson modules, and explicit `meta.json` ordering. A file listed there is public. See the [authoring guide](../docs/authoring.md).
 
-- [en/](./en/README.md): AI 101 in English. Finished lessons are translated in full; the rest are drafts.
+- [en/](./en/README.md): AI 101 in English. Finished lessons are translated in full; the rest are summaries.
 - [es/](./es/README.md): AI 101 titles and summaries in Spanish.
 - [fr/](./fr/README.md): AI 101 titles and summaries in French.
 - [ja/](./ja/README.md): AI 101 titles and summaries in Japanese.

@@ -37,7 +37,7 @@ PRD 的 M6 内容审校与公开发布、I-12 人工语言审校、M5-08 真机�
 | `tsconfig.json` | 根目录提供编辑器和 TypeScript 默认可发现的入口 |
 | `package.json` | 简单 PostCSS 插件配置集中于 `postcss` 字段，减少一个根配置文件 |
 
-Next.js 支持从 [package.json 的 postcss 字段](https://nextjs.org/docs/pages/guides/post-css) 读取插件配置；当前锁定版本的 Turbopack 生产构建已实际通过。根目录保留 8 个维护文件，各目录 README 与源文件契约同步调整；内容稳定 ID、公开 URL 和学习记录协议没有变化。课程不再使用草稿过滤。
+Next.js 支持从 [package.json 的 postcss 字段](https://nextjs.org/docs/pages/guides/post-css) 读取插件配置；当前锁定版本的 Turbopack 生产构建已实际通过。根目录保留 8 个维护文件，各目录 README 与源文件契约同步调整；内容稳定 ID、公开 URL 和学习记录协议没有变化。列入目录的课时都按普通课时公开。
 
 2026-09-23，整理后重新执行 `pnpm check`，38 个单元测试通过；`pnpm build`、`CONTENT_TEST=1 pnpm build` 均通过。三浏览器正式公开矩阵 27 项通过、隔离五语矩阵 69 项通过，共 96 项；仅跳过另一种构建专属测试。课程、样例和排序共 42 个文件与整理前逐字一致，文档本地链接、目录成员清单、L2/L3 契约、每目录文件数和 `git diff --check` 均通过。以下干净安装及性能数据属于 v0.4 的原始验收证据；此次整理未重测 Lighthouse。
 
@@ -103,6 +103,6 @@ GitHub Actions 文件已完成；以上记录均为实际本机执行，不能�
 
 ## 待发布前完成
 
-按 PRD 保留未勾选的发布任务。作者仍需复核 AI 入门里已经写完的课文、草稿和摘要译文，检查五语 UI，完成一次文档写作流程演练，确认品牌与域名；之后通过远程 CI 和 Vercel Preview，执行真机与正式站冒烟。
+按 PRD 保留未勾选的发布任务。作者仍需复核 AI 入门里已经写完的课文和各语言摘要，检查五语 UI，完成一次文档写作流程演练，确认品牌与域名；之后通过远程 CI 和 Vercel Preview，执行真机与正式站冒烟。
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

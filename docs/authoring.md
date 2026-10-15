@@ -39,7 +39,7 @@ Read the diff and verify the actual behavior.
 
 组件只允许静态 `title` / `type` 字符串。禁止 import、JavaScript 表达式、原始 HTML、iframe、脚本和未知组件；代码围栏里的示例不会执行。注册入口为 `src/components/mdx/components.tsx`，不要为了单篇文章绕过校验器。
 
-本地图片放到 `public/images/`，正文使用有意义的本语言 alt。编译器从图片读取宽高。这里的素材任何人都能访问，不能存敏感草稿资源。
+本地图片放到 `public/images/`，正文使用有意义的本语言 alt。编译器从图片读取宽高。这里的素材任何人都能访问，不能存放密钥或未公开的敏感素材。
 
 ```md
 ![The steps from a goal to a verified change](/images/courses/change-cycle.svg)
@@ -91,6 +91,6 @@ pnpm build
 
 选择题、视频播放器、交互练习、答案展开和提示词对比继续延期。先用文字写清文章目标，再在 PRD 的 T 系列记录具体需求、真实材料、预期行为和验收条件；不要提前创建空组件。
 
-公开课程是 `content/zh/ai-101`（AI 入门）：六个模块、31 篇课时。其中六篇参考课文和两篇并入的旧课有全文；其余课时是带「草稿」标记的摘要，目录和路由仍然公开。英文对应课文有全文或草稿，日文、法文、西班牙文目前是标题和摘要。旧地址在 `config/redirects.json`：`/zh/courses/ai-coding` 以及原来的三篇课时，分别跳到 `ai-101` 的课程页、`safety/first-workflow`、`context/useful-context` 和 `checking/verify-results`。工程 fixture 仍使用 `tests/fixtures` 里的 `ai-coding`，只用于测试。
+公开课程是 `content/zh/ai-101`（AI 入门）：六个模块、31 篇课时，列入目录的课都按普通课时公开。其中六篇参考课文和两篇并入的旧课有全文；其余课时目前是两句摘要。英文对应课文有全文或摘要，日文、法文、西班牙文目前是标题和摘要。旧地址在 `config/redirects.json`：`/zh/courses/ai-coding` 以及原来的三篇课时，分别跳到 `ai-101` 的课程页、`safety/first-workflow`、`context/useful-context` 和 `checking/verify-results`。工程 fixture 仍使用 `tests/fixtures` 里的 `ai-coding`，只用于测试。
 
 [PROTOCOL]: Update this header when making changes, then check README.md.
