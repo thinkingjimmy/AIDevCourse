@@ -82,7 +82,8 @@
     "who": "Who it's for",
     "before": "Before you start",
     "doneMark": "Completed",
-    "contents": "Contents"
+    "contents": "Contents",
+    "progressLabel": "Progress {done} / {total}"
   },
   "Learning": {
     "loading": "Restoring learning records…",

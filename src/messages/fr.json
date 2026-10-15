@@ -82,7 +82,8 @@
     "who": "Pour qui",
     "before": "Avant de commencer",
     "doneMark": "Terminé",
-    "contents": "Plan"
+    "contents": "Plan",
+    "progressLabel": "Progression {done} / {total}"
   },
   "Learning": {
     "loading": "Restauration de la progression…",

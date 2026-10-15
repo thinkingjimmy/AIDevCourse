@@ -115,8 +115,9 @@ for (const locale of locales) {
     const report = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(report.violations).toEqual([]);
     await page.getByRole('button', { name: dictionary(locale).Ui.menu, exact: true }).click();
-    await expect(page.getByRole('dialog')).toBeVisible();
-    await page.keyboard.press('Escape'); await expect(page.getByRole('dialog')).not.toBeVisible();
+    await expect(page.locator('.mobile-course-bar .course-navigation')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.mobile-course-bar')).not.toHaveAttribute('open');
   });
 }
 test('search retries a failed index request and clears old-language results', async ({ page }) => {

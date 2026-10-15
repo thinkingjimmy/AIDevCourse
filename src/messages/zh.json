@@ -82,7 +82,8 @@
     "who": "适合谁",
     "before": "开始前",
     "doneMark": "已完成",
-    "contents": "目录"
+    "contents": "目录",
+    "progressLabel": "进度 {done} / {total}"
   },
   "Learning": {
     "loading": "正在恢复学习记录…",

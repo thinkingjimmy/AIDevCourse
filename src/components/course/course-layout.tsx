@@ -1,64 +1,76 @@
 /**
- * [INPUT]: Course and progress from progress/progress-provider, and module groups from lib/content/modules.
- * [OUTPUT]: Lesson course index (current module only) and the compact contents strip.
+ * [INPUT]: Course and progress from progress/progress-provider, plus search and language data for the sidebar footer.
+ * [OUTPUT]: Full-bleed wiki shell: collapsible module tree, progress, and article slot. No search field in the tree.
  * [POS]: Client lesson navigation; article content stays server rendered. Course overviews do not mount this.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 'use client';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { courseLabel, groupModules } from '@/lib/content/modules';
+import { groupModules } from '@/lib/content/modules';
+import type { Locale } from '@/lib/i18n/config';
+import type { Catalog } from '@/lib/content/types';
+import { site } from '@/lib/site-config';
+import { LanguageSwitcher } from '../layout/language-switcher';
+import { SearchTrigger } from '../search/search-trigger';
+import type { SearchLessonMeta } from '../search/lessons';
 import { useProgress, useLessonStates } from '../progress/progress-provider';
-function CourseNav({ onNavigate }: { onNavigate?: () => void }) {
+function ModuleTree() {
   const ui = useTranslations('Ui');
   const { course } = useProgress();
   const pathname = usePathname();
-  return <nav aria-label={ui('menu')} className="course-navigation learn-nav learn-index">
-    {groupModules(course.lessons).map((group, index) => {
-      const num = String(index + 1).padStart(2, '0');
-      const open = group.lessons.some(({ lesson }) => lesson.url === pathname);
-      const first = group.lessons[0]?.lesson;
-      if (!open) {
-        return first ? <Link key={group.module} href={first.url} onClick={onNavigate} className="learn-modline">{group.title}<span className="num"> {num}</span></Link> : null;
-      }
-      return <div key={group.module} className="is-open">
-        <p className="learn-modline">{group.title}<span className="num"> {num}</span></p>
+  const groups = groupModules(course.lessons);
+  const currentModule = groups.find((group) => group.lessons.some(({ lesson }) => lesson.url === pathname))?.module;
+  const [open, setOpen] = useState<Record<string, boolean>>({});
+  return <nav aria-label={ui('menu')} className="course-navigation wiki-tree">
+    {groups.map((group, index) => {
+      const expanded = open[group.module] ?? group.module === currentModule;
+      return <details key={group.module} className="wiki-module" open={expanded} onToggle={(event) => {
+        const next = event.currentTarget.open;
+        setOpen((value) => value[group.module] === next ? value : { ...value, [group.module]: next });
+      }}>
+        <summary>
+          <span className="wiki-chevron" aria-hidden="true" />
+          <span className="wiki-mod-num">{String(index + 1).padStart(2, '0')}</span>
+          <span className="wiki-mod-title">{group.title}</span>
+        </summary>
         <ol>{group.lessons.map(({ lesson }) => {
           const current = pathname === lesson.url;
-          return <li key={lesson.id}><Link href={lesson.url} onClick={onNavigate} className={`learn-lesson${current ? ' is-current' : ''}`} aria-current={current ? 'page' : undefined}>{lesson.title}{current ? ' —' : ''}</Link></li>;
+          return <li key={lesson.id}><Link href={lesson.url} aria-current={current ? 'page' : undefined} className={current ? 'is-current' : undefined}>{lesson.title}</Link></li>;
         })}</ol>
-      </div>;
+      </details>;
     })}
   </nav>;
 }
-function LessonStrip() {
-  const t = useTranslations('Course');
+function WikiSide({ locale, version, lessons, translations }: {
+  locale: Locale; version: string; lessons: Record<string, SearchLessonMeta>; translations: Catalog['translations'];
+}) {
   const ui = useTranslations('Ui');
+  const courseCopy = useTranslations('Course');
   const { course } = useProgress();
   const { summary, ready } = useLessonStates();
-  const pathname = usePathname();
-  const index = course.lessons.findIndex((lesson) => lesson.url === pathname);
-  const lesson = course.lessons[index];
-  const doneCount = ready ? summary.done : 0;
-  return <div className="learn-strip mobile-course-bar">
-    <p className="learn-strip-crumb">{lesson
-      ? <>{courseLabel(course.slug)}<span aria-hidden> / </span><b>{ui('lessonNumber', { number: index + 1 })} · {lesson.title}</b></>
-      : <b>{course.title}</b>}</p>
-    <div className="learn-strip-tools">
-      <details>
-        <summary>{t('contents')}<span aria-hidden> ▾</span></summary>
-        <CourseNav />
-      </details>
-      <span className="count">{doneCount} / {summary.total}</span>
+  const done = ready ? summary.done : 0;
+  return <details className="wiki-side mobile-course-bar" onKeyDown={(event) => { if (event.key === 'Escape') event.currentTarget.open = false; }}>
+    <summary className="wiki-side-toggle">{ui('menu')}</summary>
+    <div className="wiki-side-body">
+      <Link href={`/${locale}`} className="home-logo wiki-logo" aria-label={`${site.name} · ${ui('home')}`}><span className="home-mark" aria-hidden="true" /><span>aidevcourse</span></Link>
+      <Link href={course.url} className="wiki-course">{course.title}</Link>
+      <div className="wiki-progress">
+        <p>{courseCopy('progressLabel', { done, total: summary.total })}</p>
+        <div className="wiki-meter" aria-hidden="true"><span style={{ width: `${ready ? summary.percent : 0}%` }} /></div>
+      </div>
+      <ModuleTree />
+      <div className="wiki-tools">
+        <SearchTrigger locale={locale} version={version} lessons={lessons} compact />
+        <LanguageSwitcher locale={locale} translations={translations} compact />
+      </div>
     </div>
-  </div>;
+  </details>;
 }
-export function LearnShell({ children }: { children: ReactNode }) {
-  return <>
-    <LessonStrip />
-    <aside className="learn-out learn-lnav"><div className="learn-out-in"><CourseNav /></div></aside>
-    {children}
-  </>;
+export function LearnShell({ locale, version, lessons, translations, children }: {
+  locale: Locale; version: string; lessons: Record<string, SearchLessonMeta>; translations: Catalog['translations']; children: ReactNode;
+}) {
+  return <div className="wiki"><WikiSide locale={locale} version={version} lessons={lessons} translations={translations} />{children}</div>;
 }

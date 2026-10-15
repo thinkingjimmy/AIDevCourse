@@ -82,7 +82,8 @@
     "who": "Para quién",
     "before": "Antes de empezar",
     "doneMark": "Completado",
-    "contents": "Índice"
+    "contents": "Índice",
+    "progressLabel": "Progreso {done} / {total}"
   },
   "Learning": {
     "loading": "Restaurando el progreso…",

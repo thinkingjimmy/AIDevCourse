@@ -82,7 +82,8 @@
     "who": "対象",
     "before": "始める前に",
     "doneMark": "完了",
-    "contents": "目次"
+    "contents": "目次",
+    "progressLabel": "進捗 {done} / {total}"
   },
   "Learning": {
     "loading": "学習記録を復元中…",

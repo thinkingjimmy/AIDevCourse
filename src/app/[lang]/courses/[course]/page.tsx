@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Public course introduction, module groups, and the exploded-chip figure.
- * [OUTPUT]: Course overview: homepage-style hero (title, description, first-lesson action, and stats), a full-bleed rule, then a two-column module syllabus. No sidebar.
+ * [OUTPUT]: Course overview: homepage-style hero, a full-bleed rule, then a two-column module syllabus. Every lesson link opens in a new tab.
  * [POS]: Course overview inside the shared learning shell; the introduction never counts as a lesson.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -28,7 +28,7 @@ export default async function CoursePage({ params }: Props) {
   const first = course.lessons[0];
   const document = getCatalog().documents.find((doc) => doc.url === course.url);
   const stats = [t('moduleCount', { count: groups.length }), ui('lessonCount', { count: course.lessons.length }), ui('minutes', { count: course.durationMinutes })].join(' · ');
-  return <main id="main-content" className="course-overview" tabIndex={-1}>
+  return <div className="learn-frame"><main id="main-content" className="course-overview" tabIndex={-1}>
     <section className="home-hero-wrap">
       <div className="home-hero">
         <div className="home-copy">
@@ -42,7 +42,7 @@ export default async function CoursePage({ params }: Props) {
           <h1>{course.title}</h1>
           <p className="home-sub">{course.description}</p>
           {first && <div className="home-ctas">
-            <Link className="home-cta" href={first.url}>{t('startFirst')}<span aria-hidden> →</span></Link>
+            <Link className="home-cta" href={first.url} target="_blank" rel="noopener">{t('startFirst')}<span aria-hidden> →</span></Link>
             <p className="course-stats">{stats}</p>
           </div>}
           {document && <TranslationNotice document={document} sourceLocale={course.sourceLocale} />}
@@ -57,7 +57,7 @@ export default async function CoursePage({ params }: Props) {
         {groups.map((group, index) => <section key={group.module} className="course-module">
           <h2><span className="mono">{String(index + 1).padStart(2, '0')}</span>{group.title}</h2>
           <ol>{group.lessons.map(({ lesson, part }) => <li key={lesson.id}>
-            <Link href={lesson.url}>
+            <Link href={lesson.url} target="_blank" rel="noopener">
               <span className="idx">{part}</span>
               <span className="ttl">{lesson.title}</span>
               <span className="mins">{ui('minutes', { count: lesson.durationMinutes })}</span>
@@ -66,5 +66,5 @@ export default async function CoursePage({ params }: Props) {
         </section>)}
       </div>
     </section>
-  </main>;
+  </main></div>;
 }

@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Ordered current-language lessons and the active stable lesson ID.
- * [OUTPUT]: Previous and next cards; the first lesson's previous card returns to the course introduction.
+ * [OUTPUT]: Previous and next links in one row; the first lesson's previous link returns to the course introduction.
  * [POS]: Server-rendered lesson footer, independent of completion actions.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */

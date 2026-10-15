@@ -12,6 +12,6 @@ missing-page.tsx: Two-column unavailable page shared by locale and root 404 docu
 
 providers.tsx: Shared light-only UI providers.
 
-site-frame.tsx: Zinc frame, sticky header, and footer. Course and lesson routes keep the header and skip the footer.
+site-frame.tsx: Zinc frame, sticky header, and footer. Course overviews keep the header and skip the footer. Lesson routes render without this frame.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

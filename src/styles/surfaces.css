@@ -9,7 +9,7 @@
 body:has(.site-main)::before { content: ''; position: fixed; inset: 0 auto; left: 50%; width: var(--column); translate: -50% 0; border-inline: 1px solid var(--line); pointer-events: none; z-index: 1; }
 body:has(.site-main) :is(.header-inner, .footer-inner) { border-inline: 1px solid var(--line); }
 /* Homepage uses the locked zinc frame instead of the paper rails. */
-body:has(.home-shell), body:has(.learn-page) {
+body:has(.home-shell), body:has(.learn-page), body:has(.wiki) {
   background: #fff; color: #09090b;
   --paper: #fff; --sheet: #fff; --surface: #fafafa; --hover: #f4f4f5;
   --ink: #09090b; --body: #09090b; --strong: #18181b; --muted: #71717a; --faint: #a1a1aa;

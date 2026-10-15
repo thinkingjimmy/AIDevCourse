@@ -8,11 +8,11 @@ chip-explode-markup.ts: Inline SVG for that animation, generated from the anatom
 
 chip-explode.module.css: Light grayscale kit styles, scoped to the course figure, matching the homepage Mac.
 
-course-layout.tsx: Lesson-only course index (current module expanded, text toward the frame) and the compact contents strip.
+course-layout.tsx: Full-bleed lesson wiki. Left sidebar holds the logo, course title, progress, and collapsible modules. Search is a footer button, not a field in the tree.
 
 empty-courses.tsx: Empty course library, an about link, and links to courses published in other languages.
 
-lesson-navigation.tsx: Previous and next cards; the first lesson's previous card returns to the course introduction.
+lesson-navigation.tsx: Previous and next row under a top border; the first lesson's previous link returns to the course introduction.
 
 translation-notice.tsx: Localized stale-translation notice with a valid original link.
 

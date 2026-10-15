@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Language/course parameters and the shared progress context.
- * [OUTPUT]: Centered content frame and progress context for course routes. The zinc header lives on the locale layout.
+ * [OUTPUT]: Centered content frame and progress context for the course overview. Lesson routes opt out of the site header.
  * [POS]: Runtime publication boundary for the course overview and all lesson routes.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -13,5 +13,5 @@ import { ProgressProvider } from '@/components/progress/progress-provider';
 export default async function Layout({ children, params }: { children: ReactNode; params: Promise<{ lang: string; course: string }> }) {
   const { lang, course: slug } = await params; if (!isLocale(lang)) notFound(); setRequestLocale(lang);
   const course = getCourse(lang, slug); if (!course) notFound();
-  return <ProgressProvider course={course}><div className="learn-frame">{children}</div></ProgressProvider>;
+  return <ProgressProvider course={course}>{children}</ProgressProvider>;
 }
