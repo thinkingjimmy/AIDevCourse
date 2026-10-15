@@ -1,7 +1,7 @@
 /**
  * [INPUT]: Course and progress from progress/progress-provider, and module groups from lib/content/modules.
- * [OUTPUT]: Outside course nav, the narrow contents strip, the continue link, and syllabus rows.
- * [POS]: Client learning chrome for the course overview and every lesson; article content stays server rendered.
+ * [OUTPUT]: Lesson course nav and contents strip, plus the course continue link and syllabus rows.
+ * [POS]: Client course controls and lesson-only navigation; article content stays server rendered.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 'use client';

@@ -4,8 +4,8 @@
 
 [...lesson]/: Nested module; see [[...lesson]/README.md](./[...lesson]/README.md).
 
-layout.tsx: Homepage frame around the main column; the course nav sits outside the left rail.
+layout.tsx: Shared header, centered content frame, and progress context; navigation belongs to lesson routes.
 
-page.tsx: Course overview inside that shell: breadcrumb, facts, syllabus rows, then the introduction.
+page.tsx: Course overview with breadcrumb, facts, syllabus rows, and introduction; no sidebar or top contents strip.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

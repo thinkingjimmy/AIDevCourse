@@ -4,7 +4,7 @@
 
 course-card.tsx: Course card with facts, a progress-aware continue action, and the compact lesson path.
 
-course-layout.tsx: Course nav and lesson TOC outside the frame, plus the narrow contents strip, continue link, and syllabus rows.
+course-layout.tsx: Lesson-only course nav and compact contents strip, plus the course overview continue link and syllabus rows.
 
 empty-courses.tsx: Empty course library, an about link, and valid alternate-language entries.
 
