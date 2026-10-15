@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Public course introduction, module groups, and the exploded-chip figure.
- * [OUTPUT]: Course overview: homepage-style hero (goals and the first-lesson action), a full-bleed rule, then a two-column module syllabus. No sidebar.
+ * [OUTPUT]: Course overview: homepage-style hero (title, description, first-lesson action, and stats), a full-bleed rule, then a two-column module syllabus. No sidebar.
  * [POS]: Course overview inside the shared learning shell; the introduction never counts as a lesson.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -43,8 +43,6 @@ export default async function CoursePage({ params }: Props) {
           </p>
           <h1>{course.title}</h1>
           <p className="home-sub">{course.description}</p>
-          <p className="course-learn">{t('learn')}</p>
-          <ul className="course-goals">{course.goals.map((goal) => <li key={goal}><span aria-hidden>✓</span><span>{goal}</span></li>)}</ul>
           {first && <div className="home-ctas">
             <Link className="home-cta" href={first.url}>{t('startFirst')}<span aria-hidden> →</span></Link>
             <p className="course-stats">{stats}</p>
