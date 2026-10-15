@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Tailwind v4, Fumadocs typography, next/font variables, and sibling style layers.
- * [OUTPUT]: One light-only token system, shared primitives (buttons, chips, lesson states, segments).
+ * [OUTPUT]: One light-only token system, shared primitives (buttons, chips, lesson states, segments), and anchor clearance for the sticky header.
  * [POS]: Global visual contract; all languages share the same design tokens.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -49,8 +49,9 @@
   --font-mono: var(--font-plex-mono), 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
 }
 * { box-sizing: border-box; }
-html { scroll-padding-top: calc(var(--header-height) + 100px); }
-body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--font-sans); font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+html { scroll-padding-top: 0; }
+body { margin: 0; overflow-x: clip; color: var(--ink); background: var(--paper); font-family: var(--font-sans); font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+:where(h1, h2, h3, h4, [id]) { scroll-margin-top: var(--header-height); }
 html:lang(zh-Hans) { --font-sans: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
 html:lang(ja) {
   --font-sans: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;

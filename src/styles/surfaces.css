@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Shared paper, ink, column, and gutter tokens from globals.css.
- * [OUTPUT]: Site shell (rails, header, footer), the zinc homepage and course frames (viewport-centered rails, 300px exploded-Mac hero), library, about, dialogs, and search.
+ * [OUTPUT]: Site shell (rails, sticky header, footer), the zinc homepage and course frames (viewport-centered rails, 300px exploded-Mac hero), library, about, dialogs, and search.
  * [POS]: Non-reading presentation layer shared by all locales; course.css and reading.css extend it.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -16,10 +16,10 @@ body:has(.home-shell), body:has(.learn-page) {
   --line: #e4e4e7; --line-soft: #eeeef0; --line-strong: #d4d4d8;
   --link: #09090b; --link-hover: #18181b;
 }
-html:has(.home-shell) { scroll-padding-top: 24px; }
+html:has(.home-shell) { scroll-padding-top: 0; }
 
 /* Header */
-.site-header { position: sticky; top: 0; z-index: 40; background: var(--paper); border-bottom: 1px solid var(--line); }
+.site-header { position: sticky; top: 0; z-index: 40; background: var(--paper); border-bottom: 1px solid var(--line); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 .header-inner { display: flex; align-items: center; gap: 40px; width: var(--column); min-height: var(--header-height); margin: auto; padding-inline: var(--gutter); }
 body:has(#nd-docs-layout) .header-inner { width: min(1440px, 100%); padding-inline: 32px; }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0; }
@@ -64,10 +64,11 @@ body:has(#nd-docs-layout) .header-inner { width: min(1440px, 100%); padding-inli
 
 /* Homepage frame: 64rem column, side rules through the header, full-bleed horizontal rules.
    Center on the viewport (50vw), not the scrollbar-shrunk content box, so a scrolling page keeps the homepage rails. The content offset is 0 when there is no scrollbar. */
-.home-shell { position: relative; display: flex; flex-direction: column; min-height: 100vh; background: #fff; color: #09090b; font-size: 15px; line-height: 1.6; }
-.home-shell::before { content: ''; position: absolute; z-index: 2; top: 0; bottom: 0; left: 50vw; width: min(64rem, 100%); transform: translateX(-50%); border-inline: 1px solid var(--line); pointer-events: none; }
+.home-shell { --zinc-header: 56px; position: relative; display: flex; flex-direction: column; min-height: 100vh; scroll-margin-top: 0; background: #fff; color: #09090b; font-size: 15px; line-height: 1.6; }
+.home-shell :where(h1, h2, h3, h4, [id]) { scroll-margin-top: var(--zinc-header); }
+.home-shell::before { content: ''; position: absolute; z-index: 45; top: 0; bottom: 0; left: 50vw; width: min(64rem, 100%); transform: translateX(-50%); border-inline: 1px solid var(--line); pointer-events: none; }
 .home-inner { position: relative; left: calc((100vw - 100%) / 2); width: min(64rem, 100%); margin-inline: auto; padding-inline: 28px; }
-.home-top { height: 56px; border-bottom: 1px solid var(--line); }
+.home-top { position: sticky; top: 0; z-index: 40; height: var(--zinc-header); background: #fff; border-bottom: 1px solid var(--line); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 .home-top .home-inner { display: flex; align-items: center; gap: 28px; height: 100%; }
 .home-logo { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; color: inherit; font-weight: 600; letter-spacing: -.02em; text-decoration: none; }
 .home-mark { width: 18px; height: 18px; border-radius: 5px; background: #09090b; }
@@ -188,7 +189,8 @@ body:has(#nd-docs-layout) .header-inner { width: min(1440px, 100%); padding-inli
 }
 @media (max-width: 720px) {
   .home-inner { padding-inline: 16px; }
-  .home-top { height: auto; }
+  .home-shell { --zinc-header: 88px; }
+  .home-top { height: auto; min-height: var(--zinc-header); }
   .home-top .home-inner { height: auto; min-height: 56px; flex-wrap: wrap; gap: 10px 16px; padding-block: 12px; }
   .home-nav { flex-basis: 100%; order: 3; }
   .home-hero-wrap { padding-block: 36px 28px; }

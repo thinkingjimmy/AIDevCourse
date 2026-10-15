@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Shared tokens, band layout from surfaces.css, and state primitives from globals.css.
- * [OUTPUT]: Course cards, the course-hero syllabus, and the zinc course/lesson shell aligned to the homepage rails.
+ * [OUTPUT]: Course cards, the course-hero syllabus, and the zinc course/lesson shell aligned to the homepage rails. Lesson nav and TOC stick below the header.
  * [POS]: Course discovery and overview presentation; lesson reading lives in reading.css.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -109,12 +109,12 @@
 
 /* The 64rem rails come from .home-shell::before. This frame holds only the main column.
    The left offset matches the rails when a scrollbar shrinks the content box. */
-.learn-page { min-height: 100vh; overflow-x: clip; background: #fff; color: #09090b; font-size: 15px; line-height: 1.6; }
+.learn-page { min-height: 100vh; background: #fff; color: #09090b; font-size: 15px; line-height: 1.6; }
 .learn-frame { position: relative; left: calc((100vw - 100%) / 2); width: min(64rem, 100%); margin-inline: auto; align-self: center; min-height: calc(100vh - 56px); }
 .learn-out { position: absolute; top: 0; bottom: 0; width: 200px; padding-top: 48px; }
 .learn-lnav { right: calc(100% + 28px); }
 .learn-toc.learn-out { left: calc(100% + 28px); border: 0; padding-top: 48px; color: var(--muted); font-size: 13px; line-height: 2; }
-.learn-out-in { position: sticky; top: 24px; }
+.learn-out-in { position: sticky; top: calc(var(--zinc-header) + 24px); z-index: 3; }
 .learn-course-head > a { display: block; color: inherit; font-size: 14px; font-weight: 600; line-height: 1.4; text-decoration: none; }
 .learn-meter { display: flex; align-items: center; gap: 8px; margin: 10px 0 4px; color: var(--faint); font-family: var(--font-mono); font-size: 11px; font-weight: 400; }
 .learn-meter .track { position: relative; flex: 1; height: 2px; background: #f4f4f5; }
@@ -227,7 +227,7 @@
 
 /* Lesson index: no card, right-aligned toward the frame, only the current module open. */
 .learn-lnav { width: 220px; border: 0; background: transparent; text-align: right; }
-.learn-lnav .learn-out-in { top: 48px; }
+.learn-lnav .learn-out-in { top: calc(var(--zinc-header) + 48px); }
 .learn-nav.learn-index .learn-modline { display: block; margin: 0; padding: 5px 0; color: var(--muted); font-size: 13px; font-weight: 400; line-height: 1.45; text-decoration: none; }
 .learn-nav.learn-index .learn-modline:hover { color: var(--ink); }
 .learn-nav.learn-index .num { margin-left: .2em; color: var(--faint); font-family: var(--font-mono); font-size: 12px; font-weight: 400; }
