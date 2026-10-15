@@ -46,8 +46,8 @@
   },
   "Home": {
     "eyebrow": "Free · Open source · No signup",
-    "title": "Learn to code with AI,\nuse models, and build agents",
-    "intro": "One course at a time. Every lesson is a small task you can do. By the end you can edit code with AI, tune an LLM, and build your own agent.",
+    "title": "Learn AI development,\none piece at a time",
+    "intro": "From writing code and tuning models to building an agent, each lesson takes one piece apart and hands you a small task. Put it back together, and the whole machine makes sense.",
     "start": "Start from the first lesson",
     "courseTitle": "Courses",
     "courseIntro": "Grouped by track. Pick one and start.",

@@ -2,7 +2,7 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-mac-explode.tsx: Looping exploded 1984 Mac for the homepage hero. Pauses offscreen and rests assembled when motion is reduced.
+mac-explode.tsx: Exploded 1984 Mac for the homepage hero. Opens once and stays open; hover eases it shut from the current pose. Pauses offscreen. Reduced motion shows the exploded still.
 
 mac-explode-markup.ts: Inline SVG for that animation.
 

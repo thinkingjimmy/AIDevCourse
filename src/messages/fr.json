@@ -46,8 +46,8 @@
   },
   "Home": {
     "eyebrow": "Gratuit · Open source · Sans inscription",
-    "title": "Apprendre à coder avec l’IA,\nutiliser des modèles, créer un agent",
-    "intro": "Un cours à la fois, et chaque leçon est une petite tâche à faire. À la fin, vous modifiez du code avec l’IA, réglez un LLM et construisez votre propre agent.",
+    "title": "Apprendre le développement IA,\nune pièce à la fois",
+    "intro": "Du code aux modèles, jusqu’à construire un agent : chaque leçon ne démonte qu’une pièce et vous laisse une petite tâche à faire. Une fois remonté, l’ensemble de la machine devient clair.",
     "start": "Commencer par la première leçon",
     "courseTitle": "Cours",
     "courseIntro": "Classés par piste. Choisissez-en un et commencez.",

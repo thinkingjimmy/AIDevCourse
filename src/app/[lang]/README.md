@@ -14,7 +14,7 @@ layout.tsx: Static locale-specific HTML, self-hosted Latin fonts, site footer, a
 
 not-found.tsx: Localized unavailable-page explanation without false article metadata.
 
-page.tsx: Framed homepage with the zinc hero, looping exploded Mac, and a dense catalog of real courses.
+page.tsx: Framed homepage with the zinc hero, exploded Mac, and a dense catalog of real courses.
 
 unavailable/: Nested module; see [unavailable/README.md](./unavailable/README.md).
 

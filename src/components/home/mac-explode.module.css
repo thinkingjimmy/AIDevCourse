@@ -1,11 +1,11 @@
-/* Light isometric kit, scoped to the hero. The stage is larger than the 228px slot so the assembled Mac matches the old image; the viewBox (-60 -120 720 620) includes room around a 300×368 drawing. */
+/* Light isometric kit, scoped to the hero. The slot is the fully exploded bounds (450.06×515.90 user units). This stage is the larger viewBox, shifted so that pose fills the slot. */
 .stage {
   position: absolute;
-  width: 239.925%;
+  width: 159.978%;
   aspect-ratio: 720 / 620;
-  left: -70.246%;
-  top: -42.385%;
-  pointer-events: none;
+  left: -28.583%;
+  top: -13.049%;
+  pointer-events: auto;
   background: transparent;
   --anatomy-paper: #fbfbfa;
   --anatomy-top: #fff;

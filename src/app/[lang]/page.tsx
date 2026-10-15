@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Active locale and its published course manifests.
- * [OUTPUT]: Framed homepage: zinc hero, looping exploded Mac, and a dense catalog of real courses.
+ * [OUTPUT]: Framed homepage: zinc hero, exploded Mac, and a dense catalog of real courses.
  * [POS]: Public entry surface; counts and destinations derive from the catalog.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */

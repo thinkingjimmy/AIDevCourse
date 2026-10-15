@@ -46,8 +46,8 @@
   },
   "Home": {
     "eyebrow": "Gratis · Código abierto · Sin registro",
-    "title": "Aprende a programar con IA,\nusar modelos y crear agentes",
-    "intro": "Un curso cada vez, y cada lección es una tarea pequeña para hacer. Al terminar podrás cambiar código con IA, ajustar un LLM y construir tu propio agente.",
+    "title": "Aprende a desarrollar con IA,\npieza por pieza",
+    "intro": "Desde escribir código y ajustar modelos hasta montar un agente: cada lección desmonta una sola pieza y te deja una tarea pequeña. Al volver a armarla, entiendes la máquina entera.",
     "start": "Empezar por la primera lección",
     "courseTitle": "Cursos",
     "courseIntro": "Ordenados por tema. Elige uno y empieza.",
