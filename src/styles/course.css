@@ -160,8 +160,7 @@
 .learn-page .prose :where(h2) { margin: 36px 0 8px; color: var(--ink); font-family: var(--font-sans); font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
 .learn-page .prose :where(pre) { border: 1px solid var(--line); border-radius: 8px; background: #fafafa; }
 .learn-page .completion-box, .learn-page .completion-box[data-done='true'] { display: block; max-width: none; margin-top: 44px; padding: 0; border: 0; background: transparent; }
-.learn-finish { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14px; }
-.learn-finish > span { color: var(--muted); }
+.completion-box > .learn-finish { flex: none; display: flex; flex-direction: row; align-items: center; justify-content: flex-start; width: 100%; gap: 16px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 14px; }
 .learn-done { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); font-size: 14px; font-weight: 500; }
 .learn-done:hover { background: #fafafa; }
 .learn-page .completion-box[data-done='true'] .learn-done { background: #f4f4f5; }

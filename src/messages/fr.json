@@ -77,7 +77,6 @@
     "moduleCount": "{count, plural, one {# module} other {# modules}}",
     "catalog": "Sommaire",
     "onThisPage": "Sur cette page",
-    "finishedPrompt": "Lu ?",
     "who": "Pour qui",
     "before": "Avant de commencer",
     "doneMark": "Terminé",

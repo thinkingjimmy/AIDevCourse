@@ -77,7 +77,6 @@
     "moduleCount": "{count, plural, one {# módulo} other {# módulos}}",
     "catalog": "Temario",
     "onThisPage": "En esta página",
-    "finishedPrompt": "¿Terminaste?",
     "who": "Para quién",
     "before": "Antes de empezar",
     "doneMark": "Completado",
