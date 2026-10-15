@@ -6,7 +6,7 @@ english-tools.tsx: Search and language controls for the root 404, outside the lo
 
 home-header.tsx: Zinc bar with the aidevcourse mark, the About link, compact search, and 中 / EN.
 
-language-switcher.tsx: Native language links with explicit fallback, valid hashes, and preference saving.
+language-switcher.tsx: Native language links with a flag and the language name, explicit fallback, valid hashes, and preference saving.
 
 missing-page.tsx: Two-column unavailable page shared by locale and root 404 documents.
 

@@ -42,8 +42,7 @@ body:has(#nd-docs-layout) .header-inner { width: min(1440px, 100%); padding-inli
 .language-options a { display: block; padding: 10px 12px; text-decoration: none; border-bottom: 1px solid var(--line-soft); }
 .language-options a:last-child { border-bottom: 0; }
 .language-options a:hover, .language-options a[aria-current] { background: var(--surface); }
-.language-name { display: flex; justify-content: space-between; font-weight: 550; font-size: 15px; }
-.language-options small { display: block; margin-top: 3px; font-size: 12px; color: var(--muted); line-height: 1.5; }
+.language-name { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-weight: 550; font-size: 15px; }
 
 /* Bands: full-bleed horizontal lines, content held inside the rails. */
 .site-main { padding-bottom: 72px; }
