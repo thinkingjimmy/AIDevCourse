@@ -57,7 +57,6 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
             {first
               ? <Link className="home-cta" href={first}>{t('start')}<span aria-hidden> →</span></Link>
               : <Link className="home-cta" href={`/${lang}/about`}>{course('aboutSite')}</Link>}
-            <Link className="home-cta home-cta-secondary" href="#catalog">{t('browseAll')}</Link>
           </div>
         </div>
         <div className="home-deco"><MacExplode /></div>
