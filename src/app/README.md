@@ -10,7 +10,9 @@ design/: Homepage studies at /design, /design/a, /design/b, and /design/c. They 
 
 layout.tsx: A shared root boundary without imposing a fallback content language.
 
-not-found.tsx: A real global 404 with accessible language entry links.
+not-found.tsx: Root 404 with the zinc header, footer, and the two-column unavailable layout.
+
+unavailable/: Nested module; see [unavailable/README.md](./unavailable/README.md).
 
 robots.ts: Robots policy and production sitemap location.
 

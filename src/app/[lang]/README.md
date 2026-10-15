@@ -8,13 +8,13 @@ about/: Nested module; see [about/README.md](./about/README.md).
 
 courses/: Nested module; see [courses/README.md](./courses/README.md).
 
-error.tsx: Accessible retry boundary without touching local learning records.
+error.tsx: Zinc error state with retry and a link home, without touching local learning records.
 
-layout.tsx: Static locale-specific HTML, self-hosted Latin fonts, site footer, and narrowly scoped client providers.
+layout.tsx: Static locale-specific HTML, self-hosted Latin fonts, the zinc frame, and narrowly scoped client providers.
 
-not-found.tsx: Localized unavailable-page explanation without false article metadata.
+not-found.tsx: Localized unavailable page inside the zinc frame, linking to the AI 101 course.
 
-page.tsx: Framed homepage with the zinc hero, exploded Mac, and a dense catalog of real courses.
+page.tsx: Homepage body with the zinc hero, exploded Mac, and a dense catalog of real courses.
 
 unavailable/: Nested module; see [unavailable/README.md](./unavailable/README.md).
 

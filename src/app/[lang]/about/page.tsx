@@ -1,22 +1,34 @@
 /**
  * [INPUT]: Localized product, persistence, cookie, and privacy explanations.
- * [OUTPUT]: Server-rendered about page in the explicitly selected language.
+ * [OUTPUT]: About page in the zinc frame: mono eyebrow, two-line title, and a three-column section grid.
  * [POS]: Public usage guide; makes local-only storage and translation coverage clear.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { isLocale } from '@/lib/i18n/config';
-import { GridFrame } from '@/components/layout/grid-frame';
 import { pageMetadata } from '@/lib/seo/metadata';
-import { site } from '@/lib/site-config';
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params; if (!isLocale(lang)) return {};
   const t = await getTranslations({ locale: lang, namespace: 'About' });
-  return pageMetadata(lang, `/${lang}/about`, t('title'), t('intro'));
+  return pageMetadata(lang, `/${lang}/about`, t('title').replaceAll('\n', ' '), t('intro'));
 }
 export default async function AboutPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params; if (!isLocale(lang)) notFound(); setRequestLocale(lang);
   const t = await getTranslations({ locale: lang, namespace: 'About' });
-  return <main id="main-content" className="site-main" tabIndex={-1}><GridFrame><header className="page-heading"><p className="eyebrow"><span className="square-dot" aria-hidden />{site.name}</p><h1 className="serif">{t('title')}</h1><p>{t('intro')}</p></header><div className="about-body">{(['storage', 'languages', 'privacy'] as const).map((part, index) => <section key={part}><span className="mono">0{index + 1}</span><div><h2>{t(`${part}Title`)}</h2><p>{t(part)}</p></div></section>)}</div></GridFrame></main>;
+  const ui = await getTranslations({ locale: lang, namespace: 'Ui' });
+  const parts = ['storage', 'languages', 'privacy'] as const;
+  return <main id="main-content" className="about-page" tabIndex={-1}>
+    <div className="home-inner about-hero">
+      <p className="status-kicker">{ui('about')}</p>
+      <h1>{t('title')}</h1>
+      <p className="about-intro">{t('intro')}</p>
+    </div>
+    <hr className="home-rule" />
+    <div className="home-inner about-grid">{parts.map((part, index) => <section key={part}>
+      <span className="mono">{String(index + 1).padStart(2, '0')}</span>
+      <h2>{t(`${part}Title`)}</h2>
+      <p>{t(part)}</p>
+    </section>)}</div>
+  </main>;
 }

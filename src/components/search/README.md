@@ -2,7 +2,9 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-search-dialog.tsx: Lazy, race-safe search with keyboard/IME support and retries.
+lessons.ts: Lesson URL to number, title, module, and minutes for search rows.
+
+search-dialog.tsx: Lazy, race-safe search with keyboard/IME support, lesson meta, and retries.
 
 search-trigger.tsx: Accessible search entry and Cmd/Ctrl+K shortcut.
 

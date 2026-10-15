@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Public route snapshot, allowlisted entries, and optional language preference.
- * [OUTPUT]: Private 307 negotiation and server-rendered 404 rewrites; public URLs pass unchanged.
+ * [OUTPUT]: Private 307 negotiation, and HTTP 404 responses whose body is the rendered unavailable document.
  * [POS]: Sole routing interceptor; explicit language pages never negotiate content.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -9,17 +9,38 @@ import { isLocale, localeCookie, negotiateLocale } from './lib/i18n/config';
 import { isNegotiatedPath } from './lib/i18n/routing';
 import publicRoutes from '../.source/routes.json';
 const paths = new Set(publicRoutes);
-export function proxy(request: NextRequest) {
+const forwarded = ['accept', 'rsc', 'next-router-prefetch', 'next-router-segment-prefetch', 'next-router-state-tree', 'next-url'];
+const preserved = ['content-type', 'content-security-policy', 'x-content-type-options', 'referrer-policy', 'x-frame-options', 'permissions-policy', 'x-robots-tag'];
+function isUnavailableDocument(pathname: string) {
+  if (pathname === '/unavailable') return true;
+  const language = pathname.split('/')[1] ?? '';
+  return isLocale(language) && pathname === `/${language}/unavailable`;
+}
+function unavailablePath(pathname: string) {
+  const language = pathname.split('/')[1] ?? '';
+  return isLocale(language) ? `/${language}/unavailable` : '/unavailable';
+}
+export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   if (!isNegotiatedPath(path)) {
-    if (paths.has(path)) return NextResponse.next();
-    const language = path.split('/')[1];
-    const target = new URL(request.url);
-    target.host = request.headers.get('host') ?? target.host;
-    target.pathname = `/${isLocale(language) ? language : 'en'}/unavailable`;
+    if (paths.has(path) || isUnavailableDocument(path)) return NextResponse.next();
+    const target = new URL(unavailablePath(path), request.url);
     target.search = '';
-    // Runtime notFound recovery in the pinned Next.js version otherwise sends an empty HTML shell.
-    return NextResponse.rewrite(target, { status: 404 });
+    const headers = new Headers();
+    for (const name of forwarded) {
+      const value = request.headers.get(name);
+      if (value) headers.set(name, value);
+    }
+    // A rewrite status is discarded, and notFound() renders an empty shell. Return the static document ourselves.
+    const rendered = await fetch(target, { headers, redirect: 'manual' });
+    const responseHeaders = new Headers();
+    for (const name of preserved) {
+      const value = rendered.headers.get(name);
+      if (value) responseHeaders.set(name, value);
+    }
+    if (!responseHeaders.has('x-robots-tag')) responseHeaders.set('x-robots-tag', 'noindex, nofollow');
+    responseHeaders.set('cache-control', 'private, no-store');
+    return new NextResponse(rendered.body, { status: 404, headers: responseHeaders });
   }
   const locale = negotiateLocale(request.cookies.get(localeCookie)?.value, request.headers.get('accept-language') ?? '');
   const target = request.nextUrl.clone();

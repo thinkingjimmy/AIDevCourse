@@ -1,7 +1,6 @@
 {
   "Ui": {
     "home": "Inicio",
-    "courses": "Cursos",
     "about": "Acerca de",
     "skip": "Ir al contenido",
     "menu": "Índice del curso",
@@ -23,10 +22,12 @@
     "stale": "Esta traducción aún no incluye la última versión original.",
     "original": "Leer el original en {language}",
     "noJs": "La lectura y los enlaces de idioma funcionan sin JavaScript. La búsqueda, la copia y el progreso necesitan JavaScript.",
-    "footer": "Cambios pequeños, verificados por ti.",
-    "notFoundTitle": "Esta página no está disponible",
+    "notFoundTitle": "Esta pieza\naún no está instalada",
     "notFoundBody": "La dirección puede ser incorrecta o la lección aún no está publicada en este idioma.",
-    "error": "Se produjo un error. El progreso guardado permanece en este navegador.",
+    "errorEyebrow": "Error",
+    "errorTitle": "La página no se pudo cargar",
+    "error": "El progreso guardado permanece en este navegador.",
+    "backHome": "Volver al inicio",
     "retry": "Reintentar",
     "copyAnchor": "Copiar enlace al título",
     "noHeadings": "Sin títulos",
@@ -42,7 +43,7 @@
     "label": "Elegir idioma",
     "available": "Leer esta página",
     "courseFallback": "Lección sin traducir; abre el resumen del curso",
-    "listFallback": "Curso no disponible; abre la lista de cursos"
+    "listFallback": "Curso no disponible; abre la página del curso"
   },
   "Home": {
     "eyebrow": "Gratis · Código abierto · Sin registro",
@@ -56,14 +57,11 @@
     "navCourses": "Cursos",
     "navPaths": "Rutas",
     "navHandbook": "Manual",
-    "navUpdates": "Novedades",
     "footerLead": "aidevcourse.com · Gratis, código abierto, sin rastreo",
     "footerMeta": "© 2026 Jimmy Wong",
     "newBadge": "NEW"
   },
   "Course": {
-    "title": "Los cursos",
-    "intro": "Un camino claro desde tu primera petición hasta un resultado comprobado.",
     "emptyTitle": "Aún no hay cursos en este idioma",
     "emptyBody": "Este idioma todavía no tiene un curso. Mientras tanto, conoce más sobre este sitio.",
     "otherLanguages": "Disponible en otros idiomas",
@@ -88,31 +86,11 @@
   },
   "Learning": {
     "loading": "Restaurando el progreso…",
-    "local": "Guardado solo en este navegador.",
     "failure": "El progreso de esta sesión podría no guardarse. Puedes seguir leyendo.",
     "complete": "Marcar como completada",
     "undo": "Marcar como pendiente",
     "completed": "Lección completada",
-    "incomplete": "Marca de finalización eliminada",
-    "progress": "{done} de {total} lecciones publicadas completadas",
-    "start": "Empezar a aprender",
-    "continue": "Continuar aprendiendo",
-    "review": "Repasar el curso",
-    "allDone": "Has completado todas las lecciones publicadas en este idioma.",
-    "reset": "Restablecer el progreso",
-    "resetTitle": "¿Volver a empezar este curso?",
-    "resetBody": "Se borrarán las marcas de finalización y la última posición de este curso en todos los idiomas. Se conservarán los otros cursos y tu preferencia de idioma.",
-    "cancel": "Conservar mi progreso",
-    "confirm": "Restablecer este curso",
-    "resetDone": "Progreso del curso restablecido.",
-    "progressTitle": "Tu progreso",
-    "ofLessons": "/ {total, plural, one {# lección} other {# lecciones}}",
-    "progressShort": "{done} de {total} completadas",
-    "lastRead": "Te quedaste aquí",
-    "completeTitle": "¿Terminaste? Márcala cuando tengas pruebas.",
-    "completeBody": "Llegar al final no completa la lección. Márcala cuando tu práctica tenga pruebas.",
-    "doneBody": "Guardado en este navegador. Puedes deshacerlo cuando quieras.",
-    "markDone": "Completar"
+    "incomplete": "Marca de finalización eliminada"
   },
   "Search": {
     "open": "Buscar lecciones",

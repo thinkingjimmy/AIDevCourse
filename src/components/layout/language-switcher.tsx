@@ -36,8 +36,8 @@ export function LanguageSwitcher({ locale, translations, compact = false }: { lo
       {locales.map((lang) => {
         const samePage = current?.[1].find((version) => version.locale === lang);
         const coursePage = current && translations[current[0].split(':')[0]]?.find((version) => version.locale === lang);
-        const simple = /^\/(en|zh|ja|fr|es)(\/about|\/courses)?$/.test(pathname);
-        const url = samePage?.url ?? (simple ? pathname.replace(/^\/[^/]+/, `/${lang}`) : coursePage?.url ?? `/${lang}/courses`);
+        const simple = /^\/(en|zh|ja|fr|es)(\/about)?$/.test(pathname);
+        const url = samePage?.url ?? (simple ? pathname.replace(/^\/[^/]+/, `/${lang}`) : coursePage?.url ?? `/${lang}/courses/ai-101`);
         const reason = samePage || simple ? 'available' : coursePage ? 'courseFallback' : 'listFallback';
         return <a key={lang} href={url} hrefLang={htmlLanguages[lang]} aria-current={lang === locale ? 'true' : undefined} onClick={(event) => {
           try { document.cookie = `${localeCookie}=${lang}; Path=/; Max-Age=31536000; SameSite=Lax`; } catch { /* Explicit URLs remain usable without cookies. */ }

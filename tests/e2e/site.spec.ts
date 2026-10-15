@@ -8,10 +8,10 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { locales, htmlLanguages } from '../../src/lib/i18n/config';
 for (const locale of locales) {
-  test(`${locale}: home, courses, about, and accessible navigation`, async ({ page }) => {
+  test(`${locale}: home, about, and accessible navigation`, async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
-    for (const path of ['', '/courses', '/about']) {
+    for (const path of ['', '/about']) {
       const response = await page.goto(`/${locale}${path}`);
       expect(response?.status()).toBe(200);
       await expect(page.locator('html')).toHaveAttribute('lang', htmlLanguages[locale]);
@@ -20,6 +20,8 @@ for (const locale of locales) {
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await page.waitForLoadState('networkidle');
     }
+    const missingIndex = await page.request.get(`/${locale}/courses`);
+    expect(missingIndex.status()).toBe(404);
     const report = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(report.violations).toEqual([]);
     expect(errors).toEqual([]);
@@ -50,7 +52,7 @@ test('negotiates only supported unprefixed entries with private 307 responses', 
 });
 test('production publishes the Chinese course and never publishes engineering fixtures', async ({ request }) => {
   test.skip(process.env.CONTENT_TEST === '1', 'The isolated fixture build is covered separately.');
-  const paths = ['/zh', '/zh/courses', '/zh/courses/ai-101', '/zh/courses/ai-101/strengths', '/sitemap.xml', ...locales.map((lang) => `/api/search/${lang}`), ...locales.map((lang) => `/${lang}/courses`)];
+  const paths = ['/zh', '/zh/courses/ai-101', '/zh/courses/ai-101/strengths', '/sitemap.xml', ...locales.map((lang) => `/api/search/${lang}`)];
   for (const path of paths) {
     const response = await request.get(path);
     const body = await response.text();
@@ -58,7 +60,8 @@ test('production publishes the Chinese course and never publishes engineering fi
     expect(body, path).not.toMatch(/审校中|In review|校閲中|En relecture|En revisión/);
     if (path.startsWith('/zh/courses/ai-101')) expect(response.status(), path).toBe(200);
   }
-  const courses = await (await request.get('/zh/courses')).text();
+  for (const lang of locales) expect((await request.get(`/${lang}/courses`, { maxRedirects: 0 })).status()).toBe(404);
+  const courses = await (await request.get('/zh/courses/ai-101')).text();
   expect(courses).toContain('AI 入门');
   expect(courses).toContain('AI 擅长做什么');
   expect(courses).toContain('写一个好用的提示词');
@@ -83,7 +86,7 @@ test('reading and native language links work without JavaScript or cookies', asy
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
   const missing = await page.goto('/fr/unknown-page');
   expect(missing?.status()).toBe(404);
-  await expect(page.locator('h1')).toHaveText('Cette page n’est pas disponible');
+  await expect(page.locator('h1')).toHaveText('Cette pièce n’est pas encore installée');
   if (process.env.CONTENT_TEST === '1') {
     await page.goto('/fr/courses/ai-coding/first-change');
     await expect(page.locator('article > .prose')).toBeVisible();
@@ -98,5 +101,5 @@ test('keeps a light background when the system requests dark mode', async ({ pag
   await page.goto('/en');
   expect(await page.locator('body').evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(255, 255, 255)');
   await page.goto('/en/about');
-  expect(await page.locator('body').evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(244, 241, 232)');
+  expect(await page.locator('body').evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(255, 255, 255)');
 });

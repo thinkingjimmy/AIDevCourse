@@ -1,7 +1,6 @@
 {
   "Ui": {
     "home": "首页",
-    "courses": "课程",
     "about": "关于",
     "skip": "跳到正文",
     "menu": "课程目录",
@@ -23,10 +22,12 @@
     "stale": "这篇译文尚未同步最新原文。",
     "original": "阅读{language}原文",
     "noJs": "正文与语言链接无需 JavaScript。搜索、代码复制和学习记录需要启用 JavaScript。",
-    "footer": "小步改动，亲手验证。",
-    "notFoundTitle": "这个页面暂不可用",
+    "notFoundTitle": "这个零件\n还没装上",
     "notFoundBody": "地址可能有误，或这篇课时尚未以当前语言发布。",
-    "error": "页面加载出了问题。已保存的学习记录仍保留在此浏览器。",
+    "errorEyebrow": "出错了",
+    "errorTitle": "页面加载出了问题",
+    "error": "已保存的学习记录仍保留在此浏览器。",
+    "backHome": "返回首页",
     "retry": "重试",
     "copyAnchor": "复制标题链接",
     "noHeadings": "暂无标题",
@@ -42,7 +43,7 @@
     "label": "选择语言",
     "available": "阅读此语言版本",
     "courseFallback": "此课暂无译文，将打开课程总览",
-    "listFallback": "该语言暂无此课程，将打开课程列表"
+    "listFallback": "该语言暂无此课程，将打开课程页"
   },
   "Home": {
     "eyebrow": "免费 · 开源 · 不用注册",
@@ -56,14 +57,11 @@
     "navCourses": "课程",
     "navPaths": "路线",
     "navHandbook": "手册",
-    "navUpdates": "更新",
     "footerLead": "aidevcourse.com · 免费、开源、不追踪",
     "footerMeta": "© 2026 Jimmy Wong",
     "newBadge": "NEW"
   },
   "Course": {
-    "title": "课程目录",
-    "intro": "从第一次描述需求，到得到经得起检查的结果。",
     "emptyTitle": "这一语言还没有课程",
     "emptyBody": "这个语言暂时没有课程。你可以先了解这个网站。",
     "otherLanguages": "其他语言的已发布内容",
@@ -88,31 +86,11 @@
   },
   "Learning": {
     "loading": "正在恢复学习记录…",
-    "local": "学习记录仅保存在此浏览器。",
     "failure": "本次学习记录可能无法保存，阅读不受影响。",
     "complete": "标记为已完成",
     "undo": "取消完成标记",
     "completed": "本课已完成",
-    "incomplete": "已取消完成标记",
-    "progress": "已完成当前语言 {total} 课中的 {done} 课",
-    "start": "开始学习",
-    "continue": "继续学习",
-    "review": "复习课程",
-    "allDone": "当前语言已发布的课时均已完成。",
-    "reset": "重置课程进度",
-    "resetTitle": "重新开始这门课程？",
-    "resetBody": "这会清除本课程所有语言共享的完成标记与最近位置，不影响其他课程和语言偏好。",
-    "cancel": "保留进度",
-    "confirm": "确认重置",
-    "resetDone": "课程进度已重置。",
-    "progressTitle": "你的进度",
-    "ofLessons": "/ {total} 课",
-    "progressShort": "已完成 {done} / {total} 课",
-    "lastRead": "上次读到这里",
-    "completeTitle": "读完了？留下证据再标记完成",
-    "completeBody": "阅读到这里不会自动完成课时。练习有了证据后，再标记完成。",
-    "doneBody": "完成标记已保存在此浏览器，可以随时撤销。",
-    "markDone": "标记完成"
+    "incomplete": "已取消完成标记"
   },
   "Search": {
     "open": "搜索课时",
@@ -126,7 +104,7 @@
     "keys": "↑↓ 选择 · Enter 打开 · Esc 关闭"
   },
   "About": {
-    "title": "把学习的节奏，留给自己",
+    "title": "把学习的节奏，\n留给自己",
     "intro": "aidevcourse 是一个免费阅读的 AI coding 学习网站，帮助你学会描述任务、提供上下文、检查代码与验证结果。无需注册即可阅读。",
     "storageTitle": "关于学习记录",
     "storage": "完成标记与最近学习位置保存在当前浏览器、当前域名下；同一课时的译文共享标记。清除浏览器数据、更换设备或域名后，记录可能无法恢复。学习记录不会发送到网站服务器。",

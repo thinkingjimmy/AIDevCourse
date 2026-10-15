@@ -1,7 +1,6 @@
 {
   "Ui": {
     "home": "Accueil",
-    "courses": "Cours",
     "about": "À propos",
     "skip": "Aller au contenu",
     "menu": "Navigation du cours",
@@ -23,10 +22,12 @@
     "stale": "Cette traduction n’intègre pas encore la dernière version originale.",
     "original": "Lire l’original en {language}",
     "noJs": "La lecture et les liens de langue fonctionnent sans JavaScript. La recherche, la copie et la progression nécessitent JavaScript.",
-    "footer": "De petits changements, vérifiés par vous.",
-    "notFoundTitle": "Cette page n’est pas disponible",
+    "notFoundTitle": "Cette pièce n’est\npas encore installée",
     "notFoundBody": "L’adresse est peut-être incorrecte, ou cette leçon n’est pas encore publiée dans cette langue.",
-    "error": "Une erreur est survenue. Votre progression enregistrée reste dans ce navigateur.",
+    "errorEyebrow": "Erreur",
+    "errorTitle": "Le chargement de la page a échoué",
+    "error": "Votre progression enregistrée reste dans ce navigateur.",
+    "backHome": "Retour à l’accueil",
     "retry": "Réessayer",
     "copyAnchor": "Copier le lien du titre",
     "noHeadings": "Aucun titre",
@@ -42,7 +43,7 @@
     "label": "Choisir la langue",
     "available": "Lire cette page",
     "courseFallback": "Leçon non traduite ; ouvre le résumé du cours",
-    "listFallback": "Cours indisponible ; ouvre la liste des cours"
+    "listFallback": "Cours indisponible ; ouvre la page du cours"
   },
   "Home": {
     "eyebrow": "Gratuit · Open source · Sans inscription",
@@ -56,14 +57,11 @@
     "navCourses": "Cours",
     "navPaths": "Parcours",
     "navHandbook": "Manuel",
-    "navUpdates": "Mises à jour",
     "footerLead": "aidevcourse.com · Gratuit, open source, sans pistage",
     "footerMeta": "© 2026 Jimmy Wong",
     "newBadge": "NEW"
   },
   "Course": {
-    "title": "Les cours",
-    "intro": "Un parcours clair, de la première demande au résultat vérifié.",
     "emptyTitle": "Pas encore de cours dans cette langue",
     "emptyBody": "Cette langue n’a pas encore de cours. En attendant, découvrez ce site.",
     "otherLanguages": "Disponible dans d’autres langues",
@@ -88,31 +86,11 @@
   },
   "Learning": {
     "loading": "Restauration de la progression…",
-    "local": "Enregistré uniquement dans ce navigateur.",
     "failure": "La progression de cette session risque de ne pas être enregistrée. La lecture reste disponible.",
     "complete": "Marquer comme terminée",
     "undo": "Marquer comme non terminée",
     "completed": "Leçon terminée",
-    "incomplete": "Marque de fin supprimée",
-    "progress": "{done} leçons terminées sur {total} publiées",
-    "start": "Commencer",
-    "continue": "Continuer",
-    "review": "Revoir le cours",
-    "allDone": "Toutes les leçons publiées dans cette langue sont terminées.",
-    "reset": "Réinitialiser la progression",
-    "resetTitle": "Recommencer ce cours ?",
-    "resetBody": "Les marques de fin et la dernière position de ce cours seront effacées pour toutes les langues. Les autres cours et votre langue préférée sont conservés.",
-    "cancel": "Conserver ma progression",
-    "confirm": "Réinitialiser ce cours",
-    "resetDone": "Progression du cours réinitialisée.",
-    "progressTitle": "Votre progression",
-    "ofLessons": "/ {total, plural, one {# leçon} other {# leçons}}",
-    "progressShort": "{done} sur {total} terminées",
-    "lastRead": "Vous étiez ici",
-    "completeTitle": "Lecture terminée ? Marquez-la une fois la preuve en main.",
-    "completeBody": "Arriver à la fin ne termine pas la leçon. Marquez-la quand votre pratique a des preuves.",
-    "doneBody": "Enregistré dans ce navigateur. Vous pouvez annuler à tout moment.",
-    "markDone": "Terminer"
+    "incomplete": "Marque de fin supprimée"
   },
   "Search": {
     "open": "Rechercher une leçon",

@@ -1,7 +1,7 @@
 /**
  * [INPUT]: The explicit route language and the localized unavailable-page renderer.
- * [OUTPUT]: Complete server HTML for a proxy response carrying HTTP 404.
- * [POS]: Error document avoids Next.js runtime notFound recovery requiring hydration.
+ * [OUTPUT]: Full server HTML for the proxy to return with HTTP 404.
+ * [POS]: Static error document; notFound() in this Next.js version emits an empty shell.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import { notFound } from 'next/navigation';

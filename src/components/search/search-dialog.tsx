@@ -1,6 +1,6 @@
 /**
  * [INPUT]: One locale's Fumadocs static export and a user query.
- * [OUTPUT]: Lazy, race-safe search with keyboard/IME support and retries.
+ * [OUTPUT]: Lazy, race-safe search with keyboard/IME support, lesson meta, and retries.
  * [POS]: Isolated dialog boundary; cache URLs include locale and build version.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -11,13 +11,14 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { staticClient } from 'fumadocs-core/search/client/orama-static';
 import type { SortedResult } from 'fumadocs-core/search';
 import { useTranslations } from 'next-intl';
-import { Search, X, ArrowUpRight } from 'lucide-react';
+import { Search } from 'lucide-react';
 import type { Locale } from '@/lib/i18n/config';
 import { createSearchDatabase } from '@/lib/search/tokenizer';
+import type { SearchLessonMeta } from './lessons';
 function Highlight({ text }: { text: string }) {
   return text.split(/(<mark>.*?<\/mark>)/g).map((part, index) => part.startsWith('<mark>') ? <mark key={index}>{part.slice(6, -7)}</mark> : part);
 }
-export default function SearchDialog({ locale, version, onClose }: { locale: Locale; version: string; onClose: () => void }) {
+export default function SearchDialog({ locale, version, lessons, onClose }: { locale: Locale; version: string; lessons: Record<string, SearchLessonMeta>; onClose: () => void }) {
   const t = useTranslations('Search');
   const ui = useTranslations('Ui');
   const [input, setInput] = useState('');
@@ -52,14 +53,20 @@ export default function SearchDialog({ locale, version, onClose }: { locale: Loc
           if (composing.current || event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
           if (event.key === 'ArrowDown' || event.key === 'ArrowUp') { event.preventDefault(); const next = Math.max(0, Math.min(results.length - 1, active + (event.key === 'ArrowDown' ? 1 : -1))); setActive(next); links.current[next]?.scrollIntoView({ block: 'nearest' }); }
           if (event.key === 'Enter' && state === 'ready' && results[active]) { event.preventDefault(); links.current[active]?.click(); }
-        }} /><Dialog.Close className="icon-button" aria-label={ui('close')}><X size={19} /></Dialog.Close></div>
-      <Dialog.Description id="search-description" className="search-hint">{t('hint')}</Dialog.Description>
+        }} /><Dialog.Close className="search-esc" aria-label={ui('close')}>Esc</Dialog.Close></div>
+      <Dialog.Description id="search-description" className="sr-only">{t('hint')}</Dialog.Description>
       <div className="search-results" id="search-results" aria-label={t('results')}>
         <p role="status" className="search-status">{state === 'loading' ? t('loading') : state === 'error' ? t('error') : query && !results.length ? t('empty') : ''}</p>
         {state === 'error' && <button className="button" onClick={() => setAttempt((value) => value + 1)}>{t('retry')}</button>}
-        {state === 'ready' && results.map((result, index) => <Link key={`${result.id}-${index}`} ref={(element) => { links.current[index] = element; }} href={result.url} onClick={onClose} className="search-result" data-selected={active === index} onFocus={() => setActive(index)}>
-          <div>{result.breadcrumbs?.length ? <small>{result.breadcrumbs.join(' / ').replace(/<\/?mark>/g, '')}</small> : null}<span><Highlight text={result.content} /></span></div><ArrowUpRight size={16} aria-hidden />
-        </Link>)}
+        {state === 'ready' && results.map((result, index) => {
+          const meta = lessons[result.url.split('#')[0]];
+          const title = result.type === 'page' ? result.content : (meta?.title ?? result.content);
+          return <Link key={`${result.id}-${index}`} ref={(element) => { links.current[index] = element; }} href={result.url} onClick={onClose} className="search-result" data-selected={active === index} onFocus={() => setActive(index)}>
+            <span className="search-num">{meta?.number ?? ''}</span>
+            <span className="search-copy"><span className="search-title"><Highlight text={title} /></span>{meta ? <small>{meta.module} · {ui('minutes', { count: meta.minutes })}</small> : null}</span>
+            <span className="search-go" aria-hidden="true">↵</span>
+          </Link>;
+        })}
       </div><p className="search-keys">{t('keys')}</p>
     </Dialog.Content></Dialog.Portal></Dialog.Root>;
 }

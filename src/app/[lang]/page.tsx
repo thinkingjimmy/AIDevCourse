@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Active locale and its published course manifests.
- * [OUTPUT]: Framed homepage: zinc hero, exploded Mac, and a dense catalog of real courses.
+ * [OUTPUT]: Homepage body: zinc hero, exploded Mac, and a dense catalog of real courses. The frame, header, and footer come from the locale layout.
  * [POS]: Public entry surface; counts and destinations derive from the catalog.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -11,7 +11,6 @@ import { isLocale } from '@/lib/i18n/config';
 import { getCourses } from '@/lib/content/source';
 import type { CourseManifest } from '@/lib/content/types';
 import { MacExplode } from '@/components/home/mac-explode';
-import { HomeHeader } from '@/components/layout/home-header';
 import { EmptyCourses } from '@/components/course/empty-courses';
 import { pageMetadata } from '@/lib/seo/metadata';
 
@@ -47,8 +46,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
   const courses = getCourses(lang);
   const first = courses[0]?.lessons[0]?.url ?? courses[0]?.url;
   const groups = catalogGroups(courses);
-  return <main id="main-content" className="home-shell" tabIndex={-1}>
-    <HomeHeader locale={lang} />
+  return <main id="main-content" className="home-page" tabIndex={-1}>
     <div className="home-inner home-hero-wrap">
       <section className="home-hero">
         <div className="home-copy">
@@ -76,6 +74,5 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         </Link>)}</div>
       </section>) : <EmptyCourses locale={lang} />}
     </div>
-    <footer className="home-foot"><div className="home-inner"><span>{t('footerLead')}</span><span className="mono">{t('footerMeta')}</span></div></footer>
   </main>;
 }

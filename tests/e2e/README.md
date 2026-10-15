@@ -4,7 +4,7 @@
 
 playwright.config.ts: Three-browser matrix, production server, E2E_PORT, and failure artifacts.
 
-learning.spec.ts: Cross-language learning, reset/tab sync, search, and layout acceptance evidence.
+learning.spec.ts: Cross-language learning, search, and layout acceptance evidence.
 
 site.spec.ts: HTTP, locale, SEO, no-JS, keyboard, and accessibility acceptance tests.
 

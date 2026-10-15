@@ -1,7 +1,6 @@
 {
   "Ui": {
     "home": "Home",
-    "courses": "Courses",
     "about": "About",
     "skip": "Skip to content",
     "menu": "Course navigation",
@@ -23,10 +22,12 @@
     "stale": "This translation has not caught up with the latest original.",
     "original": "Read the original in {language}",
     "noJs": "Reading and language links work without JavaScript. Search, copying, and learning records require JavaScript.",
-    "footer": "Small changes. Verified by you.",
-    "notFoundTitle": "This page is not available",
+    "notFoundTitle": "This part isn't\ninstalled yet",
     "notFoundBody": "The address may be incorrect, or this lesson may not be published in this language yet.",
-    "error": "Something went wrong. Your reading progress is still stored in this browser.",
+    "errorEyebrow": "Error",
+    "errorTitle": "This page had trouble loading",
+    "error": "Your reading progress is still stored in this browser.",
+    "backHome": "Back to home",
     "retry": "Try again",
     "copyAnchor": "Copy link to heading",
     "noHeadings": "No headings",
@@ -42,7 +43,7 @@
     "label": "Choose language",
     "available": "Read this page",
     "courseFallback": "Lesson not translated; opens the course overview",
-    "listFallback": "Course not available; opens the course list"
+    "listFallback": "Course not available; opens the course page"
   },
   "Home": {
     "eyebrow": "Free · Open source · No signup",
@@ -56,14 +57,11 @@
     "navCourses": "Courses",
     "navPaths": "Paths",
     "navHandbook": "Handbook",
-    "navUpdates": "Updates",
     "footerLead": "aidevcourse.com · Free, open source, no tracking",
     "footerMeta": "© 2026 Jimmy Wong",
     "newBadge": "NEW"
   },
   "Course": {
-    "title": "The course library",
-    "intro": "A clear path from your first request to a result you can trust.",
     "emptyTitle": "No courses in this language yet",
     "emptyBody": "This language does not have a course yet. You can learn more about this site.",
     "otherLanguages": "Available in other languages",
@@ -88,31 +86,11 @@
   },
   "Learning": {
     "loading": "Restoring learning records…",
-    "local": "Saved only in this browser.",
     "failure": "This session’s learning records may not be saved. Reading remains available.",
     "complete": "Mark as complete",
     "undo": "Mark as incomplete",
     "completed": "Lesson complete",
-    "incomplete": "Completion mark removed",
-    "progress": "{done} of {total} published lessons completed",
-    "start": "Start learning",
-    "continue": "Continue learning",
-    "review": "Review this course",
-    "allDone": "All published lessons in this language are complete.",
-    "reset": "Reset course progress",
-    "resetTitle": "Start this course again?",
-    "resetBody": "This removes this course’s completion marks and last position across all languages. Other courses and your language preference stay unchanged.",
-    "cancel": "Keep my progress",
-    "confirm": "Reset this course",
-    "resetDone": "Course progress reset.",
-    "progressTitle": "Your progress",
-    "ofLessons": "/ {total, plural, one {# lesson} other {# lessons}}",
-    "progressShort": "{done} of {total} done",
-    "lastRead": "You stopped here",
-    "completeTitle": "Finished reading? Mark it once you have evidence.",
-    "completeBody": "Reaching the end does not complete a lesson. Mark it when your practice has evidence.",
-    "doneBody": "Saved in this browser. You can undo it at any time.",
-    "markDone": "Mark done"
+    "incomplete": "Completion mark removed"
   },
   "Search": {
     "open": "Search lessons",

@@ -33,8 +33,6 @@ export default async function CoursePage({ params }: Props) {
       <div className="home-hero">
         <div className="home-copy">
           <p className="course-crumb">
-            <Link href={`/${lang}/courses`}>{ui('courses')}</Link>
-            <span aria-hidden> / </span>
             <span>{courseLabel(course.slug)}</span>
             <span aria-hidden> · </span>
             <span>{ui(course.level)}</span>

@@ -39,7 +39,7 @@ PRD 的 M6 内容审校与公开发布、I-12 人工语言审校、M5-08 真机�
 
 Next.js 支持从 [package.json 的 postcss 字段](https://nextjs.org/docs/pages/guides/post-css) 读取插件配置；当前锁定版本的 Turbopack 生产构建已实际通过。根目录保留 8 个维护文件，各目录 README 与源文件契约同步调整；内容稳定 ID 和学习记录协议没有变化。列入目录的课时都按普通课时公开。
 
-公开课时 URL 不再包含模块段，形如 `/{lang}/courses/ai-101/{lesson}`。内容目录、大纲和 `meta.json` 仍按模块分组；同一课程内课时 slug 必须唯一。`config/redirects.json` 现为空，旧地址未对外分享，访问时返回 404。稳定课时 ID 和学习记录键 `lac:v1:{courseId}:lesson:{lessonId}` 不变。
+公开课时 URL 不再包含模块段，形如 `/{lang}/courses/ai-101/{lesson}`。内容目录、大纲和 `meta.json` 仍按模块分组；同一课程内课时 slug 必须唯一。`config/redirects.json` 现为空，旧地址未对外分享，访问时返回 404。稳定课时 ID 和学习记录键 `lac:v1:{courseId}:lesson:{lessonId}` 不变。`/[lang]/courses` 课程列表已删除，该地址返回 404；原先指向列表的链接改为当前语言的 `ai-101` 课程页。
 
 2026-09-23，整理后重新执行 `pnpm check`，38 个单元测试通过；`pnpm build`、`CONTENT_TEST=1 pnpm build` 均通过。三浏览器正式公开矩阵 27 项通过、隔离五语矩阵 69 项通过，共 96 项；仅跳过另一种构建专属测试。课程、样例和排序共 42 个文件与整理前逐字一致，文档本地链接、目录成员清单、L2/L3 契约、每目录文件数和 `git diff --check` 均通过。以下干净安装及性能数据属于 v0.4 的原始验收证据；此次整理未重测 Lighthouse。
 
@@ -48,7 +48,7 @@ Next.js 支持从 [package.json 的 postcss 字段](https://nextjs.org/docs/page
 - 内容 collection 使用 `defineDocs` / `createMDX`，配置位于 `config/source.config.ts`。预检先扫描并过滤真实文件，再仅将公开文件交给编译器。`.source/catalog.json` 与 `.source/routes.json` 在构建时冻结；路由、SEO、统计和搜索只消费同一次公开清单。运行时不扫描工作目录。
 - Fumadocs `loader` 使用目录语言 parser，明确关闭 fallback。应用通过 `getCourse(lang, slug)` / `getLesson(lang, course, segments)` / `getOrderedLessons` 等适配接口访问，不暴露内部 `.source` 给客户端。
 - next-intl 只加载当前字典。共享语言白名单生成 HTML 标签、路由、Fumadocs 文案与 SEO。客户端只接收当前语言交互所需四个 namespace；正文保持服务端渲染。
-- 只使用一个 `src/proxy.ts`。允许的无前缀入口私有 307 协商；明确语言不受 Cookie 影响。未知页面按公开 URL 快照重写到本语言错误文档，响应仍为 404。锁定的 Next.js 版本在运行时 `notFound()` 恢复中返回需 hydration 的空 HTML，因此采用静态错误文档确保无 JS 可读，并使用 `skipProxyUrlNormalize` 保持本地重写在同一 origin。页面查询仍保留 notFound 防线。
+- 只使用一个 `src/proxy.ts`。允许的无前缀入口私有 307 协商；明确语言不受 Cookie 影响。未知页面返回对应的静态错误文档，HTTP 状态为 404。锁定的 Next.js 版本里，重写状态会被页面的 200 覆盖，运行时 `notFound()` 又只给出需要 hydration 的空 HTML，因此由 proxy 取回已渲染的错误文档再以 404 送出。页面查询仍保留 notFound 防线。
 - 复用 Fumadocs `DocsLayout`、`DocsPage`、TOC、正文、Shiki、Callout / Steps。课程侧栏局部替换，以统一 1024px 断点、完成标记和本语言统计；移动抽屉及重置确认复用 Radix 焦点管理。不修改 node_modules。
 - 对比度以实际页面 axe 结果验证。纸色保留；代码块使用 Shiki 的浅色背景，避免默认语法红色在纸色上不足 4.5:1。复制动作等待 Clipboard Promise，再给本地化成功或失败反馈。
 - Fumadocs 16.15.13 的实际搜索后端为 ZBSearch，使用 `createSearchAPI('advanced')` 静态导出与 `staticClient`。客户端和建库共用确定的 CJK 字符/双字组合及拉丁重音折叠，避免 Firefox 与 Node 的 ICU 分词差异。索引按语言与构建版本缓存，首次打开才下载，重试不复用失败 Promise。

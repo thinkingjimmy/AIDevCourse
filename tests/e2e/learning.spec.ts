@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Isolated five-language production fixture build.
- * [OUTPUT]: Cross-language learning, reset/tab sync, search, and layout acceptance evidence.
+ * [OUTPUT]: Cross-language learning, search, and layout acceptance evidence.
  * [POS]: Nonpublic engineering matrix; never runs fixtures in the deployment build.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -11,7 +11,7 @@ import { locales, type Locale } from '../../src/lib/i18n/config';
 test.skip(process.env.CONTENT_TEST !== '1', 'Requires the isolated nonpublic fixture build.');
 const path = (locale: string, slug = 'first-change') => `/${locale}/courses/ai-coding/${slug}`;
 const dictionary = (locale: Locale) => JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
-test('shares completion across translations and synchronizes reset between tabs', async ({ page, context }) => {
+test('shares completion across translations', async ({ page, context }) => {
   await page.goto(path('zh'));
   const complete = page.getByRole('button', { name: '标记为已完成', exact: true });
   await expect(complete).toBeEnabled(); await complete.focus(); await page.keyboard.press('Space');
@@ -25,15 +25,6 @@ test('shares completion across translations and synchronizes reset between tabs'
   await expect(other.getByRole('button', { name: 'Mark as incomplete', exact: true })).toBeEnabled();
   await other.goto(path('en', 'useful-context'));
   await expect(other.getByRole('button', { name: 'Mark as incomplete', exact: true })).toBeEnabled();
-  await other.goto('/en/courses/ai-coding');
-  await expect(other.getByRole('link', { name: 'Review this course' })).toBeVisible();
-  await other.getByRole('button', { name: 'Reset course progress' }).click();
-  await other.keyboard.press('Escape');
-  await expect(other.getByRole('button', { name: 'Reset course progress' })).toBeFocused();
-  await expect(other.getByRole('link', { name: 'Review this course' })).toBeVisible();
-  await other.getByRole('button', { name: 'Reset course progress' }).click();
-  await other.getByRole('button', { name: 'Reset this course', exact: true }).click();
-  await expect(page.getByRole('button', { name: '标记为已完成', exact: true })).toHaveAttribute('aria-pressed', 'false');
 });
 test('explains missing translations and keeps direct access a real 404', async ({ page, request }) => {
   await page.goto(path('zh', 'verify-results'));

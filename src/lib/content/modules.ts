@@ -1,7 +1,7 @@
 /**
  * [INPUT]: Ordered lesson summaries and a course slug.
  * [OUTPUT]: Module groups with 1.1-style indexes, plus a short breadcrumb label.
- * [POS]: Shared by the course sidebar, syllabus rows, and server-rendered lesson eyebrows.
+ * [POS]: Shared by the course index, overview rows, and server-rendered lesson eyebrows.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import type { LessonSummary } from './types';

@@ -15,7 +15,8 @@ const catalog = readCatalog();
 mkdirSync('.source', { recursive: true });
 writeFileSync('.source/catalog.json', JSON.stringify(catalog));
 writeFileSync('.source/routes.json', JSON.stringify([
-  ...locales.flatMap((locale) => [`/${locale}`, `/${locale}/courses`, `/${locale}/about`]),
+  '/unavailable',
+  ...locales.flatMap((locale) => [`/${locale}`, `/${locale}/about`, `/${locale}/unavailable`]),
   ...catalog.documents.map((doc) => doc.url),
   // Homepage studies. Not catalog pages, and not a replacement for /[lang].
   '/design', '/design/a', '/design/b', '/design/c',

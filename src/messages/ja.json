@@ -1,7 +1,6 @@
 {
   "Ui": {
     "home": "ホーム",
-    "courses": "コース",
     "about": "このサイトについて",
     "skip": "本文へスキップ",
     "menu": "コースの目次",
@@ -23,10 +22,12 @@
     "stale": "この翻訳は最新の原文にまだ対応していません。",
     "original": "{language}の原文を読む",
     "noJs": "本文と他言語へのリンクは JavaScript なしで利用できます。検索、コピー、学習記録には JavaScript が必要です。",
-    "footer": "小さく変えて、自分で確かめる。",
-    "notFoundTitle": "このページは見つかりません",
+    "notFoundTitle": "この部品は\nまだ付いていません",
     "notFoundBody": "URL が正しくないか、この言語のレッスンがまだ公開されていません。",
-    "error": "ページを読み込めませんでした。保存済みの学習記録はこのブラウザーに残っています。",
+    "errorEyebrow": "エラー",
+    "errorTitle": "ページの読み込みに問題が起きました",
+    "error": "保存済みの学習記録はこのブラウザーに残っています。",
+    "backHome": "ホームに戻る",
     "retry": "再試行",
     "copyAnchor": "見出しへのリンクをコピー",
     "noHeadings": "見出しはありません",
@@ -42,7 +43,7 @@
     "label": "言語を選択",
     "available": "この言語で読む",
     "courseFallback": "翻訳がないため、コース概要を開きます",
-    "listFallback": "この言語のコースは未公開です。コース一覧を開きます"
+    "listFallback": "この言語のコースは未公開です。コースページを開きます"
   },
   "Home": {
     "eyebrow": "無料 · オープンソース · 登録不要",
@@ -56,14 +57,11 @@
     "navCourses": "コース",
     "navPaths": "ルート",
     "navHandbook": "ハンドブック",
-    "navUpdates": "更新",
     "footerLead": "aidevcourse.com · 無料、オープンソース、追跡なし",
     "footerMeta": "© 2026 Jimmy Wong",
     "newBadge": "NEW"
   },
   "Course": {
-    "title": "コース一覧",
-    "intro": "最初の依頼から、確かめられる結果まで。",
     "emptyTitle": "この言語にはまだコースがありません",
     "emptyBody": "この言語のコースはまだありません。先にこのサイトについてご覧ください。",
     "otherLanguages": "他の言語の公開済みコース",
@@ -88,31 +86,11 @@
   },
   "Learning": {
     "loading": "学習記録を復元中…",
-    "local": "学習記録はこのブラウザーにのみ保存されます。",
     "failure": "今回の学習記録は保存されない可能性があります。本文は引き続き読めます。",
     "complete": "完了にする",
     "undo": "未完了に戻す",
     "completed": "レッスン完了",
-    "incomplete": "完了の印を解除しました",
-    "progress": "公開済み {total} レッスン中 {done} レッスン完了",
-    "start": "学習を始める",
-    "continue": "学習を続ける",
-    "review": "コースを復習する",
-    "allDone": "この言語で公開済みのレッスンをすべて完了しました。",
-    "reset": "コースの進捗をリセット",
-    "resetTitle": "このコースを最初から始めますか？",
-    "resetBody": "このコースの全言語で共有する完了の印と最終位置を削除します。他のコースと言語設定は変わりません。",
-    "cancel": "進捗を残す",
-    "confirm": "リセットする",
-    "resetDone": "コースの進捗をリセットしました。",
-    "progressTitle": "あなたの進捗",
-    "ofLessons": "/ {total} レッスン",
-    "progressShort": "{total} 件中 {done} 件完了",
-    "lastRead": "前回ここまで",
-    "completeTitle": "読み終えたら、根拠を確かめてから完了に",
-    "completeBody": "最後まで読んでも自動では完了しません。練習の根拠がそろったらマークしてください。",
-    "doneBody": "このブラウザに保存しました。いつでも取り消せます。",
-    "markDone": "完了にする"
+    "incomplete": "完了の印を解除しました"
   },
   "Search": {
     "open": "レッスンを検索",

@@ -2,6 +2,6 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-page.tsx: Complete server HTML for a proxy response carrying HTTP 404.
+page.tsx: Localized 404 HTML. The proxy returns this document with HTTP 404.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.
