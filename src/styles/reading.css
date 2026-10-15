@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Fumadocs layout slots, shared tokens, and state primitives from globals.css.
- * [OUTPUT]: 1024/1280 lesson layouts, course sidebar, bounded prose, completion card, and the lesson wiki (desktop aside, mobile details).
+ * [OUTPUT]: 1024/1280 lesson layouts, course sidebar, bounded prose, completion card, and the lesson wiki (desktop aside with tools pinned to the viewport, mobile details).
  * [POS]: Minimal documented overrides around the reused document renderer; lesson routes only.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -132,7 +132,7 @@ html:lang(zh-Hans) .prose, html:lang(ja) .prose { line-height: 1.95; }
 .wiki-side-desktop { display: block; grid-column: 1; grid-row: 1; align-self: stretch; min-height: 100vh; background: #fafafa; border-right: 1px solid #e4e4e7; }
 .wiki-side-mobile.mobile-course-bar { display: none; grid-area: auto; }
 .wiki-side-toggle { display: none; }
-.wiki-side-body { display: flex; flex-direction: column; gap: 14px; max-height: 100vh; overflow: auto; padding: 20px 14px 16px; position: sticky; top: 0; }
+.wiki-side-body { display: flex; flex-direction: column; gap: 14px; height: 100vh; overflow: hidden; padding: 20px 14px 16px; position: sticky; top: 0; }
 .wiki-logo { color: inherit; font-size: 15px; }
 .wiki-course { color: inherit; font-size: 16px; font-weight: 600; line-height: 1.4; text-decoration: none; }
 .wiki-course:hover { color: var(--ink); }
@@ -186,7 +186,8 @@ html:lang(zh-Hans) .prose, html:lang(ja) .prose { line-height: 1.95; }
   .wiki-side-mobile.mobile-course-bar { display: block; position: sticky; top: 0; z-index: 30; min-height: 0; padding: 0; gap: 0; border: 0; border-bottom: 1px solid #e4e4e7; background: #fafafa; grid-area: auto; }
   .wiki-side-toggle { display: flex; align-items: center; min-height: 48px; padding: 0 16px; color: var(--ink); font-size: 14px; font-weight: 500; list-style: none; cursor: pointer; }
   .wiki-side-toggle::-webkit-details-marker { display: none; }
-  .wiki-side-body { position: static; max-height: 70vh; overflow: auto; border-top: 1px solid #e4e4e7; }
+  .wiki-side-body { position: static; height: auto; max-height: 70vh; overflow: auto; border-top: 1px solid #e4e4e7; }
+  .wiki-tree { flex: none; min-height: auto; overflow: visible; }
   .wiki .learn-main { padding: 28px 20px 72px; }
   .wiki .learn-pager { flex-direction: column; }
   .wiki .learn-pager a:last-child { margin-left: 0; text-align: left; }
