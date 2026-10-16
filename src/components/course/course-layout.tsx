@@ -1,11 +1,11 @@
 /**
  * [INPUT]: Course and progress from progress/progress-provider, plus search and language data for the sidebar footer.
- * [OUTPUT]: Full-bleed wiki shell. Desktop left nav is a shadcn Sidebar; mobile ≤960px opens the same nav in the sidebar sheet. Module rows are a number and a title. Completed lessons show a green check from the existing progress record. No search field in the tree.
+ * [OUTPUT]: Full-bleed wiki shell. Desktop left nav is a shadcn Sidebar; mobile ≤960px opens the same nav in the sidebar sheet. Module rows are a number and a title, and groups the reader opened stay open across lesson changes. Completed lessons show a green check from the existing progress record. No search field in the tree.
  * [POS]: Client lesson navigation; article content stays server rendered. Course overviews do not mount this.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 'use client';
-import { useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useSyncExternalStore, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -20,6 +20,43 @@ import type { SearchLessonMeta } from '../search/lessons';
 import { useProgress, useLessonStates } from '../progress/progress-provider';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarProvider, useSidebar } from '@/components/ui/sidebar';
 
+const closedModules: Record<string, boolean> = {};
+const openByCourse = new Map<string, Record<string, boolean>>();
+const openListeners = new Set<() => void>();
+function moduleStorageKey(courseId: string) { return `aidevcourse:modules:${courseId}`; }
+function loadOpenModules(courseId: string) {
+  const cached = openByCourse.get(courseId);
+  if (cached) return cached;
+  let value: Record<string, boolean> = {};
+  try {
+    const raw = sessionStorage.getItem(moduleStorageKey(courseId));
+    const parsed = raw ? JSON.parse(raw) as unknown : null;
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      value = Object.fromEntries(Object.entries(parsed).filter((entry): entry is [string, boolean] => typeof entry[1] === 'boolean'));
+    }
+  } catch { /* A blocked session store still keeps the in-memory map for this visit. */ }
+  openByCourse.set(courseId, value);
+  return value;
+}
+function publishOpenModules(courseId: string, value: Record<string, boolean>) {
+  openByCourse.set(courseId, value);
+  try { sessionStorage.setItem(moduleStorageKey(courseId), JSON.stringify(value)); } catch { /* In-memory state still covers this visit. */ }
+  openListeners.forEach((listener) => listener());
+}
+function useOpenModules(courseId: string) {
+  const open = useSyncExternalStore(
+    (listener) => { openListeners.add(listener); return () => { openListeners.delete(listener); }; },
+    () => loadOpenModules(courseId),
+    () => closedModules,
+  );
+  const setOpen = useCallback((update: (value: Record<string, boolean>) => Record<string, boolean>) => {
+    const current = loadOpenModules(courseId);
+    const next = update(current);
+    if (next !== current) publishOpenModules(courseId, next);
+  }, [courseId]);
+  return [open, setOpen] as const;
+}
+
 function ModuleTree() {
   const ui = useTranslations('Ui');
   const courseCopy = useTranslations('Course');
@@ -28,7 +65,11 @@ function ModuleTree() {
   const pathname = usePathname();
   const groups = groupModules(course.lessons);
   const currentModule = groups.find((group) => group.lessons.some(({ lesson }) => lesson.url === pathname))?.module;
-  const [open, setOpen] = useState<Record<string, boolean>>({});
+  const [open, setOpen] = useOpenModules(course.id);
+  useEffect(() => {
+    if (!currentModule) return;
+    setOpen((value) => value[currentModule] === true ? value : { ...value, [currentModule]: true });
+  }, [currentModule, setOpen]);
   return <SidebarGroup className="wiki-tree p-0">
     <nav aria-label={ui('menu')} className="course-navigation">
       {groups.map((group, index) => {
