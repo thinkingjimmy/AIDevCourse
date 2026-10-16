@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Course and progress from progress/progress-provider, plus search and language data for the sidebar footer.
- * [OUTPUT]: Full-bleed wiki shell. Desktop left nav is a shadcn Sidebar; mobile ≤960px opens the same nav in the sidebar sheet. Module rows are a number and a title. No search field in the tree.
+ * [OUTPUT]: Full-bleed wiki shell. Desktop left nav is a shadcn Sidebar; mobile ≤960px opens the same nav in the sidebar sheet. Module rows are a number and a title. Completed lessons show a green check from the existing progress record. No search field in the tree.
  * [POS]: Client lesson navigation; article content stays server rendered. Course overviews do not mount this.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -9,6 +9,7 @@ import { useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { Check } from 'lucide-react';
 import { groupModules } from '@/lib/content/modules';
 import type { Locale } from '@/lib/i18n/config';
 import type { Catalog } from '@/lib/content/types';
@@ -21,7 +22,9 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, Si
 
 function ModuleTree() {
   const ui = useTranslations('Ui');
+  const courseCopy = useTranslations('Course');
   const { course } = useProgress();
+  const { stateOf } = useLessonStates();
   const pathname = usePathname();
   const groups = groupModules(course.lessons);
   const currentModule = groups.find((group) => group.lessons.some(({ lesson }) => lesson.url === pathname))?.module;
@@ -39,9 +42,13 @@ function ModuleTree() {
             {expanded && <SidebarMenuSub>
               {group.lessons.map(({ lesson }) => {
                 const current = pathname === lesson.url;
+                const done = stateOf(lesson) === 'done';
                 return <SidebarMenuSubItem key={lesson.id}>
                   <SidebarMenuSubButton asChild isActive={current} className={current ? 'is-current' : undefined}>
-                    <Link href={lesson.url} aria-current={current ? 'page' : undefined}>{lesson.title}</Link>
+                    <Link href={lesson.url} aria-current={current ? 'page' : undefined}>
+                      <span className="wiki-lesson-title">{lesson.title}</span>
+                      {done && <span className="wiki-lesson-check"><Check size={14} strokeWidth={2.25} aria-hidden /><span className="sr-only">{courseCopy('doneMark')}</span></span>}
+                    </Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuSubItem>;
               })}

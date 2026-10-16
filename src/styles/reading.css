@@ -148,7 +148,10 @@ html:lang(zh-Hans) .prose, html:lang(ja) .prose { line-height: 1.95; }
 .wiki-mod-title { min-width: 0; font-weight: 500; }
 [data-sidebar="menu"] { gap: 0; }
 [data-sidebar="menu-sub"] { margin: 0 0 6px; translate: none; border: 0; padding: 0; gap: 0; }
-[data-sidebar="menu-sub-button"] { height: auto; margin: 1px 0; padding: 6px 8px 6px 28px; border-radius: 6px; color: #3f3f46; font-size: 13.5px; font-weight: 400; line-height: 1.45; }
+[data-sidebar="menu-sub-button"] { height: auto; width: 100%; margin: 1px 0; padding: 6px 8px 6px 28px; border-radius: 6px; color: #3f3f46; font-size: 13.5px; font-weight: 400; line-height: 1.45; }
+.wiki-lesson-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wiki-lesson-check { display: inline-flex; flex: none; align-items: center; margin-left: auto; color: #059669; }
+.wiki-lesson-check svg { color: #059669; }
 [data-sidebar="menu-sub-button"]:hover { background: #f4f4f5; color: #09090b; }
 [data-sidebar="menu-sub-button"][data-active="true"] { background: #f4f4f5; color: #09090b; font-weight: 700; }
 .wiki-tools { display: flex; flex-direction: row; align-items: center; gap: 12px; margin-top: 0; padding: 12px 14px 16px; border-top: 1px solid #e4e4e7; }
