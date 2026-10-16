@@ -4,6 +4,8 @@
     "about": "About",
     "skip": "Skip to content",
     "menu": "Course navigation",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar",
     "close": "Close",
     "toc": "On this page",
     "previous": "Previous lesson",
@@ -30,6 +32,7 @@
     "backHome": "Back to home",
     "retry": "Try again",
     "copyAnchor": "Copy link to heading",
+    "copyAnchorFailed": "Could not copy the link. Use the heading link.",
     "noHeadings": "No headings",
     "code": "Code",
     "lessonCount": "{count, plural, one {# lesson} other {# lessons}}",
@@ -51,14 +54,14 @@
     "intro": "From writing code and tuning models to building an agent, each lesson takes one piece apart and hands you a small task. Put it back together, and the whole machine makes sense.",
     "start": "Start from the first lesson",
     "courseTitle": "Courses",
-    "courseIntro": "Grouped by track. Pick one and start.",
+    "courseIntro": "Choose a course and learn at your own pace.",
     "navLabel": "Primary",
     "navCourses": "Courses",
     "navPaths": "Paths",
     "navHandbook": "Handbook",
     "footerLead": "aidevcourse.com · Free, open source, no tracking",
     "footerMeta": "© 2026 Jimmy Wong",
-    "newBadge": "NEW"
+    "browseCourses": "Browse courses"
   },
   "Course": {
     "emptyTitle": "No courses in this language yet",
@@ -81,7 +84,9 @@
     "before": "Before you start",
     "doneMark": "Completed",
     "contents": "Contents",
-    "progressLabel": "Progress {done} / {total}"
+    "progressLabel": "Progress {done} / {total}",
+    "updating": "Content is being updated",
+    "updatingBody": "New lessons are being prepared. They will appear here when published."
   },
   "Learning": {
     "loading": "Restoring learning records…",

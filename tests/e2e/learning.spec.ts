@@ -74,8 +74,9 @@ for (const locale of locales) {
     const indexes: string[] = [];
     page.on('request', (request) => { if (request.url().includes('/api/search/')) indexes.push(request.url()); });
     await page.goto(path(locale));
+    await page.waitForLoadState('networkidle');
     expect(indexes).toHaveLength(0);
-    await page.getByRole('button', { name: t.Search.open, exact: true }).click();
+    await page.keyboard.press('Control+k');
     const input = page.getByRole('textbox', { name: t.Search.open });
     for (const query of queries[locale]) {
       await input.fill(query);
@@ -123,12 +124,13 @@ for (const locale of locales) {
 test('search retries a failed index request and clears old-language results', async ({ page }) => {
   let attempts = 0;
   await page.route('**/api/search/en?*', (route) => { if (attempts++ === 0) return route.abort(); return route.continue(); });
-  await page.goto('/en'); await page.getByRole('button', { name: 'Search lessons' }).click();
+  await page.goto('/en'); await page.waitForLoadState('networkidle'); await page.keyboard.press('Control+k');
   await page.getByRole('button', { name: 'Retry search' }).click();
   await page.getByRole('textbox', { name: 'Search lessons' }).fill('context');
   await expect(page.locator('.search-result').first()).toBeVisible();
   await page.keyboard.press('Escape');
   await page.locator('.language-picker summary').click(); await page.locator('.language-options a[href="/fr"]').click();
-  await page.getByRole('button', { name: 'Rechercher une leçon' }).click();
+  await page.waitForLoadState('networkidle');
+  await page.keyboard.press('Control+k');
   await expect(page.getByRole('textbox')).toHaveValue(''); await expect(page.locator('.search-result')).toHaveCount(0);
 });

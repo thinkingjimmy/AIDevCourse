@@ -1,6 +1,6 @@
 /**
- * [INPUT]: Course and progress from progress/progress-provider, plus search and language data for the sidebar footer.
- * [OUTPUT]: Full-bleed wiki shell. Desktop left nav is a shadcn Sidebar; mobile ≤960px opens the same nav in the sidebar sheet. Module rows are a number and a title, and groups the reader opened stay open across lesson changes. Completed lessons show a green check from the existing progress record. No search field in the tree.
+ * [INPUT]: Course/progress context, shared Sidebar controls, keyboard search, and language data.
+ * [OUTPUT]: Lesson shell with keyboard-only search, collapsible desktop sidebar, and mobile sheet. Sidebar and module state survive lesson changes; blocked storage keeps in-memory state.
  * [POS]: Client lesson navigation; article content stays server rendered. Course overviews do not mount this.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -9,16 +9,37 @@ import { useCallback, useEffect, useSyncExternalStore, type ReactNode } from 're
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { SiteLogo } from '@/components/layout/page-primitives';
+import { CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';
 import { groupModules } from '@/lib/content/modules';
 import type { Locale } from '@/lib/i18n/config';
 import type { Catalog } from '@/lib/content/types';
 import { site } from '@/lib/site-config';
 import { LanguageSwitcher } from '../layout/language-switcher';
-import { SearchTrigger } from '../search/search-trigger';
+import { SearchShortcut } from '../search/search-shortcut';
 import type { SearchLessonMeta } from '../search/lessons';
 import { useProgress, useLessonStates } from '../progress/progress-provider';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarProvider, useSidebar } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarProvider, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
+
+let sidebarOpen: boolean | undefined;
+const sidebarListeners = new Set<() => void>();
+function subscribeSidebar(listener: () => void) {
+  sidebarListeners.add(listener);
+  return () => { sidebarListeners.delete(listener); };
+}
+function readSidebarOpen() {
+  if (sidebarOpen === undefined) {
+    try { sidebarOpen = sessionStorage.getItem('aidevcourse:sidebar') !== 'closed'; }
+    catch { sidebarOpen = true; }
+  }
+  return sidebarOpen;
+}
+function setSidebarOpen(open: boolean) {
+  sidebarOpen = open;
+  try { sessionStorage.setItem('aidevcourse:sidebar', open ? 'open' : 'closed'); } catch { /* Keep this visit usable without storage. */ }
+  sidebarListeners.forEach((listener) => listener());
+}
 
 const closedModules: Record<string, boolean> = {};
 const openByCourse = new Map<string, Record<string, boolean>>();
@@ -70,25 +91,25 @@ function ModuleTree() {
     if (!currentModule) return;
     setOpen((value) => value[currentModule] === true ? value : { ...value, [currentModule]: true });
   }, [currentModule, setOpen]);
-  return <SidebarGroup className="wiki-tree p-0">
-    <nav aria-label={ui('menu')} className="course-navigation">
+  return <SidebarGroup className="mt-1 mr-0 mb-0 ml-0 py-0 pr-2.5 pl-[18px]">
+    <nav aria-label={ui('menu')} className="course-navigation flex flex-col gap-1.5 text-[14px]">
       {groups.map((group, index) => {
         const expanded = open[group.module] ?? group.module === currentModule;
-        return <SidebarMenu key={group.module}>
+        return <SidebarMenu className="gap-0" key={group.module}>
           <SidebarMenuItem>
-            <SidebarMenuButton className="wiki-module-button" aria-expanded={expanded} onClick={() => setOpen((value) => ({ ...value, [group.module]: !expanded }))}>
-              <span className="wiki-mod-num">{String(index + 1).padStart(2, '0')}</span>
-              <span className="wiki-mod-title">{group.title}</span>
+            <SidebarMenuButton className="h-auto justify-start gap-2 rounded-md px-2 py-[7px] text-[14px] leading-[1.4] font-medium text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground" aria-expanded={expanded} onClick={() => setOpen((value) => ({ ...value, [group.module]: !expanded }))}>
+              <span className="flex-none font-mono text-[12px] font-normal text-muted-foreground">{String(index + 1).padStart(2, '0')}</span>
+              <span className="min-w-0 font-medium">{group.title}</span>
             </SidebarMenuButton>
-            {expanded && <SidebarMenuSub>
+            {expanded && <SidebarMenuSub className="m-0 mb-1.5 translate-x-0 gap-0 border-0 p-0">
               {group.lessons.map(({ lesson }) => {
                 const current = pathname === lesson.url;
                 const done = stateOf(lesson) === 'done';
                 return <SidebarMenuSubItem key={lesson.id}>
-                  <SidebarMenuSubButton asChild isActive={current} className={current ? 'is-current' : undefined}>
+                  <SidebarMenuSubButton asChild isActive={current} className="my-px h-auto w-full rounded-md py-1.5 pr-2 pl-7 text-[13.5px] leading-[1.45] font-normal text-sidebar-foreground hover:bg-accent hover:text-foreground data-[active=true]:bg-accent data-[active=true]:font-bold data-[active=true]:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground">
                     <Link href={lesson.url} aria-current={current ? 'page' : undefined}>
-                      <span className="wiki-lesson-title">{lesson.title}</span>
-                      {done && <span className="wiki-lesson-check"><Check size={14} strokeWidth={2.25} aria-hidden /><span className="sr-only">{courseCopy('doneMark')}</span></span>}
+                      <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">{lesson.title}</span>
+                      {done && <span className="ml-auto inline-flex flex-none items-center text-[#059669]"><CheckIcon size={14} weight="bold" aria-hidden /><span className="sr-only">{courseCopy('doneMark')}</span></span>}
                     </Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuSubItem>;
@@ -108,22 +129,27 @@ function CourseSidebar({ locale, version, lessons, translations }: {
   const courseCopy = useTranslations('Course');
   const { course } = useProgress();
   const { summary, ready } = useLessonStates();
+  const { open, isMobile } = useSidebar();
+  const toggleLabel = isMobile ? ui('close') : ui(open ? 'collapseSidebar' : 'expandSidebar');
   const done = ready ? summary.done : 0;
-  return <Sidebar collapsible="offcanvas">
-    <SidebarHeader className="wiki-side-head">
-      <Link href={`/${locale}`} className="home-logo wiki-logo" aria-label={`${site.name} · ${ui('home')}`}><span className="home-mark" aria-hidden="true" /><span>aidevcourse</span></Link>
-      <Link href={course.url} className="wiki-course">{course.title}</Link>
-      <div className="wiki-progress">
-        <p>{courseCopy('progressLabel', { done, total: summary.total })}</p>
-        <div className="wiki-meter" aria-hidden="true"><span style={{ width: `${ready ? summary.percent : 0}%` }} /></div>
+  return <Sidebar collapsible="icon">
+    <SidebarHeader className="w-full gap-3.5 pt-[18px] pr-[18px] pb-2 pl-7 group-data-[collapsible=icon]:px-2">
+      <div className="flex items-center justify-between gap-3">
+        <SiteLogo href={`/${locale}`} className="text-[15px] group-data-[collapsible=icon]:hidden" aria-label={`${site.name} · ${ui('home')}`} />
+        <SidebarTrigger aria-label={toggleLabel} title={toggleLabel} />
+      </div>
+      <Link href={course.url} className="text-[16px] leading-[1.4] font-semibold text-inherit no-underline hover:text-foreground group-data-[collapsible=icon]:hidden">{course.title}</Link>
+      <div className="group-data-[collapsible=icon]:hidden">
+        <p className="m-0 mb-2 font-mono text-[12px] text-muted-foreground">{courseCopy('progressLabel', { done, total: summary.total })}</p>
+        <div className="h-0.5 bg-border" aria-hidden="true"><span className="block h-full bg-foreground" style={{ width: `${ready ? summary.percent : 0}%` }} /></div>
       </div>
     </SidebarHeader>
-    <SidebarContent>
+    <SidebarContent className="w-full group-data-[collapsible=icon]:hidden">
       <ModuleTree />
     </SidebarContent>
-    <SidebarFooter className="wiki-tools">
-      <SearchTrigger locale={locale} version={version} lessons={lessons} compact />
-      <LanguageSwitcher locale={locale} translations={translations} compact />
+    <SidebarFooter className="mt-0 w-full flex-row items-center gap-3 border-t border-border pt-3 pr-[18px] pb-4 pl-7 group-data-[collapsible=icon]:hidden">
+      <SearchShortcut locale={locale} version={version} lessons={lessons} />
+      <LanguageSwitcher side="top" locale={locale} translations={translations} />
     </SidebarFooter>
   </Sidebar>;
 }
@@ -131,29 +157,30 @@ function CourseSidebar({ locale, version, lessons, translations }: {
 function CourseMenuButton() {
   const ui = useTranslations('Ui');
   const { setOpenMobile } = useSidebar();
-  return <button type="button" className="wiki-side-toggle" onClick={() => setOpenMobile(true)}>{ui('menu')}</button>;
+  return <Button variant="plain" size="reset" className="sticky top-0 z-30 hidden min-h-12 w-full items-center justify-start border-0 border-b border-border bg-surface px-4 text-left text-[14px] font-medium text-foreground max-[961px]:flex" onClick={() => setOpenMobile(true)}>{ui('menu')}</Button>;
 }
 
 function MobileBarSentinel() {
   const { isMobile, openMobile } = useSidebar();
   if (!isMobile || openMobile) return null;
-  return <div className="mobile-course-bar" hidden style={{ display: 'none' }} />;
+  return <div className="mobile-course-bar hidden" hidden />;
 }
 
 export function LearnShell({ locale, version, lessons, translations, children }: {
   locale: Locale; version: string; lessons: Record<string, SearchLessonMeta>; translations: Catalog['translations']; children: ReactNode;
 }) {
   const ui = useTranslations('Ui');
-  return <SidebarProvider className="wiki" open onOpenChange={() => {}}>
+  const open = useSyncExternalStore(subscribeSidebar, readSidebarOpen, () => true);
+  return <SidebarProvider className="bg-background text-foreground" open={open} onOpenChange={setSidebarOpen}>
     <CourseSidebar locale={locale} version={version} lessons={lessons} translations={translations} />
-    <SidebarInset className="wiki-stage">
+    <SidebarInset className="min-w-0 bg-background">
       <CourseMenuButton />
-      <div className="wiki-stage-grid">{children}</div>
+      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_220px] items-start max-[1101px]:grid-cols-[minmax(0,1fr)]">{children}</div>
     </SidebarInset>
     <MobileBarSentinel />
     <noscript>
-      <details className="mobile-course-bar wiki-noscript-nav">
-        <summary className="wiki-side-toggle" role="button">{ui('menu')}</summary>
+      <details className="mobile-course-bar sticky top-0 z-30 hidden border-b border-border bg-surface max-[961px]:flex [&_.course-navigation]:max-h-[70vh] [&_.course-navigation]:overflow-auto [&_.course-navigation]:px-3.5 [&_.course-navigation]:pt-2 [&_.course-navigation]:pb-4">
+        <summary className="sticky top-0 z-30 flex min-h-12 w-full items-center border-b border-border bg-surface px-4 text-left text-[14px] font-medium text-foreground [&::-webkit-details-marker]:hidden" role="button">{ui('menu')}</summary>
         <ModuleTree />
       </details>
     </noscript>

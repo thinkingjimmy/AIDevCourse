@@ -1,5 +1,5 @@
 /**
- * [INPUT]: Static exploded-chip SVG and the iso-kit lift (up axis, per-layer distance, stagger).
+ * [INPUT]: Static exploded-chip SVG, shared illustration paint, and the iso-kit lift (up axis, per-layer distance, stagger).
  * [OUTPUT]: Decorative course figure that opens once and stays open. Callouts appear after the last layer settles. Hover eases it shut from the current pose and hides the callouts first.
  * [POS]: Course hero right column. The slot is the fully exploded bounds.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
@@ -8,7 +8,6 @@
 
 import { useEffect, useRef } from 'react';
 import { CHIP_EXPLODE_SVG, CHIP_UP } from './chip-explode-markup';
-import styles from './chip-explode.module.css';
 
 const INTRO = 0.4;
 const STAG = 0.07;
@@ -63,7 +62,7 @@ export function ChipExplode() {
       for (const channel of channels) channel.paint(ease(channel.u));
     };
     const settled = () => intro <= 0 && channels.every((channel) => channel.delayLeft <= 0 && channel.u === aim);
-    const showCallouts = (on: boolean) => root.classList.toggle(styles.settled, on);
+    const showCallouts = (on: boolean) => root.setAttribute('data-settled', String(on));
     const stop = () => {
       cancelAnimationFrame(frame);
       frame = 0;
@@ -166,5 +165,5 @@ export function ChipExplode() {
     };
   }, []);
 
-  return <div ref={ref} className={styles.stage} aria-hidden="true" dangerouslySetInnerHTML={{ __html: CHIP_EXPLODE_SVG }} />;
+  return <div ref={ref} data-anatomy="chip" className="pointer-events-auto absolute inset-0 bg-transparent" aria-hidden="true" dangerouslySetInnerHTML={{ __html: CHIP_EXPLODE_SVG }} />;
 }

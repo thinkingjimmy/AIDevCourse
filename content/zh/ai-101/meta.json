@@ -1,12 +1,6 @@
 {
-  "title": "AI 入门",
+  "title": "AI 101",
   "pages": [
-    "index",
-    "models",
-    "access",
-    "context",
-    "agents",
-    "checking",
-    "safety"
+    "index"
   ]
 }

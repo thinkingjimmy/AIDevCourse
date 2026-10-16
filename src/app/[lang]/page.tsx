@@ -1,36 +1,21 @@
 /**
- * [INPUT]: Active locale and its published course manifests.
- * [OUTPUT]: Homepage body: zinc hero, exploded Mac, and a dense catalog of real courses. The frame, header, and footer come from the locale layout.
+ * [INPUT]: Active locale, published course manifests, shared CourseCard, and the Phosphor action arrow.
+ * [OUTPUT]: Homepage body with a zinc hero, exploded Mac, and a two-column grid of horizontal course cards.
  * [POS]: Public entry surface; counts and destinations derive from the catalog.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import Link from 'next/link';
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { isLocale } from '@/lib/i18n/config';
 import { getCourses } from '@/lib/content/source';
-import type { CourseManifest } from '@/lib/content/types';
+import { Button } from '@/components/ui/button';
+import { PageContainer, PageTitle, PageActions, HeroGrid, HeroCopy, HeroLead } from '@/components/layout/page-primitives';
 import { MacExplode } from '@/components/home/mac-explode';
 import { EmptyCourses } from '@/components/course/empty-courses';
+import { CourseCard } from '@/components/course/course-card';
 import { pageMetadata } from '@/lib/seo/metadata';
-
-function seriesLabel(slug: string) {
-  const [first, ...rest] = slug.split('-').filter(Boolean);
-  return [first.toUpperCase(), ...rest].join(' ');
-}
-
-function catalogGroups(courses: CourseManifest[]) {
-  const groups: { id: string; label: string; courses: { course: CourseManifest; fresh: boolean }[] }[] = [];
-  courses.forEach((course, index) => {
-    let group = groups.find((item) => item.id === course.slug);
-    if (!group) {
-      group = { id: course.slug, label: seriesLabel(course.slug), courses: [] };
-      groups.push(group);
-    }
-    group.courses.push({ course, fresh: index === 0 });
-  });
-  return groups;
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params; if (!isLocale(lang)) return {};
@@ -41,37 +26,31 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params; if (!isLocale(lang)) notFound(); setRequestLocale(lang);
   const t = await getTranslations({ locale: lang, namespace: 'Home' });
-  const ui = await getTranslations({ locale: lang, namespace: 'Ui' });
   const course = await getTranslations({ locale: lang, namespace: 'Course' });
   const courses = getCourses(lang);
-  const first = courses[0]?.lessons[0]?.url ?? courses[0]?.url;
-  const groups = catalogGroups(courses);
-  return <main id="main-content" className="home-page" tabIndex={-1}>
-    <div className="home-inner home-hero-wrap">
-      <section className="home-hero">
-        <div className="home-copy">
-          <p className="home-eyebrow"><span className="home-dot" aria-hidden />{t('eyebrow')}</p>
-          <h1>{t('title')}</h1>
-          <p className="home-sub">{t('intro')}</p>
-          <div className="home-ctas">
-            {first
-              ? <Link className="home-cta" href={first}>{t('start')}<span aria-hidden> →</span></Link>
-              : <Link className="home-cta" href={`/${lang}/about`}>{course('aboutSite')}</Link>}
-          </div>
-        </div>
-        <div className="home-deco"><MacExplode /></div>
-      </section>
-    </div>
-    <hr className="home-rule" />
-    <div className="home-inner home-catalog" id="catalog">
-      <div className="home-chapter"><h2>{t('courseTitle')}</h2><p>{t('courseIntro')}</p></div>
-      {courses.length ? groups.map((group) => <section className="home-series" key={group.id}>
-        <h3>{group.label}</h3>
-        <div className="home-grid">{group.courses.map(({ course: item, fresh }) => <Link className="home-row" key={item.id} href={item.url}>
-          <b>{item.title}{fresh ? <span className="home-new">{t('newBadge')}</span> : null}</b>
-          <span className="meta">{ui('lessonCount', { count: item.lessons.length })}</span>
-        </Link>)}</div>
-      </section>) : <EmptyCourses locale={lang} />}
-    </div>
+  const first = courses.find((item) => item.lessons.length)?.lessons[0]?.url;
+  return <main id="main-content" className="flex flex-[1_0_auto] flex-col" tabIndex={-1}>
+    <PageContainer className="overflow-x-clip pt-[70px] pb-[72px] max-[721px]:pt-9 max-[721px]:pb-7">
+      <HeroGrid>
+        <HeroCopy>
+          <p className="m-0 mb-[22px] inline-flex items-center gap-2 font-sans text-[14px] font-normal tracking-normal text-muted-foreground normal-case"><span className="size-1.5 rounded-full bg-[#22c55e]" aria-hidden />{t('eyebrow')}</p>
+          <PageTitle variant="hero">{t('title')}</PageTitle>
+          <HeroLead>{t('intro')}</HeroLead>
+          <PageActions>
+            {courses.length
+              ? <Button asChild variant="action" size="action"><Link href={first ?? '#catalog'}>{first ? t('start') : t('browseCourses')}<ArrowRightIcon size={16} aria-hidden /></Link></Button>
+              : <Button asChild variant="action" size="action"><Link href={`/${lang}/about`}>{course('aboutSite')}</Link></Button>}
+          </PageActions>
+        </HeroCopy>
+        <div className="relative -left-5 aspect-[450.06/515.9] w-[min(320px,100%)] min-w-0 justify-self-start overflow-hidden bg-transparent max-[1101px]:w-[min(220px,100%)] max-[841px]:w-[min(228px,100%)] max-[841px]:max-w-[228px] max-[841px]:justify-self-center"><MacExplode /></div>
+      </HeroGrid>
+    </PageContainer>
+    <hr className="m-0 h-0 border-0 border-t border-border" />
+    <PageContainer className="flex-[1_0_auto] pt-12 pb-[72px]" id="catalog">
+      <div className="mb-7"><h2 className="m-0 font-sans text-[22px] font-semibold tracking-[-.02em]">{t('courseTitle')}</h2><p className="m-0 mt-1 text-[14px] text-muted-foreground">{t('courseIntro')}</p></div>
+      {courses.length ? <div data-slot="course-grid" className="grid grid-cols-2 gap-5 max-[721px]:grid-cols-1">
+        {courses.map((item) => <CourseCard key={item.id} course={item} />)}
+      </div> : <EmptyCourses locale={lang} />}
+    </PageContainer>
   </main>;
 }

@@ -25,16 +25,26 @@
 }
 ```
 
-课程介绍不计入课时和时长。公开课程至少有一篇公开课时；完全没有课程的语言会显示本地化空状态。
+课程介绍不计入课时和时长。课程可以先发布介绍，再逐步添加课时。没有课时的课程保留首页卡片和总览，显示「内容更新中」，不显示开始第一课或课时统计。完全没有课程的语言会显示本地化空状态。
 
 ## 编写与检查
 
-标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片和 Fumadocs 的 `Callout`、`Steps`、`Step`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
+标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`Steps`、`Step`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
 
 ```mdx
 <Callout title="Check the result" type="info">
 Read the diff and verify the actual behavior.
 </Callout>
+```
+
+`JimmyNote` 用于个人观察或补充说明，显示浅灰底和固定的深色「Jimmy」标签。正文支持多段文字、强调和链接，无需 import。可在 [组件预览](http://localhost:3000/design/components) 检查样式。
+
+```mdx
+<JimmyNote>
+Add a personal observation here.
+
+Use **emphasis** and [links](https://example.com) when useful.
+</JimmyNote>
 ```
 
 组件只允许静态 `title` / `type` 字符串。禁止 import、JavaScript 表达式、原始 HTML、iframe、脚本和未知组件；代码围栏里的示例不会执行。注册入口为 `src/components/mdx/components.tsx`，不要为了单篇文章绕过校验器。
@@ -91,6 +101,6 @@ pnpm build
 
 选择题、视频播放器、交互练习、答案展开和提示词对比继续延期。先用文字写清文章目标，再在 PRD 的 T 系列记录具体需求、真实材料、预期行为和验收条件；不要提前创建空组件。
 
-公开课程是 `content/zh/ai-101`（AI 入门）：六个模块、31 篇课时，列入目录的课都按普通课时公开。课时 URL 是 `/{lang}/courses/ai-101/{lesson}`，模块只留在目录、大纲和 `meta.json` 里。其中六篇参考课文和两篇并入的旧课有全文；其余课时目前是两句摘要。英文对应课文有全文或摘要，日文、法文、西班牙文目前是标题和摘要。工程 fixture 仍使用 `tests/fixtures` 里的 `ai-coding`，只用于测试。
+AI 101 的五语课程入口保留在 `content/<lang>/ai-101/index.mdx`，旧课文及模块已清空，等待作者更新。保留的 frontmatter 提供课程标题、简介和目标；首页卡片直接复用标题、简介和芯片插图。添加新课时后，在 `meta.json` 的 `pages` 中列出对应文件或模块，课时 URL 仍是 `/{lang}/courses/ai-101/{lesson}`。工程 fixture 使用 `tests/fixtures` 里的 `ai-coding`，只用于测试，不随公开课文清空。
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

@@ -1,11 +1,12 @@
 /**
  * [INPUT]: Locale, the zinc header and footer, and the active route.
- * [OUTPUT]: The homepage frame on locale pages. Lesson routes render without the site header, rails, or footer.
+ * [OUTPUT]: Shared header, rails, and footer for locale pages, including course overviews. Lessons use their own shell.
  * [POS]: Single shell so About, 404, and the error boundary share the sticky header. Lessons use the wiki shell.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 'use client';
 import type { ReactNode } from 'react';
+import { SiteShell } from './page-primitives';
 import { usePathname } from 'next/navigation';
 import type { Locale } from '@/lib/i18n/config';
 export function SiteFrame({ locale, header, footer, children }: {
@@ -14,6 +15,5 @@ export function SiteFrame({ locale, header, footer, children }: {
   const pathname = usePathname() ?? '';
   const lesson = new RegExp(`^/${locale}/courses/[^/]+/.+`).test(pathname);
   if (lesson) return children;
-  const course = pathname.startsWith(`/${locale}/courses/`);
-  return <div className={course ? 'home-shell learn-page' : 'home-shell'}>{header}{children}{course ? null : footer}</div>;
+  return <SiteShell>{header}{children}{footer}</SiteShell>;
 }

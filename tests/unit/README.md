@@ -4,7 +4,7 @@
 
 vitest.config.ts: Unit test discovery for `pnpm test`, run from the repository root.
 
-content.test.ts: Publication, identity, unique lesson-slug, ordering, revision, and unsafe-content regression coverage.
+content.test.ts: Publication, identity, unique lesson-slug, ordering, revision, and unsafe-content regression coverage. Empty-course behavior is covered by the site E2E suite.
 
 i18n.test.ts: Routing priority, allowlist, and ICU parity regression coverage.
 

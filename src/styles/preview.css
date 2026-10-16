@@ -1,0 +1,41 @@
+/**
+ * [INPUT]: Shared Tailwind tokens, utilities, and Geist font variables.
+ * [OUTPUT]: Isolated preview document defaults, preserving its native browser typography.
+ * [POS]: /design entry; preview components use Tailwind instead of a page stylesheet.
+ * [PROTOCOL]: Update this header when making changes, then check README.md.
+ */
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import './tokens.css';
+
+@layer base {
+html.design {
+  color-scheme: light;
+  --bg: var(--color-background);
+  --fg: var(--color-foreground);
+  --muted: var(--color-muted);
+  --mfg: var(--color-muted-foreground);
+  --faint: var(--color-faint);
+  --bd: var(--color-border);
+  --line: color-mix(in oklab, #e4e4e7 64%, #fff);
+  --surface: var(--color-surface);
+  --bar: var(--color-strong);
+  --sans: var(--font-geist), "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --mono: var(--font-geist-mono), "PingFang SC", "Noto Sans SC", ui-monospace, monospace;
+  --font-site-sans: var(--sans);
+  --font-site-mono: var(--mono);
+  scroll-padding-top: 72px;
+}
+html.design *, html.design *::before, html.design *::after { box-sizing: border-box; }
+html.design body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--sans); font-size: 15px; line-height: 1.7;
+  text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
+}
+html.design ::selection { background: var(--fg); color: var(--bg); }
+html.design :focus { outline: none; }
+html.design :focus-visible { outline: 1px solid color-mix(in oklab, var(--fg) 55%, transparent); outline-offset: 2px; }
+html.design a { color: inherit; text-decoration: none; }
+html.design h1, html.design h2, html.design h3, html.design p { overflow-wrap: break-word; }
+}

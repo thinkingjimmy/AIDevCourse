@@ -14,7 +14,7 @@ layout.tsx: Static locale-specific HTML, self-hosted Latin fonts, the zinc frame
 
 not-found.tsx: Localized unavailable page inside the zinc frame, linking to the AI 101 course.
 
-page.tsx: Homepage body with the zinc hero, exploded Mac, and a dense catalog of real courses.
+page.tsx: Homepage with the zinc hero, exploded Mac, and a two-column CourseCard catalog that becomes one column on mobile. Cards place text on the left and the chip on the right. The hero links to the catalog when lessons are not yet available.
 
 unavailable/: Nested module; see [unavailable/README.md](./unavailable/README.md).
 

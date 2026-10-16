@@ -1,5 +1,5 @@
 /**
- * [INPUT]: Static exploded-Mac SVG markup and the scheme-A stagger.
+ * [INPUT]: Static exploded-Mac SVG markup, shared illustration paint, and the scheme-A stagger.
  * [OUTPUT]: Decorative hero that opens once and stays open. Hover eases it back together from the current pose.
  * [POS]: Homepage right column. The slot is the fully exploded bounds.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
@@ -8,7 +8,6 @@
 
 import { useEffect, useRef } from 'react';
 import { MAC_EXPLODE_SVG } from './mac-explode-markup';
-import styles from './mac-explode.module.css';
 
 const INTRO = 0.8;
 const STAG = 0.07;
@@ -176,5 +175,5 @@ export function MacExplode() {
     };
   }, []);
 
-  return <div ref={ref} className={styles.stage} aria-hidden="true" dangerouslySetInnerHTML={{ __html: MAC_EXPLODE_SVG }} />;
+  return <div ref={ref} data-anatomy="mac" className="pointer-events-auto absolute -top-[13.049%] -left-[28.583%] aspect-[720/620] w-[159.978%] bg-transparent" aria-hidden="true" dangerouslySetInnerHTML={{ __html: MAC_EXPLODE_SVG }} />;
 }

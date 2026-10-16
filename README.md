@@ -2,11 +2,11 @@
 
 **English** · [简体中文](./README.zh.md)
 
-Next.js 16.3.6 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-intl 4.14.6 + Tailwind CSS 4.3.3
+Next.js 16.3.6 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-intl 4.14.6 + Tailwind CSS 4.3.3 + local shadcn/ui components + Phosphor Icons 2.1.10
 
-A five-language learning site with local Markdown / MDX courses, language-specific search, and learning progress stored in your browser. The interface uses warm paper colors, full-height grid rails, Newsreader and IBM Plex Mono (self-hosted via `next/font`), and restrained retro details. No accounts, database, model API keys, or translation service are required.
+A five-language learning site with local Markdown / MDX courses, language-specific search, and learning progress stored in your browser. The interface uses the existing zinc palette, full-height grid rails, and self-hosted Newsreader and IBM Plex Mono fonts. Tailwind utilities own page and control styles; shared shadcn/ui primitives own actions, alerts, search, and the lesson sidebar. Custom CSS is limited to tokens, native defaults, Markdown typography, and SVG paint. No accounts, database, model API keys, or translation service are required.
 
-**Current status:** the application is implemented. The public course is AI 101 (`ai-101`): six modules and 31 lessons. Chinese is the source. English has full text for the finished lessons and summaries for the rest. Japanese, French, and Spanish publish titles and summaries. A lesson URL is `/{lang}/courses/ai-101/{lesson}` and does not include the module folder. Device checks and deployment remain pending; see the [PRD and todo](./docs/PRD.md#13-markdown-开发任务).
+**Current status:** the application is implemented. AI 101 (`ai-101`) retains a course entry in all five languages while its lessons are rewritten; no lesson articles are currently published. The homepage uses two columns of horizontal course cards, with one column on mobile. Card text sits on the left and the illustration on the right. Cards reuse the course hero description and chip illustration. A lesson URL is `/{lang}/courses/ai-101/{lesson}` and does not include the module folder. Device checks and deployment remain pending; see the [PRD and todo](./docs/PRD.md#13-markdown-开发任务).
 
 ## Quick start
 
@@ -20,6 +20,8 @@ pnpm dev
 Open [localhost:3000/zh](http://localhost:3000/zh). Restart after changing frontmatter, file structure, or `meta.json` order. Body edits support hot reload.
 
 Homepage studies, which do not replace `/zh`, are at [/design/a](http://localhost:3000/design/a) (catalog), [/design/b](http://localhost:3000/design/b) (course page), and [/design/c](http://localhost:3000/design/c) (studio). They read the published course in `content/zh/ai-101`.
+
+Writing components, including the MDX `JimmyNote` author note and tables, can be reviewed at [/design/components](http://localhost:3000/design/components).
 
 ## Commands
 
@@ -73,7 +75,7 @@ E2E uses port **3310**; set `E2E_PORT` if needed. Test courses live in `tests/fi
 
 </config>
 
-Routes stay in `src/app`; UI components are grouped by responsibility in `src/components/{course,layout,mdx,progress,search}`; shared domain logic stays in `src/lib`. MDX rendering has one registry at `src/components/mdx/components.tsx`. Each directory README maps its members, and source headers describe their input, output, and role. Generated `.source` and `.next*` directories are not committed.
+Routes stay in `src/app`; UI components are grouped by responsibility in `src/components/{course,home,layout,mdx,progress,search,ui}`; shared domain logic stays in `src/lib`. MDX rendering has one registry at `src/components/mdx/components.tsx`. Each directory README maps its members, and source headers describe their input, output, and role. Generated `.source` and `.next*` directories are not committed.
 
 ## Languages and learning data
 

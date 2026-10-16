@@ -18,8 +18,8 @@ writeFileSync('.source/routes.json', JSON.stringify([
   '/unavailable',
   ...locales.flatMap((locale) => [`/${locale}`, `/${locale}/about`, `/${locale}/unavailable`]),
   ...catalog.documents.map((doc) => doc.url),
-  // Homepage studies. Not catalog pages, and not a replacement for /[lang].
-  '/design', '/design/a', '/design/b', '/design/c',
+  // Design and component previews remain outside the published course catalog.
+  '/design', '/design/a', '/design/b', '/design/c', '/design/components',
 ]));
 export const courses = defineDocs({
   dir: contentRoot(),

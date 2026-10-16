@@ -1,13 +1,26 @@
+/**
+ * [INPUT]: Native button props, Radix Slot composition, and class-variance-authority variants.
+ * [OUTPUT]: Button and buttonVariants for site actions, shadcn primitives, and compact icon controls with a 44px hit area.
+ * [POS]: Single action component; product variants preserve the existing site's geometry.
+ * [PROTOCOL]: Update this header when making changes, then check README.md.
+ */
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 import { Slot } from "radix-ui"
 
 const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap no-underline transition-[background-color,color,box-shadow] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive [&_svg]:shrink-0",
   {
     variants: {
       variant: {
+        action: "transition-none border border-foreground bg-foreground text-white hover:bg-strong",
+        "action-outline": "transition-none border border-border bg-background text-foreground hover:bg-surface",
+        completion: "transition-none border border-border bg-background text-foreground hover:bg-surface disabled:opacity-60",
+        keyboard: "transition-none border border-border bg-transparent font-mono font-normal text-muted-foreground",
+        paper: "border border-foreground bg-transparent text-inherit hover:bg-accent active:translate-y-px",
+        plain: "transition-none leading-[inherit] rounded-none bg-transparent font-normal text-inherit",
+        preview: "transition-none bg-[#18181b] text-inherit hover:bg-[#27272a]",
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive:
           "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40",
@@ -20,11 +33,18 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
+        action: "transition-none h-11 gap-1.5 rounded-[10px] px-[18px] py-0 text-[15px] leading-none",
+        completion: "transition-none h-9 gap-1.5 rounded-lg px-3.5 py-0 text-sm",
+        keyboard: "transition-none h-auto min-h-0 gap-2.5 rounded-md px-2 py-0.5 text-xs leading-[1.4]",
+        paper: "h-auto min-h-12 gap-2.5 rounded-[3px] px-[22px] py-0 text-[15px] leading-[1.3] whitespace-normal",
+        reset: "h-auto gap-0 rounded-none p-0 text-inherit leading-[inherit]",
+        preview: "transition-none h-9 leading-[inherit] rounded-md px-3.5 py-0 text-sm",
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
         xs: "h-6 gap-1 rounded-md px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
         sm: "h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
         icon: "size-9",
+        "icon-touch": "relative size-8 touch-manipulation before:absolute before:-inset-1.5",
         "icon-xs": "size-6 rounded-md [&_svg:not([class*='size-'])]:size-3",
         "icon-sm": "size-8",
         "icon-lg": "size-10",
@@ -42,6 +62,7 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  type,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
@@ -54,6 +75,7 @@ function Button({
       data-slot="button"
       data-variant={variant}
       data-size={size}
+      type={asChild ? type : type ?? "button"}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />

@@ -42,12 +42,6 @@ describe('publication catalog', () => {
     edit(root, 'zh/ai-coding/meta.json', (value) => value.replace('"foundations"', '"foundations",\n    "extra"'));
     expect(() => readCatalog({ root })).toThrow('Duplicate lesson slug');
   });
-  it('rejects a course with no lessons', () => {
-    const root = fixture();
-    rmSync(join(root, `ja/${first}`));
-    edit(root, 'ja/ai-coding/foundations/meta.json', (value) => value.replace(/\s*"first-change",?/, ''));
-    expect(() => readCatalog({ root })).toThrow('at least one');
-  });
   it.each([
     ['duplicate identity', 'zh/ai-coding/foundations/useful-context.mdx', (v: string) => v.replace('lessonId: useful-context', 'lessonId: first-change'), 'Duplicate identity'],
     ['translation mismatch', `fr/${first}`, (v: string) => v.replace('lessonId: first-change', 'lessonId: missing-original'), 'Missing original'],

@@ -6,17 +6,19 @@
  */
 'use client';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { StatusPage, PageTitle, PageEyebrow, PageActions } from '@/components/layout/page-primitives';
 import { useLocale, useTranslations } from 'next-intl';
 export default function ErrorPage({ reset }: { reset: () => void }) {
   const t = useTranslations('Ui');
   const locale = useLocale();
-  return <main id="main-content" className="status-simple" tabIndex={-1}>
-    <p className="status-kicker">{t('errorEyebrow')}</p>
-    <h1>{t('errorTitle')}</h1>
-    <p className="status-lead">{t('error')}</p>
-    <div className="home-ctas">
-      <button className="home-cta" type="button" onClick={reset}>{t('retry')}</button>
-      <Link className="home-cta home-cta-secondary" href={`/${locale}`}>{t('backHome')}</Link>
-    </div>
-  </main>;
+  return <StatusPage id="main-content" className="flex flex-col justify-center" tabIndex={-1}>
+    <PageEyebrow>{t('errorEyebrow')}</PageEyebrow>
+    <PageTitle>{t('errorTitle')}</PageTitle>
+    <p className="m-0 mb-7 max-w-[40rem] text-[16px] leading-[1.75] text-muted-foreground">{t('error')}</p>
+    <PageActions>
+      <Button variant="action" size="action" className="font-normal leading-[inherit]" onClick={reset}>{t('retry')}</Button>
+      <Button asChild variant="action-outline" size="action"><Link href={`/${locale}`}>{t('backHome')}</Link></Button>
+    </PageActions>
+  </StatusPage>;
 }

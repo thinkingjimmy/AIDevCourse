@@ -4,6 +4,8 @@
     "about": "Acerca de",
     "skip": "Ir al contenido",
     "menu": "Índice del curso",
+    "collapseSidebar": "Contraer barra lateral",
+    "expandSidebar": "Expandir barra lateral",
     "close": "Cerrar",
     "toc": "En esta página",
     "previous": "Lección anterior",
@@ -30,6 +32,7 @@
     "backHome": "Volver al inicio",
     "retry": "Reintentar",
     "copyAnchor": "Copiar enlace al título",
+    "copyAnchorFailed": "No se pudo copiar el enlace. Usa el enlace del título.",
     "noHeadings": "Sin títulos",
     "code": "Código",
     "lessonCount": "{count, plural, one {# lección} other {# lecciones}}",
@@ -51,14 +54,14 @@
     "intro": "Desde escribir código y ajustar modelos hasta montar un agente: cada lección desmonta una sola pieza y te deja una tarea pequeña. Al volver a armarla, entiendes la máquina entera.",
     "start": "Empezar por la primera lección",
     "courseTitle": "Cursos",
-    "courseIntro": "Ordenados por tema. Elige uno y empieza.",
+    "courseIntro": "Elige un curso y aprende a tu ritmo.",
     "navLabel": "Navegación",
     "navCourses": "Cursos",
     "navPaths": "Rutas",
     "navHandbook": "Manual",
     "footerLead": "aidevcourse.com · Gratis, código abierto, sin rastreo",
     "footerMeta": "© 2026 Jimmy Wong",
-    "newBadge": "NEW"
+    "browseCourses": "Ver cursos"
   },
   "Course": {
     "emptyTitle": "Aún no hay cursos en este idioma",
@@ -81,7 +84,9 @@
     "before": "Antes de empezar",
     "doneMark": "Completado",
     "contents": "Índice",
-    "progressLabel": "Progreso {done} / {total}"
+    "progressLabel": "Progreso {done} / {total}",
+    "updating": "Contenido en actualización",
+    "updatingBody": "Se están preparando nuevas lecciones. Aparecerán aquí cuando se publiquen."
   },
   "Learning": {
     "loading": "Restaurando el progreso…",

@@ -8,6 +8,7 @@ import { IBM_Plex_Mono } from 'next/font/google';
 import { getCatalog } from '@/lib/content/source';
 import { htmlLanguages, languageNames, locales } from '@/lib/i18n/config';
 import { EnglishTools } from '@/components/layout/english-tools';
+import { SiteShell, SiteFooter } from '@/components/layout/page-primitives';
 import { SiteBar } from '@/components/layout/home-header';
 import { MissingPage } from '@/components/layout/missing-page';
 import { lessonIndex } from '@/components/search/lessons';
@@ -22,13 +23,13 @@ export default function GlobalNotFound() {
     return { href: alternate?.url ?? `/${lang}`, lang: htmlLanguages[lang], label: languageNames[lang] };
   });
   return <html lang="en" className={`light ${mono.variable}`}><body>
-    <a href="#main-content" className="skip-link">{en.Ui.skip}</a>
-    <div className="home-shell">
+    <a href="#main-content" className="fixed -top-[100px] left-4 z-[100] bg-foreground px-[18px] py-3 text-white focus:top-3">{en.Ui.skip}</a>
+    <SiteShell>
       <SiteBar locale="en" about={en.Ui.about} homeLabel={en.Ui.home} navLabel={en.Home.navLabel}>
         <EnglishTools version={catalog.version} translations={catalog.translations} lessons={lessonIndex(catalog, 'en')} />
       </SiteBar>
       <MissingPage title={en.Ui.notFoundTitle} body={en.Ui.notFoundBody} primaryHref={course?.url ?? '/en/courses/ai-101'} primaryLabel={course?.title ?? 'AI 101'} homeHref="/en" homeLabel={en.Ui.backHome} languagesLabel={en.Course.otherLanguages} languages={languages} />
-      <footer className="home-foot"><div className="home-inner"><span>{en.Home.footerLead}</span><span className="mono">{en.Home.footerMeta}</span></div></footer>
-    </div>
+      <SiteFooter meta={en.Home.footerMeta}>{en.Home.footerLead}</SiteFooter>
+    </SiteShell>
   </body></html>;
 }
