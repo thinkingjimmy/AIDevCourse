@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Sidebar composition props, Phosphor icons, and shared Button/Sheet primitives.
- * [OUTPUT]: shadcn sidebar with a 320px desktop column, a 48px collapsed rail, accessible toggle state, and a mobile sheet at ≤960px.
+ * [OUTPUT]: shadcn sidebar with a 320px desktop column, a 48px collapsed rail, accessible toggle state and focus, and a mobile sheet at ≤960px.
  * [POS]: UI primitive. Lesson pages compose it in course-layout.tsx.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -288,7 +288,10 @@ function SidebarTrigger({
       className={cn("shrink-0 text-muted-foreground", className)}
       onClick={(event) => {
         onClick?.(event)
-        if (!event.defaultPrevented) toggleSidebar()
+        if (!event.defaultPrevented) {
+          event.currentTarget.focus()
+          toggleSidebar()
+        }
       }}
       {...props}
     >

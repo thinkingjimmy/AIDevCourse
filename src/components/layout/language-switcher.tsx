@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Public translation map, current URL, Phosphor icons, shared Button, and the site border token.
- * [OUTPUT]: Globe trigger and one content-sized native language menu, with top/bottom placement, valid hashes, fallback links, and preference saving.
+ * [OUTPUT]: Globe trigger and one content-sized native language menu, with top/bottom placement, valid hashes, explained fallback links, and preference saving.
  * [POS]: Progressive-enhancement language control shared by desktop and mobile.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -26,13 +26,14 @@ export function LanguageSwitcher({ locale, translations, side = 'bottom' }: { lo
     return () => document.removeEventListener('pointerdown', close);
   }, []);
   return <details className="language-picker relative" ref={ref} onKeyDown={(event) => {
+    if (event.key === 'Tab') {
+      const menu = event.currentTarget;
+      requestAnimationFrame(() => { if (!menu.contains(document.activeElement)) menu.open = false; });
+    }
     if (event.key === 'Escape' && ref.current?.open) {
       event.preventDefault(); event.stopPropagation();
       ref.current.open = false; ref.current.querySelector('summary')?.focus();
     }
-  }} onBlur={(event) => {
-    // WebKit may blur a summary to no focus target before dispatching a link click.
-    if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget as Node) && ref.current) ref.current.open = false;
   }}>
     <Button asChild variant="ghost" size="icon-touch" className="list-none text-muted-foreground [&::-webkit-details-marker]:hidden">
       <summary aria-label={t('label')} title={t('label')}><GlobeIcon size={20} aria-hidden /></summary>
@@ -43,6 +44,7 @@ export function LanguageSwitcher({ locale, translations, side = 'bottom' }: { lo
         const coursePage = current && translations[current[0].split(':')[0]]?.find((version) => version.locale === lang);
         const simple = /^\/(en|zh|ja|fr|es)(\/about)?$/.test(pathname);
         const url = samePage?.url ?? (simple ? pathname.replace(/^\/[^/]+/, `/${lang}`) : coursePage?.url ?? `/${lang}/courses/ai-101`);
+        const fallback = current && !samePage ? t(coursePage ? 'courseFallback' : 'listFallback') : undefined;
         return <a className="flex min-h-11 touch-manipulation items-center justify-between gap-5 border-b border-line-soft px-3 py-2.5 text-[15px] font-[550] whitespace-nowrap no-underline last:border-0 hover:bg-surface aria-current:bg-surface" key={lang} href={url} hrefLang={htmlLanguages[lang]} aria-current={lang === locale ? 'true' : undefined} onClick={(event) => {
           try { document.cookie = `${localeCookie}=${lang}; Path=/; Max-Age=31536000; SameSite=Lax`; } catch { /* Explicit URLs remain usable without cookies. */ }
           const hash = window.location.hash;
@@ -50,7 +52,7 @@ export function LanguageSwitcher({ locale, translations, side = 'bottom' }: { lo
             try { if (samePage?.headings.includes(decodeURIComponent(hash.slice(1)))) event.currentTarget.href = `${url}${hash}`; }
             catch { /* An invalid hash is safely discarded. */ }
           }
-        }}><span lang={htmlLanguages[lang]}><span aria-hidden="true">{languageFlags[lang]} </span>{languageNames[lang]}</span><span className="size-4 shrink-0" aria-hidden>{lang === locale && <CheckIcon size={16} />}</span></a>;
+        }}><span><span lang={htmlLanguages[lang]}><span aria-hidden="true">{languageFlags[lang]} </span>{languageNames[lang]}</span>{fallback && <small className="mt-1 block max-w-40 text-[12px] leading-relaxed font-normal whitespace-normal">{fallback}</small>}</span><span className="size-4 shrink-0" aria-hidden>{lang === locale && <CheckIcon size={16} />}</span></a>;
       })}
     </nav>
   </details>;

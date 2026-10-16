@@ -1,6 +1,6 @@
 /**
- * [INPUT]: Locale search export, a query, Phosphor icons, and shared Dialog/Input/Button primitives.
- * [OUTPUT]: Lazy, race-safe search with keyboard/IME support, lesson meta, and retries.
+ * [INPUT]: Locale search export, a query, focus return callback, Phosphor icons, and shared Dialog/Input/Button primitives.
+ * [OUTPUT]: Lazy, race-safe search with dialog-managed focus, keyboard/IME support, lesson meta, and retries.
  * [POS]: Isolated dialog boundary; cache URLs include locale and build version.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -21,7 +21,7 @@ import type { SearchLessonMeta } from './lessons';
 function Highlight({ text }: { text: string }) {
   return text.split(/(<mark>.*?<\/mark>)/g).map((part, index) => part.startsWith('<mark>') ? <mark className="bg-[var(--mark)] px-px text-foreground" key={index}>{part.slice(6, -7)}</mark> : part);
 }
-export default function SearchDialog({ locale, version, lessons, onClose }: { locale: Locale; version: string; lessons: Record<string, SearchLessonMeta>; onClose: () => void }) {
+export default function SearchDialog({ locale, version, lessons, onClose, onFocusReturn }: { locale: Locale; version: string; lessons: Record<string, SearchLessonMeta>; onClose: () => void; onFocusReturn: () => void }) {
   const t = useTranslations('Search');
   const ui = useTranslations('Ui');
   const [input, setInput] = useState('');
@@ -47,9 +47,9 @@ export default function SearchDialog({ locale, version, lessons, onClose }: { lo
     return () => { cancelled = true; clearTimeout(timer); };
   }, [client, query, locale]);
   return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-    <DialogContent aria-describedby="search-description" onCloseAutoFocus={(event) => event.preventDefault()}>
+    <DialogContent aria-describedby="search-description" onCloseAutoFocus={(event) => { event.preventDefault(); onFocusReturn(); }}>
       <DialogTitle className="sr-only">{t('open')}</DialogTitle>
-      <div className="flex min-h-14 items-center gap-3 border-b border-border px-4 text-muted-foreground"><MagnifyingGlassIcon size={20} aria-hidden /><Input className="h-auto min-h-10 w-auto flex-1 rounded-none border-0 bg-transparent p-0 text-[16px] leading-[inherit] text-foreground shadow-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-0 md:text-[16px]" autoComplete="off" autoFocus value={input} aria-label={t('open')} placeholder={t('placeholder')} aria-controls="search-results"
+      <div className="flex min-h-14 items-center gap-3 border-b border-border px-4 text-muted-foreground"><MagnifyingGlassIcon size={20} aria-hidden /><Input className="h-auto min-h-10 w-auto flex-1 rounded-none border-0 bg-transparent p-0 text-[16px] leading-[inherit] text-foreground shadow-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-0 md:text-[16px]" autoComplete="off" value={input} aria-label={t('open')} placeholder={t('placeholder')} aria-controls="search-results"
         onCompositionStart={() => { composing.current = true; }} onCompositionEnd={(event) => { composing.current = false; setQuery(event.currentTarget.value); setActive(0); }}
         onChange={(event) => { setInput(event.target.value); setActive(0); if (!composing.current) setQuery(event.target.value); }}
         onKeyDown={(event) => {

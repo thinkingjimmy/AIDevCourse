@@ -4,7 +4,7 @@
 
 playwright.config.ts: Three-browser matrix, production server, E2E_PORT, failure artifacts, and VISUAL_TEST opt-in for local screenshot comparisons. CI always excludes appearance tests. Both production and isolated fixture builds run shared component suites.
 
-learning.spec.ts: Cross-language learning, search, and layout acceptance evidence.
+learning.spec.ts: Cross-language learning, explained translation fallbacks, completed search navigation and valid anchors, and layout acceptance evidence.
 
 components.spec.ts: Real MDX JimmyNote previews at desktop, mobile, and narrow widths, rich Markdown, accessibility, no-JS links, and local screenshot artifacts.
 

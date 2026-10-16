@@ -16,8 +16,10 @@ export function SearchShortcut({ locale, version, lessons }: { locale: Locale; v
   const close = useCallback(() => {
     setOpen(false);
   }, []);
+  const restoreFocus = useCallback(() => {
+    if (previousFocus.current?.isConnected) previousFocus.current.focus();
+  }, []);
   useEffect(() => {
-    if (!open && previousFocus.current?.isConnected) previousFocus.current.focus();
     const handle = (event: KeyboardEvent) => {
       if (event.defaultPrevented || !((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') || event.isComposing) return;
       event.preventDefault();
@@ -30,5 +32,5 @@ export function SearchShortcut({ locale, version, lessons }: { locale: Locale; v
     window.addEventListener('keydown', handle);
     return () => window.removeEventListener('keydown', handle);
   }, [close, open]);
-  return open ? <SearchDialog key={locale} locale={locale} version={version} lessons={lessons} onClose={close} /> : null;
+  return open ? <SearchDialog key={locale} locale={locale} version={version} lessons={lessons} onClose={close} onFocusReturn={restoreFocus} /> : null;
 }

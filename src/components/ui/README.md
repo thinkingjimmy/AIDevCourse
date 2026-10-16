@@ -16,7 +16,7 @@ separator.tsx: Radix separator with horizontal and vertical Tailwind variants.
 
 skeleton.tsx: Skeleton placeholder for optional sidebar loading states.
 
-sidebar.tsx: Sidebar composition, a 320px desktop column, 48px collapsed rail, localized toggle labels, and mobile sheet at ≤960px. An open native menu handles Escape before the sheet closes; closing the sheet restores focus to its entry control.
+sidebar.tsx: Sidebar composition, a 320px desktop column, 48px collapsed rail, localized toggle labels, and mobile sheet at ≤960px. The toggle retains focus when it hides sidebar content. An open native menu handles Escape before the sheet closes; closing the sheet restores focus to its entry control.
 
 [overlays/](./overlays/README.md): Shared dialog, mobile sheet, and tooltip primitives.
 

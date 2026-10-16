@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Isolated five-language production fixture build.
- * [OUTPUT]: Cross-language learning, search, and layout acceptance evidence.
+ * [OUTPUT]: Cross-language learning, completed search navigation, valid anchors, and layout acceptance evidence.
  * [POS]: Nonpublic engineering matrix; never runs fixtures in the deployment build.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -89,10 +89,14 @@ for (const locale of locales) {
     await input.dispatchEvent('compositionstart');
     await input.press('Enter'); await expect(page.getByRole('dialog')).toBeVisible();
     await input.dispatchEvent('compositionend');
-    await input.press('ArrowDown'); await input.press('Enter');
+    await input.press('ArrowDown');
+    const destination = await page.locator('.search-result[data-selected="true"]').getAttribute('href');
+    expect(destination).not.toBeNull();
+    await input.press('Enter');
     await expect(page.getByRole('dialog')).not.toBeVisible();
+    await expect(page).toHaveURL(new URL(destination!, page.url()).href);
     const hash = new URL(page.url()).hash;
-    if (hash) expect(await page.locator(`[id="${decodeURIComponent(hash.slice(1))}"]`).count()).toBe(1);
+    if (hash) await expect(page.locator(`[id="${decodeURIComponent(hash.slice(1))}"]`)).toHaveCount(1);
   });
   test(`${locale}: five viewports, 200% equivalent zoom, and accessible reading`, async ({ page, browser, baseURL }, testInfo) => {
     for (const width of [320, 390, 768, 1024, 1440]) {

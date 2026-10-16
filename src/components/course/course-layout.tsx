@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Course/progress context, shared Sidebar controls, keyboard search, and language data.
- * [OUTPUT]: Lesson shell with keyboard-only search, collapsible desktop sidebar, and mobile sheet. Sidebar and module state survive lesson changes; blocked storage keeps in-memory state.
+ * [OUTPUT]: Lesson shell with keyboard-only search, collapsible desktop sidebar, and mobile sheet with focus return to its entry button. Sidebar and module state survive lesson changes; blocked storage keeps in-memory state.
  * [POS]: Client lesson navigation; article content stays server rendered. Course overviews do not mount this.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -157,7 +157,7 @@ function CourseSidebar({ locale, version, lessons, translations }: {
 function CourseMenuButton() {
   const ui = useTranslations('Ui');
   const { setOpenMobile } = useSidebar();
-  return <Button variant="plain" size="reset" className="sticky top-0 z-30 hidden min-h-12 w-full items-center justify-start border-0 border-b border-border bg-surface px-4 text-left text-[14px] font-medium text-foreground max-[961px]:flex" onClick={() => setOpenMobile(true)}>{ui('menu')}</Button>;
+  return <Button variant="plain" size="reset" className="sticky top-0 z-30 hidden min-h-12 w-full items-center justify-start border-0 border-b border-border bg-surface px-4 text-left text-[14px] font-medium text-foreground max-[961px]:flex" onClick={(event) => { event.currentTarget.focus(); setOpenMobile(true); }}>{ui('menu')}</Button>;
 }
 
 function MobileBarSentinel() {

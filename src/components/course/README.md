@@ -8,7 +8,7 @@ chip-explode-markup.ts: Inline SVG for that animation, generated from the anatom
 
 course-card.tsx: Compact horizontal catalog card composed from shared Card parts. Localized hero text has 20px inner spacing on the left. The chip is centered on a full-height muted zinc panel that reaches the card's top, bottom, and right edges. The whole card is a native link.
 
-course-layout.tsx: Full-bleed lesson wiki. The logo row ends with a shadcn SidebarTrigger. Desktop collapse keeps a 48px rail and its toggle; the course, progress, modules, and footer leave the tab order. Sidebar and module state survive lesson changes and reloads in this session, with an in-memory fallback. Phosphor checks mark completed lessons. SidebarFooter contains the globe menu and keyboard-only search with no visible search button. At ≤960px the sidebar opens from the course directory button as a sheet.
+course-layout.tsx: Full-bleed lesson wiki. The logo row ends with a shadcn SidebarTrigger. Desktop collapse keeps a 48px rail and its toggle; the course, progress, modules, and footer leave the tab order. Sidebar and module state survive lesson changes and reloads in this session, with an in-memory fallback. Phosphor checks mark completed lessons. SidebarFooter contains the globe menu and keyboard-only search with no visible search button. At ≤960px the sidebar opens as a sheet and returns focus to the course directory button when closed.
 
 empty-courses.tsx: shadcn action and Tailwind empty course library, an about link, and links to courses published in other languages.
 
