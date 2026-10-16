@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Sidebar composition props from the lesson shell.
- * [OUTPUT]: shadcn sidebar. Desktop is a 280px column; ≤960px renders a sheet whose body is `.mobile-course-bar`.
+ * [OUTPUT]: shadcn sidebar. Desktop is a 320px column; ≤960px renders a sheet whose body is `.mobile-course-bar`.
  * [POS]: UI primitive. Lesson pages compose it in course-layout.tsx.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -33,8 +33,8 @@ import {
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
-const SIDEBAR_WIDTH = "280px"
-const SIDEBAR_WIDTH_MOBILE = "280px"
+const SIDEBAR_WIDTH = "320px"
+const SIDEBAR_WIDTH_MOBILE = "320px"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 

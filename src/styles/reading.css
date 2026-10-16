@@ -135,14 +135,14 @@ html:lang(zh-Hans) .prose, html:lang(ja) .prose { line-height: 1.95; }
 [data-slot="sidebar-inner"], [data-mobile="true"] { background: #fafafa; color: #09090b; }
 [data-mobile="true"] .mobile-course-bar { display: flex; position: static; grid-area: auto; min-height: 0; height: 100%; padding: 0; gap: 0; border: 0; background: transparent; top: auto; }
 .wiki-side-toggle { display: none; }
-.wiki-side-head { gap: 14px; padding: 20px 14px 8px; }
+.wiki-side-head { gap: 14px; padding: 22px 18px 8px 28px; }
 .wiki-logo { color: inherit; font-size: 15px; }
 .wiki-course { color: inherit; font-size: 16px; font-weight: 600; line-height: 1.4; text-decoration: none; }
 .wiki-course:hover { color: var(--ink); }
 .wiki-progress p { margin: 0 0 8px; color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
 .wiki-meter { height: 2px; background: #e4e4e7; }
 .wiki-meter span { display: block; height: 100%; background: #09090b; }
-.wiki-tree { margin: 4px 0 0; }
+.wiki-tree { margin: 4px 0 0; padding: 0 10px 0 18px; }
 .wiki-module-button { height: auto; justify-content: flex-start; gap: 8px; padding: 7px 8px; border-radius: 6px; color: #09090b; font-size: 14px; font-weight: 500; line-height: 1.4; }
 .wiki-mod-num { flex: none; color: var(--muted); font-family: var(--font-mono); font-size: 12px; font-weight: 400; }
 .wiki-mod-title { min-width: 0; font-weight: 500; }
@@ -154,7 +154,7 @@ html:lang(zh-Hans) .prose, html:lang(ja) .prose { line-height: 1.95; }
 .wiki-lesson-check svg { color: #059669; }
 [data-sidebar="menu-sub-button"]:hover { background: #f4f4f5; color: #09090b; }
 [data-sidebar="menu-sub-button"][data-active="true"] { background: #f4f4f5; color: #09090b; font-weight: 700; }
-.wiki-tools { display: flex; flex-direction: row; align-items: center; gap: 12px; margin-top: 0; padding: 12px 14px 16px; border-top: 1px solid #e4e4e7; }
+.wiki-tools { display: flex; flex-direction: row; align-items: center; gap: 12px; margin-top: 0; padding: 12px 18px 16px 28px; border-top: 1px solid #e4e4e7; }
 .wiki .search-trigger, [data-slot="sidebar-inner"] .search-trigger, [data-mobile="true"] .search-trigger { width: auto; height: auto; min-height: 28px; padding: 2px 8px; border: 1px solid #e4e4e7; border-radius: 6px; background: transparent; color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
 .wiki .search-trigger > span, [data-slot="sidebar-inner"] .search-trigger > span, [data-mobile="true"] .search-trigger > span { display: inline; flex: none; }
 .wiki .lang-compact, [data-slot="sidebar-inner"] .lang-compact, [data-mobile="true"] .lang-compact { position: relative; }
