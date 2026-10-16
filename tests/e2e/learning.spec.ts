@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Isolated five-language production fixture build.
- * [OUTPUT]: Cross-language learning, completed search navigation, valid anchors, and layout acceptance evidence.
+ * [OUTPUT]: Cross-language learning, visible-content search, completed lesson-anchor navigation, and layout acceptance evidence.
  * [POS]: Nonpublic engineering matrix; never runs fixtures in the deployment build.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -79,24 +79,34 @@ for (const locale of locales) {
     await page.keyboard.press('Control+k');
     const input = page.getByRole('textbox', { name: t.Search.open });
     for (const query of queries[locale]) {
+      await input.fill('');
+      await expect(page.locator('.search-result')).toHaveCount(0);
       await input.fill(query);
       await expect(page.locator('.search-result').first()).toBeVisible();
       const urls = await page.locator('.search-result').evaluateAll((links) => links.slice(0, 5).map((link) => link.getAttribute('href')));
       expect(urls.some((url) => url?.includes('/ai-coding/first-change'))).toBe(true);
       expect(urls.every((url) => url?.startsWith(`/${locale}/courses/`))).toBe(true);
+      expect(urls.every((url) => !url?.startsWith(`/${locale}/courses/ai-coding#`))).toBe(true);
     }
     expect(indexes.every((url) => url.includes(`/api/search/${locale}?`))).toBe(true);
     await input.dispatchEvent('compositionstart');
     await input.press('Enter'); await expect(page.getByRole('dialog')).toBeVisible();
     await input.dispatchEvent('compositionend');
-    await input.press('ArrowDown');
+    const resultUrls = await page.locator('.search-result').evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    const headingIndex = resultUrls.findIndex((url) => url?.startsWith(`${path(locale)}#`));
+    expect(headingIndex).toBeGreaterThanOrEqual(0);
+    for (let index = 0; index < headingIndex; index++) await input.press('ArrowDown');
     const destination = await page.locator('.search-result[data-selected="true"]').getAttribute('href');
     expect(destination).not.toBeNull();
     await input.press('Enter');
     await expect(page.getByRole('dialog')).not.toBeVisible();
     await expect(page).toHaveURL(new URL(destination!, page.url()).href);
     const hash = new URL(page.url()).hash;
-    if (hash) await expect(page.locator(`[id="${decodeURIComponent(hash.slice(1))}"]`)).toHaveCount(1);
+    expect(hash).not.toBe('');
+    await expect(page.locator(`[id="${decodeURIComponent(hash.slice(1))}"]`)).toHaveCount(1);
+    const screenshot = test.info().outputPath('search-heading.png');
+    await page.screenshot({ path: screenshot });
+    await test.info().attach('search-heading', { path: screenshot, contentType: 'image/png' });
   });
   test(`${locale}: five viewports, 200% equivalent zoom, and accessible reading`, async ({ page, browser, baseURL }, testInfo) => {
     for (const width of [320, 390, 768, 1024, 1440]) {

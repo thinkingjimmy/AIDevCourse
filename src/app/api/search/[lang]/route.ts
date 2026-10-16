@@ -1,6 +1,6 @@
 /**
- * [INPUT]: One validated language and its public compiled article structure.
- * [OUTPUT]: Pre-rendered Fumadocs search export of public URLs, isolated per language.
+ * [INPUT]: One validated language, visible course metadata, and public compiled lesson structure.
+ * [OUTPUT]: Per-language search export whose fragments target rendered lesson headings.
  * [POS]: Static search endpoint; no dynamic query API or full-language download.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -18,7 +18,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ lan
     const article = getArticle(lang, doc.courseSlug, doc.data.kind === 'lesson' ? [doc.slug.at(-1)!] : []);
     if (!article) throw new Error(`Missing compiled article: ${doc.url}`);
     return { id: doc.url, url: doc.url, title: doc.data.title, description: doc.data.description,
-      breadcrumbs: [catalog.courses.find((course) => course.locale === lang && course.id === doc.data.courseId)!.title], structuredData: article.data.structuredData };
+      breadcrumbs: [catalog.courses.find((course) => course.locale === lang && course.id === doc.data.courseId)!.title],
+      // Course overviews render metadata and the syllabus, not their MDX body.
+      structuredData: doc.data.kind === 'lesson' ? article.data.structuredData : { headings: [], contents: [] } };
   });
   return createSearchAPI('advanced', { indexes, tokenizer: createSearchTokenizer() }).staticGET();
 }
