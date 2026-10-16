@@ -1,0 +1,58 @@
+/**
+ * [INPUT]: Isometric SVG paint classes and the chip's settled data attribute.
+ * [OUTPUT]: Shared Mac/chip colors, SVG strokes, and chip callout fades.
+ * [POS]: Illustration paint only; Tailwind utilities control figure position and sizing.
+ * [PROTOCOL]: Update this header when making changes, then check README.md.
+ */
+[data-anatomy] {
+  --anatomy-paper: #fbfbfa;
+  --anatomy-top: #fff;
+  --anatomy-shade-0: #dcdcd9;
+  --anatomy-shade-1: #e5e5e2;
+  --anatomy-shade-2: #ededea;
+  --anatomy-shade-3: #f4f4f1;
+  --anatomy-hi: #26262a;
+  --anatomy-mid: #8a8a8f;
+  --anatomy-lo: #b4b4b8;
+  --anatomy-faint: #d4d4d6;
+  --anatomy-lit: #000;
+  --anatomy-halo: #8a8a80;
+  --anatomy-halo-opacity: .32;
+  --anatomy-dot: #3a3a3e;
+  --anatomy-weight: .6px;
+}
+[data-anatomy] .iso-svg { display: block; width: 100%; height: 100%; overflow: visible; background: transparent; }
+[data-anatomy] .iso-svg path,
+[data-anatomy] .iso-svg circle { vector-effect: non-scaling-stroke; }
+[data-anatomy] .iso-fill { fill: var(--anatomy-paper); stroke: none; }
+[data-anatomy] .iso-shade,
+[data-anatomy] .iso-top { stroke: none; }
+[data-anatomy] .iso-shade[data-shade='0'] { fill: var(--anatomy-shade-0); }
+[data-anatomy] .iso-shade[data-shade='1'] { fill: var(--anatomy-shade-1); }
+[data-anatomy] .iso-shade[data-shade='2'] { fill: var(--anatomy-shade-2); }
+[data-anatomy] .iso-shade[data-shade='3'] { fill: var(--anatomy-shade-3); }
+[data-anatomy] .iso-top { fill: var(--anatomy-top); }
+[data-anatomy] .iso-halo { fill: var(--anatomy-halo); stroke: none; filter: blur(9px); opacity: var(--anatomy-halo-opacity); transform: translateY(3px); }
+[data-anatomy] .iso-line { fill: none; stroke: var(--anatomy-lo); stroke-width: var(--anatomy-weight); stroke-linecap: round; stroke-linejoin: round; }
+[data-anatomy] .iso-line[data-tone='hi'] { stroke: var(--anatomy-hi); }
+[data-anatomy] .iso-line[data-tone='mid'] { stroke: var(--anatomy-mid); }
+[data-anatomy] .iso-line[data-tone='lo'] { stroke: var(--anatomy-lo); }
+[data-anatomy] .iso-line[data-tone='faint'] { stroke: var(--anatomy-faint); }
+[data-anatomy] .iso-dots circle { fill: var(--anatomy-dot); stroke: none; opacity: .32; }
+[data-anatomy] .iso-dots[data-tone='hi'] circle { opacity: .85; }
+[data-anatomy] .iso-dots[data-tone='mid'] circle { opacity: .45; }
+[data-anatomy] .pc-bezel { fill: var(--anatomy-top); }
+[data-anatomy] .pc-dark { fill: var(--anatomy-shade-0); }
+[data-anatomy] .pc-glass { fill: var(--anatomy-shade-0); }
+[data-anatomy] .pc-cord { stroke-width: 1.1px; }
+[data-anatomy] .pc-beam { fill: none; stroke: var(--anatomy-lit); stroke-width: 1.4px; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+[data-anatomy] .pc-dot { fill: var(--anatomy-lit); }
+[data-anatomy='chip'] .iso-svg { overflow: hidden; }
+[data-anatomy] .co { opacity: 0; transition: opacity .45s ease; }
+[data-anatomy][data-settled='true'] .co { opacity: 1; }
+[data-anatomy] .co-dot { fill: var(--ink); }
+[data-anatomy] .co-line { fill: none; stroke: var(--faint); stroke-width: .8px; }
+[data-anatomy] .co-title,
+[data-anatomy] .co-sub { font-family: var(--font-mono), ui-monospace, monospace; }
+[data-anatomy] .co-title { fill: var(--ink); font-size: 11px; font-weight: 600; }
+[data-anatomy] .co-sub { fill: var(--muted); font-size: 9.5px; }

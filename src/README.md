@@ -7,7 +7,7 @@
 - [hooks/](./hooks/README.md): Viewport hook for the lesson sidebar.
 - [lib/](./lib/README.md): Content, locale, progress, search, and SEO domain logic.
 - [messages/](./messages/README.md): Five localized UI dictionaries.
-- [styles/](./styles/README.md): Global tokens, reading styles, and interface surfaces.
+- [styles/](./styles/README.md): Shared Tailwind/shadcn tokens, native defaults, content typography, and SVG paint.
 - `proxy.ts`: Private 307 language negotiation and server-rendered 404 rewrites.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

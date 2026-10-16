@@ -1,6 +1,6 @@
 /**
- * [INPUT]: Sidebar composition props from the lesson shell.
- * [OUTPUT]: shadcn sidebar. Desktop is a 320px column; ≤960px renders a sheet whose body is `.mobile-course-bar`.
+ * [INPUT]: Sidebar composition props, Phosphor icons, and shared Button/Sheet primitives.
+ * [OUTPUT]: shadcn sidebar with a 320px desktop column, a 48px collapsed rail, accessible toggle state and focus, and a mobile sheet at ≤960px.
  * [POS]: UI primitive. Lesson pages compose it in course-layout.tsx.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -9,7 +9,7 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
-import { PanelLeftIcon } from "lucide-react"
+import { SidebarSimpleIcon } from "@phosphor-icons/react/dist/ssr/SidebarSimple"
 import { Slot } from "radix-ui"
 
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -22,17 +22,15 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet"
+} from "@/components/ui/overlays/sheet"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/overlays/tooltip"
 
-const SIDEBAR_COOKIE_NAME = "sidebar_state"
-const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "320px"
 const SIDEBAR_WIDTH_MOBILE = "320px"
 const SIDEBAR_WIDTH_ICON = "3rem"
@@ -87,9 +85,6 @@ function SidebarProvider({
       } else {
         _setOpen(openState)
       }
-
-      // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
     },
     [setOpenProp, open]
   )
@@ -107,13 +102,17 @@ function SidebarProvider({
         (event.metaKey || event.ctrlKey)
       ) {
         event.preventDefault()
+        const sidebar = document.activeElement?.closest('[data-slot="sidebar-inner"]')
+        if (!isMobile && open && sidebar) {
+          sidebar.querySelector<HTMLButtonElement>('[data-sidebar="trigger"]')?.focus()
+        }
         toggleSidebar()
       }
     }
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [toggleSidebar])
+  }, [isMobile, open, toggleSidebar])
 
   // We add a state so that we can do data-state="expanded" or "collapsed".
   // This makes it easier to style the sidebar with Tailwind classes.
@@ -170,6 +169,7 @@ function Sidebar({
   collapsible?: "offcanvas" | "icon" | "none"
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  const mobileTrigger = React.useRef<HTMLElement | null>(null)
 
   if (collapsible === "none") {
     return (
@@ -193,19 +193,29 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+          className="w-(--sidebar-width) bg-sidebar p-0 text-foreground [&>button]:hidden"
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
             } as React.CSSProperties
           }
           side={side}
+          onOpenAutoFocus={() => {
+            mobileTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+          }}
+          onCloseAutoFocus={(event) => {
+            event.preventDefault()
+            mobileTrigger.current?.focus()
+          }}
+          onEscapeKeyDown={(event) => {
+            if (event.target instanceof Element && event.target.closest("details[open]")) event.preventDefault()
+          }}
         >
           <SheetHeader className="sr-only">
             <SheetTitle>Sidebar</SheetTitle>
             <SheetDescription>Displays the mobile sidebar.</SheetDescription>
           </SheetHeader>
-          <div className="mobile-course-bar flex h-full w-full flex-col">{children}</div>
+          <div className="mobile-course-bar flex h-full w-full flex-col items-center">{children}</div>
         </SheetContent>
       </Sheet>
     )
@@ -224,7 +234,7 @@ function Sidebar({
       <div
         data-slot="sidebar-gap"
         className={cn(
-          "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear",
+          "relative w-(--sidebar-width) bg-transparent",
           "group-data-[collapsible=offcanvas]:w-0",
           "group-data-[side=right]:rotate-180",
           variant === "floating" || variant === "inset"
@@ -235,7 +245,7 @@ function Sidebar({
       <div
         data-slot="sidebar-container"
         className={cn(
-          "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear min-[961px]:flex",
+          "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) border-r border-sidebar-border bg-sidebar min-[961px]:flex",
           side === "left"
             ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
             : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
@@ -250,7 +260,7 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow-sm"
+          className="flex h-full w-full flex-col bg-sidebar text-foreground group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow-sm"
         >
           {children}
         </div>
@@ -262,25 +272,30 @@ function Sidebar({
 function SidebarTrigger({
   className,
   onClick,
+  "aria-label": label = "Toggle sidebar",
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar, isMobile, openMobile, open } = useSidebar()
 
   return (
     <Button
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       variant="ghost"
-      size="icon"
-      className={cn("size-7", className)}
+      size="icon-touch"
+      aria-label={label}
+      aria-expanded={isMobile ? openMobile : open}
+      className={cn("shrink-0 text-muted-foreground", className)}
       onClick={(event) => {
         onClick?.(event)
-        toggleSidebar()
+        if (!event.defaultPrevented) {
+          event.currentTarget.focus()
+          toggleSidebar()
+        }
       }}
       {...props}
     >
-      <PanelLeftIcon />
-      <span className="sr-only">Toggle Sidebar</span>
+      <SidebarSimpleIcon size={20} aria-hidden />
     </Button>
   )
 }

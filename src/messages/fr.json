@@ -4,6 +4,8 @@
     "about": "À propos",
     "skip": "Aller au contenu",
     "menu": "Navigation du cours",
+    "collapseSidebar": "Réduire la barre latérale",
+    "expandSidebar": "Développer la barre latérale",
     "close": "Fermer",
     "toc": "Sur cette page",
     "previous": "Leçon précédente",
@@ -30,6 +32,7 @@
     "backHome": "Retour à l’accueil",
     "retry": "Réessayer",
     "copyAnchor": "Copier le lien du titre",
+    "copyAnchorFailed": "Le lien n’a pas pu être copié. Utilisez le lien du titre.",
     "noHeadings": "Aucun titre",
     "code": "Code",
     "lessonCount": "{count, plural, one {# leçon} other {# leçons}}",
@@ -51,14 +54,14 @@
     "intro": "Du code aux modèles, jusqu’à construire un agent : chaque leçon ne démonte qu’une pièce et vous laisse une petite tâche à faire. Une fois remonté, l’ensemble de la machine devient clair.",
     "start": "Commencer par la première leçon",
     "courseTitle": "Cours",
-    "courseIntro": "Classés par piste. Choisissez-en un et commencez.",
+    "courseIntro": "Choisissez un cours et avancez à votre rythme.",
     "navLabel": "Navigation",
     "navCourses": "Cours",
     "navPaths": "Parcours",
     "navHandbook": "Manuel",
     "footerLead": "aidevcourse.com · Gratuit, open source, sans pistage",
     "footerMeta": "© 2026 Jimmy Wong",
-    "newBadge": "NEW"
+    "browseCourses": "Voir les cours"
   },
   "Course": {
     "emptyTitle": "Pas encore de cours dans cette langue",
@@ -81,7 +84,9 @@
     "before": "Avant de commencer",
     "doneMark": "Terminé",
     "contents": "Plan",
-    "progressLabel": "Progression {done} / {total}"
+    "progressLabel": "Progression {done} / {total}",
+    "updating": "Contenu en cours de mise à jour",
+    "updatingBody": "De nouvelles leçons sont en préparation. Elles apparaîtront ici une fois publiées."
   },
   "Learning": {
     "loading": "Restauration de la progression…",

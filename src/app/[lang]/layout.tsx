@@ -13,6 +13,7 @@ import { locales, isLocale, htmlLanguages } from '@/lib/i18n/config';
 import { fumadocsMessages } from '@/lib/i18n/fumadocs';
 import { Providers } from '@/components/layout/providers';
 import { SiteFrame } from '@/components/layout/site-frame';
+import { SiteFooter } from '@/components/layout/page-primitives';
 import { HomeHeader } from '@/components/layout/home-header';
 import { site } from '@/lib/site-config';
 import '@/styles/globals.css';
@@ -31,9 +32,9 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   const clientMessages = Object.fromEntries(['Ui', 'Language', 'Learning', 'Search', 'Course'].map((namespace) => [namespace, messages[namespace]]));
   return <html lang={htmlLanguages[lang]} className={`light ${serif.variable} ${mono.variable}`}><body>
     <Providers locale={lang} messages={clientMessages} translations={fumadocsMessages(messages.Ui as Record<string, string>)}>
-      <a href="#main-content" className="skip-link">{ui('skip')}</a>
-      <SiteFrame locale={lang} header={<HomeHeader locale={lang} />} footer={<footer className="home-foot"><div className="home-inner"><span>{home('footerLead')}</span><span className="mono">{home('footerMeta')}</span></div></footer>}>
-        <noscript><style>{'.search-trigger, .copy-button, .mobile-course-bar > button, [data-toc-popover], .prose button { display: none !important; }'}</style><p className="nojs-notice">{ui('noJs')}</p></noscript>
+      <a href="#main-content" className="fixed -top-[100px] left-4 z-[100] bg-foreground px-[18px] py-3 text-white focus:top-3">{ui('skip')}</a>
+      <SiteFrame locale={lang} header={<HomeHeader locale={lang} />} footer={<SiteFooter meta={home('footerMeta')}>{home('footerLead')}</SiteFooter>}>
+        <noscript><style>{'.copy-button, .mobile-course-bar > button, [data-toc-popover], .prose button { display: none !important; }'}</style><p className="nojs-notice relative z-[2] border-b border-border bg-surface px-6 py-2 text-center text-[14px]">{ui('noJs')}</p></noscript>
         {children}
       </SiteFrame>
     </Providers>

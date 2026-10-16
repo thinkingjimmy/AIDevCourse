@@ -2,11 +2,11 @@
 
 [English](./README.md) · **简体中文**
 
-Next.js 16.3.6 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-intl 4.14.6 + Tailwind CSS 4.3.3
+Next.js 16.3.6 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-intl 4.14.6 + Tailwind CSS 4.3.3 + 本地 shadcn/ui 组件 + Phosphor Icons 2.1.10
 
-五语学习网站，支持本地 Markdown / MDX 课程、按语言搜索和浏览器本地学习进度。界面采用暖纸白、贯通的网格纵线、Newsreader 与 IBM Plex Mono（经 `next/font` 自托管）和简洁复古细节，无需账号、数据库、模型 API Key 或在线翻译服务。
+五语学习网站，支持本地 Markdown / MDX 课程、按语言搜索和浏览器本地学习进度。界面保留现有锌色配色、贯通的网格纵线，以及经 `next/font` 自托管的 Newsreader 与 IBM Plex Mono。页面和控件样式使用 Tailwind；操作按钮、提示、搜索和课程侧边栏复用 shadcn/ui。自定义 CSS 仅保留主题变量、原生元素默认值、正文排版和 SVG 绘制规则。无需账号、数据库、模型 API Key 或在线翻译服务。
 
-**当前状态：**站点工程已实现。公开课程是 AI 入门（`ai-101`）：六个模块、31 篇课时。简体中文是原文。英文里写完的课有全文，其余是摘要。日文、法文和西班牙文公开标题和摘要。课时地址是 `/{lang}/courses/ai-101/{lesson}`，不含模块目录。真机检查和部署仍待完成，任务统一维护在 [PRD 与 todo](./docs/PRD.md#13-markdown-开发任务)。
+**当前状态：**站点工程已实现。AI 101（`ai-101`）保留五种语言的课程入口，课文正在重写，目前没有公开课时。首页使用两列横向课程卡片，手机端为单列，卡片内文字在左、插图在右，复用课程 hero 的简介和芯片插图。课时地址是 `/{lang}/courses/ai-101/{lesson}`，不含模块目录。真机检查和部署仍待完成，任务统一维护在 [PRD 与 todo](./docs/PRD.md#13-markdown-开发任务)。
 
 ## 快速启动
 
@@ -20,6 +20,8 @@ pnpm dev
 打开 [localhost:3000/zh](http://localhost:3000/zh)。修改 frontmatter、文件结构或 `meta.json` 排序后重启服务；正文编辑支持热更新。
 
 首页设计稿不替换 `/zh`：[/design/a](http://localhost:3000/design/a)（目录）、[/design/b](http://localhost:3000/design/b)（课页）、[/design/c](http://localhost:3000/design/c)（工作台）。三份稿都读取 `content/zh/ai-101` 里已经公开的课。
+
+正文组件（包括 MDX `JimmyNote` 个人补充说明）可在 [/design/components](http://localhost:3000/design/components) 预览。
 
 ## 常用命令
 
@@ -73,7 +75,7 @@ E2E 默认使用 **3310** 端口，冲突时设置 `E2E_PORT`。工程样例位�
 
 </config>
 
-路由位于 `src/app`；UI 按职责组织在 `src/components/{course,layout,mdx,progress,search}`；共享业务逻辑位于 `src/lib`。MDX 统一注册入口为 `src/components/mdx/components.tsx`。各目录 README 维护成员地图，源文件头说明输入、输出和职责。生成的 `.source` 与 `.next*` 不入 Git。
+路由位于 `src/app`；UI 按职责组织在 `src/components/{course,home,layout,mdx,progress,search,ui}`；共享业务逻辑位于 `src/lib`。MDX 统一注册入口为 `src/components/mdx/components.tsx`。各目录 README 维护成员地图，源文件头说明输入、输出和职责。生成的 `.source` 与 `.next*` 不入 Git。
 
 ## 语言与学习记录
 

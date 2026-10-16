@@ -4,6 +4,7 @@
  * [POS]: Lesson route inside the wiki shell; both static generation and runtime access enforce publication policy.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
+import { PageTitle } from '@/components/layout/page-primitives';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { isLocale, htmlLanguages } from '@/lib/i18n/config';
@@ -35,16 +36,16 @@ export default async function LessonPage({ params }: Props) {
   const toc = (article.data.toc ?? []).filter((item) => item.depth === 2);
   const verified = doc.data.lastVerified && ui('verified', { date: new Intl.DateTimeFormat(htmlLanguages[lang], { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date(`${doc.data.lastVerified}T00:00:00Z`)) });
   return <>
-    <article id="main-content" className="learn-main learn-reading" tabIndex={-1}>
-      {group && <p className="learn-kicker">{String(groupIndex + 1).padStart(2, '0')} {group.title} · {ui('lessonNumber', { number })} · {ui('minutes', { count: doc.data.durationMinutes })}</p>}
-      <h1>{doc.data.title}</h1>
-      {doc.data.description ? <p className="learn-lead">{doc.data.description}</p> : null}
-      {(verified || doc.data.testedWith) && <p className="learn-note">{[verified, doc.data.testedWith && ui('testedWith', { environment: doc.data.testedWith })].filter(Boolean).join(' · ')}</p>}
+    <article id="main-content" className="col-start-1 block min-w-0 px-12 pt-9 pb-20 max-[961px]:px-5 max-[961px]:pt-7 max-[961px]:pb-[72px]" tabIndex={-1}>
+      {group && <p className="m-0 mb-2.5 font-mono text-[12px] text-muted-foreground">{String(groupIndex + 1).padStart(2, '0')} {group.title} · {ui('lessonNumber', { number })} · {ui('minutes', { count: doc.data.durationMinutes })}</p>}
+      <PageTitle variant="lesson">{doc.data.title}</PageTitle>
+      {doc.data.description ? <p className="m-0 mb-5 max-w-none text-[16px] leading-[1.7] text-muted-foreground">{doc.data.description}</p> : null}
+      {(verified || doc.data.testedWith) && <p className="-mt-2 mb-4 text-[13px] text-muted-foreground">{[verified, doc.data.testedWith && ui('testedWith', { environment: doc.data.testedWith })].filter(Boolean).join(' · ')}</p>}
       <TranslationNotice document={doc} sourceLocale={course.sourceLocale} />
       <div className="prose"><Body components={getMDXComponents()} /></div>
       <LessonCompletion lessonId={doc.data.lessonId} />
       <LessonNavigation course={course} lessonId={doc.data.lessonId} />
     </article>
-    {toc.length > 0 && <aside className="wiki-toc"><b>{t('onThisPage')}</b><nav aria-label={t('onThisPage')}>{toc.map((item) => <a key={item.url} href={item.url}>{item.title}</a>)}</nav></aside>}
+    {toc.length > 0 && <aside className="sticky top-7 col-start-2 px-[18px] pt-9 pb-12 pl-4 text-[13px] leading-[1.55] text-muted-foreground max-[1101px]:hidden"><b className="m-0 mb-2 block text-[12px] font-semibold text-foreground">{t('onThisPage')}</b><nav aria-label={t('onThisPage')}>{toc.map((item) => <a className="block py-1 text-muted-foreground no-underline hover:text-foreground" key={item.url} href={item.url}>{item.title}</a>)}</nav></aside>}
   </>;
 }

@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Markdown/MDX AST, a local image root, and component allowlist.
- * [OUTPUT]: Safe headings, references, and actionable authoring errors.
+ * [OUTPUT]: Supported component names including JimmyNote, safe headings, references, and authoring errors.
  * [POS]: Syntax validation before trusted local content reaches the compiler.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -13,7 +13,7 @@ import { toString } from 'mdast-util-to-string';
 import GithubSlugger from 'github-slugger';
 import type { Root } from 'mdast';
 import type { ContentDocument } from './types';
-export const supportedComponents = ['Callout', 'Steps', 'Step'] as const;
+export const supportedComponents = ['Callout', 'JimmyNote', 'Steps', 'Step'] as const;
 export function inspectMarkdown(body: string, file: string) {
   const tree = unified().use(remarkParse).use(remarkGfm).use(remarkMdx).parse(body) as Root;
   const slugger = new GithubSlugger();

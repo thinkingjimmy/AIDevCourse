@@ -21,8 +21,7 @@
     "check": "pnpm lint && pnpm typecheck && pnpm content:check && pnpm i18n:check && pnpm test"
   },
   "dependencies": {
-    "@radix-ui/react-alert-dialog": "1.1.23",
-    "@radix-ui/react-dialog": "1.1.23",
+    "@phosphor-icons/react": "2.1.10",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "fumadocs-core": "16.15.13",
@@ -30,7 +29,6 @@
     "fumadocs-ui": "16.15.13",
     "github-slugger": "2.0.0",
     "gray-matter": "4.0.3",
-    "lucide-react": "1.47.0",
     "mdast-util-to-string": "4.0.0",
     "next": "16.3.6",
     "next-intl": "4.14.6",

@@ -1,5 +1,5 @@
 # [INPUT]: Pull requests and main-branch changes with a frozen pnpm lockfile.
-# [OUTPUT]: Clean quality, production, and isolated five-language browser gates.
+# [OUTPUT]: Quality and browser gates with best-effort evidence uploads.
 # [POS]: Repository CI; test fixtures never enter the deployment build.
 # [PROTOCOL]: Update this header when making changes, then check README.md.
 name: Quality
@@ -34,6 +34,7 @@ jobs:
       - run: CONTENT_TEST=1 pnpm test:e2e
       - uses: actions/upload-artifact@v4
         if: always()
+        continue-on-error: true
         with:
           name: browser-evidence
           path: |

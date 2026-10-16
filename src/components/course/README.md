@@ -2,18 +2,18 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-chip-explode.tsx: Exploded AI chip for the course hero. Opens once and stays open; callouts fade in after it settles. Hover eases it shut. Pauses offscreen. Reduced motion shows the exploded still with callouts.
+chip-explode.tsx: Tailwind stage and shared illustration paint for the exploded AI chip for the course hero. Opens once and stays open; callouts fade in after it settles. Hover eases it shut. Pauses offscreen. Reduced motion shows the exploded still with callouts.
 
 chip-explode-markup.ts: Inline SVG for that animation, generated from the anatomy iso-kit.
 
-chip-explode.module.css: Light grayscale kit styles, scoped to the course figure, matching the homepage Mac.
+course-card.tsx: Compact horizontal catalog card composed from shared Card parts. Localized hero text has 20px inner spacing on the left. The chip is centered on a full-height muted zinc panel that reaches the card's top, bottom, and right edges. The whole card is a native link.
 
-course-layout.tsx: Full-bleed lesson wiki. A shadcn Sidebar holds the logo, course title, progress, and collapsible modules (number and title only). Open modules stay open across lesson changes. A completed lesson shows a green check from the existing progress record. Search and language sit in SidebarFooter. At ≤960px the same sidebar opens from a 课程目录 button as a sheet. Search is not a field in the tree.
+course-layout.tsx: Full-bleed lesson wiki. The logo row ends with a shadcn SidebarTrigger. Desktop collapse keeps a 48px rail and its toggle; the course, progress, modules, and footer leave the tab order. Sidebar and module state survive lesson changes and reloads in this session, with an in-memory fallback. Phosphor checks mark completed lessons. SidebarFooter contains the globe menu and keyboard-only search with no visible search button. At ≤960px the sidebar opens as a sheet and returns focus to the course directory button when closed.
 
-empty-courses.tsx: Empty course library, an about link, and links to courses published in other languages.
+empty-courses.tsx: shadcn action and Tailwind empty course library, an about link, and links to courses published in other languages.
 
-lesson-navigation.tsx: Previous and next row under a top border; the first lesson's previous link returns to the course introduction.
+lesson-navigation.tsx: Tailwind previous and next row with Phosphor direction icons under a top border; the first previous link returns to the course introduction.
 
-translation-notice.tsx: Localized stale-translation notice with a valid original link.
+translation-notice.tsx: Shared Alert with localized stale-translation notice with a valid original link.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

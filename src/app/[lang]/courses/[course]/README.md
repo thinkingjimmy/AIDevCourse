@@ -6,6 +6,6 @@
 
 layout.tsx: Progress context for the overview and its lessons. The overview page owns the centered frame; lessons use the wiki shell.
 
-page.tsx: Course overview with a homepage-style hero, exploded chip, full-bleed rule, and two-column module cards. Lesson links open in a new tab. No sidebar.
+page.tsx: Course overview with a hero, exploded chip, and two-column module cards. Empty courses show a localized updating state without a start-lesson action or statistics. Lesson links open in a new tab. No sidebar.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

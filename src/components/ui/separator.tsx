@@ -1,3 +1,9 @@
+/**
+ * [INPUT]: Radix Separator props and shared Tailwind tokens.
+ * [OUTPUT]: Separator with horizontal and vertical variants.
+ * [POS]: Shared shadcn divider used by sidebar composition.
+ * [PROTOCOL]: Update this header when making changes, then check README.md.
+ */
 "use client"
 
 import * as React from "react"

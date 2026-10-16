@@ -2,12 +2,16 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-globals.css: One light-only token system plus shared primitives: buttons, chips, lesson-state icons, progress segments, and anchor clearance for the sticky header.
+tokens.css: Shared Tailwind/shadcn colors, fonts, radius, author-note surface colors, and Fumadocs content tokens.
 
-course.css: Course overview inside the homepage frame, plus the older lesson column rules the wiki overrides.
+globals.css: Public CSS entry, native defaults, locale fonts, focus, selection, and reduced motion. Page and control styles use Tailwind utilities in TSX.
 
-reading.css: Shared prose, and the full-bleed lesson wiki (320px shadcn sidebar with the footer pinned to the viewport, article, 220px on-this-page list; ≤960px a 课程目录 sheet).
+prose.css: Markdown typography, images, blockquotes, and task lists. Code backgrounds follow the Shiki palette to preserve syntax contrast. Shared Table parts own table styles through Tailwind.
 
-surfaces.css: Site shell (full-height rails, sticky header, footer), the zinc homepage and course frames (viewport-centered so a scrollbar does not shift them), the exploded-Mac hero, about, 404, dialogs, and search.
+illustrations.css: Shared SVG paint classes for the Mac and chip. React owns animation; Tailwind owns stage layout.
+
+preview.css: Tailwind entry and native document defaults for the isolated /design previews. Preserves their existing browser typography without adding a second component stylesheet.
+
+Use arbitrary font sizes where the previous design inherits line height. Changing `text-[14px]` to `text-sm` also changes line height and needs a visual comparison.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

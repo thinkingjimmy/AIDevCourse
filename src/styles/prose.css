@@ -1,0 +1,25 @@
+/**
+ * [INPUT]: Fumadocs-rendered Markdown, Shiki palette variables, and shared theme tokens.
+ * [OUTPUT]: Stable reading typography for authored content, images, and task lists.
+ * [POS]: Content-only layer; tables, page layouts, callouts, code actions, and navigation use Tailwind.
+ * [PROTOCOL]: Update this header when making changes, then check README.md.
+ */
+.prose { margin-top: 8px; font-size: 16px; line-height: 1.85; color: #3f3f46; max-width: none; min-width: 0; }
+html:lang(zh-Hans) .prose, html:lang(ja) .prose { line-height: 1.95; }
+.prose :where(h2) { margin: 36px 0 8px; font-family: var(--font-sans); font-size: 20px; line-height: 1.4; font-weight: 600; letter-spacing: -.01em; color: var(--ink); }
+.prose :where(h3) { font-size: 20px; font-weight: 600; color: var(--ink); }
+.prose :where(h2, h3, h4) button { font: inherit; color: inherit; }
+.prose :where(a:not(.not-prose)) { color: var(--link); text-decoration: underline; text-underline-offset: 4px; }
+.prose :where(h2, h3, h4) :where(a) { color: inherit; text-decoration: none; }
+.prose :where(img) { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 2px; background: var(--sheet); }
+.prose :where(pre) { overflow-x: auto; font-size: 13.5px; line-height: 1.85; border: 1px solid var(--line); border-radius: 8px; background: var(--shiki-light-bg, var(--sheet)); }
+.prose :where(:not(pre) > code) { padding: 1px 5px; border: 0; border-radius: 2px; background: var(--surface); font-size: .88em; }
+.prose :where(figure) { max-width: 100%; min-width: 0; border-radius: 0; }
+.prose :where(blockquote) { margin-inline: 0; padding: 16px 20px; border: 1px solid var(--ink); border-left-width: 1px; background: var(--sheet); box-shadow: 4px 4px 0 var(--line); font: 14px/1.8 var(--font-mono); font-style: normal; color: var(--body); }
+.prose :where(blockquote p) { margin: 0; }
+.prose :where(blockquote p)::before, .prose :where(blockquote p)::after { content: none; }
+.prose :where(.contains-task-list) { padding: 0; list-style: none; border: 1px solid var(--line); background: var(--sheet); }
+.prose :where(.task-list-item) { display: flex; gap: 12px; align-items: flex-start; margin: 0; padding: 12px 16px; font-size: 15px; line-height: 1.6; }
+.prose :where(.task-list-item + .task-list-item) { border-top: 1px solid var(--line-soft); }
+.prose :where(.task-list-item input) { width: 18px; height: 18px; margin: 3px 0 0; accent-color: var(--done); }
+.prose :where(pre, figure) { max-width: none; }

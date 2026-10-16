@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Isolated five-language production fixture build.
- * [OUTPUT]: Cross-language learning, search, and layout acceptance evidence.
+ * [OUTPUT]: Cross-language learning, visible-content search, completed lesson-anchor navigation, and layout acceptance evidence.
  * [POS]: Nonpublic engineering matrix; never runs fixtures in the deployment build.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -74,24 +74,39 @@ for (const locale of locales) {
     const indexes: string[] = [];
     page.on('request', (request) => { if (request.url().includes('/api/search/')) indexes.push(request.url()); });
     await page.goto(path(locale));
+    await page.waitForLoadState('networkidle');
     expect(indexes).toHaveLength(0);
-    await page.getByRole('button', { name: t.Search.open, exact: true }).click();
+    await page.keyboard.press('Control+k');
     const input = page.getByRole('textbox', { name: t.Search.open });
     for (const query of queries[locale]) {
+      await input.fill('');
+      await expect(page.locator('.search-result')).toHaveCount(0);
       await input.fill(query);
       await expect(page.locator('.search-result').first()).toBeVisible();
       const urls = await page.locator('.search-result').evaluateAll((links) => links.slice(0, 5).map((link) => link.getAttribute('href')));
       expect(urls.some((url) => url?.includes('/ai-coding/first-change'))).toBe(true);
       expect(urls.every((url) => url?.startsWith(`/${locale}/courses/`))).toBe(true);
+      expect(urls.every((url) => !url?.startsWith(`/${locale}/courses/ai-coding#`))).toBe(true);
     }
     expect(indexes.every((url) => url.includes(`/api/search/${locale}?`))).toBe(true);
     await input.dispatchEvent('compositionstart');
     await input.press('Enter'); await expect(page.getByRole('dialog')).toBeVisible();
     await input.dispatchEvent('compositionend');
-    await input.press('ArrowDown'); await input.press('Enter');
+    const resultUrls = await page.locator('.search-result').evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+    const headingIndex = resultUrls.findIndex((url) => url?.startsWith(`${path(locale)}#`));
+    expect(headingIndex).toBeGreaterThanOrEqual(0);
+    for (let index = 0; index < headingIndex; index++) await input.press('ArrowDown');
+    const destination = await page.locator('.search-result[data-selected="true"]').getAttribute('href');
+    expect(destination).not.toBeNull();
+    await input.press('Enter');
     await expect(page.getByRole('dialog')).not.toBeVisible();
+    await expect(page).toHaveURL(new URL(destination!, page.url()).href);
     const hash = new URL(page.url()).hash;
-    if (hash) expect(await page.locator(`[id="${decodeURIComponent(hash.slice(1))}"]`).count()).toBe(1);
+    expect(hash).not.toBe('');
+    await expect(page.locator(`[id="${decodeURIComponent(hash.slice(1))}"]`)).toHaveCount(1);
+    const screenshot = test.info().outputPath('search-heading.png');
+    await page.screenshot({ path: screenshot });
+    await test.info().attach('search-heading', { path: screenshot, contentType: 'image/png' });
   });
   test(`${locale}: five viewports, 200% equivalent zoom, and accessible reading`, async ({ page, browser, baseURL }, testInfo) => {
     for (const width of [320, 390, 768, 1024, 1440]) {
@@ -123,12 +138,13 @@ for (const locale of locales) {
 test('search retries a failed index request and clears old-language results', async ({ page }) => {
   let attempts = 0;
   await page.route('**/api/search/en?*', (route) => { if (attempts++ === 0) return route.abort(); return route.continue(); });
-  await page.goto('/en'); await page.getByRole('button', { name: 'Search lessons' }).click();
+  await page.goto('/en'); await page.waitForLoadState('networkidle'); await page.keyboard.press('Control+k');
   await page.getByRole('button', { name: 'Retry search' }).click();
   await page.getByRole('textbox', { name: 'Search lessons' }).fill('context');
   await expect(page.locator('.search-result').first()).toBeVisible();
   await page.keyboard.press('Escape');
   await page.locator('.language-picker summary').click(); await page.locator('.language-options a[href="/fr"]').click();
-  await page.getByRole('button', { name: 'Rechercher une leçon' }).click();
+  await page.waitForLoadState('networkidle');
+  await page.keyboard.press('Control+k');
   await expect(page.getByRole('textbox')).toHaveValue(''); await expect(page.locator('.search-result')).toHaveCount(0);
 });

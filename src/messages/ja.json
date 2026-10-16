@@ -4,6 +4,8 @@
     "about": "このサイトについて",
     "skip": "本文へスキップ",
     "menu": "コースの目次",
+    "collapseSidebar": "サイドバーを折りたたむ",
+    "expandSidebar": "サイドバーを開く",
     "close": "閉じる",
     "toc": "このページの内容",
     "previous": "前のレッスン",
@@ -30,6 +32,7 @@
     "backHome": "ホームに戻る",
     "retry": "再試行",
     "copyAnchor": "見出しへのリンクをコピー",
+    "copyAnchorFailed": "リンクをコピーできませんでした。見出しのリンクを使用してください。",
     "noHeadings": "見出しはありません",
     "code": "コード",
     "lessonCount": "{count} レッスン",
@@ -51,14 +54,14 @@
     "intro": "コードを書くことから、モデルの調整、Agent を組むことまで。各レッスンは部品を一つだけ分解し、手を動かして小さな課題をやります。また組み立てれば、機械全体が分かります。",
     "start": "最初のレッスンから始める",
     "courseTitle": "コース",
-    "courseIntro": "方向ごとに並んでいます。一つ選んですぐ始められます。",
+    "courseIntro": "コースを選び、自分のペースで学びましょう。",
     "navLabel": "メインメニュー",
     "navCourses": "コース",
     "navPaths": "ルート",
     "navHandbook": "ハンドブック",
     "footerLead": "aidevcourse.com · 無料、オープンソース、追跡なし",
     "footerMeta": "© 2026 Jimmy Wong",
-    "newBadge": "NEW"
+    "browseCourses": "コースを見る"
   },
   "Course": {
     "emptyTitle": "この言語にはまだコースがありません",
@@ -81,7 +84,9 @@
     "before": "始める前に",
     "doneMark": "完了",
     "contents": "目次",
-    "progressLabel": "進捗 {done} / {total}"
+    "progressLabel": "進捗 {done} / {total}",
+    "updating": "コンテンツを更新中",
+    "updatingBody": "新しいレッスンを準備しています。公開後、ここに表示されます。"
   },
   "Learning": {
     "loading": "学習記録を復元中…",

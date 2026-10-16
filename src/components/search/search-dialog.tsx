@@ -1,24 +1,27 @@
 /**
- * [INPUT]: One locale's Fumadocs static export and a user query.
- * [OUTPUT]: Lazy, race-safe search with keyboard/IME support, lesson meta, and retries.
+ * [INPUT]: Locale search export, a query, focus return callback, Phosphor icons, and shared Dialog/Input/Button primitives.
+ * [OUTPUT]: Lazy, race-safe search with dialog-managed focus, keyboard/IME support, lesson meta, and retries.
  * [POS]: Isolated dialog boundary; cache URLs include locale and build version.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import * as Dialog from '@radix-ui/react-dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/overlays/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { staticClient } from 'fumadocs-core/search/client/orama-static';
 import type { SortedResult } from 'fumadocs-core/search';
 import { useTranslations } from 'next-intl';
-import { Search } from 'lucide-react';
+import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
+import { ArrowElbowDownLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowElbowDownLeft';
 import type { Locale } from '@/lib/i18n/config';
 import { createSearchDatabase } from '@/lib/search/tokenizer';
 import type { SearchLessonMeta } from './lessons';
 function Highlight({ text }: { text: string }) {
-  return text.split(/(<mark>.*?<\/mark>)/g).map((part, index) => part.startsWith('<mark>') ? <mark key={index}>{part.slice(6, -7)}</mark> : part);
+  return text.split(/(<mark>.*?<\/mark>)/g).map((part, index) => part.startsWith('<mark>') ? <mark className="bg-[var(--mark)] px-px text-foreground" key={index}>{part.slice(6, -7)}</mark> : part);
 }
-export default function SearchDialog({ locale, version, lessons, onClose }: { locale: Locale; version: string; lessons: Record<string, SearchLessonMeta>; onClose: () => void }) {
+export default function SearchDialog({ locale, version, lessons, onClose, onFocusReturn }: { locale: Locale; version: string; lessons: Record<string, SearchLessonMeta>; onClose: () => void; onFocusReturn: () => void }) {
   const t = useTranslations('Search');
   const ui = useTranslations('Ui');
   const [input, setInput] = useState('');
@@ -43,30 +46,30 @@ export default function SearchDialog({ locale, version, lessons, onClose }: { lo
     }, query ? 100 : 0);
     return () => { cancelled = true; clearTimeout(timer); };
   }, [client, query, locale]);
-  return <Dialog.Root open onOpenChange={(open) => { if (!open) onClose(); }}><Dialog.Portal>
-    <Dialog.Overlay className="dialog-overlay" /><Dialog.Content className="search-dialog" aria-describedby="search-description" onCloseAutoFocus={(event) => event.preventDefault()}>
-      <Dialog.Title className="sr-only">{t('open')}</Dialog.Title>
-      <div className="search-input-row"><Search size={20} aria-hidden /><input autoComplete="off" autoFocus value={input} aria-label={t('open')} placeholder={t('placeholder')} aria-controls="search-results"
+  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+    <DialogContent aria-describedby="search-description" onCloseAutoFocus={(event) => { event.preventDefault(); onFocusReturn(); }}>
+      <DialogTitle className="sr-only">{t('open')}</DialogTitle>
+      <div className="flex min-h-14 items-center gap-3 border-b border-border px-4 text-muted-foreground"><MagnifyingGlassIcon size={20} aria-hidden /><Input className="h-auto min-h-10 w-auto flex-1 rounded-none border-0 bg-transparent p-0 text-[16px] leading-[inherit] text-foreground shadow-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-0 md:text-[16px]" autoComplete="off" value={input} aria-label={t('open')} placeholder={t('placeholder')} aria-controls="search-results"
         onCompositionStart={() => { composing.current = true; }} onCompositionEnd={(event) => { composing.current = false; setQuery(event.currentTarget.value); setActive(0); }}
         onChange={(event) => { setInput(event.target.value); setActive(0); if (!composing.current) setQuery(event.target.value); }}
         onKeyDown={(event) => {
           if (composing.current || event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
           if (event.key === 'ArrowDown' || event.key === 'ArrowUp') { event.preventDefault(); const next = Math.max(0, Math.min(results.length - 1, active + (event.key === 'ArrowDown' ? 1 : -1))); setActive(next); links.current[next]?.scrollIntoView({ block: 'nearest' }); }
           if (event.key === 'Enter' && state === 'ready' && results[active]) { event.preventDefault(); links.current[active]?.click(); }
-        }} /><Dialog.Close className="search-esc" aria-label={ui('close')}>Esc</Dialog.Close></div>
-      <Dialog.Description id="search-description" className="sr-only">{t('hint')}</Dialog.Description>
-      <div className="search-results" id="search-results" aria-label={t('results')}>
-        <p role="status" className="search-status">{state === 'loading' ? t('loading') : state === 'error' ? t('error') : query && !results.length ? t('empty') : ''}</p>
-        {state === 'error' && <button className="button" onClick={() => setAttempt((value) => value + 1)}>{t('retry')}</button>}
+        }} /><DialogClose asChild><Button variant="keyboard" size="keyboard" aria-label={ui('close')}>Esc</Button></DialogClose></div>
+      <DialogDescription id="search-description" className="sr-only">{t('hint')}</DialogDescription>
+      <div className="flex max-h-[50vh] flex-col gap-0.5 overflow-auto p-2" id="search-results" aria-label={t('results')}>
+        <p role="status" className="px-3 py-2 text-[14px] text-muted-foreground empty:hidden">{state === 'loading' ? t('loading') : state === 'error' ? t('error') : query && !results.length ? t('empty') : ''}</p>
+        {state === 'error' && <Button variant="paper" size="paper" onClick={() => setAttempt((value) => value + 1)}>{t('retry')}</Button>}
         {state === 'ready' && results.map((result, index) => {
           const meta = lessons[result.url.split('#')[0]];
           const title = result.type === 'page' ? result.content : (meta?.title ?? result.content);
-          return <Link key={`${result.id}-${index}`} ref={(element) => { links.current[index] = element; }} href={result.url} onClick={onClose} className="search-result" data-selected={active === index} onFocus={() => setActive(index)}>
-            <span className="search-num">{meta?.number ?? ''}</span>
-            <span className="search-copy"><span className="search-title"><Highlight text={title} /></span>{meta ? <small>{meta.module} · {ui('minutes', { count: meta.minutes })}</small> : null}</span>
-            <span className="search-go" aria-hidden="true">↵</span>
+          return <Link key={`${result.id}-${index}`} ref={(element) => { links.current[index] = element; }} href={result.url} onClick={onClose} className="search-result group/result grid grid-cols-[36px_minmax(0,1fr)_20px] items-center gap-2 rounded-lg p-3 no-underline hover:bg-surface data-[selected=true]:bg-surface" data-selected={active === index} onFocus={() => setActive(index)}>
+            <span className="font-mono text-[12px] text-faint">{meta?.number ?? ''}</span>
+            <span className="min-w-0"><span className="block text-[15px] font-medium [overflow-wrap:anywhere]"><Highlight text={title} /></span>{meta ? <small className="mt-0.5 block font-mono text-[12px] text-faint">{meta.module} · {ui('minutes', { count: meta.minutes })}</small> : null}</span>
+            <ArrowElbowDownLeftIcon size={16} className="invisible text-faint group-data-[selected=true]/result:visible" aria-hidden />
           </Link>;
         })}
-      </div><p className="search-keys">{t('keys')}</p>
-    </Dialog.Content></Dialog.Portal></Dialog.Root>;
+      </div><p className="m-0 border-t border-border px-4 py-3 font-mono text-[12px] text-muted-foreground">{t('keys')}</p>
+    </DialogContent></Dialog>;
 }

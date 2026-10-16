@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Parsed language documents, explicit order, and local public assets.
- * [OUTPUT]: Identity, unique lesson-slug, and revision validation, plus public catalog rules and safe links.
+ * [OUTPUT]: Identity, lesson-slug, revision, and link validation; course introductions can publish before lessons.
  * [POS]: Central publication policy used before any route, search, or SEO output.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -71,13 +71,7 @@ export function publishDocuments(documents: ContentDocument[], order: Map<Locale
       previous = position;
     }
   }
-  const visible = documents;
-  for (const course of visible.filter((doc) => doc.data.kind === 'course')) {
-    if (!visible.some((doc) => doc.locale === course.locale && doc.data.kind === 'lesson' && doc.data.courseId === course.data.courseId)) {
-      fail(course, 'Published course must contain at least one public lesson');
-    }
-  }
-  return { visible, warnings };
+  return { visible: documents, warnings };
 }
 
 export function validateReferences(documents: ContentDocument[], publicRoot: string) {
