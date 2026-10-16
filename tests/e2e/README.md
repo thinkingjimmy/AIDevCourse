@@ -12,7 +12,7 @@ tables.spec.ts: Chinese and English two/three-column Markdown previews at /desig
 
 navigation.spec.ts: Public course footers, globe menus, and keyboard-only search. Sidebar state/focus, mobile sheet, heading-link copying, and blocked storage/clipboard use isolated ai-coding fixtures. No baseline images are required.
 
-site.spec.ts: Responsive two-column course cards that become one column on mobile, left text/right illustration placement, full-height image backgrounds, native card links without footer actions, empty course overviews, withdrawn URLs/search/sitemap, HTTP, locale, SEO, no-JS, keyboard, and accessibility acceptance tests.
+site.spec.ts: Isolated language/viewport cases for responsive course cards, full-height image backgrounds, native card links, and empty course overviews. HTTP publication, locale, SEO, no-JS, keyboard, and accessibility checks use native navigation between pages instead of interrupting prefetches with repeated hard loads.
 
 styles.spec.ts: Hero motion in both builds. Shared controls, responsive boundaries, no-JS reading, and failure feedback use isolated lessons. Optional local Chromium comparisons cover public pages and design previews. References stay under `docs/evidence/screenshots/tailwind` and are ignored by Git.
 

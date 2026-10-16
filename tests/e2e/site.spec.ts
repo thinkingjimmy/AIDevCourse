@@ -1,6 +1,6 @@
 /**
  * [INPUT]: The production server, authored catalog, localized messages, and all five language routes.
- * [OUTPUT]: Course-card layout, empty-course, publication, locale, and accessibility evidence.
+ * [OUTPUT]: Course-card layout, empty-course, publication, locale, and accessibility evidence with isolated language cases.
  * [POS]: Public-site browser matrix, valid with an empty or partial course library.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -14,8 +14,12 @@ for (const locale of locales) {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
     for (const path of ['', '/about']) {
-      const response = await page.goto(`/${locale}${path}`);
+      const response = path ? await page.request.get(`/${locale}${path}`) : await page.goto(`/${locale}`);
       expect(response?.status()).toBe(200);
+      if (path) {
+        await page.locator(`header a[href="/${locale}/about"]`).click();
+        await expect(page).toHaveURL(new RegExp(`/${locale}/about$`));
+      }
       await expect(page.locator('html')).toHaveAttribute('lang', htmlLanguages[locale]);
       await expect(page.locator('h1')).toHaveCount(1);
       await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`/${locale}${path}$`));
@@ -84,12 +88,12 @@ test('production publishes course entries and removes withdrawn lessons from dis
 });
 
 for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'tablet', width: 840, height: 960 }, { name: 'mobile', width: 390, height: 844 }, { name: 'narrow', width: 320, height: 844 }]) {
-  test(`course cards and updating state work on ${viewport.name}`, async ({ page }) => {
-    test.skip(process.env.CONTENT_TEST === '1', 'Public AI 101 cards use the authoring catalog.');
-    await page.setViewportSize(viewport);
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    const catalog = readCatalog();
-    for (const locale of locales) {
+  for (const locale of locales) {
+    test(`${locale}: course cards and updating state work on ${viewport.name}`, async ({ page }) => {
+      test.skip(process.env.CONTENT_TEST === '1', 'Public AI 101 cards use the authoring catalog.');
+      await page.setViewportSize(viewport);
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      const catalog = readCatalog();
       const messages = JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
       const course = catalog.courses.find((item) => item.locale === locale && item.slug === 'ai-101')!;
       const errors: string[] = [];
@@ -138,8 +142,8 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       await expect(page.getByRole('contentinfo')).toHaveCount(1);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       expect(errors).toEqual([]);
-    }
-  });
+    });
+  }
 }
 
 test('course cards open the updating overview without JavaScript', async ({ browser, baseURL }) => {
