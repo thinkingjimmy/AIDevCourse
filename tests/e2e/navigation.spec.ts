@@ -1,16 +1,18 @@
 /**
- * [INPUT]: Public course overviews, isolated fixture lessons, localized labels, and a production server.
+ * [INPUT]: Public course overviews, isolated fixture lessons, localized labels, and a production server, canonical locale paths.
  * [OUTPUT]: Brand identity, course hero alignment and shared actions without summary statistics, footer, language menus, sidebar collapse, and keyboard-only search evidence.
  * [POS]: Navigation acceptance suite; screenshots are local artifacts, not baseline assertions.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
+import type { Locale } from '../../src/lib/i18n/config';
+import { localePath } from '../../src/lib/i18n/routing';
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import AxeBuilder from '@axe-core/playwright';
 
 const fixture = process.env.CONTENT_TEST === '1';
 const courseSlug = fixture ? 'ai-coding' : 'ai-101';
-const coursePath = (locale: string) => `/${locale}/courses/${courseSlug}`;
+const coursePath = (locale: string) => localePath(locale as Locale, `/courses/${courseSlug}`);
 const lessonPath = (locale = 'zh') => `${coursePath(locale)}/first-change`;
 
 const dictionary = (locale: string) => JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
@@ -38,10 +40,10 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     };
     for (const locale of ['zh', 'en', 'ja', 'fr', 'es']) {
-      await page.goto(`/${locale}`);
+      await page.goto(localePath(locale as Locale, `/`));
       await checkBrand();
       await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute('content', 'AIDevCourse');
-      await page.goto(`/${locale}/about`);
+      await page.goto(localePath(locale as Locale, `/about`));
       await checkBrand();
       await expect(page.locator('main')).toContainText('AIDevCourse');
     }
@@ -85,7 +87,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     };
     for (const locale of ['zh', 'en', 'ja', 'fr', 'es']) {
       const copy = dictionary(locale);
-      await page.goto(`/${locale}`);
+      await page.goto(localePath(locale as Locale, `/`));
       const homeAction = await page.getByRole('link', { name: copy.Home.start, exact: true }).evaluate(appearance);
       await page.goto(coursePath(locale));
       await page.evaluate(() => document.fonts.ready);
@@ -124,7 +126,7 @@ test('search uses shortcuts without header or sidebar buttons', async ({ page })
     await page.goto(path);
     await page.waitForLoadState('networkidle');
     await expect(page.getByRole('button', { name: copy.Search.open, exact: true })).toHaveCount(0);
-    const language = page.locator('.language-picker summary');
+    const language = page.getByRole('button', { name: copy.Ui.more, exact: true }).or(page.locator('.language-picker summary'));
     await language.focus();
     await page.keyboard.press('Control+k');
     await expect(page.getByRole('textbox', { name: copy.Search.open })).toBeFocused();
@@ -142,7 +144,7 @@ test('search uses shortcuts without header or sidebar buttons', async ({ page })
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(lessonPath());
   await page.getByRole('button', { name: copy.Ui.menu, exact: true }).click();
-  const language = page.locator('.language-picker summary');
+  const language = page.getByRole('button', { name: copy.Ui.more, exact: true }).or(page.locator('.language-picker summary'));
   await language.focus();
   await page.keyboard.press('Control+k');
   await expect(page.getByRole('textbox', { name: copy.Search.open })).toBeFocused();
@@ -153,12 +155,21 @@ test('search uses shortcuts without header or sidebar buttons', async ({ page })
 });
 
 async function openLanguages(page: Page, locale: string) {
+  const more = page.getByRole('button', { name: dictionary(locale).Ui.more, exact: true });
+  const submenu = await more.isVisible();
+  if (submenu) {
+    await more.click();
+    const change = page.getByRole('menuitem', { name: dictionary(locale).Language.change, exact: true });
+    await change.focus(); await change.press('ArrowRight');
+  }
   const trigger = page.locator('.language-picker summary');
-  await expect(trigger).toHaveAccessibleName(dictionary(locale).Language.label);
-  await expect(trigger).toHaveText('');
-  await expect(trigger.locator('svg')).toHaveAttribute('viewBox', '0 0 256 256');
-  await trigger.focus();
-  await page.keyboard.press('Enter');
+  if (!submenu) {
+    await expect(trigger).toHaveAccessibleName(dictionary(locale).Language.label);
+    await expect(trigger).toHaveText('');
+    await expect(trigger.locator('svg')).toHaveAttribute('viewBox', '0 0 256 256');
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+  }
   const menu = page.locator('.language-options');
   await expect(menu).toBeVisible();
   await expect(menu.locator('a')).toHaveCount(5);
@@ -178,7 +189,7 @@ for (const locale of ['zh', 'en', 'ja', 'fr', 'es']) {
   test(`${locale}: navigation shares a compact globe language menu`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 960 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto(`/${locale}`);
+    await page.goto(localePath(locale as Locale, `/`));
     await page.evaluate(() => document.fonts.ready);
     const header = await openLanguages(page, locale);
     await capture(page, `${locale}-header-languages`);
@@ -187,7 +198,8 @@ for (const locale of ['zh', 'en', 'ja', 'fr', 'es']) {
     await expect(page.locator('.language-options')).not.toBeVisible();
     await page.goto(fixture ? lessonPath(locale) : coursePath(locale));
     await page.evaluate(() => document.fonts.ready);
-    expect(await openLanguages(page, locale)).toEqual(header);
+    const courseMenu = await openLanguages(page, locale);
+    if (!fixture) expect(courseMenu).toEqual(header);
     await expect(page.locator('svg.lucide')).toHaveCount(0);
     await capture(page, `${locale}-sidebar-languages`);
     await page.locator('main h1, article h1').click();
@@ -214,7 +226,7 @@ test('sidebar collapse preserves focus, reading space, and navigation state', as
   await expect(toggle).toHaveAccessibleName(dictionary('zh').Ui.expandSidebar);
   await expect(toggle).toBeFocused();
   await expect(page.locator('.course-navigation')).not.toBeVisible();
-  await expect(page.locator('.language-picker')).not.toBeVisible();
+  await expect(page.getByRole('button', { name: dictionary('zh').Ui.more, exact: true })).not.toBeVisible();
   await expect.poll(async () => (await page.locator('[data-slot="sidebar-gap"]').boundingBox())!.width).toBe(48);
   await expect(page.locator('article > .prose')).toBeVisible();
   const report = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
@@ -283,11 +295,12 @@ test('mobile sidebar closes from the logo row and keeps language choices in the 
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
   await page.getByRole('button', { name: copy.Ui.menu, exact: true }).click();
-  await page.locator('.language-picker summary').click();
+  await page.getByRole('button', { name: copy.Ui.more, exact: true }).click();
+  await page.getByRole('menuitem', { name: copy.Language.change, exact: true }).click();
   await page.locator('.language-options a[hreflang="en"]').click();
-  await expect(page).toHaveURL(/\/en\/courses\/ai-coding\/first-change$/);
+  await expect(page).toHaveURL(/\/courses\/ai-coding\/first-change$/);
   await page.getByRole('button', { name: dictionary('en').Ui.menu, exact: true }).click();
-  await page.locator('[data-mobile="true"] a[href="/en/courses/ai-coding/useful-context"]').click();
+  await page.locator('[data-mobile="true"] a[href="/courses/ai-coding/useful-context"]').click();
   await expect(page).toHaveURL(/\/useful-context$/);
   await expect(page.locator('[data-mobile="true"]')).toHaveCount(0);
   await page.goBack();

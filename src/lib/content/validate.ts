@@ -1,20 +1,21 @@
 /**
- * [INPUT]: Parsed language documents, explicit order, and local public assets.
- * [OUTPUT]: Identity, revision, and link validation against published routes and rendered anchors.
+ * [INPUT]: Parsed language documents, explicit order, and local public assets, canonical locale paths.
+ * [OUTPUT]: Identity, achievement ownership and translation alignment, ordering, and link validation against public routes and rendered anchors.
  * [POS]: Central publication policy used before any route, search, or SEO output.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import { existsSync } from 'node:fs';
 import { resolve, sep } from 'node:path';
 import { identity, renderedAnchors, type ContentDocument } from './model';
-import { isLocale, languageNames, type Locale } from '../i18n/config';
+import { languageNames, type Locale } from '../i18n/config';
+import { localePath, pathLocale, stripLocale } from '../i18n/routing';
 
 export function publishDocuments(documents: ContentDocument[], order: Map<Locale, string[]>) {
   const byKey = new Map<string, ContentDocument>();
   const byURL = new Map<string, ContentDocument>();
   const courses = documents.filter((doc) => doc.data.kind === 'course');
-  const warnings: string[] = [];
   const fail = (doc: ContentDocument, reason: string): never => { throw new Error(`${doc.file}: ${reason}`); };
+  const achievementIds = new Set<string>();
   const lessonSlugs = new Map<string, ContentDocument>();
   for (const doc of documents) {
     const key = `${doc.locale}:${identity(doc)}`;
@@ -26,6 +27,12 @@ export function publishDocuments(documents: ContentDocument[], order: Map<Locale
       lessonSlugs.set(slugKey, doc);
     }
     if (byURL.has(doc.url)) fail(doc, `Duplicate URL ${doc.url}`);
+    if (doc.data.kind === 'course' && doc.achievements.length) fail(doc, 'Achievements belong in lesson articles');
+    for (const achievement of doc.achievements) {
+      const achievementKey = `${doc.locale}:${doc.data.courseId}:${achievement.id}`;
+      if (achievementIds.has(achievementKey)) fail(doc, `Duplicate achievement ID ${achievement.id}`);
+      achievementIds.add(achievementKey);
+    }
     byKey.set(key, doc);
     byURL.set(doc.url, doc);
   }
@@ -48,13 +55,12 @@ export function publishDocuments(documents: ContentDocument[], order: Map<Locale
     if (parent.data.kind !== 'course' || originalParent.data.kind !== 'course') throw new Error('Expected course');
     if (parent.data.sourceLocale !== originalParent.data.sourceLocale) fail(doc, 'Inconsistent sourceLocale');
     if (original.courseSlug !== doc.courseSlug || original.slug.join('/') !== doc.slug.join('/')) fail(doc, 'Translation path must match its original');
-    const sourceRevision = original.data.contentRevision;
-    if (!sourceRevision || original.data.translatedFromRevision !== undefined) fail(original, 'Original requires contentRevision only');
-    if (doc.locale !== parent.data.sourceLocale) {
-      if (!doc.data.translatedFromRevision || doc.data.contentRevision !== undefined) fail(doc, 'Translation requires translatedFromRevision only');
-      if (doc.data.translatedFromRevision! > sourceRevision!) fail(doc, 'Translation references a future revision');
-      doc.stale = doc.data.translatedFromRevision! < sourceRevision!;
-      if (doc.stale) warnings.push(`${doc.file}: translation revision ${doc.data.translatedFromRevision} is behind ${sourceRevision}`);
+    if (doc !== original) for (const achievement of doc.achievements) {
+      const source = original.achievements.find((item) => item.id === achievement.id);
+      if (!source) fail(doc, `Unknown translated achievement ID ${achievement.id}`);
+      if (source!.answer !== achievement.answer || source!.options.map((item) => item.value).sort().join(',') !== achievement.options.map((item) => item.value).sort().join(',')) {
+        fail(doc, `Translated achievement options and answer must match the original: ${achievement.id}`);
+      }
     }
     doc.sourceUrl = original.url;
   }
@@ -71,7 +77,7 @@ export function publishDocuments(documents: ContentDocument[], order: Map<Locale
       previous = position;
     }
   }
-  return { visible: documents, warnings };
+  return documents;
 }
 
 export function validateReferences(documents: ContentDocument[], publicRoot: string) {
@@ -87,16 +93,16 @@ export function validateReferences(documents: ContentDocument[], publicRoot: str
         if (!path.startsWith(resolve(publicRoot) + sep) || !existsSync(path)) fail('Missing or invalid image');
         continue;
       }
-      if (!link.url.startsWith('/') && !link.url.startsWith('#')) fail('Use final language-prefixed links or local anchors');
+      if (!link.url.startsWith('/') && !link.url.startsWith('#')) fail('Use canonical site paths or local anchors');
       const [path, fragment] = link.url.split('#');
       const targetPath = path || doc.url;
       const target = byURL.get(targetPath);
-      const locale = targetPath.split('/')[1];
-      if (!isLocale(locale)) fail('Invalid target language');
-      const simplePage = targetPath === `/${locale}` || targetPath === `/${locale}/about`;
+      const locale = pathLocale(targetPath);
+      if (targetPath !== localePath(locale, stripLocale(targetPath))) fail('Use the canonical language path');
+      const simplePage = targetPath === localePath(locale) || targetPath === localePath(locale, '/about');
       if (!target && !simplePage) fail('Target is missing');
       if (fragment && (!target || !renderedAnchors(target).includes(decodeURIComponent(fragment)))) fail('Missing heading anchor');
-      if (locale !== doc.locale && !link.label.includes(languageNames[locale as Locale])) fail('Cross-language links must name their target language');
+      if (locale !== doc.locale && !link.label.includes(languageNames[locale])) fail('Cross-language links must name their target language');
     }
   }
 }

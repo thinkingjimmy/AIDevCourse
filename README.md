@@ -6,9 +6,11 @@ A multilingual learning site for local Markdown and MDX courses.
 
 Next.js 16.3.8 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-intl 4.14.6 + Tailwind CSS 4.3.3
 
-Read courses in five languages, search the current language, and keep learning progress in your browser. No account, database, model API key, or translation service is required.
+Authors declare single-choice achievements directly in MDX; validation builds each course’s achievement inventory from its original articles.
 
-**Content status:** AI 101 has an introduction and a Hello World first-lesson placeholder in each language. The homepage learning action opens this first lesson. The curriculum is being rewritten; engineering fixtures remain separate from published courses.
+Read courses in five languages, search the current language, and keep earned achievements and your last lesson in your browser. No account, database, model API key, or translation service is required.
+
+**Content status:** AI 101 has introductions in five languages. The Chinese What a language model does lesson explains LLM generation and input quality with interactive examples; the other languages retain welcome placeholders. The homepage learning action opens this first lesson. Engineering fixtures remain separate from published courses.
 
 ## Quick start
 
@@ -19,9 +21,9 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open [localhost:3000/zh](http://localhost:3000/zh). Body edits support hot reload. Restart after changing frontmatter, file paths, or `meta.json` order.
+Open [localhost:3000/zh](http://localhost:3000/zh). Body edits support hot reload. Restart after changing frontmatter, achievement declarations, file paths, or `meta.json` order.
 
-The language routes are `/en`, `/zh`, `/ja`, `/fr`, and `/es`. Design studies are available at `/design`; writing components are at `/design/components`.
+English uses `/`, `/about`, and `/courses/...`; other languages use `/zh`, `/ja`, `/fr`, and `/es` prefixes. Only `/` detects saved/browser language preferences, with English as the fallback. Design studies are available at `/design`; writing components are at `/design/components`.
 
 ## Commands
 
@@ -89,7 +91,7 @@ Start with the [contribution guide](./.github/CONTRIBUTING.md). Report reproduci
 
 The [requirements](./docs/requirements.md) define current behavior; the [architecture guide](./docs/architecture.md) explains module boundaries and data flow. The [authoring guide](./docs/authoring.md) covers course IDs, translations, and supported MDX. The [deployment guide](./docs/deployment.md) covers `SITE_URL`, release checks, and rollback. Authoring and deployment guides use Chinese.
 
-Use a verified HTTPS origin for production. Local environment examples are in `config/.env.example`. Preview deployments use `noindex`. Course translations share completion by stable IDs; unavailable translations link to an available course or the language homepage. Reading remains available when storage fails.
+Use a verified HTTPS origin for production. Local environment examples are in `config/.env.example`. Preview deployments use `noindex`. Course translations share achievements by stable IDs; unavailable translations link to an available course or the language homepage. Reading remains available when storage fails.
 
 Licensed under [MIT](./LICENSE).
 

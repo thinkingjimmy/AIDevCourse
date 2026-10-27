@@ -11,7 +11,6 @@
     "previous": "Previous lesson",
     "next": "Next lesson",
     "overview": "Course overview",
-    "minutes": "{count, plural, one {# minute} other {# minutes}}",
     "lessons": "{count, plural, one {# published lesson in English} other {# published lessons in English}}",
     "beginner": "Beginner",
     "intermediate": "Intermediate",
@@ -19,10 +18,6 @@
     "copy": "Copy code",
     "copied": "Copied",
     "copyFailed": "Copy failed. Select and copy the code manually.",
-    "verified": "Verified on {date}",
-    "testedWith": "Tested with {environment}",
-    "stale": "This translation has not caught up with the latest original.",
-    "original": "Read the original in {language}",
     "noJs": "Reading and language links work without JavaScript. Search, copying, and learning records require JavaScript.",
     "notFoundTitle": "This part isn't\ninstalled yet",
     "notFoundBody": "The address may be incorrect, or this lesson may not be published in this language yet.",
@@ -38,15 +33,14 @@
     "lessonCount": "{count, plural, one {# lesson} other {# lessons}}",
     "lessonNumber": "Lesson {number}",
     "moduleNumber": "Module {number}",
-    "concept": "Concept",
-    "tool": "Tool",
-    "practice": "Practice"
+    "more": "More"
   },
   "Language": {
     "label": "Choose language",
     "available": "Read this page",
     "courseFallback": "Lesson not translated; opens the course overview",
-    "listFallback": "Course not available; opens the course page"
+    "listFallback": "Course not available; opens the course page",
+    "change": "Change language"
   },
   "Home": {
     "eyebrow": "Free · Open source · No signup",
@@ -72,7 +66,6 @@
     "syllabus": "Your learning path",
     "aboutSite": "About this site",
     "pathTitle": "Learn in order, one loop per lesson",
-    "pathNote": "Completion marks are learning records, not grades.",
     "startFirst": "Start the first lesson",
     "continueNamed": "Continue: {title}",
     "free": "Free",
@@ -81,19 +74,11 @@
     "onThisPage": "On this page",
     "who": "Who it's for",
     "before": "Before you start",
-    "doneMark": "Completed",
     "contents": "Contents",
-    "progressLabel": "Progress {done} / {total}",
     "updating": "Content is being updated",
-    "updatingBody": "New lessons are being prepared. They will appear here when published."
-  },
-  "Learning": {
-    "loading": "Restoring learning records…",
-    "failure": "This session’s learning records may not be saved. Reading remains available.",
-    "complete": "Mark as complete",
-    "undo": "Mark as incomplete",
-    "completed": "Lesson complete",
-    "incomplete": "Completion mark removed"
+    "updatingBody": "New lessons are being prepared. They will appear here when published.",
+    "achievementCount": "{count, plural, one {# achievement unlocked} other {# achievements unlocked}}",
+    "achievementsTitle": "My achievements"
   },
   "Search": {
     "open": "Search lessons",
@@ -110,10 +95,20 @@
     "title": "Learn at your own pace",
     "intro": "AIDevCourse is a free reading space for people learning to work with AI on code. You do not need an account to read.",
     "storageTitle": "Your learning records",
-    "storage": "Completion marks and your last lesson stay in this browser, on this domain. Translations of a lesson share the same mark. Clearing browser data or changing devices or domains may remove access to these records. They are not sent to our server.",
+    "storage": "Achievements and your last lesson are saved in this browser on this domain. Translations of the same course share achievements. Clearing browser data or changing devices or domains may remove access to these records. Learning records are not sent to the site server.",
     "languagesTitle": "Languages and availability",
     "languages": "The interface is available in five languages. Each language publishes its own lessons, so the library can differ. A functional cookie remembers your language choice; explicit language URLs work even when cookies are blocked.",
     "privacyTitle": "External links and privacy",
     "privacy": "There are no advertising or analytics scripts. External links lead to other services with their own policies. The hosting provider may keep ordinary access logs. Never paste private keys or sensitive project information into public examples."
+  },
+  "Achievement": {
+    "challenge": "Achievement challenge",
+    "unlocked": "Achievement unlocked · {title}",
+    "noJs": "Unlocking and saving achievements requires JavaScript. You can keep reading.",
+    "explanation": "View explanation",
+    "saveFailed": "This achievement is saved only on this page for now. It may be lost after a refresh.",
+    "correct": "Correct answer",
+    "incorrect": "Incorrect answer",
+    "retry": "Try again"
   }
 }

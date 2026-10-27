@@ -1,12 +1,8 @@
 ---
-kind: lesson
 courseId: ai-coding
 lessonId: useful-context
 title: 一次小修改 useful-context
 description: 上下文与可验证的小修改
-durationMinutes: 12
-lessonType: concept
-contentRevision: 2
 ---
 
 ## 一次小修改
@@ -49,3 +45,17 @@ const verify = () => prompt.length > 0;
 接受结果之前，先检查代码差异。
 
 INTERNAL_FIXTURE_DO_NOT_PUBLISH
+
+
+<Achievement
+  id="context-before-code"
+  title="Context builder"
+  question="Which input helps produce a useful code change?"
+  answer="context"
+  explanation="Context helps the model make a useful change."
+  takeaway="Include the goal and the relevant files."
+>
+  <AchievementOption value="guess">Ask it to guess.</AchievementOption>
+  <AchievementOption value="repeat">Repeat the same request.</AchievementOption>
+  <AchievementOption value="context">Give the goal and relevant context.</AchievementOption>
+</Achievement>

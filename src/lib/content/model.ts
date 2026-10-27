@@ -1,31 +1,37 @@
 /**
  * [INPUT]: Validated metadata, the shared locale type, and ordered lesson summaries.
- * [OUTPUT]: Content models, stable identities, rendered anchors, and module grouping.
+ * [OUTPUT]: Content and declarative achievements with question-only prompts, stable identities, rendered anchors, and module grouping without manual lesson metadata.
  * [POS]: Framework-free contract shared by content processing and server/client consumers.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import type { Locale } from '../i18n/config';
 import type { DocumentData } from './schema';
+export type AchievementDefinition = {
+  id: string; title: string; question: string;
+  answer: string; explanation: string; takeaway: string;
+  options: { value: string; label: string }[];
+};
+export type CourseAchievement = { id: string; lessonId: string };
 export type ContentDocument = {
   file: string; locale: Locale; courseSlug: string; slug: string[]; url: string;
   data: DocumentData; headings: { id: string; title: string; depth: number }[];
   links: { url: string; image: boolean; label: string }[];
-  body: string; stale: boolean; sourceUrl: string;
+  body: string; sourceUrl: string; achievements: AchievementDefinition[];
 };
 export type LessonSummary = {
-  id: string; title: string; description: string; url: string; durationMinutes: number;
-  type: 'concept' | 'tool' | 'practice'; module: string; moduleTitle: string;
+  id: string; title: string; description: string; url: string;
+  module: string; moduleTitle: string;
 };
 export type CourseManifest = {
   id: string; locale: Locale; slug: string; title: string; description: string; url: string;
   sourceLocale: Locale; level: 'beginner' | 'intermediate' | 'advanced';
   goals: string[]; audience: string; prerequisites: string[];
-  lessons: LessonSummary[]; durationMinutes: number;
+  lessons: LessonSummary[]; achievements: CourseAchievement[];
 };
 export type Translation = { locale: Locale; url: string; headings: string[] };
 export type Catalog = {
   documents: ContentDocument[]; courses: CourseManifest[];
-  translations: Record<string, Translation[]>; warnings: string[]; version: string;
+  translations: Record<string, Translation[]>; version: string;
 };
 export function identity(document: ContentDocument) {
   return document.data.kind === 'course' ? document.data.courseId : `${document.data.courseId}:${document.data.lessonId}`;

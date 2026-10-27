@@ -1,12 +1,8 @@
 ---
-kind: lesson
 courseId: ai-coding
 lessonId: verify-results
 title: 一次小修改 verify-results
 description: 上下文与可验证的小修改
-durationMinutes: 12
-lessonType: concept
-contentRevision: 2
 ---
 
 ## 一次小修改
@@ -49,3 +45,16 @@ const verify = () => prompt.length > 0;
 接受结果之前，先检查代码差异。
 
 INTERNAL_FIXTURE_DO_NOT_PUBLISH
+
+
+<Achievement
+  id="verify-before-done"
+  title="Result verifier"
+  question="What should you do before accepting a code change?"
+  answer="check"
+  explanation="A confident answer does not prove the change works."
+  takeaway="Read the diff and check the result."
+>
+  <AchievementOption value="accept">Accept the generated code.</AchievementOption>
+  <AchievementOption value="check">Review and verify the change.</AchievementOption>
+</Achievement>

@@ -1,6 +1,6 @@
 /**
  * [INPUT]: A direct scan of content/zh, separate from the live homepage.
- * [OUTPUT]: The published zh AI 101 course, its lessons, and the homepage facts used by design previews.
+ * [OUTPUT]: The published zh AI 101 course, its lean lesson summaries, and the homepage facts used by design previews.
  * [POS]: Design-only reader. It is not used by the live home.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -10,7 +10,6 @@ import { scanContent } from '@/lib/content/scan';
 import type { ContentDocument } from '@/lib/content/model';
 
 export const levelLabel = { beginner: '入门', intermediate: '进阶', advanced: '高级' } as const;
-export const typeLabel = { concept: '概念', tool: '工具', practice: '练习' } as const;
 
 export const tracks = [
   { id: 'ai-101', title: 'AI 101', pending: false },
@@ -28,8 +27,8 @@ export const principles = [
 export type DesignSample = { lang: string; code: string };
 export type DesignCallout = { title: string; body: string };
 export type DesignLesson = {
-  id: string; number: string; title: string; description: string; durationMinutes: number;
-  type: keyof typeof typeLabel; moduleTitle: string; opening: string;
+  id: string; number: string; title: string; description: string;
+  moduleTitle: string; opening: string;
   quote: string; samples: DesignSample[]; callout: DesignCallout | null;
 };
 export type DesignModule = { title: string; lessons: DesignLesson[] };
@@ -37,7 +36,6 @@ export type DesignCourse = {
   id: string; title: string; description: string; level: keyof typeof levelLabel;
   audience: string; prerequisites: string[]; goals: string[];
   intro: string; closing: string; lessons: DesignLesson[]; modules: DesignModule[];
-  durationMinutes: number;
 };
 
 function proseParagraphs(body: string) {
@@ -59,7 +57,7 @@ function lessonFrom(doc: ContentDocument, moduleTitle: string, index: number): D
   const calloutMatch = doc.body.match(/<Callout([^>]*)>([\s\S]*?)<\/Callout>/);
   return {
     id: doc.data.lessonId, number: String(index + 1).padStart(2, '0'), title: doc.data.title, description: doc.data.description,
-    durationMinutes: doc.data.durationMinutes, type: doc.data.lessonType, moduleTitle, opening: paragraphs[0] ?? doc.data.description,
+    moduleTitle, opening: paragraphs[0] ?? doc.data.description,
     quote, samples, callout: calloutMatch ? { title: calloutMatch[1].match(/title="([^"]*)"/)?.[1] ?? '', body: calloutMatch[2].trim() } : null,
   };
 }
@@ -88,6 +86,6 @@ export const loadDesignCourse = cache((): DesignCourse => {
     id: courseDoc.data.courseId, title: courseDoc.data.title, description: courseDoc.data.description,
     level: courseDoc.data.level, audience: courseDoc.data.audience, prerequisites: courseDoc.data.prerequisites,
     goals: courseDoc.data.goals, intro: paragraphs[0] ?? courseDoc.data.description, closing: paragraphs[1] ?? '',
-    lessons, modules, durationMinutes: lessons.reduce((sum, lesson) => sum + lesson.durationMinutes, 0),
+    lessons, modules,
   };
 });

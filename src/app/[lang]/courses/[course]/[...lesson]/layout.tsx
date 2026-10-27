@@ -1,5 +1,5 @@
 /**
- * [INPUT]: Lesson content, the public catalog, and the parent course progress context.
+ * [INPUT]: Lesson content, the public catalog, and the parent course learning context.
  * [OUTPUT]: Full-bleed wiki shell around the article. The site header is not mounted on this route.
  * [POS]: Navigation boundary for lesson routes; course overviews use the parent frame directly.
  * [PROTOCOL]: Update this header when making changes, then check README.md.

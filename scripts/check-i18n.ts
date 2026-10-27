@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Five local dictionaries and the cross-language content catalog.
- * [OUTPUT]: ICU/key parity checks, coverage, and stale-translation reports.
+ * [OUTPUT]: ICU/key parity checks, dictionary coverage, and translation identity validation.
  * [POS]: Internationalization quality gate; missing normal translations are not errors.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -10,6 +10,5 @@ import { validateDictionaries } from '../src/lib/i18n/validate';
 import { readCatalog } from '../src/lib/content/manifest';
 const dictionaries = Object.fromEntries(locales.map((locale) => [locale, JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'))]));
 const count = validateDictionaries(dictionaries);
-const catalog = readCatalog();
-for (const warning of catalog.warnings) console.warn(warning);
+readCatalog();
 console.log(`${locales.length} dictionaries × ${count} valid messages; translation identities checked.`);

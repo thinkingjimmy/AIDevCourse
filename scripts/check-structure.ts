@@ -1,6 +1,6 @@
 /**
- * [INPUT]: Tracked and non-ignored repository files and their module documentation.
- * [OUTPUT]: Actionable structure errors and a repeatable .artifacts/review/structure.json report.
+ * [INPUT]: Maintained repository files, source contracts, and the Tailwind typography convention.
+ * [OUTPUT]: Structure and typography errors plus repeatable .artifacts/review/structure.json evidence.
  * [POS]: Repository maintenance gate for file limits, source contracts, and documentation links.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -27,6 +27,12 @@ for (const file of files) {
     if (lines > 800) issues.push(`${file}: ${lines} lines; maximum is 800`);
     if (!source.slice(0, 1500).includes(protocol) || !['[INPUT]:', '[OUTPUT]:', '[POS]:'].every((field) => source.slice(0, 1500).includes(field))) {
       issues.push(`${file}: missing source contract`);
+    }
+    if (file.startsWith('src/') && /\b(?:text|leading|tracking)-\[(?:-?\.?\d|clamp\()/.test(source)) {
+      issues.push(`${file}: use the shared Tailwind typography scale instead of arbitrary type values`);
+    }
+    if (file.startsWith('src/styles/') && /(?:^|[;{])\s*(?:font-size|line-height|font-weight|letter-spacing)\s*:/m.test(source)) {
+      issues.push(`${file}: express typography with Tailwind utilities and theme tokens`);
     }
   }
   if (extname(file) !== '.md') continue;

@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Filesystem scan, publication policy, and explicit ordering.
- * [OUTPUT]: One public catalog with localized manifests and translation maps.
+ * [OUTPUT]: One public catalog with lean lesson summaries, localized manifests with source-language achievement inventories, and identity-based translation maps.
  * [POS]: Framework-independent content builder shared by checks and the app.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -12,7 +12,7 @@ import { identity, renderedAnchors, type Catalog, type CourseManifest, type Less
 
 export function readCatalog(options: { root?: string; publicRoot?: string } = {}): Catalog {
   const scan = scanContent(options.root ?? contentRoot());
-  const { visible, warnings } = publishDocuments(scan.documents, scan.order);
+  const visible = publishDocuments(scan.documents, scan.order);
   validateReferences(visible, options.publicRoot ?? join(process.cwd(), 'public'));
   const courses: CourseManifest[] = [];
   const translations: Catalog['translations'] = {};
@@ -27,16 +27,20 @@ export function readCatalog(options: { root?: string; publicRoot?: string } = {}
         if (doc.data.kind !== 'lesson') throw new Error('Expected lesson');
         const modulePath = doc.slug.slice(0, -1).join('/');
         return { id: doc.data.lessonId, title: doc.data.title, description: doc.data.description, url: doc.url,
-          durationMinutes: doc.data.durationMinutes, type: doc.data.lessonType, module: modulePath,
+          module: modulePath,
           moduleTitle: scan.labels.get(`${doc.locale}/${doc.courseSlug}${modulePath ? `/${modulePath}` : ''}`) ?? course.title };
       });
+    const sourceOrder = scan.order.get(course.sourceLocale) ?? [];
+    const achievements = visible.filter((doc) => doc.locale === course.sourceLocale && doc.data.courseId === course.courseId && doc.data.kind === 'lesson')
+      .sort((a, b) => sourceOrder.indexOf(a.file) - sourceOrder.indexOf(b.file))
+      .flatMap((doc) => doc.achievements.map((achievement) => ({ id: achievement.id, lessonId: doc.data.kind === 'lesson' ? doc.data.lessonId : '' })));
     courses.push({ id: course.courseId, locale: document.locale, slug: document.courseSlug, title: course.title,
       description: course.description, url: document.url, sourceLocale: course.sourceLocale, level: course.level,
       goals: course.goals, audience: course.audience, prerequisites: course.prerequisites,
-      lessons, durationMinutes: lessons.reduce((sum, lesson) => sum + lesson.durationMinutes, 0) });
+      lessons, achievements });
   }
   courses.sort((a, b) => (scan.order.get(a.locale)?.indexOf(visible.find((doc) => doc.url === a.url)!.file) ?? 0) -
     (scan.order.get(b.locale)?.indexOf(visible.find((doc) => doc.url === b.url)!.file) ?? 0));
   const version = createHash('sha256').update(JSON.stringify(visible)).digest('hex').slice(0, 12);
-  return { documents: visible, courses, translations, warnings, version };
+  return { documents: visible, courses, translations, version };
 }

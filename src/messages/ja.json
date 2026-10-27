@@ -11,7 +11,6 @@
     "previous": "前のレッスン",
     "next": "次のレッスン",
     "overview": "コース概要",
-    "minutes": "{count} 分",
     "lessons": "日本語で公開済み：{count} レッスン",
     "beginner": "初級",
     "intermediate": "中級",
@@ -19,10 +18,6 @@
     "copy": "コードをコピー",
     "copied": "コピーしました",
     "copyFailed": "コピーできませんでした。コードを選択してコピーしてください。",
-    "verified": "検証日：{date}",
-    "testedWith": "検証環境：{environment}",
-    "stale": "この翻訳は最新の原文にまだ対応していません。",
-    "original": "{language}の原文を読む",
     "noJs": "本文と他言語へのリンクは JavaScript なしで利用できます。検索、コピー、学習記録には JavaScript が必要です。",
     "notFoundTitle": "この部品は\nまだ付いていません",
     "notFoundBody": "URL が正しくないか、この言語のレッスンがまだ公開されていません。",
@@ -38,15 +33,14 @@
     "lessonCount": "{count} レッスン",
     "lessonNumber": "レッスン {number}",
     "moduleNumber": "モジュール {number}",
-    "concept": "概念",
-    "tool": "ツール",
-    "practice": "実践"
+    "more": "その他"
   },
   "Language": {
     "label": "言語を選択",
     "available": "この言語で読む",
     "courseFallback": "翻訳がないため、コース概要を開きます",
-    "listFallback": "この言語のコースは未公開です。コースページを開きます"
+    "listFallback": "この言語のコースは未公開です。コースページを開きます",
+    "change": "言語を変更"
   },
   "Home": {
     "eyebrow": "無料 · オープンソース · 登録不要",
@@ -72,7 +66,6 @@
     "syllabus": "学習の流れ",
     "aboutSite": "このサイトについて",
     "pathTitle": "順番に、1 レッスンで 1 ループ",
-    "pathNote": "完了マークは学習の記録で、成績ではありません。",
     "startFirst": "最初のレッスンから",
     "continueNamed": "続き：{title}",
     "free": "無料",
@@ -81,19 +74,11 @@
     "onThisPage": "このページの内容",
     "who": "対象",
     "before": "始める前に",
-    "doneMark": "完了",
     "contents": "目次",
-    "progressLabel": "進捗 {done} / {total}",
     "updating": "コンテンツを更新中",
-    "updatingBody": "新しいレッスンを準備しています。公開後、ここに表示されます。"
-  },
-  "Learning": {
-    "loading": "学習記録を復元中…",
-    "failure": "今回の学習記録は保存されない可能性があります。本文は引き続き読めます。",
-    "complete": "完了にする",
-    "undo": "未完了に戻す",
-    "completed": "レッスン完了",
-    "incomplete": "完了の印を解除しました"
+    "updatingBody": "新しいレッスンを準備しています。公開後、ここに表示されます。",
+    "achievementCount": "{count} 件の実績を解除",
+    "achievementsTitle": "実績"
   },
   "Search": {
     "open": "レッスンを検索",
@@ -110,10 +95,20 @@
     "title": "自分のペースで学ぶ",
     "intro": "AIDevCourse は、AI とコードを書く方法を学ぶための無料サイトです。アカウントを作らずに読めます。",
     "storageTitle": "学習記録について",
-    "storage": "完了の印と最後に読んだレッスンは、このブラウザーとドメインに保存されます。同じレッスンの翻訳間で記録を共有します。ブラウザーデータの削除、端末やドメインの変更で記録にアクセスできなくなる場合があります。記録はサーバーに送信しません。",
+    "storage": "実績と最後に開いたレッスンは、このブラウザーとドメインに保存されます。同じコースの翻訳では実績を共有します。ブラウザーデータの削除や端末・ドメインの変更により、記録を復元できなくなる場合があります。学習記録はサイトのサーバーに送信されません。",
     "languagesTitle": "言語と翻訳について",
     "languages": "画面は5言語に対応しています。言語ごとにコースを公開するため、内容が異なることがあります。機能性 Cookie が言語設定を記憶します。Cookie を拒否しても言語別 URL は利用できます。",
     "privacyTitle": "外部リンクとプライバシー",
     "privacy": "広告や解析スクリプトは使用しません。外部サイトにはそれぞれの方針が適用されます。ホスティング事業者は通常のアクセスログを保存する場合があります。公開例に秘密鍵や機密情報を貼り付けないでください。"
+  },
+  "Achievement": {
+    "challenge": "実績チャレンジ",
+    "unlocked": "実績を解除 · {title}",
+    "noJs": "実績の解除と保存には JavaScript が必要です。本文は引き続き読めます。",
+    "explanation": "解説を見る",
+    "saveFailed": "実績は現在のページにのみ保存されています。再読み込みすると失われる場合があります。",
+    "correct": "正解です",
+    "incorrect": "不正解です",
+    "retry": "もう一度挑戦"
   }
 }

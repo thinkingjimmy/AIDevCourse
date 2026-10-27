@@ -1,13 +1,16 @@
 /**
- * [INPUT]: Site fonts, zinc/Fumadocs palettes, and the reference author-note colors.
- * [OUTPUT]: Shared Tailwind and shadcn color, type, radius, and content tokens.
+ * [INPUT]: Site Geist font variables, the shared typography scale, and zinc/Fumadocs palettes.
+ * [OUTPUT]: Shared typography, color, illustration, radius, and content tokens, with author-note backgrounds matching callout shadows.
  * [POS]: Theme contract imported by the public site and the isolated preview document.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
+@import './typography.css';
+
 @theme inline {
   --font-sans: var(--font-site-sans);
   --font-serif: var(--font-site-serif);
   --font-mono: var(--font-site-mono);
+  --font-pixel: var(--font-site-pixel);
 }
 
 @theme {
@@ -29,9 +32,23 @@
   --color-surface: #fafafa;
   --color-line-soft: #eeeef0;
   --color-strong: #18181b;
-  --color-author-note: #e8e8e3;
+  --color-author-note: var(--color-border);
   --color-author-note-foreground: #2b2b22;
   --color-done: #3f6b3a;
+  --color-review: #6b5313;
+  --color-mark: #f1de9c;
+  --color-reading: #3f3f46;
+  --color-anatomy-paper: #fbfbfa;
+  --color-anatomy-shade-0: #dcdcd9;
+  --color-anatomy-shade-1: #e5e5e2;
+  --color-anatomy-shade-2: #ededea;
+  --color-anatomy-shade-3: #f4f4f1;
+  --color-anatomy-hi: #26262a;
+  --color-anatomy-mid: #8a8a8f;
+  --color-anatomy-lo: #b4b4b8;
+  --color-anatomy-faint: #d4d4d6;
+  --color-anatomy-halo: #8a8a80;
+  --color-anatomy-dot: #3a3a3e;
   --color-sidebar: #fafafa;
   --color-sidebar-foreground: #3f3f46;
   --color-sidebar-primary: #09090b;

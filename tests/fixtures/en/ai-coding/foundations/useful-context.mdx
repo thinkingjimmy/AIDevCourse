@@ -1,12 +1,8 @@
 ---
-kind: lesson
 courseId: ai-coding
 lessonId: useful-context
 title: A small change useful-context
 description: Useful context and verifiable changes
-durationMinutes: 12
-lessonType: concept
-translatedFromRevision: 1
 ---
 
 ## A small change
@@ -47,3 +43,17 @@ const verify = () => prompt.length > 0;
 ## Foundations
 
 Read the difference before accepting the result.
+
+
+<Achievement
+  id="context-before-code"
+  title="Context builder"
+  question="Which input helps produce a useful code change?"
+  answer="context"
+  explanation="Context helps the model make a useful change."
+  takeaway="Include the goal and the relevant files."
+>
+  <AchievementOption value="guess">Ask it to guess.</AchievementOption>
+  <AchievementOption value="repeat">Repeat the same request.</AchievementOption>
+  <AchievementOption value="context">Give the goal and relevant context.</AchievementOption>
+</Achievement>

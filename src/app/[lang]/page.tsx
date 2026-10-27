@@ -1,9 +1,10 @@
 /**
- * [INPUT]: Active locale, published course manifests, shared CourseCard, and the Phosphor action arrow.
- * [OUTPUT]: Homepage with a rail-aligned hero, menu-styled learning action, exploded Mac, and a foundations catalog without a subtitle.
+ * [INPUT]: Active locale, published course manifests, shared CourseCard, and the Phosphor action arrow, canonical locale paths.
+ * [OUTPUT]: Homepage with a rail-aligned Geist Pixel hero title, menu-styled learning action, exploded Mac, and a foundations catalog without a subtitle.
  * [POS]: Public entry surface; the learning action prioritizes AI 101's first published lesson.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
+import { localePath } from '@/lib/i18n/routing';
 import Link from 'next/link';
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import { notFound } from 'next/navigation';
@@ -20,7 +21,7 @@ import { pageMetadata } from '@/lib/metadata';
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params; if (!isLocale(lang)) return {};
   const t = await getTranslations({ locale: lang, namespace: 'Home' });
-  return pageMetadata(lang, `/${lang}`, t('title').replace('\n', ' '), t('intro'));
+  return pageMetadata(lang, localePath(lang), t('title').replace('\n', ' '), t('intro'));
 }
 
 export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
@@ -34,11 +35,11 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
     <PageContainer className="overflow-x-clip pt-[70px] pb-[72px] max-[721px]:pt-9 max-[721px]:pb-7">
       <HeroGrid>
         <HeroCopy>
-          <PageTitle variant="hero">{t('title')}</PageTitle>
+          <PageTitle variant="hero" className="font-pixel font-normal">{t('title')}</PageTitle>
           <HeroLead>{t('intro')}</HeroLead>
           <PageActions>
             <Button asChild variant="action-raised" size="action">
-              <Link href={courses.length ? first ?? '#catalog' : `/${lang}/about`}>
+              <Link href={courses.length ? first ?? '#catalog' : localePath(lang, '/about')}>
                 {courses.length ? first ? t('start') : t('browseCourses') : course('aboutSite')}
                 {courses.length > 0 && <ArrowRightIcon size={16} aria-hidden />}
               </Link>
@@ -50,7 +51,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
     </PageContainer>
     <hr className="m-0 h-0 border-0 border-t border-border" />
     <PageContainer className="flex-[1_0_auto] pt-12 pb-[72px]" id="catalog">
-      <h2 className="m-0 mb-7 font-sans text-[22px] font-semibold tracking-[-.02em]">{t('courseTitle')}</h2>
+      <h2 className="m-0 mb-7 font-sans text-2xl font-semibold tracking-tight">{t('courseTitle')}</h2>
       {courses.length ? <div data-slot="course-grid" className="grid grid-cols-2 gap-5 max-[721px]:grid-cols-1">
         {courses.map((item) => <CourseCard key={item.id} course={item} />)}
       </div> : <EmptyCourses locale={lang} />}

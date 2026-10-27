@@ -1,29 +1,40 @@
 /**
- * [INPUT]: Active content mode's route snapshot, allowlisted entries, and language preference.
- * [OUTPUT]: Private 307 negotiation, and HTTP 404 responses whose body is the rendered unavailable document.
- * [POS]: Sole routing interceptor; explicit language pages never negotiate content.
+ * [INPUT]: Public route snapshot, canonical language paths, and saved/browser language preference, canonical locale paths.
+ * [OUTPUT]: Homepage-only 307 negotiation, prefix-free English rewrites, canonical /en redirects, and rendered 404 responses.
+ * [POS]: Sole routing interceptor; article and About addresses always keep their declared language.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import { NextResponse, type NextRequest } from 'next/server';
-import { isLocale, localeCookie, negotiateLocale } from './lib/i18n/config';
-import { isNegotiatedPath } from './lib/i18n/routing';
+import { defaultLocale, isLocale, localeCookie, negotiateLocale } from './lib/i18n/config';
+import { isNegotiatedPath, localePath, pathLocale, stripLocale } from './lib/i18n/routing';
 import publicRoutes from '@routes';
 const paths = new Set(publicRoutes);
 const forwarded = ['accept', 'rsc', 'next-router-prefetch', 'next-router-segment-prefetch', 'next-router-state-tree', 'next-url'];
 const preserved = ['content-type', 'content-security-policy', 'x-content-type-options', 'referrer-policy', 'x-frame-options', 'permissions-policy', 'x-robots-tag'];
-function isUnavailableDocument(pathname: string) {
-  if (pathname === '/unavailable') return true;
-  const language = pathname.split('/')[1] ?? '';
-  return isLocale(language) && pathname === `/${language}/unavailable`;
-}
 function unavailablePath(pathname: string) {
-  const language = pathname.split('/')[1] ?? '';
-  return isLocale(language) ? `/${language}/unavailable` : '/unavailable';
+  return localePath(pathLocale(pathname), '/unavailable');
 }
 export async function proxy(request: NextRequest) {
+  // Preserve the request origin; NextURL normalizes loopback hosts and can turn an internal rewrite into an external request.
   const path = request.nextUrl.pathname;
-  if (!isNegotiatedPath(path)) {
-    if (paths.has(path) || isUnavailableDocument(path)) return NextResponse.next();
+  if (path === '/en' || path.startsWith('/en/')) {
+    const target = new URL(request.url);
+    target.pathname = stripLocale(path);
+    return NextResponse.redirect(target, 308);
+  }
+  if (isNegotiatedPath(path)) {
+    const choice = request.nextUrl.searchParams.get('lang');
+    const locale = isLocale(choice) ? choice : negotiateLocale(request.cookies.get(localeCookie)?.value, request.headers.get('accept-language') ?? '');
+    const target = new URL(request.url);
+    target.searchParams.delete('lang');
+    target.pathname = locale === defaultLocale ? '/en' : localePath(locale);
+    const response = locale === defaultLocale ? NextResponse.rewrite(target) : NextResponse.redirect(target, 307);
+    response.headers.set('Cache-Control', 'private, no-store');
+    response.headers.set('Vary', 'Cookie, Accept-Language');
+    if (isLocale(choice)) response.cookies.set(localeCookie, choice, { path: '/', maxAge: 31536000, sameSite: 'lax' });
+    return response;
+  }
+  if (!paths.has(path)) {
     const target = new URL(unavailablePath(path), request.url);
     target.search = '';
     const headers = new Headers();
@@ -42,12 +53,11 @@ export async function proxy(request: NextRequest) {
     responseHeaders.set('cache-control', 'private, no-store');
     return new NextResponse(rendered.body, { status: 404, headers: responseHeaders });
   }
-  const locale = negotiateLocale(request.cookies.get(localeCookie)?.value, request.headers.get('accept-language') ?? '');
-  const target = request.nextUrl.clone();
-  target.pathname = `/${locale}${target.pathname === '/' ? '' : target.pathname}`;
-  const response = NextResponse.redirect(target, 307);
-  response.headers.set('Cache-Control', 'private, no-store');
-  response.headers.set('Vary', 'Cookie, Accept-Language');
-  return response;
+  if (pathLocale(path) === defaultLocale && (path === '/about' || path.startsWith('/courses/'))) {
+    const target = new URL(request.url);
+    target.pathname = `/en${path}`;
+    return NextResponse.rewrite(target);
+  }
+  return NextResponse.next();
 }
 export const config = { matcher: ['/((?!api(?:/|$)|_next(?:/|$)|images(?:/|$)|favicon.svg$|robots.txt$|sitemap.xml$).*)'] };

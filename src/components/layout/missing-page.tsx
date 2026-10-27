@@ -15,13 +15,13 @@ export function MissingPage({ title, body, primaryHref, primaryLabel, homeHref, 
     <div>
       <PageEyebrow>404</PageEyebrow>
       <PageTitle>{title}</PageTitle>
-      <p className="m-0 mb-7 max-w-[40rem] text-[16px] leading-[1.75] text-muted-foreground">{body}</p>
+      <p className="m-0 mb-7 max-w-[40rem] text-base leading-body text-muted-foreground">{body}</p>
       <PageActions>
         <Button asChild variant="action" size="action"><Link href={primaryHref}>{primaryLabel}</Link></Button>
         {primaryHref !== homeHref && <Button asChild variant="action-outline" size="action"><Link href={homeHref}>{homeLabel}</Link></Button>}
       </PageActions>
-      <nav className="mt-7 flex flex-wrap gap-x-[18px] gap-y-2 font-mono text-[12px] text-muted-foreground" aria-label={languagesLabel}>{languages.map((language) => <Link className="text-inherit no-underline hover:text-foreground" key={language.href} href={language.href} lang={language.lang}>{language.label}</Link>)}</nav>
+      <nav className="mt-7 flex flex-wrap gap-x-[18px] gap-y-2 font-mono text-xs text-muted-foreground" aria-label={languagesLabel}>{languages.map((language) => <Link className="text-inherit no-underline hover:text-foreground" key={language.href} href={language.href} lang={language.lang}>{language.label}</Link>)}</nav>
     </div>
-    <p className="m-0 justify-self-end font-mono text-[clamp(120px,16vw,220px)] leading-[.8] font-medium tracking-[-.06em] text-muted select-none max-[721px]:justify-self-start max-[721px]:text-[96px]" aria-hidden="true">404</p>
+    <p className="m-0 justify-self-end font-mono text-error leading-none font-medium tracking-tighter text-muted select-none max-[721px]:justify-self-start max-[721px]:text-8xl" aria-hidden="true">404</p>
   </StatusPage>;
 }

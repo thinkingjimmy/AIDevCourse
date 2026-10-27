@@ -1,12 +1,12 @@
 /**
- * [INPUT]: Product language and locale negotiation policy.
- * [OUTPUT]: Locale whitelist, display names, HTML tags, and safe negotiation.
+ * [INPUT]: Saved language preference, weighted browser languages, and the English fallback policy.
+ * [OUTPUT]: Locale whitelist, display names, HTML tags, and cookie-first browser negotiation with English fallback.
  * [POS]: Single language configuration shared by routing, content, and UI.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 export const locales = ['en', 'zh', 'ja', 'fr', 'es'] as const;
 export type Locale = (typeof locales)[number];
-export const defaultLocale: Locale = 'zh';
+export const defaultLocale: Locale = 'en';
 export const languageNames: Record<Locale, string> = {
   en: 'English', zh: '简体中文', ja: '日本語', fr: 'Français', es: 'Español',
 };

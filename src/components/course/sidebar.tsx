@@ -1,12 +1,13 @@
 /**
- * [INPUT]: Controlled desktop state, current route, localized labels, and Radix Sheet/Slot.
+ * [INPUT]: Controlled desktop state, current route, localized labels, and Radix Sheet/Slot, canonical locale paths.
  * [OUTPUT]: Course sidebar composition with a 320px column, 48px rail, and mobile sheet.
  * [POS]: Course-only navigation primitives; course-layout.tsx supplies lesson content and persistence.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 'use client';
+import { canonicalPath } from '@/lib/i18n/routing';
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentProps, type CSSProperties } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentProps } from 'react';
 import { usePathname } from 'next/navigation';
 import { SidebarSimpleIcon } from '@phosphor-icons/react/dist/ssr/SidebarSimple';
 import { Slot } from 'radix-ui';
@@ -39,7 +40,7 @@ export function SidebarProvider({ open, onOpenChange, className, style, children
   open: boolean; onOpenChange: (open: boolean) => void;
 }) {
   const isMobile = useSyncExternalStore(subscribeViewport, () => window.matchMedia(mobileQuery).matches, () => false);
-  const pathname = usePathname();
+  const pathname = canonicalPath(usePathname());
   // A sheet belongs to the route that opened it; navigation closes it without an extra render effect.
   const [mobilePath, setMobilePath] = useState<string | null>(null);
   const openMobile = mobilePath === pathname;
@@ -64,7 +65,7 @@ export function SidebarProvider({ open, onOpenChange, className, style, children
 
   const value = useMemo(() => ({ open, isMobile, openMobile, setOpenMobile, toggleSidebar }), [open, isMobile, openMobile, setOpenMobile, toggleSidebar]);
   return <SidebarContext.Provider value={value}>
-    <div {...props} data-slot="sidebar-wrapper" style={{ '--sidebar-width': '320px', '--sidebar-width-icon': '3rem', ...style } as CSSProperties} className={cn('group/sidebar-wrapper flex min-h-svh w-full', className)}>{children}</div>
+    <div {...props} data-slot="sidebar-wrapper" style={style} className={cn('group/sidebar-wrapper flex min-h-svh w-full [--sidebar-width:20rem] [--sidebar-width-icon:3rem]', className)}>{children}</div>
   </SidebarContext.Provider>;
 }
 
@@ -73,7 +74,7 @@ export function Sidebar({ label, className, children, ...props }: ComponentProps
   const mobileTrigger = useRef<HTMLElement | null>(null);
   if (isMobile) return <Sheet open={openMobile} onOpenChange={setOpenMobile}>
     <SheetContent data-sidebar="sidebar" data-slot="sidebar" data-mobile="true" aria-describedby={undefined}
-      className={cn('w-(--sidebar-width) bg-sidebar p-0 text-foreground', className)} style={{ '--sidebar-width': '320px' } as CSSProperties}
+      className={cn('w-(--sidebar-width) bg-sidebar p-0 text-foreground [--sidebar-width:20rem]', className)}
       onOpenAutoFocus={() => { mobileTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; }}
       onCloseAutoFocus={(event) => { event.preventDefault(); if (mobileTrigger.current?.isConnected) mobileTrigger.current.focus(); }}
       onEscapeKeyDown={(event) => { if (event.target instanceof Element && event.target.closest('details[open]')) event.preventDefault(); }}>

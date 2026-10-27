@@ -11,7 +11,6 @@
     "previous": "上一课",
     "next": "下一课",
     "overview": "课程总览",
-    "minutes": "{count} 分钟",
     "lessons": "简体中文已发布 {count} 课",
     "beginner": "入门",
     "intermediate": "进阶",
@@ -19,10 +18,6 @@
     "copy": "复制代码",
     "copied": "已复制",
     "copyFailed": "复制失败，请选中代码手动复制。",
-    "verified": "验证日期：{date}",
-    "testedWith": "验证环境：{environment}",
-    "stale": "这篇译文尚未同步最新原文。",
-    "original": "阅读{language}原文",
     "noJs": "正文与语言链接无需 JavaScript。搜索、代码复制和学习记录需要启用 JavaScript。",
     "notFoundTitle": "这个零件\n还没装上",
     "notFoundBody": "地址可能有误，或这篇课时尚未以当前语言发布。",
@@ -38,15 +33,14 @@
     "lessonCount": "{count} 课",
     "lessonNumber": "第 {number} 课",
     "moduleNumber": "模块 {number}",
-    "concept": "概念",
-    "tool": "工具",
-    "practice": "练习"
+    "more": "更多"
   },
   "Language": {
     "label": "选择语言",
     "available": "阅读此语言版本",
     "courseFallback": "此课暂无译文，将打开课程总览",
-    "listFallback": "该语言暂无此课程，将打开课程页"
+    "listFallback": "该语言暂无此课程，将打开课程页",
+    "change": "修改语言"
   },
   "Home": {
     "eyebrow": "免费 · 开源 · 不用注册",
@@ -72,7 +66,6 @@
     "syllabus": "学习路径",
     "aboutSite": "关于这个网站",
     "pathTitle": "按顺序学，每课一个闭环",
-    "pathNote": "完成标记只是学习记录，不是考试成绩。",
     "startFirst": "开始第一课",
     "continueNamed": "继续：{title}",
     "free": "免费",
@@ -81,19 +74,11 @@
     "onThisPage": "本页内容",
     "who": "适合谁",
     "before": "开始前",
-    "doneMark": "已完成",
     "contents": "目录",
-    "progressLabel": "进度 {done} / {total}",
     "updating": "内容更新中",
-    "updatingBody": "新的课文正在准备中，发布后会显示在这里。"
-  },
-  "Learning": {
-    "loading": "正在恢复学习记录…",
-    "failure": "本次学习记录可能无法保存，阅读不受影响。",
-    "complete": "标记为已完成",
-    "undo": "取消完成标记",
-    "completed": "本课已完成",
-    "incomplete": "已取消完成标记"
+    "updatingBody": "新的课文正在准备中，发布后会显示在这里。",
+    "achievementCount": "已解锁 {count} 项成就",
+    "achievementsTitle": "我的成就"
   },
   "Search": {
     "open": "搜索课时",
@@ -110,10 +95,20 @@
     "title": "把学习的节奏，\n留给自己",
     "intro": "AIDevCourse 是一个免费阅读的 AI coding 学习网站，帮助你学会描述任务、提供上下文、检查代码与验证结果。无需注册即可阅读。",
     "storageTitle": "关于学习记录",
-    "storage": "完成标记与最近学习位置保存在当前浏览器、当前域名下；同一课时的译文共享标记。清除浏览器数据、更换设备或域名后，记录可能无法恢复。学习记录不会发送到网站服务器。",
+    "storage": "成就与最近学习位置保存在当前浏览器、当前域名下；同一课程的译文共享成就。清除浏览器数据、更换设备或域名后，记录可能无法恢复。学习记录不会发送到网站服务器。",
     "languagesTitle": "关于语言与译文",
     "languages": "网站界面支持五种语言。各语言的课程独立发布，内容数量可能不同。功能性 Cookie 用于记住语言偏好；禁用 Cookie 后，带语言前缀的链接仍可正常访问。",
     "privacyTitle": "关于外链与隐私",
     "privacy": "网站不接入广告或分析脚本。外链指向的服务有各自的隐私规则；托管平台可能保留常规访问日志。请勿在公开示例中粘贴密钥或敏感项目信息。"
+  },
+  "Achievement": {
+    "challenge": "成就挑战",
+    "unlocked": "成就已解锁 · {title}",
+    "noJs": "成就解锁与保存需要 JavaScript，你可以继续阅读。",
+    "explanation": "查看解释",
+    "saveFailed": "成就暂时保存在当前页面，刷新后可能丢失。",
+    "correct": "回答正确",
+    "incorrect": "回答不正确",
+    "retry": "再试一次"
   }
 }

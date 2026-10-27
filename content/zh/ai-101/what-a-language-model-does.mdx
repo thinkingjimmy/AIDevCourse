@@ -1,0 +1,100 @@
+---
+# [INPUT]: AI 101 identity, LLM generation concepts, Chat examples with Thinking and a completed answer, local interactive demonstrations, and the persistent judgment achievement.
+# [OUTPUT]: The first AI 101 lesson at /zh/courses/ai-101/what-a-language-model-does.
+# [POS]: First concept lesson explaining generation, verification, and input quality.
+# [PROTOCOL]: Update this header when making changes, then check README.md.
+courseId: ai-101
+lessonId: what-a-language-model-does
+title: 大语言模型是如何生成回答的？
+description: 从文字接龙理解大语言模型，以及为什么你的输入会影响它的输出。
+---
+
+你经常会看到一个术语「大语言模型」（Large Language Model），有人会简称它为大模型或者 LLM。
+
+但它实际是什么？
+
+## 全自动文字接龙系统
+
+简单理解的话，你可以将 LLM 看成一个「全自动文字接龙系统」。
+
+举个简单的例子，如果你向 LLM（比如 DeepSeek、ChatGPT）提问：
+
+<Chat>
+  <ChatMessage from="user">今天广州的天气如何？</ChatMessage>
+  <ChatMessage from="assistant" state="thinking" />
+</Chat>
+
+模型就会进行一系列的运算，预测这个问题下一个概率最高的「字」是什么。可能在某次运算里，它吐出来的第一个字是「今」。
+
+注意，模型并不会像你想象中那样将结果一次全部生成。当计算出「今」之后，模型会将「今天广州的天气如何？今」作为新的输入，再重新计算下一个字，第二次计算，算出下一个字是「天」，得到最新结果「今天广州的天气如何？今天」。
+
+整个流程大概像这样：
+
+<LLMGenerationDemo />
+
+接着经过多次运算之后，得到各位常常看到的结果：
+
+<Chat>
+  <ChatMessage from="user">今天广州的天气如何？</ChatMessage>
+  <ChatMessage from="assistant">今天广州天气晴朗，温度在 28 ℃</ChatMessage>
+</Chat>
+
+模型是基于已有的数据（或知识）来预测下一个字。换句来说，模型并没有真正理解你问的问题，也不会像人类一样去思考，而是通过统计学的方式来预测下一个最可能的字。
+
+理解了这个原理，你应该就懂得了为何在使用 LLM 的产品的时候，LLM 的回复都是一个字一个字地吐出答案。
+
+<JimmyNote>
+  当然，随着模型的迭代，模型的运算速度越来越快。你现在看到的 LLM
+  的回答已经不是一个字一个字地吐出来，有可能是一段一段地吐出来。这只是因为计算速度变快了，产品上为了体验更好，就选择一段一段地显示。但实际上
+  LLM 还是一个字一个字地计算，其工作原理并没有变化。
+</JimmyNote>
+
+## 模型是如何训练的？
+
+整个过程非常复杂，但简单来说，LLM 是通过大量的文本数据进行训练的。比如编程相关的，则会使用来自 GitHub 及其他代码库的数十亿行公开代码，以及编程相关的书籍、文档、Stack Overflow 上的问答等等。
+
+在训练过程中，模型会反复尝试预测该数据中缺失的部分（就像前面说的文字接龙那样）。每次预测错误都会对数十亿个被称为“参数”的数值进行微调。训练是整个过程中最耗费资源的环节，需要数月时间，并消耗大量的硬件资源.
+
+训练完成后，当你向某个模型发送指令后，模型就会利用这些已训练好的参数来预测下一个最可能的字，直到生成完整的回答。
+
+如何训练这部分内容涉及大量难懂的细节，这里就不过多展开。
+
+关键的是需要注意一个很重要的概念：模型的训练数据是有时间限制的。在不使用其他工具的情况下，它无法获取训练数据之外的信息。比如 GPT-6 的训练数据截止到 2026 年 4 月，所以它无法知道 4 月以后发生的事情。
+
+<Achievement
+  id="generation-vs-verification"
+  title="分清生成与查证"
+  question="模型在没有接入天气数据的情况下，回答「今天广州天气晴朗，28℃」。下面哪种理解更准确？"
+  answer="verify"
+  explanation="正如前文提到那样，模型的训练数据是有时间限制的，它无法获取训练数据之后的信息。在没有接入天气数据情况下，不可能知道今天广州的天气。它生成的回答只是基于训练数据的预测，并不代表真实天气。"
+  takeaway="模型的训练数据是有时间限制的，它无法获取训练数据之后的信息。所以，在没有接入天气数据情况下，不可能知道今天广州的天气。"
+>
+  <AchievementOption value="specific">
+    回答这么具体，说明它知道广州的真实天气。
+  </AchievementOption>
+  <AchievementOption value="verify">
+    它生成了一句天气预报，但这个回答不一定代表真实天气，仍需要查证。
+  </AchievementOption>
+</Achievement>
+
+## 你的输入决定了模型的输出
+
+懂得了这个简单原理之后，你应该就能理解，为何在 LLM 产品的早期，比如 GPT-3.5 的时候，会有众多所谓的 Prompt Engineering（提示词工程）技巧了吧。
+
+比如在翻译场景下，你可以在输入要翻译的英文前增加一段「你是个精通中英文翻译的专家，请你翻译如下英文...」，这类指令（Prompt）。
+
+本质上来说添加这些指令，就是为了提高 LLM 输出满意答案的概率。
+
+但即使模型发展到现在，输入质量依然对 LLM 输出的结果起到很关键的作用。只是说有些输入，不再需要由用户来输入了，而是产品已经输入好了（这些我们后续会细讲）。但不管产品和模型再怎么优化，你想要通过 LLM 获得好的结果，依然需要学习。
+
+为什么呢？
+
+因为受限于文字这种交互形式，你如果不懂某些概念，你就很难向 LLM 提出问题，或者给它布置合适的指令。最后如果指令不清晰，或者描述有误，自然就会得出不够好，甚至错误的答案。
+
+就拿下方这两个按钮为例，当你点击后，都会出现一个菜单。菜单上有同样内容。但你会发现两个菜单的样式完全不一样。你觉得哪个体验更好？
+
+<MenuComparisonDemo />
+
+如果你不懂任何的编程或产品相关的概念，完全靠简单的一句话需求：点击按钮后，出现一个菜单，菜单里有菜单 A、B、C 三个按钮。那大概率只能得到一个「在概率上最有可能」，或者说是一个「平庸」的结果。但如果你懂得相关的知识，你就可以给 LLM 下相关的优化命令，让其输出变得更加出色。
+
+这也是本教程想教给你的东西。

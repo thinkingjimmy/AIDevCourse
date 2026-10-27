@@ -2,9 +2,9 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-Homepage studies and writing-component previews for AIDevCourse. These routes do not replace `/[lang]`.
+Homepage studies and writing-component previews for AIDevCourse. These routes do not replace `/[lang]`. All previews use the same Tailwind typography scale as public pages.
 
-- `catalog.ts`: Reads the published `content/zh/ai-101` course for the previews only.
+- `catalog.ts`: Reads the published `content/zh/ai-101` course for the previews only, without reading-time or article-type metadata.
 - `layout.tsx`: Tailwind preview entry and Geist document shell with inherited root brand icons, separate from the live site header.
 - `ui.tsx`: Shared SiteLogo and configured product name, variant switch, header, and footer.
 - `page.tsx`: Index of the three studies.

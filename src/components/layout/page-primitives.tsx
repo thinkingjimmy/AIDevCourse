@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Native element props, Next.js links/images, shared site identity, and Tailwind theme tokens.
- * [OUTPUT]: Shared page shells with a 56 px header offset, containers, image-based SiteLogo, typography, container-aligned hero parts, and footer.
+ * [OUTPUT]: Shared shells, image-based SiteLogo, token-based title variants, hero parts, and footer.
  * [POS]: Shared visual structure for public pages, status pages, and the lesson sidebar.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -13,7 +13,7 @@ import { site } from '@/lib/site-config';
 
 export function SiteShell({ className, ...props }: ComponentProps<'div'>) {
   return <div {...props} className={cn(
-    'relative flex min-h-screen flex-col bg-background text-[15px] leading-[1.6] text-foreground [--zinc-header:56px]',
+    'relative flex min-h-screen flex-col bg-background text-ui leading-copy text-foreground [--zinc-header:56px]',
     '[&_:where(h1,h2,h3,h4,[id])]:scroll-mt-(--zinc-header)',
     'before:pointer-events-none before:absolute before:inset-y-0 before:left-[50vw] before:z-[45] before:w-[min(64rem,100%)] before:-translate-x-1/2 before:border-x before:border-border before:content-[\'\']',
     className,
@@ -25,7 +25,7 @@ export function PageContainer({ className, ...props }: ComponentProps<'div'>) {
 }
 
 export function SiteLogo({ className, ...props }: Omit<ComponentProps<typeof Link>, 'children'>) {
-  return <Link {...props} className={cn('inline-flex shrink-0 items-center gap-2 font-semibold tracking-[-.02em] text-inherit no-underline', className)}>
+  return <Link {...props} className={cn('inline-flex shrink-0 items-center gap-2 font-semibold tracking-tight text-inherit no-underline', className)}>
     <Image src={site.logo} width={24} height={24} alt="" className="size-6 shrink-0" loading="eager" unoptimized /><span>{site.name}</span>
   </Link>;
 }
@@ -33,9 +33,9 @@ export function SiteLogo({ className, ...props }: Omit<ComponentProps<typeof Lin
 const titleVariants = cva('font-sans font-semibold text-foreground whitespace-pre-line', {
   variants: {
     variant: {
-      hero: 'm-0 mb-5 text-[56px] leading-[1.08] tracking-[-.035em] max-[1101px]:text-[40px] max-[1101px]:tracking-[-.03em] max-[841px]:text-[32px]',
-      page: 'm-0 mb-[18px] text-[52px] leading-[1.12] tracking-[-.03em] max-[721px]:text-[32px]',
-      lesson: 'm-0 mb-3 text-[34px] leading-[1.2] tracking-[-.03em]',
+      hero: 'm-0 mb-5 text-hero tracking-heading max-[1101px]:text-display max-[841px]:text-title',
+      page: 'm-0 mb-[18px] text-5xl tracking-heading max-[721px]:text-title',
+      lesson: 'm-0 mb-3 text-4xl leading-heading tracking-heading',
     },
   },
   defaultVariants: { variant: 'page' },
@@ -46,7 +46,7 @@ export function PageTitle({ variant, className, ...props }: ComponentProps<'h1'>
 }
 
 export function PageEyebrow({ className, ...props }: ComponentProps<'p'>) {
-  return <p {...props} className={cn('m-0 mb-[18px] font-mono text-[12px] font-normal tracking-[.08em] text-muted-foreground', className)} />;
+  return <p {...props} className={cn('m-0 mb-[18px] font-mono text-xs font-normal tracking-label text-muted-foreground', className)} />;
 }
 
 export function HeroGrid({ className, ...props }: ComponentProps<'div'>) {
@@ -58,7 +58,7 @@ export function HeroCopy(props: ComponentProps<'div'>) {
 }
 
 export function HeroLead({ className, ...props }: ComponentProps<'p'>) {
-  return <p {...props} className={cn('m-0 mb-8 max-w-[30rem] text-[18px] leading-[1.7] text-muted-foreground max-[1101px]:text-[16px]', className)} />;
+  return <p {...props} className={cn('m-0 mb-8 max-w-[30rem] text-lg leading-body text-muted-foreground max-[1101px]:text-base', className)} />;
 }
 
 export function StatusPage({ className, ...props }: ComponentProps<'main'>) {
@@ -70,7 +70,7 @@ export function PageActions({ className, ...props }: ComponentProps<'div'>) {
 }
 
 export function SiteFooter({ children, meta }: { children: ReactNode; meta: ReactNode }) {
-  return <footer className="border-t border-border text-[13px] text-muted-foreground">
+  return <footer className="border-t border-border text-caption text-muted-foreground">
     <PageContainer className="flex items-center justify-between gap-4 py-[18px] max-[721px]:flex-col max-[721px]:items-start max-[721px]:gap-1.5">
       <span>{children}</span><a href="https://jimmywong.dev" className="font-mono no-underline underline-offset-4 hover:text-foreground hover:underline">{meta}</a>
     </PageContainer>

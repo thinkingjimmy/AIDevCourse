@@ -5,7 +5,7 @@
 - `README.zh.md`: Chinese project entry, setup commands, and repository map.
 - `requirements.md`: Current product behavior, acceptance criteria, and scope.
 - `architecture.md`: Module boundaries, content flow, routing, and validation.
-- `authoring.md`: Local course writing, translation, validation, and publication.
+- `authoring.md`: Local course writing, declarative single-choice achievements, translation, validation, and publication.
 - `deployment.md`: Environment settings, release checks, and rollback.
 - [templates/](./templates/README.md): Course and lesson templates for originals and translations.
 

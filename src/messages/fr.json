@@ -11,7 +11,6 @@
     "previous": "Leçon précédente",
     "next": "Leçon suivante",
     "overview": "Vue d’ensemble du cours",
-    "minutes": "{count, plural, one {# minute} other {# minutes}}",
     "lessons": "{count, plural, one {# leçon publiée en français} other {# leçons publiées en français}}",
     "beginner": "Débutant",
     "intermediate": "Intermédiaire",
@@ -19,10 +18,6 @@
     "copy": "Copier le code",
     "copied": "Copié",
     "copyFailed": "Échec de la copie. Sélectionnez et copiez le code manuellement.",
-    "verified": "Vérifié le {date}",
-    "testedWith": "Environnement : {environment}",
-    "stale": "Cette traduction n’intègre pas encore la dernière version originale.",
-    "original": "Lire l’original en {language}",
     "noJs": "La lecture et les liens de langue fonctionnent sans JavaScript. La recherche, la copie et la progression nécessitent JavaScript.",
     "notFoundTitle": "Cette pièce n’est\npas encore installée",
     "notFoundBody": "L’adresse est peut-être incorrecte, ou cette leçon n’est pas encore publiée dans cette langue.",
@@ -38,15 +33,14 @@
     "lessonCount": "{count, plural, one {# leçon} other {# leçons}}",
     "lessonNumber": "Leçon {number}",
     "moduleNumber": "Module {number}",
-    "concept": "Concept",
-    "tool": "Outil",
-    "practice": "Pratique"
+    "more": "Plus"
   },
   "Language": {
     "label": "Choisir la langue",
     "available": "Lire cette page",
     "courseFallback": "Leçon non traduite ; ouvre le résumé du cours",
-    "listFallback": "Cours indisponible ; ouvre la page du cours"
+    "listFallback": "Cours indisponible ; ouvre la page du cours",
+    "change": "Changer de langue"
   },
   "Home": {
     "eyebrow": "Gratuit · Open source · Sans inscription",
@@ -72,7 +66,6 @@
     "syllabus": "Votre parcours",
     "aboutSite": "À propos de ce site",
     "pathTitle": "Dans l’ordre, une boucle par leçon",
-    "pathNote": "Les marques de fin sont un suivi, pas une note.",
     "startFirst": "Commencer la première leçon",
     "continueNamed": "Continuer : {title}",
     "free": "Gratuit",
@@ -81,19 +74,11 @@
     "onThisPage": "Sur cette page",
     "who": "Pour qui",
     "before": "Avant de commencer",
-    "doneMark": "Terminé",
     "contents": "Plan",
-    "progressLabel": "Progression {done} / {total}",
     "updating": "Contenu en cours de mise à jour",
-    "updatingBody": "De nouvelles leçons sont en préparation. Elles apparaîtront ici une fois publiées."
-  },
-  "Learning": {
-    "loading": "Restauration de la progression…",
-    "failure": "La progression de cette session risque de ne pas être enregistrée. La lecture reste disponible.",
-    "complete": "Marquer comme terminée",
-    "undo": "Marquer comme non terminée",
-    "completed": "Leçon terminée",
-    "incomplete": "Marque de fin supprimée"
+    "updatingBody": "De nouvelles leçons sont en préparation. Elles apparaîtront ici une fois publiées.",
+    "achievementCount": "{count, plural, one {# accomplissement débloqué} other {# accomplissements débloqués}}",
+    "achievementsTitle": "Mes accomplissements"
   },
   "Search": {
     "open": "Rechercher une leçon",
@@ -110,10 +95,20 @@
     "title": "Apprendre à votre rythme",
     "intro": "AIDevCourse est un espace de lecture gratuit pour apprendre à coder avec l’IA. Aucun compte n’est nécessaire.",
     "storageTitle": "Votre progression",
-    "storage": "Les leçons terminées et votre dernière position restent dans ce navigateur et sur ce domaine. Les traductions partagent les mêmes marques. Effacer les données du navigateur ou changer d’appareil ou de domaine peut rendre ces données inaccessibles. Elles ne sont pas envoyées à notre serveur.",
+    "storage": "Les accomplissements et votre dernière leçon sont enregistrés dans ce navigateur, sur ce domaine. Les traductions du même cours partagent les accomplissements. Si vous effacez les données du navigateur ou changez d’appareil ou de domaine, ces enregistrements peuvent devenir inaccessibles. Ils ne sont pas envoyés au serveur du site.",
     "languagesTitle": "Langues et disponibilité",
     "languages": "L’interface existe en cinq langues. Chaque langue publie ses propres leçons, donc le catalogue peut différer. Un cookie fonctionnel mémorise votre langue ; les URL avec préfixe de langue fonctionnent aussi sans cookies.",
     "privacyTitle": "Liens externes et confidentialité",
     "privacy": "Aucun script publicitaire ni de mesure d’audience n’est intégré. Les services externes appliquent leurs propres règles. L’hébergeur peut conserver des journaux d’accès. Ne publiez jamais de clés privées ni de données sensibles dans les exemples."
+  },
+  "Achievement": {
+    "challenge": "Défi d’accomplissement",
+    "unlocked": "Accomplissement débloqué · {title}",
+    "noJs": "JavaScript est nécessaire pour débloquer et enregistrer les accomplissements. Vous pouvez continuer à lire.",
+    "explanation": "Voir l’explication",
+    "saveFailed": "Cet accomplissement est enregistré uniquement sur cette page pour le moment. Il risque d’être perdu après un rechargement.",
+    "correct": "Bonne réponse",
+    "incorrect": "Réponse incorrecte",
+    "retry": "Réessayer"
   }
 }

@@ -1,9 +1,11 @@
 /**
- * [INPUT]: The production server, authored catalog, localized messages, and all five language routes.
- * [OUTPUT]: Homepage hero alignment, action and course-card surfaces with hero-only chip callouts, publication, locale, and accessibility evidence.
+ * [INPUT]: The production server, authored catalog, localized messages, and all five language routes, canonical locale paths.
+ * [OUTPUT]: Homepage Geist and locale-specific Noto font loading, hero alignment, action and course-card surfaces with hero-only chip callouts, publication, minimal-metadata rendering/search, locale negotiation with English fallback, and accessibility evidence.
  * [POS]: Public-site browser matrix, valid with an empty or partial course library.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
+import type { Locale } from '../../src/lib/i18n/config';
+import { localePath } from '../../src/lib/i18n/routing';
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { readFileSync } from 'node:fs';
@@ -14,19 +16,40 @@ for (const locale of locales) {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
     for (const path of ['', '/about']) {
-      const response = path ? await page.request.get(`/${locale}${path}`) : await page.goto(`/${locale}`);
+      const response = path ? await page.request.get(localePath(locale as Locale, path || '/')) : await page.goto(localePath(locale as Locale, `/`));
       expect(response?.status()).toBe(200);
+      if (!path) {
+        await page.evaluate(() => document.fonts.ready);
+        await expect(page.locator('body')).toHaveCSS('font-family', /^["']?Geist["']?(?:,|\s)/);
+        const loadedFonts = await page.evaluate(() => Array.from(document.fonts)
+          .filter((font) => font.status === 'loaded').map((font) => font.family.replaceAll('"', '')));
+        const cjkFamily = locale === 'zh' ? 'Noto Sans SC' : locale === 'ja' ? 'Noto Sans JP' : undefined;
+        if (cjkFamily) {
+          await expect(page.locator('body')).toHaveCSS('font-family', new RegExp(cjkFamily));
+          expect(loadedFonts).toContain(cjkFamily);
+          const screenshot = test.info().outputPath(`${locale}-noto-home.png`);
+          await page.screenshot({ path: screenshot, animations: 'disabled' });
+          await test.info().attach(`${locale} Noto typography`, { path: screenshot, contentType: 'image/png' });
+        } else {
+          expect(loadedFonts.some((family) => family.startsWith('Noto Sans'))).toBe(false);
+        }
+        await test.info().attach(`${locale}-fonts`, {
+          body: JSON.stringify({ locale, loadedFonts, body: await page.locator('body').evaluate((element) => getComputedStyle(element).fontFamily) }, null, 2),
+          contentType: 'application/json',
+        });
+      }
       if (path) {
-        await page.locator(`header a[href="/${locale}/about"]`).click();
-        await expect(page).toHaveURL(new RegExp(`/${locale}/about$`));
+        await page.locator(`header a[href="${localePath(locale, '/about')}"]`).click();
+        await expect(page).toHaveURL(new RegExp(localePath(locale as Locale, `/about$`)));
       }
       await expect(page.locator('html')).toHaveAttribute('lang', htmlLanguages[locale]);
       await expect(page.locator('h1')).toHaveCount(1);
-      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`/${locale}${path}$`));
+      const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
+      expect(new URL(canonical!).pathname).toBe(localePath(locale, path || '/'));
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await page.waitForLoadState('networkidle');
     }
-    const missingIndex = await page.request.get(`/${locale}/courses`);
+    const missingIndex = await page.request.get(localePath(locale as Locale, `/courses`));
     expect(missingIndex.status()).toBe(404);
     const report = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(report.violations).toEqual([]);
@@ -38,20 +61,36 @@ for (const locale of locales) {
     await expect(page.locator('.language-picker')).not.toHaveAttribute('open');
   });
 }
-test('negotiates only supported unprefixed entries with private 307 responses', async ({ request }) => {
+test('negotiates only the homepage and keeps English paths prefix-free', async ({ request }) => {
+  const fallbackEvidence = [];
+  for (const headers of [
+    { Cookie: '', 'Accept-Language': '' },
+    { Cookie: '', 'Accept-Language': 'de-DE,ko;q=.8' },
+    { Cookie: 'lac-language=invalid', 'Accept-Language': 'de;q=0' },
+  ]) {
+    const fallback = await request.get('/', { headers, maxRedirects: 0 });
+    expect(fallback.status()).toBe(200);
+    expect(fallback.headers().location).toBeUndefined();
+    expect(await fallback.text()).toContain('lang="en"');
+    expect(fallback.headers()['cache-control']).toContain('no-store');
+    fallbackEvidence.push({ request: headers, status: fallback.status(), location: fallback.headers().location });
+  }
+  await test.info().attach('English homepage responses', { body: JSON.stringify(fallbackEvidence, null, 2), contentType: 'application/json' });
   const response = await request.get('/', { headers: { 'Accept-Language': 'ja-JP,fr;q=.5', Cookie: 'lac-language=es' }, maxRedirects: 0 });
   expect(response.status()).toBe(307); expect(response.headers().location).toMatch(/\/es$/);
   expect(response.headers()['cache-control']).toContain('no-store'); expect(response.headers().vary).toContain('Cookie');
-  const browser = await request.get('/about', { headers: { 'Accept-Language': 'de,fr-FR;q=.8' }, maxRedirects: 0 });
-  expect(browser.headers().location).toMatch(/\/fr\/about$/);
-  const explicit = await request.get('/en', { headers: { Cookie: 'lac-language=zh' }, maxRedirects: 0 });
+  const browser = await request.get('/', { headers: { 'Accept-Language': 'de,fr-FR;q=.8' }, maxRedirects: 0 });
+  expect(browser.headers().location).toMatch(/\/fr$/);
+  const chinese = await request.get('/', { headers: { 'Accept-Language': 'zh-CN,en;q=.8' }, maxRedirects: 0 });
+  expect(chinese.headers().location).toMatch(/\/zh$/);
+  const explicit = await request.get('/about', { headers: { Cookie: 'lac-language=zh' }, maxRedirects: 0 });
   expect(explicit.status()).toBe(200); expect(explicit.headers().link).toBeUndefined();
   for (const path of ['/de/courses', '/unknown/path', '/api/search/de', '/fr/courses/missing-course']) {
     const missing = await request.get(path, { maxRedirects: 0 }); expect(missing.status(), path).toBe(404);
   }
   expect((await request.get('/favicon.svg')).status()).toBe(200);
   for (const locale of locales) {
-    const missing = await request.get(`/${locale}/unknown-page`);
+    const missing = await request.get(localePath(locale as Locale, `/unknown-page`));
     expect(missing.status()).toBe(404);
     expect(await missing.text()).toContain(`lang="${htmlLanguages[locale]}"`);
   }
@@ -67,14 +106,14 @@ test('production publishes course entries and removes withdrawn lessons from dis
     expect(body, path).not.toMatch(/审校中|In review|校閲中|En relecture|En revisión/);
     expect(response.status(), path).toBe(200);
   }
-  for (const lang of locales) expect((await request.get(`/${lang}/courses`, { maxRedirects: 0 })).status()).toBe(404);
+  for (const lang of locales) expect((await request.get(localePath(lang as Locale, `/courses`), { maxRedirects: 0 })).status()).toBe(404);
   const courses = await (await request.get('/zh/courses/ai-101')).text();
   expect(courses).toContain('AI 101');
   const sitemap = await (await request.get('/sitemap.xml')).text();
   for (const locale of locales) {
     const search = await (await request.get(`/api/search/${locale}`)).text();
     for (const slug of ['strengths', 'tokens', 'first-workflow']) {
-      const path = `/${locale}/courses/ai-101/${slug}`;
+      const path = localePath(locale as Locale, `/courses/ai-101/${slug}`);
       if (catalog.documents.some((document) => document.url === path)) continue;
       expect((await request.get(path)).status()).toBe(404);
       expect(sitemap).not.toContain(path);
@@ -85,6 +124,107 @@ test('production publishes course entries and removes withdrawn lessons from dis
     const missing = await request.get(path, { maxRedirects: 0 });
     expect(missing.status(), path).toBe(404);
   }
+});
+
+test('minimal frontmatter renders course, article, and search without manual metadata', async ({ page }) => {
+  const catalog = readCatalog();
+  for (const course of catalog.courses) {
+    const first = course.lessons[0];
+    if (!first) continue;
+    const response = await page.goto(course.url);
+    expect(response?.status()).toBe(200);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(course.title);
+    await expect(page.getByRole('link', { name: first.title }).first()).toHaveAttribute('href', first.url);
+    await page.goto(first.url);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(first.title);
+    await expect(page.locator('article > .prose')).toBeVisible();
+    await expect(page.locator('.notice')).toHaveCount(0);
+  }
+  const english = catalog.courses.find((course) => course.locale === 'en')!;
+  await page.goto(english.lessons[0].url);
+  await page.waitForLoadState('networkidle');
+  await page.keyboard.press('Control+k');
+  await page.getByRole('dialog').getByRole('textbox').fill(process.env.CONTENT_TEST === '1' ? 'context' : 'LLM');
+  await expect(page.locator('.search-result small').first()).toHaveText(english.lessons[0].moduleTitle);
+  await page.keyboard.press('Escape');
+  await page.goto(english.url);
+  const screenshot = test.info().outputPath('minimal-course-metadata.png');
+  await page.screenshot({ path: screenshot, fullPage: true });
+  await test.info().attach('Course without manual time or type metadata', { path: screenshot, contentType: 'image/png' });
+});
+
+test.describe('English URL policy', () => {
+  test.use({ locale: 'zh-CN' });
+
+  test('prefix-free English navigation, language switching, search, and SEO stay aligned', async ({ page, context, request }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await page.goto('/');
+    await expect(page).toHaveURL(/\/zh$/);
+    await page.locator('.language-picker summary').click();
+    await page.getByRole('link', { name: 'English', exact: true }).click();
+    expect(new URL(page.url()).pathname).toBe('/');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    await expect(page.locator('header a[href="/about"]')).toBeVisible();
+    await page.locator('header a[href="/about"]').click();
+    await expect(page).toHaveURL(/\/about$/);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/about$/);
+    await expect(page.locator('link[hreflang="zh-Hans"]')).toHaveAttribute('href', /\/zh\/about$/);
+
+    await context.addCookies([{ name: 'lac-language', value: 'zh', url: page.url() }]);
+    const path = process.env.CONTENT_TEST === '1' ? '/courses/ai-coding/first-change' : '/courses/ai-101/what-a-language-model-does';
+    const response = await page.goto(path);
+    expect(response?.status()).toBe(200);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    await expect(page.locator('article > .prose')).toBeVisible();
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${path}$`));
+    await expect(page.locator('link[hreflang="en"]')).toHaveAttribute('href', new RegExp(`${path}$`));
+    await expect(page.locator('link[hreflang="x-default"]')).toHaveAttribute('href', new RegExp(`${path}$`));
+    expect(await page.locator('a[href^="/en"]').count()).toBe(0);
+    await page.waitForLoadState('networkidle');
+    await page.keyboard.press('Control+k');
+    const search = page.getByRole('dialog').getByRole('textbox');
+    await search.fill(process.env.CONTENT_TEST === '1' ? 'context' : 'LLM');
+    await expect(page.locator('.search-result').first()).toHaveAttribute('href', /^\/courses\//);
+    const destination = await page.locator('.search-result').first().getAttribute('href');
+    await page.locator('.search-result').first().click();
+    await expect(page).toHaveURL(new URL(destination!, page.url()).href);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    expect(errors).toEqual([]);
+    const screenshot = test.info().outputPath('prefix-free-english-lesson.png');
+    await page.screenshot({ path: screenshot, fullPage: true });
+    await test.info().attach('English lesson without a locale prefix', { path: screenshot, contentType: 'image/png' });
+
+    const sitemap = await (await request.get('/sitemap.xml')).text();
+    expect(sitemap).toContain(path);
+    expect(sitemap).not.toMatch(/https?:\/\/[^<"\s]+\/en(?:\/|<|")/);
+    const alias = await request.get(`/en${path}?from=old`, { maxRedirects: 0 });
+    expect(alias.status()).toBe(308);
+    expect(new URL(alias.headers().location, page.url()).pathname).toBe(path);
+    expect(alias.headers().location).toContain('?from=old');
+  });
+
+  test('native English homepage selection overrides browser language without JavaScript', async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ baseURL, javaScriptEnabled: false, locale: 'fr-FR' });
+    try {
+      const page = await context.newPage();
+      await page.goto('/');
+      await expect(page).toHaveURL(/\/fr$/);
+      await page.locator('.language-picker summary').click();
+      await page.getByRole('link', { name: 'English', exact: true }).click();
+      expect(new URL(page.url()).pathname).toBe('/');
+      await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+      const canonical = new URL((await page.locator('link[rel="canonical"]').getAttribute('href'))!);
+      expect(canonical.pathname).toBe('/');
+      expect(canonical.search).toBe('');
+      await page.goto('/');
+      await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+      const screenshot = test.info().outputPath('english-home-no-js.png');
+      await page.screenshot({ path: screenshot });
+      await test.info().attach('English home without JavaScript', { path: screenshot, contentType: 'image/png' });
+    } finally { await context.close(); }
+  });
 });
 
 for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'tablet', width: 840, height: 960 }, { name: 'mobile', width: 390, height: 844 }, { name: 'narrow', width: 320, height: 844 }]) {
@@ -98,7 +238,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       const course = catalog.courses.find((item) => item.locale === locale && item.slug === 'ai-101')!;
       const errors: string[] = [];
       page.on('pageerror', (error) => errors.push(error.message));
-      await page.goto(`/${locale}`);
+      await page.goto(localePath(locale as Locale, `/`));
       await page.evaluate(() => document.fonts.ready);
       const grid = page.locator('[data-slot="course-grid"]');
       const card = grid.getByRole('link', { name: 'AI 101', exact: true });
@@ -157,12 +297,20 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     await page.emulateMedia({ reducedMotion: 'reduce' });
     const catalog = readCatalog();
     for (const locale of locales) {
-      await page.goto(`/${locale}`);
+      await page.goto(localePath(locale as Locale, `/`));
       await page.evaluate(() => document.fonts.ready);
       const messages = JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
       const action = page.getByRole('link', { name: messages.Home.start, exact: true });
       const title = page.locator('main h1');
       const intro = title.locator('..').locator('p');
+      await expect(title).toHaveCSS('font-family', /Geist Pixel/);
+      await expect(title).toHaveCSS('font-weight', '400');
+      await expect(page.locator('body')).toHaveCSS('font-family', /^["']?Geist["']?(?:,|\s)/);
+      await expect(intro).toHaveCSS('font-family', /^["']?Geist["']?(?:,|\s)/);
+      const loadedFonts = await page.evaluate(() => Array.from(document.fonts)
+        .filter((font) => font.status === 'loaded').map((font) => font.family.replaceAll('"', '')));
+      expect(loadedFonts).toContain('Geist');
+      expect(loadedFonts).toContain('Geist Pixel');
       await expect(intro).toHaveCount(1);
       await expect(intro).toHaveText(messages.Home.intro);
       await expect(page.getByText(messages.Home.eyebrow, { exact: true })).toHaveCount(0);
@@ -267,8 +415,8 @@ test('reading and native language links work without JavaScript or cookies', asy
 });
 test('keeps a light background when the system requests dark mode', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
-  await page.goto('/en');
+  await page.goto('/');
   expect(await page.locator('body').evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(255, 255, 255)');
-  await page.goto('/en/about');
+  await page.goto('/about');
   expect(await page.locator('body').evaluate((element) => getComputedStyle(element).backgroundColor)).toBe('rgb(255, 255, 255)');
 });

@@ -20,12 +20,12 @@ export default function DesignIndex() {
   return <>
     <DesignHeader />
     <main id="main"><div className="mx-auto w-[min(720px,calc(100%-32px))] pt-[72px] max-[721px]:pt-10">
-      <p className="m-0 text-[var(--mfg)] [font-family:var(--mono)] text-[12px] font-medium">AIDevCourse · aidevcourse.com</p>
-      <h1 className="m-0 text-[clamp(36px,5vw,52px)] font-medium tracking-[-.03em] leading-[1.12] mt-[18px]">三份首页。</h1>
-      <p className="m-0 mt-5 max-w-[680px] text-[17px] leading-[1.7] text-[var(--mfg)]">同一套锌色、发丝线和等宽数字，三种不同的首页。内容来自仓库里已经写好的中文课，当前首页保持原样。</p>
-      <div className="mt-7">{studies.map((item) => <Link key={item.href} href={item.href} className="grid grid-cols-[148px_96px_minmax(0,1fr)] items-baseline gap-3 border-t border-[var(--line)] py-3.5 text-[14px] hover:bg-[color-mix(in_oklab,var(--muted)_55%,transparent)] max-[721px]:grid-cols-1 max-[721px]:gap-1">
+      <p className="m-0 text-[var(--mfg)] font-mono text-xs font-medium">AIDevCourse · aidevcourse.com</p>
+      <h1 className="m-0 text-title md:text-5xl font-medium tracking-heading leading-tight mt-[18px]">三份首页。</h1>
+      <p className="m-0 mt-5 max-w-[680px] text-base leading-body text-[var(--mfg)]">同一套锌色、发丝线和等宽数字，三种不同的首页。内容来自仓库里已经写好的中文课，当前首页保持原样。</p>
+      <div className="mt-7">{studies.map((item) => <Link key={item.href} href={item.href} className="grid grid-cols-[148px_96px_minmax(0,1fr)] items-baseline gap-3 border-t border-[var(--line)] py-3.5 text-sm hover:bg-[color-mix(in_oklab,var(--muted)_55%,transparent)] max-[721px]:grid-cols-1 max-[721px]:gap-1">
         <span className="font-medium">{item.name}</span>
-        <span className="text-[12px] text-[var(--mfg)] [font-family:var(--mono)] tabular-nums">{item.path}</span>
+        <span className="text-xs text-[var(--mfg)] font-mono tabular-nums">{item.path}</span>
         <span>{item.body}</span>
       </Link>)}</div>
     </div></main>

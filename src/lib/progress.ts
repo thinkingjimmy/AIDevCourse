@@ -1,108 +1,86 @@
 /**
- * [INPUT]: Browser storage, stable IDs, and current-language lesson summaries.
- * [OUTPUT]: ProgressStorage persistence, coursePrefix, progress models, and selectProgress.
- * [POS]: Sole persistence adapter; corrupt records are protected until reset.
+ * [INPUT]: Browser storage, stable course/lesson identities, and the published course achievement inventory.
+ * [OUTPUT]: LearningStorage, LearningState, and coursePrefix for registered course achievements.
+ * [POS]: Sole learning-record adapter; keeps recent visits and earned achievements separate from legacy completion.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
-import type { LessonSummary } from './content/model';
-
-export interface StorageLike {
-  readonly length: number;
-  key(index: number): string | null;
-  getItem(key: string): string | null;
-  setItem(key: string, value: string): void;
-  removeItem(key: string): void;
-}
-export type Completion = { completed: boolean; updatedAt: string };
-export type LastVisit = { lessonId: string; visitedAt: string };
-export type Progress = { completed: Record<string, boolean>; last?: string; failed: boolean };
+export type LearningState = { unlocked: Record<string, string>; last?: string; failed: boolean };
+type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 const validId = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const validDate = (value: unknown) => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value) && Number.isFinite(Date.parse(value));
+const validDate = (value: unknown): value is string => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value) && Number.isFinite(Date.parse(value));
 export const coursePrefix = (courseId: string) => {
   if (!validId.test(courseId)) throw new Error('Invalid course identity');
   return `lac:v1:${courseId}:`;
 };
-export class ProgressStorage {
+
+export class LearningStorage {
   private memory = new Map<string, string>();
   private protectedKeys = new Set<string>();
   private failed = false;
-  constructor(private access: () => StorageLike) {}
-  private read(key: string): unknown {
+  private prefix: string;
+  private achievementIds: Set<string>;
+  constructor(private access: () => StorageLike, courseId: string, achievementIds: readonly string[]) {
+    this.prefix = coursePrefix(courseId);
+    if (achievementIds.some((id) => !validId.test(id))) throw new Error('Invalid achievement identity');
+    this.achievementIds = new Set(achievementIds);
+  }
+
+  private read(key: string): Record<string, unknown> | undefined {
     let raw: string | null;
     try { raw = this.memory.get(key) ?? this.access().getItem(key); }
     catch { this.failed = true; raw = this.memory.get(key) ?? null; }
-    if (raw === null) return undefined;
-    try { return JSON.parse(raw); }
-    catch { this.protectedKeys.add(key); this.failed = true; return undefined; }
-  }
-  private keys(prefix: string) {
-    const keys = new Set([...this.memory.keys()].filter((key) => key.startsWith(prefix)));
+    if (raw === null) return;
     try {
-      const storage = this.access();
-      for (let i = 0; i < storage.length; i++) {
-        const key = storage.key(i);
-        if (key?.startsWith(prefix)) keys.add(key);
-      }
-    } catch { this.failed = true; }
-    return [...keys];
+      const value: unknown = JSON.parse(raw);
+      if (value && typeof value === 'object' && !Array.isArray(value)) return value as Record<string, unknown>;
+    } catch { /* Preserve damaged records while allowing this page to keep learning. */ }
+    this.protect(key);
   }
-  load(courseId: string): Progress {
-    const prefix = coursePrefix(courseId);
-    const completed: Record<string, boolean> = {};
+
+  private protect(key: string) {
+    this.protectedKeys.add(key);
+    this.failed = true;
+  }
+
+  load(): LearningState {
+    const prefix = this.prefix;
+    const unlocked: Record<string, string> = {};
+    const lastKey = `${prefix}last`;
+    const visit = this.read(lastKey);
     let last: string | undefined;
-    for (const key of this.keys(prefix)) {
-      const value = this.read(key);
-      if (value === undefined) continue;
-      const object = value as Record<string, unknown> | null;
-      const suffix = key.slice(prefix.length);
-      if (object && typeof object === 'object' && !Array.isArray(object)) {
-        if (suffix === 'last' && typeof object.lessonId === 'string' && validId.test(object.lessonId) && validDate(object.visitedAt) && Object.keys(object).length === 2) {
-          last = object.lessonId; continue;
-        }
-        if (suffix.startsWith('lesson:') && validId.test(suffix.slice(7)) && typeof object.completed === 'boolean' && validDate(object.updatedAt) && Object.keys(object).length === 2) {
-          completed[suffix.slice(7)] = object.completed; continue;
-        }
-      }
-      this.protectedKeys.add(key);
-      this.failed = true;
+    if (visit) {
+      if (typeof visit.lessonId === 'string' && validId.test(visit.lessonId) && validDate(visit.visitedAt) && Object.keys(visit).length === 2) last = visit.lessonId;
+      else this.protect(lastKey);
     }
-    return { completed, last, failed: this.failed };
+    for (const id of this.achievementIds) {
+      const key = `${prefix}achievement:${id}`;
+      const record = this.read(key);
+      if (record) {
+        if (validDate(record.unlockedAt) && Object.keys(record).length === 1) unlocked[id] = record.unlockedAt;
+        else this.protect(key);
+      }
+    }
+    return { unlocked, last, failed: this.failed };
   }
-  private write(key: string, value: Completion | LastVisit) {
+
+  private write(key: string, value: object) {
     const raw = JSON.stringify(value);
     this.memory.set(key, raw);
-    if (this.protectedKeys.has(key)) { this.failed = true; return; }
+    if (this.protectedKeys.has(key)) return;
     try { this.access().setItem(key, raw); this.memory.delete(key); }
     catch { this.failed = true; }
   }
-  complete(courseId: string, lessonId: string, completed: boolean) {
-    if (!validId.test(lessonId)) throw new Error('Invalid lesson identity');
-    this.write(`${coursePrefix(courseId)}lesson:${lessonId}`, { completed, updatedAt: new Date().toISOString() });
-    return this.load(courseId);
-  }
-  visit(courseId: string, lessonId: string) {
-    if (!validId.test(lessonId)) throw new Error('Invalid lesson identity');
-    this.write(`${coursePrefix(courseId)}last`, { lessonId, visitedAt: new Date().toISOString() });
-    return this.load(courseId);
-  }
-  reset(courseId: string) {
-    for (const key of this.keys(coursePrefix(courseId))) {
-      this.memory.delete(key);
-      this.protectedKeys.delete(key);
-      try { this.access().removeItem(key); }
-      catch { this.failed = true; this.memory.set(key, 'null'); }
-    }
-    // Failed removals remain hidden for this session while the warning stays visible.
-    return { completed: {}, failed: this.failed } satisfies Progress;
-  }
-}
 
-export function selectProgress(lessons: LessonSummary[], progress: Progress) {
-  const done = lessons.filter((lesson) => progress.completed[lesson.id]).length;
-  const total = lessons.length;
-  const allDone = total > 0 && done === total;
-  const recent = lessons.find((lesson) => lesson.id === progress.last && !progress.completed[lesson.id]);
-  const next = recent ?? lessons.find((lesson) => !progress.completed[lesson.id]) ?? lessons[0];
-  return { done, total, allDone, percent: total ? Math.round(done / total * 100) : 0, next,
-    action: allDone ? 'review' : progress.last || done ? 'continue' : 'start' } as const;
+  unlock(achievementId: string) {
+    if (!this.achievementIds.has(achievementId)) throw new Error('Unknown achievement');
+    const state = this.load();
+    if (!Object.hasOwn(state.unlocked, achievementId)) this.write(`${this.prefix}achievement:${achievementId}`, { unlockedAt: new Date().toISOString() });
+    return this.load();
+  }
+
+  visit(lessonId: string) {
+    if (!validId.test(lessonId)) throw new Error('Invalid lesson identity');
+    this.write(`${this.prefix}last`, { lessonId, visitedAt: new Date().toISOString() });
+    return this.load();
+  }
 }

@@ -10,12 +10,12 @@ design/: Homepage studies and /design/components writing-component previews. The
 
 layout.tsx: Shared AIDevCourse title template, favicon, and touch-icon metadata without imposing a fallback content language.
 
-not-found.tsx: Root 404 with the zinc header, footer, and the two-column unavailable layout.
+not-found.tsx: Root 404 with Geist typography, the zinc header, footer, and the two-column unavailable layout.
 
 unavailable/: Nested module; see [unavailable/README.md](./unavailable/README.md).
 
 robots.ts: Robots policy and production sitemap location.
 
-sitemap.ts: Actual public language URLs and reciprocal hreflang entries.
+sitemap.ts: Canonical prefix-free English and prefixed translated URLs with reciprocal hreflang entries.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

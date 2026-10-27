@@ -1,15 +1,16 @@
 /**
- * [INPUT]: Isolated content paths, Fumadocs YAML parsing, metadata schemas, and Markdown inspection.
- * [OUTPUT]: Parsed documents whose public lesson URLs omit the module, plus explicit per-language ordering and module labels.
+ * [INPUT]: Isolated content paths, Fumadocs YAML parsing, metadata schemas, and Markdown inspection, canonical locale paths.
+ * [OUTPUT]: Documents with path-inferred kind, canonical public URLs, explicit per-language ordering, module labels, and validated achievement declarations.
  * [POS]: Filesystem adapter; no UI consumer reads content directories directly.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { frontmatter } from 'fumadocs-core/content/md/frontmatter';
-import { documentSchema, metaSchema } from './schema';
+import { courseSchema, lessonSchema, metaSchema } from './schema';
 import { inspectMarkdown } from './mdx';
 import { isLocale, type Locale } from '../i18n/config';
+import { localePath } from '../i18n/routing';
 import type { ContentDocument } from './model';
 import { contentMode } from '../../../config/content-mode.mjs';
 const relativePath = (root: string, path: string) => relative(root, path).replaceAll('\\', '/');
@@ -42,21 +43,20 @@ export function scanContent(root: string) {
       if (entry.isDirectory()) continue;
       const file = join(dir, entry.name);
       const parsed = frontmatter(readFileSync(file, 'utf8'));
-      const parsedData = documentSchema.safeParse(parsed.data);
-      if (!parsedData.success) throw new Error(`${file}: ${parsedData.error.message}`);
-      const data = parsedData.data;
       const parts = relativePath(root, file).replace(/\.(md|mdx)$/, '').split('/');
       if (parts.length < 3 || parts.some((part) => !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(part))) {
         throw new Error(`${file}: use language/course/ASCII-slug paths`);
       }
       const isIndex = parts.length === 3 && name === 'index';
-      if ((data.kind === 'course') !== isIndex) throw new Error(`${file}: only course/index may have kind: course`);
+      const parsedData = (isIndex ? courseSchema : lessonSchema).safeParse(parsed.data);
+      if (!parsedData.success) throw new Error(`${file}: ${parsedData.error.message}`);
+      const data = parsedData.data;
       if (!ordered || !meta.pages.includes(name)) throw new Error(`${file}: content missing from explicit directory order`);
       const slug = isIndex ? [] : parts.slice(2);
       const publicSlug = isIndex ? '' : slug[slug.length - 1];
-      const url = `/${locale}/courses/${parts[1]}${publicSlug ? `/${publicSlug}` : ''}`;
-      const { headings, links } = inspectMarkdown(parsed.content, file);
-      documents.push({ file: relativePath(root, file), locale, courseSlug: parts[1], slug, url, data, body: parsed.content, headings, links, stale: false, sourceUrl: '' });
+      const url = localePath(locale, `/courses/${parts[1]}${publicSlug ? `/${publicSlug}` : ''}`);
+      const { headings, links, achievements } = inspectMarkdown(parsed.content, file);
+      documents.push({ file: relativePath(root, file), locale, courseSlug: parts[1], slug, url, data, body: parsed.content, headings, links, achievements, sourceUrl: '' });
     }
     for (const page of meta.pages) {
       const entry = byName.get(page)!;

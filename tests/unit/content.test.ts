@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Five-language courses in tests/fixtures/ and temporary authoring mutations.
- * [OUTPUT]: Publication, identity, unique lesson-slug, ordering, revision, and unsafe-content regression coverage.
+ * [OUTPUT]: Publication, identity, unique lesson-slug, ordering and unsafe-content regression coverage.
  * [POS]: Content-policy tests independent of compiled framework caches.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -10,7 +10,6 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { readCatalog } from '../../src/lib/content/manifest';
 import { inspectMarkdown } from '../../src/lib/content/mdx';
-import { documentSchema } from '../../src/lib/content/schema';
 const temporary: string[] = [];
 function fixture() {
   const root = mkdtempSync(join(tmpdir(), 'lac-content-'));
@@ -28,7 +27,6 @@ describe('publication catalog', () => {
     expect(catalog.courses.find((course) => course.locale === 'zh')?.lessons).toHaveLength(3);
     expect(catalog.courses.find((course) => course.locale === 'en')?.lessons).toHaveLength(2);
     expect(catalog.documents.some((doc) => doc.body.includes('WITHDRAWN_SECRET') || doc.body.includes('DRAFT_TRANSLATION_SECRET'))).toBe(false);
-    expect(catalog.warnings.length).toBeGreaterThan(0);
     const lesson = catalog.courses.find((course) => course.locale === 'zh')?.lessons.find((item) => item.id === 'first-change');
     expect(lesson?.url).toBe('/zh/courses/ai-coding/first-change');
     expect(lesson?.module).toBe('foundations');
@@ -45,13 +43,12 @@ describe('publication catalog', () => {
   it.each([
     ['duplicate identity', 'zh/ai-coding/foundations/useful-context.mdx', (v: string) => v.replace('lessonId: useful-context', 'lessonId: first-change'), 'Duplicate identity'],
     ['translation mismatch', `fr/${first}`, (v: string) => v.replace('lessonId: first-change', 'lessonId: missing-original'), 'Missing original'],
-    ['future revision', `es/${first}`, (v: string) => v.replace('translatedFromRevision: 1', 'translatedFromRevision: 3'), 'future revision'],
     ['wrong ownership', `en/${first}`, (v: string) => v.replace('courseId: ai-coding', 'courseId: another-course'), 'ownership'],
     ['unknown component', `zh/${first}`, (v: string) => `${v}\n<Quiz />\n`, 'Unknown component'],
     ['script', `zh/${first}`, (v: string) => `${v}\n<script>alert(1)</script>\n`, 'Unknown component'],
     ['MDX expression', `zh/${first}`, (v: string) => `${v}\n{process.env.SECRET}\n`, 'expressions'],
     ['broken anchor', `zh/${first}`, (v: string) => `${v}\n[Missing](#missing-anchor)\n`, 'Missing heading'],
-    ['missing link', `zh/${first}`, (v: string) => `${v}\n[Missing lesson](/en/courses/ai-coding/foundations/verify-results)\n`, 'missing'],
+    ['missing link', `zh/${first}`, (v: string) => `${v}\n[Missing lesson](/courses/ai-coding/foundations/verify-results)\n`, 'missing'],
     ['missing image', `zh/${first}`, (v: string) => `${v}\n![Alt](/images/missing.png)\n`, 'Missing or invalid image'],
     ['dangerous link', `zh/${first}`, (v: string) => `${v}\n[Bad](javascript:alert)\n`, 'Unsafe'],
   ])('rejects %s', (_name, path, transform, message) => {
@@ -77,11 +74,5 @@ describe('publication catalog', () => {
   it('does not treat JSX in fenced examples as executable components', () => {
     expect(() => inspectMarkdown('```tsx\n<Quiz onClick={() => eval("x")} />\n```', 'example.mdx')).not.toThrow();
   });
-  it('validates real dates, rejects a review flag, and requires tool verification', () => {
-    const base = { kind: 'lesson', courseId: 'course', lessonId: 'lesson', title: 'Title', description: 'Description', durationMinutes: 5, lessonType: 'tool', contentRevision: 1 };
-    expect(documentSchema.safeParse(base).success).toBe(false);
-    expect(documentSchema.safeParse({ ...base, lastVerified: '2026-02-30', testedWith: 'Local browser' }).success).toBe(false);
-    expect(documentSchema.safeParse({ ...base, lastVerified: '2026-09-23', testedWith: 'Local browser' }).success).toBe(true);
-    expect(documentSchema.safeParse({ ...base, lastVerified: '2026-09-23', testedWith: 'Local browser', draft: false }).success).toBe(false);
-  });
+
 });

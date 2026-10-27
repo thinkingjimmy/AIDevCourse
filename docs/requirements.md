@@ -2,20 +2,20 @@
 
 > L2 | Parent: [README.md](./README.md)
 
-AIDevCourse is a multilingual site for learning from local Markdown and MDX courses. Reading must work without an account or a model API key. The published catalog contains the AI 101 introduction and a Hello World first-lesson placeholder in five languages. Engineering fixtures remain separate from published courses.
+AIDevCourse is a multilingual site for learning from local Markdown and MDX courses. Reading must work without an account or a model API key. AI 101 has introductions in five languages, a Chinese What a language model does lesson about LLM generation and input quality, and welcome placeholders in the other languages. Engineering fixtures remain separate from published courses.
 
 ## Routes and publication
 
 | Route | Required behavior |
 | --- | --- |
-| `/` | Negotiate a supported language and redirect with a private, non-cacheable 307 response. |
-| `/{lang}` | Show the current language's courses. The start-learning action (马上学习 in Chinese) opens AI 101's first published lesson. Keep a useful empty state when no courses exist. |
-| `/{lang}/courses/{course}` | Render course metadata, available modules, and the syllabus. |
-| `/{lang}/courses/{course}/{lesson}` | Render a published lesson, its local headings, completion control, and adjacent lessons. |
-| `/{lang}/about` | Explain the site, language preference, and local learning storage. |
+| `/` | Detect saved/browser language. Serve English at this URL, or redirect to another language with a private, non-cacheable 307 response. |
+| `/` or `/{lang}` | Show the current language's courses. The start-learning action (马上学习 in Chinese) opens AI 101's first published lesson. Keep a useful empty state when no courses exist. |
+| `/courses/{course}` or `/{lang}/courses/{course}` | Render course metadata, available modules, and the syllabus. |
+| `/courses/{course}/{lesson}` or `/{lang}/courses/{course}/{lesson}` | Render a published lesson, its local headings, recent-visit recording, inline achievements where authored, and adjacent lessons. |
+| `/about` or `/{lang}/about` | Explain the site, language preference, and local learning storage. |
 | `/api/search/{lang}` | Serve the same build's public, single-language content index. |
 
-Supported languages are `en`, `zh`, `ja`, `fr`, and `es`. Explicit language URLs take priority over preferences. Unprefixed entry routes use a valid preference cookie, then `Accept-Language`, then `zh`. Unknown routes and missing translations return HTTP 404 with working recovery links. `/{lang}/courses` is not a page; the language homepage lists courses.
+Supported languages are `en`, `zh`, `ja`, `fr`, and `es`. English public URLs have no locale prefix; the other four languages retain theirs. Only `/` uses a valid preference cookie, then `Accept-Language`, then `en`. An explicit `?lang=en` homepage choice supports native language links without JavaScript and saves the preference. Other canonical URLs always use their declared language. Former `/en` paths redirect permanently to the equivalent prefix-free URL. Unknown routes and missing translations return HTTP 404 with working recovery links. `/courses` and `/{lang}/courses` are not pages; the language homepage lists courses.
 
 Content in `content/` is public. Every course and module declares order through `meta.json`. Course introductions do not count as lessons. Course overviews use frontmatter and the generated syllabus; their MDX bodies are not rendered. Lesson URLs omit module directories.
 
@@ -26,14 +26,15 @@ Content in `content/` is public. Every course and module declares order through 
 - Keep `courseId`, `lessonId`, and `sourceLocale` stable across translations and URL changes.
 - Link to the requested translation when available. Otherwise, explain the missing translation and link to its course overview or language homepage.
 - Preserve a URL fragment only when the destination renders that anchor. Do not substitute another language's body or fabricate a translation.
-- Use `contentRevision` for originals and `translatedFromRevision` for translations. Show a notice when a translation is behind its original.
+- Infer course/lesson kind from the file path. Articles require only courseId, lessonId, title, and description. Do not maintain reading duration, lesson classification, verification metadata, revision numbers, or stale-translation notices.
 
 ## Learning and search
 
-- Keep completion and recent position in browser storage. Translations share completion by stable identity; each language counts only its available lessons.
-- Marking a lesson complete stays on that lesson. Following a next-lesson link does not mark it complete.
-- Confirm course resets. Reset only that course's completion and recent position, including its translations; keep language preference and other courses.
-- Synchronize storage events across tabs. Storage failures must keep reading available and allow in-memory progress.
+- Save earned achievements and recent position in browser storage. Stable course/achievement IDs share earned counts across translations. Reading, navigation, and skipping an exercise never unlock achievements.
+- Show a 🥇 medal inside a circular achievement progress ring with a localized title and earned count at the bottom left of the sidebar footer. Put a More button at the far right; its dropdown contains About and a Change language submenu. Preserve translation fallback, locale cookies, valid translated anchors, keyboard/touch navigation, and focus restoration. Without JavaScript, expose native About/language links. Progress uses earned achievements divided by registered achievements available in the course; courses without achievements show an empty ring. Do not show a numerical total, percentage, or lesson completion checks. Lesson footers have no completion action.
+- Synchronize records across tabs. Repeated unlocks count once. Restore before enabling interaction; saved unlocks render without replaying celebration.
+- Leave legacy lesson completion records untouched and exclude them from achievements. Keep the existing recent-visit key.
+- Storage failures keep reading and unlocks available in page memory. Protect corrupt records and explain possible loss after refresh in the earned card.
 - Search only published content in the active language. Index visible course titles and descriptions, plus lesson bodies and rendered headings. Support keyboard navigation, input composition, loading, empty, and failure states.
 - Never activate results from an older query. Clear the search state when the language changes.
 
@@ -43,13 +44,20 @@ Use one shared light theme and language-aware system fonts. Keep decorative grid
 
 All controls need visible focus and localized names. Mobile menus close after navigation and restore focus when dismissed. Honor reduced motion and pause decorative animation offscreen. Long headings must wrap; tables and code scroll within their containers without widening the page.
 
-Use the supported Markdown and MDX subset described in [authoring.md](./authoring.md). Tool lessons need actual verification dates and environments. Images need meaningful localized alt text and known dimensions. The build must reject unsafe MDX, invalid metadata, duplicate identities or paths, broken local links, and missing rendered anchors.
+Use the supported Markdown and MDX subset described in [authoring.md](./authoring.md). Images need meaningful localized alt text and known dimensions. The build must reject unsafe MDX, invalid metadata, duplicate identities or paths, broken local links, and missing rendered anchors.
+
+The Chinese What a language model does lesson requires two local demonstrations, with no model or network calls:
+
+- Generation: a fixed fictional weather question and answer, initially empty, advanced one illustrative character at a time, with the current input, new character, and next input visible. Completion disables advancement; reset returns to the initial state. Rapid clicks must not skip characters. A static sequence keeps the explanation readable without JavaScript. The generation demo itself does not unlock achievements and has no automatic playback.
+- Menus: a borderless layout without an outer shadow and two equal-width columns, each centering one control using shared Button styles, each showing only 请点击 with no arrows. There is no title, labels, separators, status rows, or explanatory footer. The native browser select and shadcn-style Radix dropdown share the same A/B/C choices and expose selection through accessible labels while keeping the visible labels unchanged. Keyboard selection, Escape dismissal, focus restoration, narrow-screen layout, and accessible names must work. The native select remains available without JavaScript; the surrounding article explains the comparison.
+
+Acceptance includes desktop and mobile interactions, completion and reset, menu keyboard behavior, accessibility, no horizontal page overflow, no-JavaScript reading, and repeatable screenshot evidence. The declarative Achievement block replaces the static milestone at the same location. Its ‘🥇 成就挑战’ label introduces the weather question directly, without a separate prompt heading, with vertically stacked A/B native radio choices. Reuse the article quote-frame border and offset shadow; make each full option row clickable and show which answer was selected. A wrong answer shows an error icon, an explicit incorrect-answer label, and the explanation in a bordered error panel; allow retry. A correct answer immediately records ‘分清生成与查证’, updates the sidebar, and reveals the earned card containing only its earned title, takeaway, and retry action. Do not repeat the question, correct-answer label, or explanation in the earned card; announce success through its live status. No reveal action is required. Focus the earned title without scrolling and apply one brief opacity emphasis unless reduced motion is requested. The earned card offers Try again. Retrying clears the selected answer and feedback, restores focus to the first answer without scrolling, and enables a fresh attempt. Wrong answers during a retry remain visible and allow correction. Retrying never removes the saved achievement, changes its original unlock time, or increases the earned count. Refreshing an existing unlock shows the earned card directly without celebration. Without JavaScript, show the question, an expandable explanation, and the inability to unlock or save. Only the Chinese public lesson contains this exercise; all five sidebar dictionaries show shared counts. Authors can add distinct single-choice achievements to other articles using only MDX. Achievement requires stable id, title (the earned achievement name), question, answer, explanation, takeaway, and at least two plain-text AchievementOption children with distinct stable values. The correct answer must match an option. Build validation rejects malformed definitions, duplicate course achievement IDs, exercises in non-rendered course overviews, and translated ID/option/answer drift. Translations may omit an exercise; course totals always use the original-language inventory. Existing saved unlocks retain their keys. Interface labels are localized in five languages; authored content stays in the article.
 
 Canonical URLs, hreflang entries, search indexes, and sitemap entries must describe the same published catalog. Preview deployments use `noindex`. Production requires an explicit valid HTTPS `SITE_URL` and rejects fixture content.
 
 ## Scope and acceptance
 
-The current scope is course discovery, reading, translation navigation, local progress, and search. Accounts, payments, cloud sync, model execution, quizzes, embedded video, dark mode, and progress import/export have no active implementation requirement. Add an interactive teaching component only when a real article requires it; first define its input, states, failure behavior, and acceptance cases.
+The current scope is course discovery, reading, translation navigation, local achievements, recent visits, and search. Accounts, payments, cloud sync, model execution, scored exams or a general quiz engine, embedded video, dark mode, and learning-record import/export have no active implementation requirement. Add an interactive teaching component only when a real article requires it; first define its input, states, failure behavior, and acceptance cases.
 
 Use [architecture.md](./architecture.md) for code boundaries and [deployment.md](./deployment.md) for release gates. Changes require source checks, a production build where applicable, and E2E checks for affected behavior. A release also requires both complete browser matrices, reviewed published content and translations, real-device/input-method checks, and deployment verification. Local automated results do not establish that these release gates are complete.
 

@@ -1,53 +1,61 @@
 /**
- * [INPUT]: Tailwind v4, Fumadocs typography, self-hosted font variables, and scoped content styles.
- * [OUTPUT]: Shared shadcn/Tailwind tokens, native element defaults, and accessibility rules.
+ * [INPUT]: Tailwind v4, shared typography tokens, Fumadocs, and self-hosted Geist and Noto CJK font variables.
+ * [OUTPUT]: Tailwind-based native defaults and accessibility rules with Geist Latin and locale-specific Noto CJK typography.
  * [POS]: Site-wide CSS entry. Layout and interactive component styles live in TSX utilities.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 @import './tokens.css';
 @import './prose.css';
 @import './illustrations.css';
+@source '../';
 @source '../../node_modules/fumadocs-ui/dist/**/*.js';
 
 @layer base {
   :root {
-    color-scheme: light;
+    @apply scheme-light;
     --paper: var(--color-background); --sheet: var(--color-background); --surface: var(--color-surface);
     --ink: var(--color-foreground); --body: var(--color-foreground);
     --muted: var(--color-muted-foreground); --faint: var(--color-faint);
     --line: var(--color-border); --line-soft: var(--color-line-soft);
     --link: var(--color-foreground);
     --done: var(--color-done);
-    --review: #6b5313; --mark: #f1de9c;
+    --review: var(--color-review); --mark: var(--color-mark);
     --header-height: 64px;
     --font-sans: var(--font-site-sans); --font-serif: var(--font-site-serif); --font-mono: var(--font-site-mono);
-    --font-site-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Arial, sans-serif;
-    --font-site-serif: var(--font-newsreader), 'Songti SC', 'STSong', 'Noto Serif CJK SC', 'Source Han Serif SC', Georgia, serif;
-    --font-site-mono: var(--font-plex-mono), 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    --font-site-sans: var(--font-geist), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Arial, sans-serif;
+    --font-site-serif: var(--font-site-sans);
+    --font-site-mono: var(--font-geist-mono), 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    --font-site-pixel: var(--font-geist-pixel), var(--font-site-sans);
   }
-  html { scroll-padding-top: 0; }
-  html:lang(zh-Hans) { --font-site-sans: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+  html { @apply scroll-pt-0; }
+  html:lang(zh-Hans) {
+    --font-site-sans: var(--font-geist), var(--font-noto-sans-sc), 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    --font-site-mono: var(--font-geist-mono), var(--font-noto-sans-sc), 'SFMono-Regular', Consolas, monospace;
+  }
   html:lang(ja) {
-    --font-site-sans: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
-    --font-site-serif: var(--font-newsreader), 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif CJK JP', Georgia, serif;
+    --font-site-sans: var(--font-geist), var(--font-noto-sans-jp), 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
+    --font-site-mono: var(--font-geist-mono), var(--font-noto-sans-jp), 'SFMono-Regular', Consolas, monospace;
   }
-  body { margin: 0; overflow-x: clip; color: var(--ink); background: var(--paper); font-family: var(--font-site-sans); font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
-  :where(h1, h2, h3, h4, [id]) { scroll-margin-top: var(--header-height); }
-  a, button, summary { -webkit-tap-highlight-color: transparent; }
-  button, input { font: inherit; }
-  button, summary { cursor: pointer; }
-  button { color: inherit; }
-  button:disabled { cursor: not-allowed; opacity: .5; }
-  a { color: inherit; }
-  :focus-visible { outline: 2px solid var(--link); outline-offset: 4px; }
-  ::selection { color: #fff; background: var(--link); }
-  svg { flex-shrink: 0; }
-  h1, h2, h3, p { overflow-wrap: break-word; }
+  body { @apply m-0 overflow-x-clip bg-background font-sans text-base text-foreground antialiased; }
+  :where(h1, h2, h3, h4, [id]) { @apply scroll-mt-(--header-height); }
+  a, button, summary { @apply [-webkit-tap-highlight-color:transparent]; }
+  button, input { @apply [font:inherit]; }
+  button, summary { @apply cursor-pointer; }
+  button { @apply text-inherit; }
+  button:disabled { @apply cursor-not-allowed opacity-50; }
+  a { @apply text-inherit; }
+  :focus-visible { @apply outline-2 outline-offset-4 outline-foreground; }
+  ::selection { @apply bg-foreground text-white; }
+  svg { @apply shrink-0; }
+  h1, h2, h3, p { @apply wrap-break-word; }
+  @media (scripting: none) {
+    .copy-button, .mobile-course-bar > button, [data-toc-popover], .prose button { @apply hidden!; }
+  }
   @media (max-width: 639px) { :root { --header-height: 56px; } }
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    *, *::before, *::after { @apply scroll-auto! [animation-duration:0.01ms]! [transition-duration:0.01ms]!; }
   }
 }

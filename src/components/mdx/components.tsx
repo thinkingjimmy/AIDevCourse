@@ -1,6 +1,6 @@
 /**
- * [INPUT]: Fumadocs primitives, shared Alert and Table parts, Phosphor icons, Heading, JimmyNote, and localized code block.
- * [OUTPUT]: The shared MDX registry, including themed tables, Callout, and JimmyNote.
+ * [INPUT]: Fumadocs primitives, shared UI, Phosphor icons, headings, author notes, chat messages, code blocks, lesson demos, and validated article achievement definitions.
+ * [OUTPUT]: The shared MDX registry, including themed tables, Callout, JimmyNote, Chat, configurable ChatMessage, What a language model does demos, and configurable article achievements.
  * [POS]: MDX rendering registry used by course and lesson pages.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -15,17 +15,22 @@ import { cn } from '@/lib/utils';
 import { LocalizedCodeBlock } from './code-block';
 import { Heading } from './heading';
 import { JimmyNote } from './jimmy-note';
+import { Chat, ChatMessage } from './chat/chat-message';
+import { LLMGenerationDemo } from './llm-generation-demo';
+import { MenuComparisonDemo } from './menu-comparison-demo';
+import { getAchievementComponents } from './achievement/components';
+import type { AchievementDefinition } from '@/lib/content/model';
 import type { MDXComponents } from 'mdx/types';
 function Callout({ title, type = 'info', children }: { title?: ReactNode; type?: string; children?: ReactNode }) {
   const Icon = type === 'warning' || type === 'warn' || type === 'error' ? WarningIcon : InfoIcon;
-  return <Alert data-type={type} role="note"><Icon className={type === 'warning' || type === 'error' ? 'mt-[5px] text-[var(--review)]' : 'mt-[5px] text-foreground'} size={18} aria-hidden /><AlertDescription>{title && <AlertTitle>{title}</AlertTitle>}<div>{children}</div></AlertDescription></Alert>;
+  return <Alert data-type={type} role="note"><Icon className={type === 'warning' || type === 'error' ? 'mt-[5px] text-review' : 'mt-[5px] text-foreground'} size={18} aria-hidden /><AlertDescription>{title && <AlertTitle>{title}</AlertTitle>}<div>{children}</div></AlertDescription></Alert>;
 }
 function MarkdownTable({ className, ...props }: ComponentProps<'table'>) {
   return <div className="my-6"><Table {...props} className={cn('[&_th]:min-w-40 [&_td]:min-w-40 [&_th]:[overflow-wrap:anywhere] [&_td]:[overflow-wrap:anywhere]', className)} /></div>;
 }
-export function getMDXComponents(): MDXComponents {
+export function getMDXComponents(achievements: readonly AchievementDefinition[] = []): MDXComponents {
   return {
-    ...defaults, Steps, Step, Callout, JimmyNote, pre: LocalizedCodeBlock,
+    ...defaults, Steps, Step, Callout, JimmyNote, Chat, ChatMessage, LLMGenerationDemo, MenuComparisonDemo, ...getAchievementComponents(achievements), pre: LocalizedCodeBlock,
     table: MarkdownTable, thead: TableHeader, tbody: TableBody, tfoot: TableFooter,
     tr: TableRow, th: TableHead, td: TableCell, caption: TableCaption,
     h1: (props) => <Heading as="h1" {...props} />,

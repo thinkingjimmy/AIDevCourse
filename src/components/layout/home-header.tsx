@@ -1,9 +1,10 @@
 /**
- * [INPUT]: Locale and the public catalog version.
+ * [INPUT]: Locale and the public catalog version, canonical locale paths.
  * [OUTPUT]: Single-row zinc header with the logo on the left and About immediately before the globe menu on the right.
  * [POS]: Shared by every locale page through the site frame, and by the root 404 bar.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
+import { localePath } from '@/lib/i18n/routing';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { PageContainer, SiteLogo } from './page-primitives';
@@ -15,13 +16,13 @@ import { lessonIndex } from '../search/lessons';
 import { LanguageSwitcher } from './language-switcher';
 import { SearchShortcut } from '../search/search-shortcut';
 export function SiteBar({ locale, about, homeLabel, navLabel, children }: {
-  locale: string; about: string; homeLabel: string; navLabel: string; children?: ReactNode;
+  locale: Locale; about: string; homeLabel: string; navLabel: string; children?: ReactNode;
 }) {
   return <header className="sticky top-0 z-40 h-(--zinc-header) border-b border-border bg-background backdrop-blur-[8px]"><PageContainer className="flex h-full items-center gap-7 max-[721px]:gap-4">
-    <SiteLogo href={`/${locale}`} aria-label={`${site.name} · ${homeLabel}`} />
+    <SiteLogo href={localePath(locale)} aria-label={`${site.name} · ${homeLabel}`} />
     <div className="ml-auto flex min-w-0 items-center gap-5 max-[721px]:gap-2.5">
-      <nav className="min-w-0 text-[14px] text-muted-foreground" aria-label={navLabel}><Link className="text-muted-foreground no-underline hover:text-foreground" href={`/${locale}/about`}>{about}</Link></nav>
-      <div className="flex shrink-0 items-center gap-2.5 text-[13px] text-muted-foreground">{children}</div>
+      <nav className="min-w-0 text-sm text-muted-foreground" aria-label={navLabel}><Link className="text-muted-foreground no-underline hover:text-foreground" href={localePath(locale, '/about')}>{about}</Link></nav>
+      <div className="flex shrink-0 items-center gap-2.5 text-caption text-muted-foreground">{children}</div>
     </div>
   </PageContainer></header>;
 }

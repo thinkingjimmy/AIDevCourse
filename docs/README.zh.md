@@ -6,9 +6,9 @@
 
 Next.js 16.3.8 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-intl 4.14.6 + Tailwind CSS 4.3.3
 
-支持本地 Markdown / MDX 课程、当前语言搜索和浏览器学习进度。无需账号、数据库、模型 API Key 或在线翻译服务。
+支持本地 Markdown / MDX 课程、当前语言搜索和浏览器成就与最近学习位置。无需账号、数据库、模型 API Key 或在线翻译服务。
 
-**内容状态：**AI 101 提供五语课程介绍和 Hello World 第一课占位文档。首页「马上学习」直接进入第一课。正式课文正在重写，工程样例与公开课程分开管理。
+**内容状态：**AI 101 提供五语课程介绍。中文版「What a language model does」第一课通过交互例子讲解 LLM 的生成过程与输入质量；其他语言暂保留欢迎占位文档。首页「马上学习」直接进入第一课。工程样例与公开课程分开管理。
 
 ## 快速启动
 
@@ -19,9 +19,9 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-打开 [localhost:3000/zh](http://localhost:3000/zh)。正文支持热更新。修改 frontmatter、文件路径或 `meta.json` 排序后，重启开发服务。
+打开 [localhost:3000/zh](http://localhost:3000/zh)。正文支持热更新。修改 frontmatter、成就声明、文件路径或 `meta.json` 排序后，重启开发服务。
 
-语言入口为 `/en`、`/zh`、`/ja`、`/fr`、`/es`。`/design` 提供设计稿，`/design/components` 提供正文组件预览。
+英文入口为 `/`，英文关于页和课程使用 `/about`、`/courses/...`；其他语言保留 `/zh`、`/ja`、`/fr`、`/es` 前缀。只有首页 `/` 根据已保存的选择、浏览器语言、默认英文的顺序识别语言。`/design` 提供设计稿，`/design/components` 提供正文组件预览。
 
 ## 常用命令
 
@@ -73,7 +73,7 @@ E2E 自动启动 **3310** 端口的服务；端口冲突时设置 `E2E_PORT`。�
 
 [需求说明](./requirements.md) 定义当前行为，[架构说明](./architecture.md) 说明模块边界和数据流。[作者指南](./authoring.md) 说明课程 ID、翻译和 MDX 约束。[部署指南](./deployment.md) 说明 `SITE_URL`、发布检查和回滚。生产环境使用已确认的 HTTPS origin；环境示例位于 `config/.env.example`。Preview 使用 `noindex`。
 
-译文通过稳定 ID 共享进度。缺译文时链接到有效课程或目标语言首页。存储失败时仍可阅读。
+作者通过 MDX 的 Achievement 和 AchievementOption 声明题目与成就，系统自动收集课程成就清单。同一课程的译文通过稳定 ID 共享成就。缺译文时链接到有效课程或目标语言首页。存储失败时仍可阅读。
 
 采用 [MIT 许可证](../LICENSE)。
 
