@@ -1,5 +1,5 @@
 /**
- * [INPUT]: Validated publication catalog and Fumadocs Config API.
+ * [INPUT]: Validated publication catalog, isolated content mode, and Fumadocs Config API.
  * [OUTPUT]: A local MDX collection containing only allowed content files, plus allowlisted /design preview routes.
  * [POS]: Build-time compiler boundary; fixtures require an isolated test build.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
@@ -10,11 +10,12 @@ import { contentRoot } from '../src/lib/content/scan';
 import { documentSchema } from '../src/lib/content/schema';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { locales } from '../src/lib/i18n/config';
+import { contentMode } from './content-mode.mjs';
 const catalog = readCatalog();
 // Freeze the checked public boundary at build time; runtime routes need no filesystem access.
-mkdirSync('.source', { recursive: true });
-writeFileSync('.source/catalog.json', JSON.stringify(catalog));
-writeFileSync('.source/routes.json', JSON.stringify([
+mkdirSync(contentMode.generated, { recursive: true });
+writeFileSync(`${contentMode.generated}/catalog.json`, JSON.stringify(catalog));
+writeFileSync(`${contentMode.generated}/routes.json`, JSON.stringify([
   '/unavailable',
   ...locales.flatMap((locale) => [`/${locale}`, `/${locale}/about`, `/${locale}/unavailable`]),
   ...catalog.documents.map((doc) => doc.url),

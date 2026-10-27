@@ -1,0 +1,99 @@
+<!doctype html>
+<!--
+[INPUT]: Five transparent PNG brand icon candidates and the site's zinc palette.
+[OUTPUT]: A responsive comparison sheet with wordmark, size, and download previews.
+[POS]: Review surface for the brand-icons asset module.
+[PROTOCOL]: Update this header when making changes, then check README.md.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>AIDevCourse — Icon studies</title>
+  <style>
+    :root { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #09090b; background: #fafafa; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    main { max-width: 1440px; margin: 0 auto; padding: 56px 40px 32px; }
+    header { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 34px; }
+    .eyebrow { margin: 0 0 13px; font: 11px/1.4 ui-monospace, monospace; letter-spacing: .11em; color: #71717a; }
+    h1 { margin: 0; font-size: clamp(28px, 3vw, 40px); line-height: 1.1; font-weight: 600; letter-spacing: -.045em; }
+    .intro { margin: 13px 0 0; font-size: 14px; color: #71717a; line-height: 1.6; }
+    .meta { flex-shrink: 0; text-align: right; font: 11px/1.9 ui-monospace, monospace; color: #71717a; }
+    .grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid #e4e4e7; border-left: 1px solid #e4e4e7; }
+    .card { min-width: 0; padding: 19px 18px 18px; border-right: 1px solid #e4e4e7; border-bottom: 1px solid #e4e4e7; background: #fff; }
+    .label { display: flex; align-items: center; gap: 12px; font-size: 12px; font-weight: 600; }
+    .label > span:first-child { color: #a1a1aa; font: 11px ui-monospace, monospace; }
+    .hero { display: grid; place-items: center; height: 222px; margin-top: 4px; }
+    .hero img { max-width: 100%; height: auto; }
+    .description { min-height: 38px; margin: 0 0 21px; color: #71717a; font-size: 12px; line-height: 1.6; }
+    .lockup { display: flex; align-items: center; gap: 7px; padding: 12px 8px; border: 1px solid #e4e4e7; background: #fafafa; }
+    .lockup span { font-size: 14px; font-weight: 600; letter-spacing: -.02em; }
+    .sizes { display: flex; align-items: end; justify-content: space-between; padding: 20px 4px 19px; }
+    .sizes > div { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .sample { display: grid; place-items: center; height: 48px; }
+    .sizes > div > span:last-child { font: 10px ui-monospace, monospace; color: #a1a1aa; }
+    .download { display: flex; justify-content: space-between; border-top: 1px solid #e4e4e7; padding-top: 13px; color: #3f3f46; text-decoration: none; font-size: 12px; }
+    a:hover { color: #09090b; }
+    a:focus-visible { outline: 2px solid #71717a; outline-offset: 4px; }
+    footer { display: flex; justify-content: space-between; gap: 20px; margin-top: 23px; color: #71717a; font-size: 11px; line-height: 1.6; }
+    footer a { color: inherit; text-underline-offset: 3px; }
+    @media (max-width: 1090px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (max-width: 720px) { main { padding: 32px 20px; } header { display: block; } .meta { margin-top: 18px; text-align: left; } .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } footer { flex-direction: column; gap: 8px; } }
+    @media (max-width: 440px) { .grid { grid-template-columns: 1fr; } .hero { height: 240px; } .card { padding: 20px; } .description { min-height: auto; } .lockup { justify-content: center; } .sizes { justify-content: space-around; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div><p class="eyebrow">AIDevCourse / BRAND EXPLORATION</p><h1>Five ways to make a mark.</h1><p class="intro">AI, development, and learning — shaped for the existing zinc interface.</p></div>
+      <div class="meta">05 ICON STUDIES<br>TRANSPARENT PNG · 1254 × 1254</div>
+    </header>
+    <section class="grid" aria-label="Five brand icon candidates">
+      <article class="card">
+        <div class="label"><span>01</span><span>Code Book</span></div>
+        <a class="hero" href="01-code-book.png" aria-label="Open Code Book PNG"><img src="01-code-book.png" width="200" height="200" alt="Code brackets become an open book."></a>
+        <p class="description">Code brackets become an open book.</p>
+        <div class="lockup"><img src="01-code-book.png" width="30" height="30" alt=""><span>AIDevCourse</span></div>
+        <div class="sizes" aria-label="Preview at 16, 24, 32, and 48 pixels"><div><span class="sample"><img src="01-code-book.png" width="16" height="16" alt=""></span><span>16</span></div><div><span class="sample"><img src="01-code-book.png" width="24" height="24" alt=""></span><span>24</span></div><div><span class="sample"><img src="01-code-book.png" width="32" height="32" alt=""></span><span>32</span></div><div><span class="sample"><img src="01-code-book.png" width="48" height="48" alt=""></span><span>48</span></div></div>
+        <a class="download" href="01-code-book.png" download>Download PNG <span aria-hidden="true">↗</span></a>
+      </article>
+      <article class="card">
+        <div class="label"><span>02</span><span>Prompt Cursor</span></div>
+        <a class="hero" href="02-prompt-cursor.png" aria-label="Open Prompt Cursor PNG"><img src="02-prompt-cursor.png" width="200" height="200" alt="A prompt and cursor form a compact D."></a>
+        <p class="description">A prompt and cursor form a compact D.</p>
+        <div class="lockup"><img src="02-prompt-cursor.png" width="30" height="30" alt=""><span>AIDevCourse</span></div>
+        <div class="sizes" aria-label="Preview at 16, 24, 32, and 48 pixels"><div><span class="sample"><img src="02-prompt-cursor.png" width="16" height="16" alt=""></span><span>16</span></div><div><span class="sample"><img src="02-prompt-cursor.png" width="24" height="24" alt=""></span><span>24</span></div><div><span class="sample"><img src="02-prompt-cursor.png" width="32" height="32" alt=""></span><span>32</span></div><div><span class="sample"><img src="02-prompt-cursor.png" width="48" height="48" alt=""></span><span>48</span></div></div>
+        <a class="download" href="02-prompt-cursor.png" download>Download PNG <span aria-hidden="true">↗</span></a>
+      </article>
+      <article class="card">
+        <div class="label"><span>03</span><span>Learning Path</span></div>
+        <a class="hero" href="03-learning-path.png" aria-label="Open Learning Path PNG"><img src="03-learning-path.png" width="200" height="200" alt="An A contains an ascending learning path."></a>
+        <p class="description">An A contains an ascending learning path.</p>
+        <div class="lockup"><img src="03-learning-path.png" width="30" height="30" alt=""><span>AIDevCourse</span></div>
+        <div class="sizes" aria-label="Preview at 16, 24, 32, and 48 pixels"><div><span class="sample"><img src="03-learning-path.png" width="16" height="16" alt=""></span><span>16</span></div><div><span class="sample"><img src="03-learning-path.png" width="24" height="24" alt=""></span><span>24</span></div><div><span class="sample"><img src="03-learning-path.png" width="32" height="32" alt=""></span><span>32</span></div><div><span class="sample"><img src="03-learning-path.png" width="48" height="48" alt=""></span><span>48</span></div></div>
+        <a class="download" href="03-learning-path.png" download>Download PNG <span aria-hidden="true">↗</span></a>
+      </article>
+      <article class="card">
+        <div class="label"><span>04</span><span>Open Chip</span></div>
+        <a class="hero" href="04-open-chip.png" aria-label="Open Open Chip PNG"><img src="04-open-chip.png" width="200" height="200" alt="An open book sits inside an AI chip."></a>
+        <p class="description">An open book sits inside an AI chip.</p>
+        <div class="lockup"><img src="04-open-chip.png" width="30" height="30" alt=""><span>AIDevCourse</span></div>
+        <div class="sizes" aria-label="Preview at 16, 24, 32, and 48 pixels"><div><span class="sample"><img src="04-open-chip.png" width="16" height="16" alt=""></span><span>16</span></div><div><span class="sample"><img src="04-open-chip.png" width="24" height="24" alt=""></span><span>24</span></div><div><span class="sample"><img src="04-open-chip.png" width="32" height="32" alt=""></span><span>32</span></div><div><span class="sample"><img src="04-open-chip.png" width="48" height="48" alt=""></span><span>48</span></div></div>
+        <a class="download" href="04-open-chip.png" download>Download PNG <span aria-hidden="true">↗</span></a>
+      </article>
+      <article class="card">
+        <div class="label"><span>05</span><span>ADC Monogram</span></div>
+        <a class="hero" href="05-adc-monogram.png" aria-label="Open ADC Monogram PNG"><img src="05-adc-monogram.png" width="200" height="200" alt="Shared shapes connect A, D, and C."></a>
+        <p class="description">Shared shapes connect A, D, and C.</p>
+        <div class="lockup"><img src="05-adc-monogram.png" width="30" height="30" alt=""><span>AIDevCourse</span></div>
+        <div class="sizes" aria-label="Preview at 16, 24, 32, and 48 pixels"><div><span class="sample"><img src="05-adc-monogram.png" width="16" height="16" alt=""></span><span>16</span></div><div><span class="sample"><img src="05-adc-monogram.png" width="24" height="24" alt=""></span><span>24</span></div><div><span class="sample"><img src="05-adc-monogram.png" width="32" height="32" alt=""></span><span>32</span></div><div><span class="sample"><img src="05-adc-monogram.png" width="48" height="48" alt=""></span><span>48</span></div></div>
+        <a class="download" href="05-adc-monogram.png" download>Download PNG <span aria-hidden="true">↗</span></a>
+      </article>
+    </section>
+    <footer><span>Original generated assets. Shown with the site wordmark and at 16 / 24 / 32 / 48 px.</span><a href="prompts.md">Generation prompts</a></footer>
+  </main>
+</body>
+</html>
+

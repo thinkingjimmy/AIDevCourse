@@ -8,7 +8,7 @@ api/: Nested module; see [api/README.md](./api/README.md).
 
 design/: Homepage studies and /design/components writing-component previews. They do not replace the live home.
 
-layout.tsx: A shared root boundary without imposing a fallback content language.
+layout.tsx: Shared AIDevCourse title template, favicon, and touch-icon metadata without imposing a fallback content language.
 
 not-found.tsx: Root 404 with the zinc header, footer, and the two-column unavailable layout.
 

@@ -12,7 +12,7 @@ import { visit } from 'unist-util-visit';
 import { toString } from 'mdast-util-to-string';
 import GithubSlugger from 'github-slugger';
 import type { Root } from 'mdast';
-import type { ContentDocument } from './types';
+import type { ContentDocument } from './model';
 export const supportedComponents = ['Callout', 'JimmyNote', 'Steps', 'Step'] as const;
 export function inspectMarkdown(body: string, file: string) {
   const tree = unified().use(remarkParse).use(remarkGfm).use(remarkMdx).parse(body) as Root;

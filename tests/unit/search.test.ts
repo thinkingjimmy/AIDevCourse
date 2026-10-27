@@ -5,7 +5,7 @@
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import { expect, it } from 'vitest';
-import { tokenize, createSearchTokenizer } from '../../src/lib/search/tokenizer';
+import { tokenize, createSearchTokenizer } from '../../src/lib/search';
 import { createSearchAPI } from 'fumadocs-core/search/server';
 it('uses identical tokens for accented words and deterministic CJK substrings', () => {
   expect(tokenize('vérifier código')).toEqual(tokenize('verifier codigo'));

@@ -1,11 +1,12 @@
 /**
- * [INPUT]: Active design variant and the Phosphor terminal mark.
- * [OUTPUT]: Shared wordmark, variant switch, header, and footer for the three previews.
+ * [INPUT]: Active design variant, shared SiteLogo, and configured site identity.
+ * [OUTPUT]: Shared brand logo, variant switch, header, and footer for the three previews.
  * [POS]: Chrome for /design. It does not render the live site shell.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import Link from 'next/link';
-import { TerminalIcon } from '@phosphor-icons/react/dist/ssr/Terminal';
+import { SiteLogo } from '@/components/layout/page-primitives';
+import { site } from '@/lib/site-config';
 import type { ReactNode } from 'react';
 
 export const variants = [
@@ -15,12 +16,8 @@ export const variants = [
 ] as const;
 export type VariantId = (typeof variants)[number]['id'];
 
-export function Mark({ size = 22 }: { size?: number }) {
-  return <TerminalIcon size={size} aria-hidden />;
-}
-
 export function Brand() {
-  return <Link href="/design" className="inline-flex items-center gap-2.5 text-[15px] font-medium tracking-[-.02em] [&_svg]:block"><Mark />AIDevCourse</Link>;
+  return <SiteLogo href="/design" className="gap-2.5 text-[15px] font-medium" />;
 }
 
 export function VariantSwitch({ current }: { current?: VariantId }) {
@@ -42,7 +39,7 @@ export function DesignHeader({ current, sections = [] }: { current?: VariantId; 
 
 export function DesignFooter({ flush = false, children }: { flush?: boolean; children?: ReactNode }) {
   return <footer className={flush ? 'mt-24 border-t border-[var(--line)] [&_a:hover]:text-[var(--fg)] -mx-8 max-[721px]:-mx-4 [&>div]:px-8 max-[721px]:[&>div]:px-4' : 'mt-24 border-t border-[var(--line)] [&_a:hover]:text-[var(--fg)]'}><div className={`${flush ? '' : 'mx-auto w-[min(1200px,calc(100%-32px))] '}flex min-h-16 items-center gap-[18px] py-3 text-[var(--mfg)] text-[12px] max-[721px]:flex-wrap max-[721px]:items-start [font-family:var(--mono)] tabular-nums`}>
-    <Link href="/design" className="text-[var(--fg)]">AIDevCourse</Link>
+    <Link href="/design" className="text-[var(--fg)]">{site.name}</Link>
     <VariantSwitch />
     <Link href="/zh">现站</Link>
     <span className="flex-1" />

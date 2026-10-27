@@ -6,9 +6,8 @@
  */
 'use client';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { ProgressStorage, coursePrefix, type Progress } from '@/lib/progress/storage';
-import { selectProgress } from '@/lib/progress/selectors';
-import type { CourseManifest, LessonSummary } from '@/lib/content/types';
+import { ProgressStorage, coursePrefix, selectProgress, type Progress } from '@/lib/progress';
+import type { CourseManifest, LessonSummary } from '@/lib/content/model';
 type Context = {
   course: CourseManifest; progress: Progress; ready: boolean;
   complete: (id: string, value: boolean) => void; visit: (id: string) => void; reset: () => void;

@@ -1,5 +1,5 @@
 /**
- * [INPUT]: Fumadocs MDX, next-intl, and reviewed config/redirects.json migrations.
+ * [INPUT]: Fumadocs MDX, next-intl, isolated content-mode paths, and reviewed URL migrations.
  * [OUTPUT]: Validated Next.js configuration and security headers.
  * [POS]: Application build boundary; content policy lives in src/lib/content.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
@@ -7,23 +7,30 @@
 import { createMDX } from 'fumadocs-mdx/next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import redirects from './config/redirects.json' with { type: 'json' };
+import { resolve } from 'node:path';
+import { contentMode } from './config/content-mode.mjs';
 
-if (process.env.CONTENT_TEST === '1' && process.env.VERCEL) {
-  throw new Error('Test content must never be deployed.');
-}
 if (process.env.VERCEL_ENV === 'production') {
   const url = new URL(process.env.SITE_URL || 'invalid');
   if (url.protocol !== 'https:' || /localhost|example\.|\.example$|^127\.|^0\.0\.0\.0$|\[::1\]/.test(url.hostname) || url.pathname !== '/' || url.username || url.password || url.search || url.hash) {
     throw new Error('Production requires a real HTTPS SITE_URL origin.');
   }
 }
-const withMDX = createMDX({ configPath: 'config/source.config.ts' });
+const withMDX = createMDX({ configPath: 'config/source.config.ts', outDir: contentMode.generated });
 const withIntl = createNextIntlPlugin('./src/lib/i18n/request.ts');
+const aliases = {
+  '@source': `./${contentMode.generated}/server.ts`,
+  '@catalog': `./${contentMode.generated}/catalog.json`,
+  '@routes': `./${contentMode.generated}/routes.json`,
+};
 export default withMDX(withIntl({
-  allowedDevOrigins: ['192.168.0.107'],
   agentRules: false,
-  turbopack: { root: process.cwd() },
-  distDir: process.env.CONTENT_TEST === '1' ? '.next-test' : '.next',
+  turbopack: { root: process.cwd(), resolveAlias: aliases },
+  webpack(config) {
+    config.resolve.alias = { ...config.resolve.alias, ...Object.fromEntries(Object.entries(aliases).map(([key, path]) => [key, resolve(path)])) };
+    return config;
+  },
+  distDir: contentMode.build,
   poweredByHeader: false,
   skipProxyUrlNormalize: true,
   async redirects() { return redirects.map((entry) => ({ ...entry, permanent: true })); },

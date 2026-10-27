@@ -1,5 +1,5 @@
 /**
- * [INPUT]: Public route snapshot, allowlisted entries, and optional language preference.
+ * [INPUT]: Active content mode's route snapshot, allowlisted entries, and language preference.
  * [OUTPUT]: Private 307 negotiation, and HTTP 404 responses whose body is the rendered unavailable document.
  * [POS]: Sole routing interceptor; explicit language pages never negotiate content.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
@@ -7,7 +7,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { isLocale, localeCookie, negotiateLocale } from './lib/i18n/config';
 import { isNegotiatedPath } from './lib/i18n/routing';
-import publicRoutes from '../.source/routes.json';
+import publicRoutes from '@routes';
 const paths = new Set(publicRoutes);
 const forwarded = ['accept', 'rsc', 'next-router-prefetch', 'next-router-segment-prefetch', 'next-router-state-tree', 'next-url'];
 const preserved = ['content-type', 'content-security-policy', 'x-content-type-options', 'referrer-policy', 'x-frame-options', 'permissions-policy', 'x-robots-tag'];

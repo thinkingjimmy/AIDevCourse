@@ -1,6 +1,6 @@
 /**
- * [INPUT]: Course/progress context, shared Sidebar controls, keyboard search, and language data.
- * [OUTPUT]: Lesson shell with keyboard-only search, collapsible desktop sidebar, and mobile sheet with focus return to its entry button. Sidebar and module state survive lesson changes; blocked storage keeps in-memory state.
+ * [INPUT]: Course/progress context, course sidebar controls, keyboard search, and language data.
+ * [OUTPUT]: Lesson shell with keyboard-only search, a collapsible sidebar, and a mobile sheet. The footer aligns About before the globe menu on the right. Sidebar and module state survive lesson changes; blocked storage keeps in-memory state.
  * [POS]: Client lesson navigation; article content stays server rendered. Course overviews do not mount this.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -12,15 +12,14 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { SiteLogo } from '@/components/layout/page-primitives';
 import { CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';
-import { groupModules } from '@/lib/content/modules';
+import { groupModules, type Catalog } from '@/lib/content/model';
 import type { Locale } from '@/lib/i18n/config';
-import type { Catalog } from '@/lib/content/types';
 import { site } from '@/lib/site-config';
 import { LanguageSwitcher } from '../layout/language-switcher';
 import { SearchShortcut } from '../search/search-shortcut';
 import type { SearchLessonMeta } from '../search/lessons';
 import { useProgress, useLessonStates } from '../progress/progress-provider';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarProvider, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarProvider, SidebarTrigger, useSidebar } from '@/components/course/sidebar';
 
 let sidebarOpen: boolean | undefined;
 const sidebarListeners = new Set<() => void>();
@@ -88,7 +87,7 @@ function ModuleTree() {
   const currentModule = groups.find((group) => group.lessons.some(({ lesson }) => lesson.url === pathname))?.module;
   const [open, setOpen] = useOpenModules(course.id);
   useEffect(() => {
-    if (!currentModule) return;
+    if (currentModule === undefined) return;
     setOpen((value) => value[currentModule] === true ? value : { ...value, [currentModule]: true });
   }, [currentModule, setOpen]);
   return <SidebarGroup className="mt-1 mr-0 mb-0 ml-0 py-0 pr-2.5 pl-[18px]">
@@ -132,7 +131,7 @@ function CourseSidebar({ locale, version, lessons, translations }: {
   const { open, isMobile } = useSidebar();
   const toggleLabel = isMobile ? ui('close') : ui(open ? 'collapseSidebar' : 'expandSidebar');
   const done = ready ? summary.done : 0;
-  return <Sidebar collapsible="icon">
+  return <Sidebar label={ui('menu')}>
     <SidebarHeader className="w-full gap-3.5 pt-[18px] pr-[18px] pb-2 pl-7 group-data-[collapsible=icon]:px-2">
       <div className="flex items-center justify-between gap-3">
         <SiteLogo href={`/${locale}`} className="text-[15px] group-data-[collapsible=icon]:hidden" aria-label={`${site.name} · ${ui('home')}`} />
@@ -147,8 +146,9 @@ function CourseSidebar({ locale, version, lessons, translations }: {
     <SidebarContent className="w-full group-data-[collapsible=icon]:hidden">
       <ModuleTree />
     </SidebarContent>
-    <SidebarFooter className="mt-0 w-full flex-row items-center gap-3 border-t border-border pt-3 pr-[18px] pb-4 pl-7 group-data-[collapsible=icon]:hidden">
+    <SidebarFooter className="mt-0 w-full flex-row items-center justify-end gap-3 border-t border-border pt-3 pr-[18px] pb-4 pl-7 group-data-[collapsible=icon]:hidden">
       <SearchShortcut locale={locale} version={version} lessons={lessons} />
+      <Link href={`/${locale}/about`} className="text-[14px] text-muted-foreground no-underline hover:text-foreground">{ui('about')}</Link>
       <LanguageSwitcher side="top" locale={locale} translations={translations} />
     </SidebarFooter>
   </Sidebar>;

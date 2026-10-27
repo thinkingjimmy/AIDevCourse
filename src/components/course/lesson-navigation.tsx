@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import { getTranslations } from 'next-intl/server';
-import type { CourseManifest } from '@/lib/content/types';
+import type { CourseManifest } from '@/lib/content/model';
 export async function LessonNavigation({ course, lessonId }: { course: CourseManifest; lessonId: string }) {
   const t = await getTranslations({ locale: course.locale, namespace: 'Ui' });
   const index = course.lessons.findIndex((lesson) => lesson.id === lessonId);

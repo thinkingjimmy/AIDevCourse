@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { Alert } from '@/components/ui/alert';
 import { getTranslations } from 'next-intl/server';
 import { languageNames, type Locale } from '@/lib/i18n/config';
-import type { ContentDocument } from '@/lib/content/types';
+import type { ContentDocument } from '@/lib/content/model';
 export async function TranslationNotice({ document, sourceLocale }: { document: ContentDocument; sourceLocale: Locale }) {
   if (!document.stale) return null;
   const t = await getTranslations({ locale: document.locale, namespace: 'Ui' });

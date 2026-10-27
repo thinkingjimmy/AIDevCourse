@@ -1,6 +1,6 @@
 /**
  * [INPUT]: The production server, authored catalog, localized messages, and all five language routes.
- * [OUTPUT]: Course-card layout, empty-course, publication, locale, and accessibility evidence with isolated language cases.
+ * [OUTPUT]: Homepage hero alignment, action and course-card surfaces, publication, locale, and accessibility evidence.
  * [POS]: Public-site browser matrix, valid with an empty or partial course library.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -144,6 +144,78 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       expect(errors).toEqual([]);
     });
   }
+}
+
+for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'mobile', width: 390, height: 844 }]) {
+  test(`home hero aligns with navigation and preserves menu depth on ${viewport.name}`, async ({ page }) => {
+    test.skip(process.env.CONTENT_TEST === '1', 'Public homepage learning actions.');
+    await page.setViewportSize(viewport);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const catalog = readCatalog();
+    for (const locale of locales) {
+      await page.goto(`/${locale}`);
+      await page.evaluate(() => document.fonts.ready);
+      const messages = JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
+      const action = page.getByRole('link', { name: messages.Home.start, exact: true });
+      const title = page.locator('main h1');
+      const intro = title.locator('..').locator('p');
+      await expect(intro).toHaveCount(1);
+      await expect(intro).toHaveText(messages.Home.intro);
+      await expect(page.getByText(messages.Home.eyebrow, { exact: true })).toHaveCount(0);
+      const logo = await page.locator('header a').first().boundingBox();
+      for (const element of [title, intro, action, page.getByRole('heading', { name: messages.Home.courseTitle, exact: true })]) {
+        expect((await element.boundingBox())!.x).toBeCloseTo(logo!.x, 1);
+      }
+      const course = catalog.courses.find((item) => item.locale === locale && item.slug === 'ai-101')!;
+      await expect(action).toHaveAttribute('href', course.lessons[0].url);
+      await page.locator('.language-picker summary').click();
+      const menu = page.locator('.language-options');
+      await expect(menu).toBeVisible();
+      const surface = await menu.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return { border: style.border, shadow: style.boxShadow, color: style.color, background: style.backgroundColor };
+      });
+      expect(surface.shadow).not.toBe('none');
+      await page.keyboard.press('Escape');
+      await expect(action).toHaveCSS('border', surface.border);
+      await expect(action).toHaveCSS('border-radius', '0px');
+      await expect(action).toHaveCSS('color', surface.color);
+      await expect(action).toHaveCSS('background-color', surface.background);
+      await expect(action).toHaveCSS('box-shadow', surface.shadow);
+      const actionBox = await action.boundingBox();
+      await action.hover();
+      await expect(action).toHaveCSS('box-shadow', surface.shadow);
+      expect(await action.boundingBox()).toEqual(actionBox);
+      if (locale === 'en') {
+        const path = test.info().outputPath(`home-action-hover-${viewport.name}.png`);
+        await page.screenshot({ path, fullPage: true });
+        await test.info().attach('Homepage action hover', { path, contentType: 'image/png' });
+      }
+      const card = page.locator('[data-slot="course-grid"]').getByRole('link', { name: 'AI 101', exact: true });
+      const cardSurface = card.locator('[data-slot="card"]');
+      await expect(cardSurface).toHaveCSS('box-shadow', 'none');
+      await card.scrollIntoViewIfNeeded();
+      const cardBox = await card.boundingBox();
+      await card.hover();
+      await expect(cardSurface).toHaveCSS('box-shadow', surface.shadow);
+      expect(await card.boundingBox()).toEqual(cardBox);
+      if (locale === 'en') {
+        const path = test.info().outputPath(`course-card-hover-${viewport.name}.png`);
+        await page.screenshot({ path, fullPage: true });
+        await test.info().attach('Course card hover', { path, contentType: 'image/png' });
+      }
+      await page.mouse.move(0, 0);
+      await expect(cardSurface).toHaveCSS('box-shadow', 'none');
+      await page.keyboard.press('Tab');
+      await card.focus();
+      await expect(cardSurface).toHaveCSS('box-shadow', surface.shadow);
+      await action.focus();
+      await expect(action).toHaveCSS('outline-style', 'solid');
+      await action.press('Enter');
+      await expect(page).toHaveURL(new RegExp(`${course.lessons[0].url}$`));
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    }
+  });
 }
 
 test('course cards open the updating overview without JavaScript', async ({ browser, baseURL }) => {

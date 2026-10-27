@@ -7,7 +7,7 @@
 import { createSearchAPI } from 'fumadocs-core/search/server';
 import { getCatalog, getArticle } from '@/lib/content/source';
 import { isLocale, locales } from '@/lib/i18n/config';
-import { createSearchTokenizer } from '@/lib/search/tokenizer';
+import { createSearchTokenizer } from '@/lib/search';
 export const dynamic = 'force-static';
 export function generateStaticParams() { return locales.map((lang) => ({ lang })); }
 export async function GET(_request: Request, { params }: { params: Promise<{ lang: string }> }) {

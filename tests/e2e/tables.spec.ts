@@ -1,5 +1,5 @@
 /**
- * [INPUT]: Chinese and English MDX component previews, responsive viewports, and a production server.
+ * [INPUT]: MDX table previews, native focusable scroll containers, viewports, and a production server.
  * [OUTPUT]: Themed table, content, keyboard scrolling, accessibility, and no-JS acceptance evidence.
  * [POS]: Scoped table E2E suite; screenshots are local artifacts without baseline images.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
@@ -44,9 +44,10 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
         await test.info().attach(`${example.locale} table`, { path, contentType: 'image/png' });
         if (viewport.width < 480) {
           expect(await container.evaluate((element) => element.scrollWidth > element.clientWidth)).toBe(true);
-          await table.focus();
-          await expect(table).toBeFocused();
-          await table.press('ArrowRight');
+          await container.focus();
+          await expect(container).toBeFocused();
+          // WebKit cancels native scrolling when keydown and keyup share a frame.
+          await container.press('ArrowRight', { delay: 150 });
           await expect.poll(() => container.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
         }
       }
@@ -63,8 +64,9 @@ test('Markdown tables remain readable and scrollable without JavaScript', async 
     const container = table.locator('..');
     await expect(table.getByRole('columnheader')).toHaveText(examples[0].headings);
     await expect(table.getByRole('cell').last()).toHaveText(examples[0].lastCell);
-    await table.focus();
-    await table.press('ArrowRight');
+    await container.focus();
+    await expect(container).toBeFocused();
+    await container.press('ArrowRight', { delay: 150 });
     await expect.poll(() => container.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     const path = test.info().outputPath('table-no-js.png');

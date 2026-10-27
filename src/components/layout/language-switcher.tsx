@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Public translation map, current URL, Phosphor icons, shared Button, and the site border token.
- * [OUTPUT]: Globe trigger and one content-sized native language menu, with top/bottom placement, valid hashes, explained fallback links, and preference saving.
+ * [OUTPUT]: Globe trigger and one right-aligned native language menu, with top/bottom placement, valid hashes, explained fallback links, and preference saving.
  * [POS]: Progressive-enhancement language control shared by desktop and mobile.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -13,7 +13,7 @@ import { CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { locales, languageNames, htmlLanguages, localeCookie, type Locale } from '@/lib/i18n/config';
-import type { Catalog } from '@/lib/content/types';
+import type { Catalog } from '@/lib/content/model';
 const languageFlags: Record<Locale, string> = { en: '🇺🇸', zh: '🇨🇳', ja: '🇯🇵', fr: '🇫🇷', es: '🇪🇸' };
 export function LanguageSwitcher({ locale, translations, side = 'bottom' }: { locale: Locale; translations: Catalog['translations']; side?: 'top' | 'bottom' }) {
   const t = useTranslations('Language');
@@ -38,12 +38,12 @@ export function LanguageSwitcher({ locale, translations, side = 'bottom' }: { lo
     <Button asChild variant="ghost" size="icon-touch" className="list-none text-muted-foreground [&::-webkit-details-marker]:hidden">
       <summary aria-label={t('label')} title={t('label')}><GlobeIcon size={20} aria-hidden /></summary>
     </Button>
-    <nav className={cn('language-options absolute z-[60] max-h-[75dvh] w-max max-w-[calc(100vw-32px)] overflow-auto border border-border bg-background p-1.5 text-[15px] leading-[1.65] font-normal text-muted-foreground shadow-[4px_4px_0_var(--line)]', side === 'top' ? 'bottom-[calc(100%+10px)] left-0' : 'top-[calc(100%+10px)] right-0')} aria-label={t('label')}>
+    <nav className={cn('language-options absolute right-0 z-[60] max-h-[75dvh] w-max max-w-[calc(100vw-32px)] overflow-auto border border-border bg-background p-1.5 text-[15px] leading-[1.65] font-normal text-muted-foreground shadow-[4px_4px_0_var(--line)]', side === 'top' ? 'bottom-[calc(100%+10px)]' : 'top-[calc(100%+10px)]')} aria-label={t('label')}>
       {locales.map((lang) => {
         const samePage = current?.[1].find((version) => version.locale === lang);
         const coursePage = current && translations[current[0].split(':')[0]]?.find((version) => version.locale === lang);
         const simple = /^\/(en|zh|ja|fr|es)(\/about)?$/.test(pathname);
-        const url = samePage?.url ?? (simple ? pathname.replace(/^\/[^/]+/, `/${lang}`) : coursePage?.url ?? `/${lang}/courses/ai-101`);
+        const url = samePage?.url ?? (simple ? pathname.replace(/^\/[^/]+/, `/${lang}`) : coursePage?.url ?? `/${lang}`);
         const fallback = current && !samePage ? t(coursePage ? 'courseFallback' : 'listFallback') : undefined;
         return <a className="flex min-h-11 touch-manipulation items-center justify-between gap-5 border-b border-line-soft px-3 py-2.5 text-[15px] font-[550] whitespace-nowrap no-underline last:border-0 hover:bg-surface aria-current:bg-surface" key={lang} href={url} hrefLang={htmlLanguages[lang]} aria-current={lang === locale ? 'true' : undefined} onClick={(event) => {
           try { document.cookie = `${localeCookie}=${lang}; Path=/; Max-Age=31536000; SameSite=Lax`; } catch { /* Explicit URLs remain usable without cookies. */ }

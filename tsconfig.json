@@ -26,7 +26,16 @@
         "./src/*"
       ],
       "@source": [
-        "./.source/server.ts"
+        "./.source/server.ts",
+        "./.source-test/server.ts"
+      ],
+      "@catalog": [
+        "./.source/catalog.json",
+        "./.source-test/catalog.json"
+      ],
+      "@routes": [
+        "./.source/routes.json",
+        "./.source-test/routes.json"
       ]
     },
     "allowJs": true
@@ -39,6 +48,7 @@
     "tests/**/*.ts",
     "config/**/*.ts",
     ".source/**/*.ts",
+    ".source-test/**/*.ts",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     ".next-test/types/**/*.ts",

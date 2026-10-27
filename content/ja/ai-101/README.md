@@ -2,8 +2,10 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-index.mdx: AI 101 course identity and localized hero metadata. No lesson articles are currently published.
+index.mdx: AI 101 course identity and localized hero metadata.
 
-meta.json: Explicit publication order. Add new lesson or module entries here when their files are ready.
+hello-world.mdx: First AI 101 lesson; a temporary welcome article reached from the homepage.
+
+meta.json: Explicit publication order, with Hello World as the first lesson.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

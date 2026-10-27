@@ -52,7 +52,7 @@
     "eyebrow": "Gratis · Código abierto · Sin registro",
     "title": "Aprende a desarrollar con IA,\npieza por pieza",
     "intro": "Desde escribir código y ajustar modelos hasta montar un agente: cada lección desmonta una sola pieza y te deja una tarea pequeña. Al volver a armarla, entiendes la máquina entera.",
-    "start": "Empezar por la primera lección",
+    "start": "Empezar a aprender",
     "courseTitle": "Cursos",
     "courseIntro": "Elige un curso y aprende a tu ritmo.",
     "navLabel": "Navegación",
@@ -109,7 +109,7 @@
   },
   "About": {
     "title": "Aprende a tu ritmo",
-    "intro": "aidevcourse es un espacio de lectura gratuito para aprender a programar con IA. No necesitas una cuenta.",
+    "intro": "AIDevCourse es un espacio de lectura gratuito para aprender a programar con IA. No necesitas una cuenta.",
     "storageTitle": "Tu progreso",
     "storage": "Las marcas y la última lección se guardan en este navegador y dominio. Las traducciones comparten la misma marca. Borrar los datos o cambiar de dispositivo o dominio puede hacer que pierdas acceso a estos registros. No se envían al servidor.",
     "languagesTitle": "Idiomas y disponibilidad",

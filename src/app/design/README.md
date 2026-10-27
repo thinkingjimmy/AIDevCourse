@@ -5,8 +5,8 @@
 Homepage studies and writing-component previews for AIDevCourse. These routes do not replace `/[lang]`.
 
 - `catalog.ts`: Reads the published `content/zh/ai-101` course for the previews only.
-- `layout.tsx`: Tailwind preview entry and Geist document shell, separate from the live site header.
-- `ui.tsx`: Tailwind wordmark with a Phosphor terminal icon, variant switch, header, and footer.
+- `layout.tsx`: Tailwind preview entry and Geist document shell with inherited root brand icons, separate from the live site header.
+- `ui.tsx`: Shared SiteLogo and configured product name, variant switch, header, and footer.
 - `page.tsx`: Index of the three studies.
 - `a/page.tsx`: Catalog homepage.
 - `b/page.tsx`: The course itself as the homepage.

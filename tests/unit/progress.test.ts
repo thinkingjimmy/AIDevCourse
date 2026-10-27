@@ -5,9 +5,8 @@
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import { describe, expect, it } from 'vitest';
-import { ProgressStorage, type StorageLike } from '../../src/lib/progress/storage';
-import { selectProgress } from '../../src/lib/progress/selectors';
-import type { LessonSummary } from '../../src/lib/content/types';
+import { ProgressStorage, selectProgress, type StorageLike } from '../../src/lib/progress';
+import type { LessonSummary } from '../../src/lib/content/model';
 class MemoryStorage implements StorageLike {
   data = new Map<string, string>(); writes = 0; denied = false;
   get length() { return this.data.size; }

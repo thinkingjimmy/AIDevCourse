@@ -2,9 +2,10 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-Build and publication settings. TypeScript uses the root `tsconfig.json`; each test suite owns its configuration. PostCSS plugins are declared in `package.json`.
+Build and publication settings. TypeScript uses the root `tsconfig.json`; test configurations live in tests/. PostCSS plugins are declared in `package.json`.
 
 - `.env.example`: Production-origin environment reference.
+- `content-mode.mjs`: Isolated public/fixture input, generated-source, and build paths; fixture deployment guard.
 - `eslint.config.mjs`: Next.js, TypeScript, and accessibility lint rules, loaded by `pnpm lint`.
 - `redirects.json`: Reviewed one-hop URL migrations; currently empty.
 - `source.config.ts`: Validated Fumadocs collection, frozen public catalog/routes, design/component preview allowlist, and code highlighting.

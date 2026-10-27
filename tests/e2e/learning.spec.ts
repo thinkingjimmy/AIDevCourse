@@ -6,7 +6,7 @@
  */
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { mkdirSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { locales, type Locale } from '../../src/lib/i18n/config';
 test.skip(process.env.CONTENT_TEST !== '1', 'Requires the isolated nonpublic fixture build.');
 const path = (locale: string, slug = 'first-change') => `/${locale}/courses/ai-coding/${slug}`;
@@ -115,8 +115,9 @@ for (const locale of locales) {
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `page overflow at ${width}`).toBe(true);
       expect(await page.locator('h1').count()).toBe(1);
       if (testInfo.project.name === 'chromium') {
-        const directory = `docs/evidence/screenshots/${locale}`; mkdirSync(directory, { recursive: true });
-        await page.screenshot({ path: `${directory}/reading-${width}.png`, fullPage: false });
+        const screenshot = testInfo.outputPath(`reading-${width}.png`);
+        await page.screenshot({ path: screenshot });
+        await testInfo.attach(`Reading at ${width}px`, { path: screenshot, contentType: 'image/png' });
       }
     }
     // A 1280px display at 200% has a 640 CSS-pixel viewport and two device pixels per CSS pixel.
@@ -124,7 +125,11 @@ for (const locale of locales) {
     const zoomPage = await zoomContext.newPage(); await zoomPage.goto(path(locale));
     expect(await zoomPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await expect(zoomPage.locator('article > .prose')).toBeVisible();
-    if (testInfo.project.name === 'chromium') await zoomPage.screenshot({ path: `docs/evidence/screenshots/${locale}/reading-zoom-200.png` });
+    if (testInfo.project.name === 'chromium') {
+      const screenshot = testInfo.outputPath('reading-zoom-200.png');
+      await zoomPage.screenshot({ path: screenshot });
+      await testInfo.attach('Reading at 200% scale', { path: screenshot, contentType: 'image/png' });
+    }
     await zoomContext.close();
     await page.setViewportSize({ width: 640, height: 900 });
     const report = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();

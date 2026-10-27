@@ -9,12 +9,12 @@ import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { isLocale } from '@/lib/i18n/config';
-import { groupModules } from '@/lib/content/modules';
+import { groupModules } from '@/lib/content/model';
 import { getCatalog, getCourse, getArticle } from '@/lib/content/source';
 import { Button } from '@/components/ui/button';
 import { PageTitle, PageActions, HeroGrid, HeroCopy, HeroLead } from '@/components/layout/page-primitives';
-import { ChipExplode } from '@/components/course/chip-explode';
-import { pageMetadata } from '@/lib/seo/metadata';
+import { ChipExplode } from '@/components/illustrations/chip-explode';
+import { pageMetadata } from '@/lib/metadata';
 import { TranslationNotice } from '@/components/course/translation-notice';
 type Props = { params: Promise<{ lang: string; course: string }> };
 export function generateStaticParams() { return getCatalog().courses.map((course) => ({ lang: course.locale, course: course.slug })); }

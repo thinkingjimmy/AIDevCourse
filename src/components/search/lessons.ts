@@ -5,7 +5,7 @@
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import type { Locale } from '@/lib/i18n/config';
-import type { Catalog } from '@/lib/content/types';
+import type { Catalog } from '@/lib/content/model';
 export type SearchLessonMeta = { number: string; title: string; module: string; minutes: number };
 export function lessonIndex(catalog: Catalog, locale: Locale) {
   const lessons: Record<string, SearchLessonMeta> = {};

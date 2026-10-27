@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Public course overviews, isolated fixture lessons, localized labels, and a production server.
- * [OUTPUT]: Course footer, language menus, sidebar collapse, and keyboard-only search evidence.
+ * [OUTPUT]: Brand identity, course footer, language menus, sidebar collapse, and keyboard-only search evidence.
  * [POS]: Navigation acceptance suite; screenshots are local artifacts, not baseline assertions.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -19,6 +19,60 @@ async function capture(page: Page, name: string) {
   const path = test.info().outputPath(`${name}.png`);
   await page.screenshot({ path, animations: 'disabled' });
   await test.info().attach(name, { path, contentType: 'image/png' });
+}
+
+for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'mobile', width: 390, height: 844 }]) {
+  test(`brand identity stays consistent on ${viewport.name}`, async ({ page, request }) => {
+    await page.setViewportSize(viewport);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const checkBrand = async () => {
+      const logo = page.getByRole('link', { name: /^AIDevCourse(?: · |$)/ }).first();
+      await expect(logo).toBeVisible();
+      await expect(logo).toHaveText('AIDevCourse');
+      const mark = logo.locator('img');
+      await expect(mark).toHaveAttribute('src', '/images/brand/logo.png');
+      await expect(mark).toHaveAttribute('alt', '');
+      await expect.poll(() => mark.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth === 128)).toBe(true);
+      await expect(page).toHaveTitle(/AIDevCourse/);
+      await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href', '/favicon.svg');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    };
+    for (const locale of ['zh', 'en', 'ja', 'fr', 'es']) {
+      await page.goto(`/${locale}`);
+      await checkBrand();
+      await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute('content', 'AIDevCourse');
+      await page.goto(`/${locale}/about`);
+      await checkBrand();
+      await expect(page.locator('main')).toContainText('AIDevCourse');
+    }
+    await page.goto('/zh');
+    await capture(page, `brand-home-${viewport.name}`);
+    await page.goto(coursePath('zh'));
+    await checkBrand();
+    await page.getByRole('link', { name: /^AIDevCourse · / }).click();
+    await expect(page).toHaveURL(/\/zh$/);
+    for (const path of ['/unknown-brand-page', '/zh/unknown-brand-page', '/design/a']) {
+      await page.goto(path);
+      await checkBrand();
+    }
+    const favicon = await request.get('/favicon.svg');
+    expect(favicon.ok()).toBe(true);
+    expect(await favicon.text()).toContain('data:image/png;base64,');
+    expect(await page.evaluate(async () => {
+      const image = new Image();
+      image.src = '/favicon.svg';
+      await image.decode();
+      return [image.naturalWidth, image.naturalHeight];
+    })).toEqual([64, 64]);
+    const touchIcon = await request.get('/images/brand/apple-touch-icon.png');
+    expect(touchIcon.ok()).toBe(true);
+    expect(touchIcon.headers()['content-type']).toContain('image/png');
+    if (!fixture) return;
+    await page.goto(lessonPath());
+    if (viewport.name === 'mobile') await page.getByRole('button', { name: dictionary('zh').Ui.menu, exact: true }).click();
+    await checkBrand();
+    await capture(page, `brand-sidebar-${viewport.name}`);
+  });
 }
 
 for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'mobile', width: 390, height: 844 }]) {
@@ -198,6 +252,7 @@ test('mobile sidebar closes from the logo row and keeps language choices in the 
     await menuButton.click();
     const sheet = page.locator('[data-mobile="true"]');
     await expect(sheet).toBeVisible();
+    await expect(sheet).toHaveAccessibleName(copy.Ui.menu);
     await openLanguages(page, 'zh');
     await capture(page, `mobile-languages-${width}`);
     await page.keyboard.press('Escape');
@@ -211,6 +266,13 @@ test('mobile sidebar closes from the logo row and keeps language choices in the 
   await page.locator('.language-picker summary').click();
   await page.locator('.language-options a[hreflang="en"]').click();
   await expect(page).toHaveURL(/\/en\/courses\/ai-coding\/first-change$/);
+  await page.getByRole('button', { name: dictionary('en').Ui.menu, exact: true }).click();
+  await page.locator('[data-mobile="true"] a[href="/en/courses/ai-coding/useful-context"]').click();
+  await expect(page).toHaveURL(/\/useful-context$/);
+  await expect(page.locator('[data-mobile="true"]')).toHaveCount(0);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/first-change$/);
+  await expect(page.locator('[data-mobile="true"]')).toHaveCount(0);
 });
 
 test('navigation remains usable when session storage and clipboard access fail', async ({ page }) => {

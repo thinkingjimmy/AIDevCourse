@@ -2,7 +2,7 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-Isolated course fixtures mirror `content/<lang>/<course>/`. They exercise translation coverage, publication boundaries, MDX rendering, and learning progress. `CONTENT_TEST=1` selects this root and `.next-test`; Vercel rejects the mode.
+Isolated course fixtures mirror `content/<lang>/<course>/`. They exercise translation coverage, publication boundaries, MDX rendering, and learning progress. `CONTENT_TEST=1` selects this root, `.source-test`, and `.next-test`; Vercel rejects the mode.
 
 - [en/](./en/README.md): English translation cases.
 - [es/](./es/README.md): Spanish translation and search cases.

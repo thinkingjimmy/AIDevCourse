@@ -52,7 +52,7 @@
     "eyebrow": "Free · Open source · No signup",
     "title": "Learn AI development,\none piece at a time",
     "intro": "From writing code and tuning models to building an agent, each lesson takes one piece apart and hands you a small task. Put it back together, and the whole machine makes sense.",
-    "start": "Start from the first lesson",
+    "start": "Start learning",
     "courseTitle": "Courses",
     "courseIntro": "Choose a course and learn at your own pace.",
     "navLabel": "Primary",
@@ -109,7 +109,7 @@
   },
   "About": {
     "title": "Learn at your own pace",
-    "intro": "aidevcourse is a free reading space for people learning to work with AI on code. You do not need an account to read.",
+    "intro": "AIDevCourse is a free reading space for people learning to work with AI on code. You do not need an account to read.",
     "storageTitle": "Your learning records",
     "storage": "Completion marks and your last lesson stay in this browser, on this domain. Translations of a lesson share the same mark. Clearing browser data or changing devices or domains may remove access to these records. They are not sent to our server.",
     "languagesTitle": "Languages and availability",

@@ -1,5 +1,5 @@
 /**
- * [INPUT]: Localized 404 copy, a course link, a home link, and other-language entries.
+ * [INPUT]: Localized 404 copy, available course/home recovery links, and other-language entries.
  * [OUTPUT]: Two-column unavailable page: copy on the left, a large mono 404 on the right.
  * [POS]: Shared by the locale not-found document and the root English document.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
@@ -18,7 +18,7 @@ export function MissingPage({ title, body, primaryHref, primaryLabel, homeHref, 
       <p className="m-0 mb-7 max-w-[40rem] text-[16px] leading-[1.75] text-muted-foreground">{body}</p>
       <PageActions>
         <Button asChild variant="action" size="action"><Link href={primaryHref}>{primaryLabel}</Link></Button>
-        <Button asChild variant="action-outline" size="action"><Link href={homeHref}>{homeLabel}</Link></Button>
+        {primaryHref !== homeHref && <Button asChild variant="action-outline" size="action"><Link href={homeHref}>{homeLabel}</Link></Button>}
       </PageActions>
       <nav className="mt-7 flex flex-wrap gap-x-[18px] gap-y-2 font-mono text-[12px] text-muted-foreground" aria-label={languagesLabel}>{languages.map((language) => <Link className="text-inherit no-underline hover:text-foreground" key={language.href} href={language.href} lang={language.lang}>{language.label}</Link>)}</nav>
     </div>

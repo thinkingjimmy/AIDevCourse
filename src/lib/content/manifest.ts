@@ -8,7 +8,7 @@ import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 import { scanContent, contentRoot } from './scan';
 import { publishDocuments, validateReferences } from './validate';
-import { identity, type Catalog, type CourseManifest, type LessonSummary } from './types';
+import { identity, renderedAnchors, type Catalog, type CourseManifest, type LessonSummary } from './model';
 
 export function readCatalog(options: { root?: string; publicRoot?: string } = {}): Catalog {
   const scan = scanContent(options.root ?? contentRoot());
@@ -17,7 +17,7 @@ export function readCatalog(options: { root?: string; publicRoot?: string } = {}
   const courses: CourseManifest[] = [];
   const translations: Catalog['translations'] = {};
   for (const document of visible) {
-    (translations[identity(document)] ??= []).push({ locale: document.locale, url: document.url, headings: document.headings.map((heading) => heading.id) });
+    (translations[identity(document)] ??= []).push({ locale: document.locale, url: document.url, headings: renderedAnchors(document) });
     if (document.data.kind !== 'course') continue;
     const course = document.data;
     const localOrder = scan.order.get(document.locale) ?? [];

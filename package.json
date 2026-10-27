@@ -1,5 +1,5 @@
 {
-  "name": "learning-ai-coding",
+  "name": "aidevcourse",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,16 +9,19 @@
   },
   "scripts": {
     "dev": "next dev",
-    "content:generate": "fumadocs-mdx config/source.config.ts .source",
+    "content:generate": "node scripts/generate-content.mjs",
     "content:check": "node --import tsx scripts/check-content.ts",
     "i18n:check": "node --import tsx scripts/check-i18n.ts",
     "lint": "eslint --config config/eslint.config.mjs src scripts tests config next.config.mjs",
     "typecheck": "pnpm content:generate && tsc --noEmit",
-    "test": "vitest run --config tests/unit/vitest.config.ts",
-    "test:e2e": "playwright test --config tests/e2e/playwright.config.ts",
+    "test": "vitest run --config tests/vitest.config.ts",
+    "test:e2e": "playwright test --config tests/playwright.config.ts",
     "build": "pnpm content:check && pnpm i18n:check && next build",
     "start": "next start",
-    "check": "pnpm lint && pnpm typecheck && pnpm content:check && pnpm i18n:check && pnpm test"
+    "check": "pnpm structure:check && pnpm lint && pnpm typecheck && pnpm content:check && pnpm i18n:check && pnpm test",
+    "test:e2e:report": "playwright show-report .artifacts/e2e/public/report",
+    "measure:performance": "node scripts/measure-performance.mjs",
+    "structure:check": "node --import tsx scripts/check-structure.ts"
   },
   "dependencies": {
     "@phosphor-icons/react": "2.1.10",
@@ -28,9 +31,8 @@
     "fumadocs-mdx": "15.4.3",
     "fumadocs-ui": "16.15.13",
     "github-slugger": "2.0.0",
-    "gray-matter": "4.0.3",
     "mdast-util-to-string": "4.0.0",
-    "next": "16.3.6",
+    "next": "16.3.8",
     "next-intl": "4.14.6",
     "radix-ui": "1.8.1",
     "react": "19.3.0",
@@ -55,7 +57,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "eslint": "9.39.1",
-    "eslint-config-next": "16.3.6",
+    "eslint-config-next": "16.3.8",
     "lighthouse": "13.5.0",
     "tailwindcss": "4.3.3",
     "tsx": "4.23.15",
@@ -74,5 +76,14 @@
       "sharp",
       "unrs-resolver"
     ]
+  },
+  "description": "A multilingual learning site for local Markdown and MDX courses.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thinkingjimmy/aidevcourse.git"
+  },
+  "bugs": {
+    "url": "https://github.com/thinkingjimmy/aidevcourse/issues"
   }
 }

@@ -7,7 +7,7 @@
 import { cache } from 'react';
 import { join } from 'node:path';
 import { scanContent } from '@/lib/content/scan';
-import type { ContentDocument } from '@/lib/content/types';
+import type { ContentDocument } from '@/lib/content/model';
 
 export const levelLabel = { beginner: '入门', intermediate: '进阶', advanced: '高级' } as const;
 export const typeLabel = { concept: '概念', tool: '工具', practice: '练习' } as const;

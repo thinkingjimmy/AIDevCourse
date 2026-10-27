@@ -1,17 +1,19 @@
 /**
- * [INPUT]: Native element props, Next.js links, and shared Tailwind theme tokens.
- * [OUTPUT]: Shared page shells, containers, branding, typography, hero parts, and footer with an author link.
+ * [INPUT]: Native element props, Next.js links/images, shared site identity, and Tailwind theme tokens.
+ * [OUTPUT]: Shared page shells with a 56 px header offset, containers, image-based SiteLogo, typography, hero parts, and footer.
  * [POS]: Shared visual structure for public pages, status pages, and the lesson sidebar.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import type { ComponentProps, ReactNode } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
+import { site } from '@/lib/site-config';
 
 export function SiteShell({ className, ...props }: ComponentProps<'div'>) {
   return <div {...props} className={cn(
-    'relative flex min-h-screen flex-col bg-background text-[15px] leading-[1.6] text-foreground [--zinc-header:56px] max-[721px]:[--zinc-header:88px]',
+    'relative flex min-h-screen flex-col bg-background text-[15px] leading-[1.6] text-foreground [--zinc-header:56px]',
     '[&_:where(h1,h2,h3,h4,[id])]:scroll-mt-(--zinc-header)',
     'before:pointer-events-none before:absolute before:inset-y-0 before:left-[50vw] before:z-[45] before:w-[min(64rem,100%)] before:-translate-x-1/2 before:border-x before:border-border before:content-[\'\']',
     className,
@@ -24,7 +26,7 @@ export function PageContainer({ className, ...props }: ComponentProps<'div'>) {
 
 export function SiteLogo({ className, ...props }: Omit<ComponentProps<typeof Link>, 'children'>) {
   return <Link {...props} className={cn('inline-flex shrink-0 items-center gap-2 font-semibold tracking-[-.02em] text-inherit no-underline', className)}>
-    <span aria-hidden className="size-[18px] rounded-[5px] bg-foreground" /><span>aidevcourse</span>
+    <Image src={site.logo} width={24} height={24} alt="" className="size-6 shrink-0" loading="eager" unoptimized /><span>{site.name}</span>
   </Link>;
 }
 

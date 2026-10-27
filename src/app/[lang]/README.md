@@ -10,11 +10,11 @@ courses/: Nested module; see [courses/README.md](./courses/README.md).
 
 error.tsx: Zinc error state with retry and a link home, without touching local learning records.
 
-layout.tsx: Static locale-specific HTML, self-hosted Latin fonts, the zinc frame, and narrowly scoped client providers.
+layout.tsx: Static locale-specific HTML, inherited root brand metadata, self-hosted Latin fonts, a frame keyed to published lesson URLs, and narrowly scoped client providers.
 
-not-found.tsx: Localized unavailable page inside the zinc frame, linking to the AI 101 course.
+not-found.tsx: Localized unavailable page inside the zinc frame, linking to an available course or home.
 
-page.tsx: Homepage with the zinc hero, exploded Mac, and a two-column CourseCard catalog that becomes one column on mobile. Cards place text on the left and the chip on the right. The hero links to the catalog when lessons are not yet available.
+page.tsx: Homepage with the zinc hero, exploded Mac, and a two-column CourseCard catalog that becomes one column on mobile. The hero starts with the title; its title, intro, and action share the header and catalog's left edge without an extra inset. Cards place text on the left and the chip on the right. The white, square start-learning action shares the language menu's border, muted text, and offset shadow. It opens AI 101's first published lesson in the current language; an unavailable lesson falls back to the catalog.
 
 unavailable/: Nested module; see [unavailable/README.md](./unavailable/README.md).
 

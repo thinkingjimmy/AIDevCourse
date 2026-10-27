@@ -10,7 +10,7 @@ import { Steps, Step } from 'fumadocs-ui/components/steps';
 import { InfoIcon } from '@phosphor-icons/react/dist/ssr/Info';
 import { WarningIcon } from '@phosphor-icons/react/dist/ssr/Warning';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Table, TableHeader, TableBody, TableFooter, TableRow, TableHead, TableCell, TableCaption } from '@/components/ui/data/table';
+import { Table, TableHeader, TableBody, TableFooter, TableRow, TableHead, TableCell, TableCaption } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { LocalizedCodeBlock } from './code-block';
 import { Heading } from './heading';

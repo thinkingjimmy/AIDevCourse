@@ -2,18 +2,11 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-chip-explode.tsx: Tailwind stage and shared illustration paint for the exploded AI chip for the course hero. Opens once and stays open; callouts fade in after it settles. Hover eases it shut. Pauses offscreen. Reduced motion shows the exploded still with callouts.
-
-chip-explode-markup.ts: Inline SVG for that animation, generated from the anatomy iso-kit.
-
-course-card.tsx: Compact horizontal catalog card composed from shared Card parts. Localized hero text has 20px inner spacing on the left. The chip is centered on a full-height muted zinc panel that reaches the card's top, bottom, and right edges. The whole card is a native link.
-
-course-layout.tsx: Full-bleed lesson wiki. The logo row ends with a shadcn SidebarTrigger. Desktop collapse keeps a 48px rail and its toggle; the course, progress, modules, and footer leave the tab order. Sidebar and module state survive lesson changes and reloads in this session, with an in-memory fallback. Phosphor checks mark completed lessons. SidebarFooter contains the globe menu and keyboard-only search with no visible search button. At ≤960px the sidebar opens as a sheet and returns focus to the course directory button when closed.
-
-empty-courses.tsx: shadcn action and Tailwind empty course library, an about link, and links to courses published in other languages.
-
-lesson-navigation.tsx: Tailwind previous and next row with Phosphor direction icons under a top border; the first previous link returns to the course introduction.
-
-translation-notice.tsx: Shared Alert with localized stale-translation notice with a valid original link.
+- `course-card.tsx`: Linked course card with localized metadata, the shared chip illustration, and the language menu's offset shadow on hover and keyboard focus.
+- `course-layout.tsx`: Lesson shell, module navigation, progress, and session-persisted desktop state. The sidebar footer right-aligns the localized About link before the globe menu on desktop and mobile.
+- `empty-courses.tsx`: Localized empty catalog and links to available languages.
+- `lesson-navigation.tsx`: Previous and next lesson links; the first previous link returns to the course.
+- `sidebar.tsx`: Course-specific desktop rail and mobile sheet; navigation closes the sheet.
+- `translation-notice.tsx`: Stale-translation notice with a valid original-language link.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

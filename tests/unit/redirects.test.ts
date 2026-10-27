@@ -5,7 +5,7 @@
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import { it, expect } from 'vitest';
-import { validateRedirects } from '../../src/lib/seo/redirects';
+import { validateRedirects } from '../../src/lib/redirects';
 it('accepts only exact one-hop migrations to published content', () => {
   const urls = new Set(['/zh/courses/new']);
   expect(validateRedirects([{ source: '/zh/courses/old', destination: '/zh/courses/new' }], urls)).toHaveLength(1);

@@ -2,18 +2,18 @@
 
 > L2 | Parent: [README.md](./README.md)
 
-课程只从 `content/<lang>/` 编译。网站页面无需逐篇修改。所有 todo 继续维护在 [PRD](./PRD.md#13-markdown-开发任务)。
+课程只从 `content/<lang>/` 编译。网站页面无需逐篇修改。当前产品行为见 [需求说明](./requirements.md)，数据流见 [架构说明](./architecture.md)。
 
 ## 本地启动
 
-使用 Node 22.17.0 与 pnpm 10.30.3，执行 `pnpm install --frozen-lockfile`。`pnpm dev` 与部署展示同一份课程。新增文件、修改 frontmatter 或 meta 后重启开发服务以刷新公开清单；正文编辑支持热更新。
+使用 Node 22.17.0 或更新的 22.x 补丁版本与 pnpm 10.30.3，执行 `pnpm install --frozen-lockfile`。`pnpm dev` 与部署展示同一份课程。新增文件、修改 frontmatter 或 meta 后重启开发服务以刷新公开清单；正文编辑支持热更新。
 
 `CONTENT_TEST=1` 仅用于非公开工程验收，连接 Vercel 时会直接拒绝启动。
 
 ## 新增原文课程
 
 1. 在 `content/zh/<course>/` 建立目录，复制 [课程模板](./templates/course-original.mdx) 为 `index.mdx`。更换所有示例文字与 ID；课程原文也可以使用其他受支持语言。
-2. 填写 `sourceLocale`、本语言标题、简介、难度、目标 `goals`、受众 `audience` 和前置要求 `prerequisites`。写入 `content/` 并列入 `meta.json` 的文件即公开。
+2. 填写 `sourceLocale`、本语言标题、简介、难度、目标 `goals`、受众 `audience` 和前置要求 `prerequisites`。课程总览由这些字段和课时目录生成，课程文件无需正文。写入 `content/` 并列入 `meta.json` 的文件即公开。
 3. 为课程与每一层模块新增 `meta.json`，在语言根 meta 的 `pages` 中加入课程目录。每层 `pages` 只写直接成员的 ASCII 文件名或目录名，不带扩展名。
 4. 从 [课时模板](./templates/lesson-original.mdx) 新增课时。`courseId` 匹配课程，`lessonId` 永久代表这一逻辑课时；修改标题、排序或路径时保留 ID。
 5. 在模块 meta 中按教学顺序列出课时。课程 meta 包含 `index` 和各模块。不要通过文件名排序、通配符或数字前缀推断顺序。
@@ -55,7 +55,7 @@ Use **emphasis** and [links](https://example.com) when useful.
 ![The steps from a goal to a verified change](/images/courses/change-cycle.svg)
 ```
 
-站内链接使用最终语言路径或当前文章 `#heading`。课时公开地址不含模块，例如 `/zh/courses/ai-101/strengths`；同一课程内课时 slug 必须唯一。跨语言链接文字必须包含目标语言自称，例如 `[English: What AI is good at](/en/courses/ai-101/strengths)`，且目标文件已经存在。不可链接不存在的课时或锚点。外部资料可用 HTTPS 链接，不做视频嵌入。
+站内链接使用最终语言路径或当前文章 `#heading`。课时公开地址不含模块，例如 `/zh/courses/ai-101/strengths`；同一课程内课时 slug 必须唯一。跨语言链接文字必须包含目标语言自称，例如 `[English: What AI is good at](/en/courses/ai-101/strengths)`，且目标文件已经存在。不可链接不存在的课时或锚点。课程总览只渲染元数据和目录，支持 `#course-catalog`；课程介绍正文中的标题不会渲染，不能作为锚点。课程列表位于语言首页，`/{lang}/courses` 不存在。外部资料可用 HTTPS 链接，不做视频嵌入。
 
 `durationMinutes` 是正整数阅读时长；`lessonType` 为 concept / practice / tool。工具操作课必须填写亲自验证的 `lastVerified` 和 `testedWith`。概念和文字练习不假造验证日期，不把编写日期当作工具验证日期。
 
@@ -74,7 +74,7 @@ pnpm build
 
 原文使用 `contentRevision`；译文只使用 `translatedFromRevision`，记录译文依据的原文版本。译文不能引用未来版本。目标语言 meta 只列已有文件，顺序是原文顺序的子序列。
 
-缺译文的课时不存在，不复制原文到另一种语言目录冒充译文。切换菜单会明确说明将前往目标语言课程总览或课程页。
+缺译文的课时不存在，不复制原文到另一种语言目录冒充译文。切换菜单会明确说明将前往目标语言课程总览或首页。
 
 原文发生实质变化时增加 `contentRevision`。旧译文可继续公开，但显示本地化更新提示和原文链接；译者核对后再更新 `translatedFromRevision`。改错字不需要重置学习记录。
 
@@ -82,7 +82,7 @@ pnpm build
 
 课程文件列入对应 `meta.json` 后即公开。检查 meta 完整，执行 check / build / 生产 E2E。请按 [部署指南](./deployment.md) 发布通过检查的提交。
 
-下架时删除该语言的文件，并同步删除仍引用它的译文；目录中不再保留已删除的条目。原文文件不能在译文仍引用时直接移除。没有课时的课程介绍无法通过校验。
+下架时删除该语言的文件，并同步删除仍引用它的译文；目录中不再保留已删除的条目。原文文件不能在译文仍引用时直接移除。没有课时的课程介绍可以继续公开，并显示内容更新状态。
 
 已发布 URL 变化时同步所有语言的相对路径，保持稳定 ID，并在 `config/redirects.json` 添加旧 URL 到实际公开新 URL 的映射。不能有链式跳转、环、动态匹配或外部目标。
 
@@ -95,12 +95,12 @@ pnpm build
 ]
 ```
 
-上面的 JSON 只说明字段形状。真实迁移写在 `config/redirects.json`。这份文件目前是空数组：以前的地址没有对外分享，所以不做跳转。只有发生新的 URL 迁移时才追加条目。不要用示例覆盖这份映射。
+上面的 JSON 只说明字段形状。真实迁移写在 `config/redirects.json`，目标必须已经公开。只有发生 URL 迁移时才追加条目，不要用示例覆盖现有映射。
 
 ## 互动需求
 
-选择题、视频播放器、交互练习、答案展开和提示词对比继续延期。先用文字写清文章目标，再在 PRD 的 T 系列记录具体需求、真实材料、预期行为和验收条件；不要提前创建空组件。
+选择题、视频播放器、交互练习、答案展开和提示词对比暂不实现。先用文字写清文章目标；现有组件不足时，再记录真实材料、输入、状态、失败处理和验收条件，并更新 [需求说明](./requirements.md)。不要提前创建空组件。
 
-AI 101 的五语课程入口保留在 `content/<lang>/ai-101/index.mdx`，旧课文及模块已清空，等待作者更新。保留的 frontmatter 提供课程标题、简介和目标；首页卡片直接复用标题、简介和芯片插图。添加新课时后，在 `meta.json` 的 `pages` 中列出对应文件或模块，课时 URL 仍是 `/{lang}/courses/ai-101/{lesson}`。工程 fixture 使用 `tests/fixtures` 里的 `ai-coding`，只用于测试，不随公开课文清空。
+当前 AI 101 发布五语课程介绍和 Hello World 第一课占位文档，分别位于 `content/<lang>/ai-101/index.mdx` 与 `hello-world.mdx`。首页「马上学习」按 `meta.json` 中的顺序进入第一课。新增课时需在 `pages` 中列出对应文件或模块，课时 URL 为 `/{lang}/courses/ai-101/{lesson}`。`tests/fixtures` 中的 `ai-coding` 只用于工程验证，不属于公开课程。
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

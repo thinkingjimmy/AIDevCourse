@@ -8,13 +8,13 @@ import { PageTitle } from '@/components/layout/page-primitives';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { isLocale, htmlLanguages } from '@/lib/i18n/config';
-import { groupModules } from '@/lib/content/modules';
+import { groupModules } from '@/lib/content/model';
 import { getCatalog, getCourse, getLesson, getArticle } from '@/lib/content/source';
-import { identity } from '@/lib/content/types';
+import { identity } from '@/lib/content/model';
 import { getMDXComponents } from '@/components/mdx/components';
 import { LessonCompletion } from '@/components/progress/lesson-completion';
 import { LessonNavigation } from '@/components/course/lesson-navigation';
-import { pageMetadata } from '@/lib/seo/metadata';
+import { pageMetadata } from '@/lib/metadata';
 import { TranslationNotice } from '@/components/course/translation-notice';
 type Props = { params: Promise<{ lang: string; course: string; lesson: string[] }> };
 export function generateStaticParams() { return getCatalog().documents.filter((doc) => doc.data.kind === 'lesson').map((doc) => ({ lang: doc.locale, course: doc.courseSlug, lesson: [doc.slug.at(-1)!] })); }

@@ -8,7 +8,7 @@ fumadocs.ts: Translations for every Fumadocs control enabled by this application
 
 request.ts: Server translation configuration with deterministic date handling.
 
-routing.ts: Prefix-only routing policy without automatic alternate links.
+routing.ts: Explicit entry-path allowlist for language negotiation.
 
 validate.ts: Key, text, syntax, and interpolation parity validation.
 

@@ -2,13 +2,13 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-Product and contributor documentation. Detailed guides are currently in Chinese; the root README provides English setup and project orientation.
+- `README.zh.md`: Chinese project entry, setup commands, and repository map.
+- `requirements.md`: Current product behavior, acceptance criteria, and scope.
+- `architecture.md`: Module boundaries, content flow, routing, and validation.
+- `authoring.md`: Local course writing, translation, validation, and publication.
+- `deployment.md`: Environment settings, release checks, and rollback.
+- [templates/](./templates/README.md): Course and lesson templates for originals and translations.
 
-- [PRD.md](./PRD.md): Product requirements, acceptance criteria, and the sole development todo list.
-- [authoring.md](./authoring.md): Create, translate, validate, and publish local courses.
-- [deployment.md](./deployment.md): Configure Vercel, review release gates, and roll back deployments.
-- [implementation-notes.md](./implementation-notes.md): Pinned versions, architecture decisions, and observed validation results.
-- [templates/](./templates/README.md): Course and lesson MDX templates for originals and translations.
-- [evidence/](./evidence/README.md): Recorded checks, layout screenshots, and performance measurements.
+Keep only current development guidance here. Test reports and local review records belong in Git-ignored `.artifacts/`; Git history retains earlier specifications and release evidence.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

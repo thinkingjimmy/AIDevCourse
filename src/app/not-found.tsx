@@ -17,9 +17,9 @@ import '@/styles/globals.css';
 const mono = IBM_Plex_Mono({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-plex-mono', display: 'swap' });
 export default function GlobalNotFound() {
   const catalog = getCatalog();
-  const course = catalog.courses.find((item) => item.locale === 'en' && item.slug === 'ai-101');
+  const course = catalog.courses.find((item) => item.locale === 'en');
   const languages = locales.filter((lang) => lang !== 'en').map((lang) => {
-    const alternate = catalog.courses.find((item) => item.locale === lang && item.slug === 'ai-101') ?? catalog.courses.find((item) => item.locale === lang);
+    const alternate = catalog.courses.find((item) => item.locale === lang);
     return { href: alternate?.url ?? `/${lang}`, lang: htmlLanguages[lang], label: languageNames[lang] };
   });
   return <html lang="en" className={`light ${mono.variable}`}><body>
@@ -28,7 +28,7 @@ export default function GlobalNotFound() {
       <SiteBar locale="en" about={en.Ui.about} homeLabel={en.Ui.home} navLabel={en.Home.navLabel}>
         <EnglishTools version={catalog.version} translations={catalog.translations} lessons={lessonIndex(catalog, 'en')} />
       </SiteBar>
-      <MissingPage title={en.Ui.notFoundTitle} body={en.Ui.notFoundBody} primaryHref={course?.url ?? '/en/courses/ai-101'} primaryLabel={course?.title ?? 'AI 101'} homeHref="/en" homeLabel={en.Ui.backHome} languagesLabel={en.Course.otherLanguages} languages={languages} />
+      <MissingPage title={en.Ui.notFoundTitle} body={en.Ui.notFoundBody} primaryHref={course?.url ?? '/en'} primaryLabel={course?.title ?? en.Ui.backHome} homeHref="/en" homeLabel={en.Ui.backHome} languagesLabel={en.Course.otherLanguages} languages={languages} />
       <SiteFooter meta={en.Home.footerMeta}>{en.Home.footerLead}</SiteFooter>
     </SiteShell>
   </body></html>;

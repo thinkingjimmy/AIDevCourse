@@ -8,7 +8,7 @@ import { PageContainer, PageTitle, PageEyebrow } from '@/components/layout/page-
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { isLocale } from '@/lib/i18n/config';
-import { pageMetadata } from '@/lib/seo/metadata';
+import { pageMetadata } from '@/lib/metadata';
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params; if (!isLocale(lang)) return {};
   const t = await getTranslations({ locale: lang, namespace: 'About' });

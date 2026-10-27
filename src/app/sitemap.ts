@@ -6,9 +6,9 @@
  */
 import type { MetadataRoute } from 'next';
 import { getCatalog } from '@/lib/content/source';
-import { identity } from '@/lib/content/types';
+import { identity } from '@/lib/content/model';
 import { locales } from '@/lib/i18n/config';
-import { alternates } from '@/lib/seo/metadata';
+import { alternates } from '@/lib/metadata';
 import { site } from '@/lib/site-config';
 export default function sitemap(): MetadataRoute.Sitemap {
   const entries = [...locales.flatMap((locale) => ['', '/about'].map((part) => ({ locale, url: `/${locale}${part}`, id: undefined as string | undefined }))), ...getCatalog().documents.map((doc) => ({ locale: doc.locale, url: doc.url, id: identity(doc) }))];

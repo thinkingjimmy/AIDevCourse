@@ -2,14 +2,13 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-Shared content, language, and browser-state logic. Rendering components live in `src/components`.
-
-- [content/](./content/README.md): Course schemas, authoring validation, publication catalog, and compiled article queries.
-- [i18n/](./i18n/README.md): Locale definitions, routing negotiation, messages, and framework translation adapters.
-- [progress/](./progress/README.md): Guarded local storage and course-progress selectors.
-- [search/](./search/README.md): Deterministic CJK and accent-aware tokenization shared by index and client.
-- [seo/](./seo/README.md): Localized metadata, canonical/alternate URLs, and redirect validation.
-- `site-config.ts`: Brand and metadata configuration with a safe local default.
-- `utils.ts`: `cn` class merger for the shadcn UI primitives.
+- [content/](./content/README.md): Publication schemas, content model, validation, and compiled server queries.
+- [i18n/](./i18n/README.md): Locale rules, message validation, and framework adapters.
+- `metadata.ts`: Canonical, alternate, and social metadata for published routes.
+- `progress.ts`: Guarded browser persistence and current-language progress selection.
+- `redirects.ts`: Exact one-hop URL migration validation.
+- `search.ts`: Shared deterministic CJK and accent-aware search tokenization.
+- `site-config.ts`: Shared AIDevCourse name, production logo path, origin, and indexing policy.
+- `utils.ts`: Tailwind class composition with cn.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

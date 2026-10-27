@@ -1,5 +1,0 @@
-production draft preview: rejected with CONTENT_PREVIEW is restricted
-fixture on Vercel: rejected with Test content must never be deployed
-missing production origin: rejected with Invalid URL
-placeholder production origin: rejected with Production requires
-production URL with query: rejected with Production requires

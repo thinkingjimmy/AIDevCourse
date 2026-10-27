@@ -1,12 +1,12 @@
 /**
  * [INPUT]: Parsed language documents, explicit order, and local public assets.
- * [OUTPUT]: Identity, lesson-slug, revision, and link validation; course introductions can publish before lessons.
+ * [OUTPUT]: Identity, revision, and link validation against published routes and rendered anchors.
  * [POS]: Central publication policy used before any route, search, or SEO output.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import { existsSync } from 'node:fs';
 import { resolve, sep } from 'node:path';
-import { identity, type ContentDocument } from './types';
+import { identity, renderedAnchors, type ContentDocument } from './model';
 import { isLocale, languageNames, type Locale } from '../i18n/config';
 
 export function publishDocuments(documents: ContentDocument[], order: Map<Locale, string[]>) {
@@ -93,9 +93,9 @@ export function validateReferences(documents: ContentDocument[], publicRoot: str
       const target = byURL.get(targetPath);
       const locale = targetPath.split('/')[1];
       if (!isLocale(locale)) fail('Invalid target language');
-      const simplePage = new RegExp(`^/${locale}(?:/courses|/about)?$`).test(targetPath);
+      const simplePage = targetPath === `/${locale}` || targetPath === `/${locale}/about`;
       if (!target && !simplePage) fail('Target is missing');
-      if (fragment && !target?.headings.some((heading) => heading.id === decodeURIComponent(fragment))) fail('Missing heading anchor');
+      if (fragment && (!target || !renderedAnchors(target).includes(decodeURIComponent(fragment)))) fail('Missing heading anchor');
       if (locale !== doc.locale && !link.label.includes(languageNames[locale as Locale])) fail('Cross-language links must name their target language');
     }
   }

@@ -1,6 +1,6 @@
 node_modules/
 .next*/
-.source/
+.source*/
 next-env.d.ts
 *.tsbuildinfo
 .env*
@@ -11,9 +11,7 @@ playwright-report/
 .pnpm-store/
 .cache/
 coverage/
-
-# Acceptance screenshots and local visual references are not committed.
-docs/evidence/screenshots/**/*.png
+.artifacts/
 
 # Local agent and preview configuration.
 .claude/
