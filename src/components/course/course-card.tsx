@@ -1,6 +1,6 @@
 /**
  * [INPUT]: A localized course manifest, shared Card parts and theme tokens, and the course hero illustration.
- * [OUTPUT]: A linked horizontal course card with left-side text and a full-height zinc illustration panel on the right.
+ * [OUTPUT]: A linked horizontal course card with left-side text and a full-height zinc illustration panel on the right. The chip has no leader lines or names.
  * [POS]: Server-rendered catalog entry; course metadata also supplies the overview hero.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -22,7 +22,7 @@ export async function CourseCard({ course }: { course: CourseManifest }) {
         <p className="m-0 mt-2.5 text-[14px] leading-[1.75] text-muted-foreground">{course.description}</p>
       </CardContent>
       {course.slug === 'ai-101' && <div data-slot="course-card-image" className="flex w-[38%] shrink-0 self-stretch items-center overflow-hidden bg-muted p-3">
-        <div className="relative aspect-[720/570] w-full"><ChipExplode /></div>
+        <div className="relative aspect-[580/570] w-full"><ChipExplode callouts={false} /></div>
       </div>}
     </Card>
   </Link>;
