@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Static exploded-Mac SVG markup, the shared animation driver, and the scheme-A stagger.
- * [OUTPUT]: Decorative hero that opens once and stays open. Hover eases it back together from the current pose.
+ * [OUTPUT]: Decorative hero that opens once, loops assembly and explosion while hovered, and returns to the exploded pose on pointer leave.
  * [POS]: Homepage right column. The slot is the fully exploded bounds.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -57,7 +57,7 @@ export function MacExplode() {
     const cable = svg.querySelector<SVGElement>('[data-asm="cable"]');
     if (cable) add(0, 0.25, (amount) => { cable.style.opacity = (1 - amount).toFixed(2); });
 
-    return animateIllustration(root, channels, { intro: INTRO, ease });
+    return animateIllustration(root, channels, { intro: INTRO, ease, loopOnHover: true });
   }, []);
 
   return <div ref={ref} data-anatomy="mac" className="pointer-events-auto absolute -top-[13.049%] -left-[28.583%] aspect-[720/620] w-[159.978%] bg-transparent" aria-hidden="true" dangerouslySetInnerHTML={{ __html: MAC_EXPLODE_SVG }} />;

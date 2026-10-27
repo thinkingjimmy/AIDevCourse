@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Public pages, isolated fixture lessons, and optional Git-ignored screenshot references.
- * [OUTPUT]: Portable interaction checks, whole-card chip hover video evidence, and opt-in local visual comparisons.
+ * [OUTPUT]: Portable interaction checks, Mac hover-loop and whole-card chip hover video evidence, and opt-in local visual comparisons.
  * [POS]: Styling acceptance suite; CI runs interactions without local baseline images.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -226,5 +226,50 @@ test('the entire course card controls chip hover motion', async ({ browser, base
     await context.close();
     const path = await page.video()?.path();
     if (path) await test.info().attach('Course card hover motion', { path, contentType: 'video/webm' });
+  }
+});
+
+test('home Mac hover repeats closing and opening until the pointer leaves', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ baseURL, viewport: viewports[0], reducedMotion: 'no-preference', recordVideo: { dir: test.info().outputPath('video') } });
+  const page = await context.newPage();
+  try {
+    await page.goto('/en');
+    const mac = page.locator('[data-anatomy="mac"]');
+    const keyboard = mac.locator('[data-asm="kb"]');
+    await expect(mac).toHaveAttribute('data-settled', 'true');
+    await mac.hover();
+    for (let cycle = 0; cycle < 2; cycle++) {
+      await expect.poll(() => keyboard.getAttribute('transform')).toBeNull();
+      await expect(mac).toHaveAttribute('data-settled', 'true');
+      await expect(keyboard).toHaveAttribute('transform', /translate/);
+      expect(await mac.evaluate((element) => element.matches(':hover'))).toBe(true);
+    }
+    await expect(mac).toHaveAttribute('data-settled', 'false');
+    await page.mouse.move(0, 0);
+    await expect(mac).toHaveAttribute('data-settled', 'true');
+    const changesWhileStill = () => keyboard.evaluate((element) => new Promise<number>((resolve) => {
+      let changes = 0;
+      const observer = new MutationObserver(() => changes++);
+      observer.observe(element, { attributes: true, attributeFilter: ['transform'] });
+      setTimeout(() => { observer.disconnect(); resolve(changes); }, 2000);
+    }));
+    expect(await changesWhileStill()).toBe(0);
+    await mac.hover();
+    await expect.poll(() => keyboard.getAttribute('transform')).toBeNull();
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect(mac).toHaveAttribute('data-settled', 'true');
+    expect(await changesWhileStill()).toBe(0);
+    await page.mouse.move(0, 0);
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await mac.hover();
+    await expect.poll(() => keyboard.getAttribute('transform')).toBeNull();
+    await expect(mac).toHaveAttribute('data-settled', 'true');
+    const path = test.info().outputPath('home-mac-hover-loop.png');
+    await page.screenshot({ path });
+    await test.info().attach('Mac reopens while still hovered', { path, contentType: 'image/png' });
+  } finally {
+    await context.close();
+    const path = await page.video()?.path();
+    if (path) await test.info().attach('Homepage Mac hover loop', { path, contentType: 'video/webm' });
   }
 });

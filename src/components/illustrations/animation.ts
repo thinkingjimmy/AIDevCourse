@@ -1,17 +1,18 @@
 /**
  * [INPUT]: A decorative element, optional data-illustration-hover ancestor, timed paint channels, and illustration-specific easing.
- * [OUTPUT]: animateIllustration lifecycle cleanup and translatePart SVG positioning.
+ * [OUTPUT]: animateIllustration lifecycle cleanup with optional hover looping and translatePart SVG positioning.
  * [POS]: Shared animation driver for Mac and chip artwork; React owns mount and cleanup.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 export type AnimationChannel = { delay: number; duration: number; paint: (amount: number) => void };
+const HOVER_PAUSE = 0.6;
 
 export function translatePart(element: Element, vector: readonly [number, number], amount: number) {
   if (amount <= 0.0005) element.removeAttribute('transform');
   else element.setAttribute('transform', `translate(${(vector[0] * amount).toFixed(2)} ${(vector[1] * amount).toFixed(2)})`);
 }
 
-export function animateIllustration(root: HTMLElement, definitions: AnimationChannel[], options: { intro: number; ease: (amount: number) => number }) {
+export function animateIllustration(root: HTMLElement, definitions: AnimationChannel[], options: { intro: number; ease: (amount: number) => number; loopOnHover?: boolean }) {
   const hoverRoot = root.closest<HTMLElement>('[data-illustration-hover]') ?? root;
   const channels = definitions.map((channel) => ({ ...channel, position: 0, delayLeft: 0 }));
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -20,9 +21,12 @@ export function animateIllustration(root: HTMLElement, definitions: AnimationCha
   let visible = false;
   let target: 0 | 1 = 1;
   let intro = options.intro;
+  let hovered = false;
+  let holdLeft = HOVER_PAUSE;
 
   const paint = () => channels.forEach((channel) => channel.paint(options.ease(channel.position)));
   const settled = () => intro <= 0 && channels.every((channel) => channel.delayLeft <= 0 && channel.position === target);
+  const looping = () => options.loopOnHover === true && hovered;
   const stop = () => {
     cancelAnimationFrame(frame);
     frame = 0;
@@ -52,21 +56,28 @@ export function animateIllustration(root: HTMLElement, definitions: AnimationCha
   };
   const tick = (now: number) => {
     if (!last) last = now;
-    step(Math.min(0.05, (now - last) / 1000));
+    const elapsed = Math.min(0.05, (now - last) / 1000);
     last = now;
-    if (settled()) {
-      root.dataset.settled = String(target === 1);
+    if (!settled()) step(elapsed);
+    else if (looping()) {
+      holdLeft -= elapsed;
+      if (holdLeft <= 0) retarget(target === 1 ? 0 : 1);
+    }
+    if (settled()) root.dataset.settled = String(target === 1);
+    if (!settled() || looping()) frame = requestAnimationFrame(tick);
+    else {
       frame = 0;
       last = 0;
-    } else frame = requestAnimationFrame(tick);
+    }
   };
   const start = () => {
-    if (!frame && !reduce.matches && visible && !settled()) frame = requestAnimationFrame(tick);
+    if (!frame && !reduce.matches && visible && (!settled() || looping())) frame = requestAnimationFrame(tick);
   };
   const retarget = (next: 0 | 1) => {
     if (reduce.matches || target === next) return;
     target = next;
     intro = 0;
+    holdLeft = HOVER_PAUSE;
     root.dataset.settled = 'false';
     channels.forEach((channel) => { channel.delayLeft = channel.delay; });
     start();
@@ -76,17 +87,27 @@ export function animateIllustration(root: HTMLElement, definitions: AnimationCha
       stop();
       intro = 0;
       target = 1;
+      holdLeft = HOVER_PAUSE;
       channels.forEach((channel) => { channel.position = 1; channel.delayLeft = 0; });
       paint();
       root.dataset.settled = 'true';
     } else if (!visible) stop();
     else start();
   };
-  const onEnter = (event: PointerEvent) => { if (event.pointerType !== 'touch') retarget(0); };
-  const onLeave = (event: PointerEvent) => { if (event.pointerType !== 'touch') retarget(1); };
+  const onEnter = (event: PointerEvent) => {
+    if (event.pointerType === 'touch') return;
+    hovered = true;
+    retarget(0);
+  };
+  const onLeave = (event: PointerEvent) => {
+    if (event.pointerType === 'touch') return;
+    hovered = false;
+    retarget(1);
+  };
   root.dataset.settled = 'false';
   paint();
-  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches && hoverRoot.matches(':hover')) retarget(0);
+  hovered = window.matchMedia('(hover: hover) and (pointer: fine)').matches && hoverRoot.matches(':hover');
+  if (hovered) retarget(0);
   sync();
   hoverRoot.addEventListener('pointerenter', onEnter);
   hoverRoot.addEventListener('pointerleave', onLeave);
