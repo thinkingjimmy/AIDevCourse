@@ -4,7 +4,7 @@
 
 - `site.spec.ts`: Public routing, homepage hero/header/catalog alignment, Fundamentals heading without a subtitle, menu-matched actions, course-card hover/focus depth and hidden chip callouts with desktop/mobile screenshots, empty states, SEO, accessibility, and no-JS reading.
 - `learning.spec.ts`: Fixture learning progress, multilingual search, IME, and responsive reading.
-- `navigation.spec.ts`: Brand identity across languages, metadata, image loading, responsive headers/sidebars, language menus, focus, persistence, and clipboard failures. Brand cases attach desktop and mobile screenshots.
+- `navigation.spec.ts`: Brand identity across languages, aligned course heroes with home-matched actions and no summary statistics, metadata, image loading, responsive headers/sidebars, language menus, focus, persistence, and clipboard failures. Brand and course hero cases attach desktop and mobile screenshots.
 - `styles.spec.ts`: Illustration motion, whole-card chip hover/re-entry and reduced-motion behavior with video evidence, shared controls, failure states, and optional appearance comparisons.
 - `components.spec.ts`: JimmyNote Markdown, accessibility, responsive layout, and no-JS rendering.
 - `tables.spec.ts`: Semantic tables, narrow-screen scrolling, native container keyboard access, and no-JS rendering.

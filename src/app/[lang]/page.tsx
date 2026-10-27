@@ -33,11 +33,11 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
   return <main id="main-content" className="flex flex-[1_0_auto] flex-col" tabIndex={-1}>
     <PageContainer className="overflow-x-clip pt-[70px] pb-[72px] max-[721px]:pt-9 max-[721px]:pb-7">
       <HeroGrid>
-        <HeroCopy className="pl-0">
+        <HeroCopy>
           <PageTitle variant="hero">{t('title')}</PageTitle>
           <HeroLead>{t('intro')}</HeroLead>
           <PageActions>
-            <Button asChild variant="action-outline" size="action" className="rounded-none text-muted-foreground shadow-[4px_4px_0_var(--line)]">
+            <Button asChild variant="action-raised" size="action">
               <Link href={courses.length ? first ?? '#catalog' : `/${lang}/about`}>
                 {courses.length ? first ? t('start') : t('browseCourses') : course('aboutSite')}
                 {courses.length > 0 && <ArrowRightIcon size={16} aria-hidden />}

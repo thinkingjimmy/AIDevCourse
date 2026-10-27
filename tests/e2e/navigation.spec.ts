@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Public course overviews, isolated fixture lessons, localized labels, and a production server.
- * [OUTPUT]: Brand identity, course footer, language menus, sidebar collapse, and keyboard-only search evidence.
+ * [OUTPUT]: Brand identity, course hero alignment and shared actions without summary statistics, footer, language menus, sidebar collapse, and keyboard-only search evidence.
  * [POS]: Navigation acceptance suite; screenshots are local artifacts, not baseline assertions.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -76,10 +76,30 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
 }
 
 for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'mobile', width: 390, height: 844 }]) {
-  test(`course overview shares the localized site footer on ${viewport.name}`, async ({ page }) => {
+  test(`course overview shares home hero styles and the localized footer on ${viewport.name}`, async ({ page }) => {
     await page.setViewportSize(viewport);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const appearance = (element: HTMLElement) => {
+      const style = getComputedStyle(element);
+      return { border: style.border, radius: style.borderRadius, background: style.backgroundColor, color: style.color, shadow: style.boxShadow, height: style.height, font: style.font, padding: style.padding };
+    };
     for (const locale of ['zh', 'en', 'ja', 'fr', 'es']) {
+      const copy = dictionary(locale);
+      await page.goto(`/${locale}`);
+      const homeAction = await page.getByRole('link', { name: copy.Home.start, exact: true }).evaluate(appearance);
       await page.goto(coursePath(locale));
+      await page.evaluate(() => document.fonts.ready);
+      const title = page.locator('main h1');
+      const hero = title.locator('..');
+      const action = page.getByRole('link', { name: copy.Course.startFirst, exact: true });
+      expect(await action.evaluate(appearance)).toEqual(homeAction);
+      await expect(action.locator('..').locator('p')).toHaveCount(0);
+      await expect(action).toHaveAttribute('target', '_blank');
+      const logo = (await page.locator('header a').first().boundingBox())!;
+      for (const element of [title, hero.locator(':scope > p').first(), hero.locator(':scope > p').last(), action, page.locator('#course-catalog')]) {
+        expect((await element.boundingBox())!.x).toBeCloseTo(logo.x, 1);
+      }
+      if (locale === 'en' || locale === 'zh') await capture(page, `${locale}-course-hero-${viewport.name}`);
       const footer = page.getByRole('contentinfo');
       await expect(footer).toHaveCount(1);
       await expect(footer).toContainText(dictionary(locale).Home.footerLead);

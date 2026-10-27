@@ -10,7 +10,7 @@ language-switcher.tsx: Shared globe Button and content-sized native language men
 
 missing-page.tsx: Two-column unavailable page shared by locale and root 404 documents.
 
-page-primitives.tsx: Shared Tailwind page containers, viewport-centered rails, SiteLogo, title variants, hero parts, status layout, action group, and footer with the author link to jimmywong.dev. The shell keeps a 56 px header and anchor offset at every viewport size. SiteLogo reads the configured name and optimized 24 px image for headers, the lesson sidebar, and design previews.
+page-primitives.tsx: Shared Tailwind page containers, viewport-centered rails, SiteLogo, title variants, hero parts without extra copy inset, status layout, action group, and footer with the author link to jimmywong.dev. Hero text inherits its container's left edge on home and course overviews. The shell keeps a 56 px header and anchor offset at every viewport size. SiteLogo reads the configured name and optimized 24 px image for headers, the lesson sidebar, and design previews.
 
 providers.tsx: Shared light-only UI providers.
 

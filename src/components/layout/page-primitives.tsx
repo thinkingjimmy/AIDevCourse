@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Native element props, Next.js links/images, shared site identity, and Tailwind theme tokens.
- * [OUTPUT]: Shared page shells with a 56 px header offset, containers, image-based SiteLogo, typography, hero parts, and footer.
+ * [OUTPUT]: Shared page shells with a 56 px header offset, containers, image-based SiteLogo, typography, container-aligned hero parts, and footer.
  * [POS]: Shared visual structure for public pages, status pages, and the lesson sidebar.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -54,7 +54,7 @@ export function HeroGrid({ className, ...props }: ComponentProps<'div'>) {
 }
 
 export function HeroCopy(props: ComponentProps<'div'>) {
-  return <div {...props} className={cn('min-w-0 pl-6', props.className)} />;
+  return <div {...props} className={cn('min-w-0', props.className)} />;
 }
 
 export function HeroLead({ className, ...props }: ComponentProps<'p'>) {

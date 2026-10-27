@@ -4,7 +4,7 @@
 
 - `alert.tsx`: Alert, title, and description with callout, notice, and author variants.
 - `badge.tsx`: Compact outline and secondary labels for design previews.
-- `button.tsx`: Native buttons and link composition with shared action variants.
+- `button.tsx`: Native buttons and link composition with shared action variants, including action-raised for square white home/course hero actions with an offset shadow.
 - `card.tsx`: Card and CardContent for course catalog surfaces.
 - `input.tsx`: Native input with shared focus and error states.
 - `table.tsx`: Semantic table parts with a focusable native horizontal scroll container.

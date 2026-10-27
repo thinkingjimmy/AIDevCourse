@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Native button props, Radix Slot composition, and class-variance-authority variants.
- * [OUTPUT]: Button and buttonVariants for site actions, shadcn primitives, and compact icon controls with a 44px hit area.
+ * [OUTPUT]: Button and buttonVariants for site actions, square raised hero actions, shadcn primitives, and compact icon controls with a 44px hit area.
  * [POS]: Single action component; product variants preserve the existing site's geometry.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -16,6 +16,7 @@ const buttonVariants = cva(
       variant: {
         action: "transition-none border border-foreground bg-foreground text-white hover:bg-strong",
         "action-outline": "transition-none border border-border bg-background text-foreground hover:bg-surface",
+        "action-raised": "transition-none border border-border bg-background text-muted-foreground shadow-[4px_4px_0_var(--line)] hover:bg-surface",
         completion: "transition-none border border-border bg-background text-foreground hover:bg-surface disabled:opacity-60",
         keyboard: "transition-none border border-border bg-transparent font-mono font-normal text-muted-foreground",
         paper: "border border-foreground bg-transparent text-inherit hover:bg-accent active:translate-y-px",
@@ -50,6 +51,7 @@ const buttonVariants = cva(
         "icon-lg": "size-10",
       },
     },
+    compoundVariants: [{ variant: "action-raised", className: "rounded-none" }],
     defaultVariants: {
       variant: "default",
       size: "default",

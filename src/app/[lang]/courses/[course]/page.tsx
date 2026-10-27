@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Public course introduction, module groups, exploded-chip figure, and Phosphor action arrow.
- * [OUTPUT]: Course hero, with the exploded chip's leader lines and names, and a two-column syllabus, or a localized updating state when no lessons are published.
+ * [OUTPUT]: Container-aligned course hero with a shared raised action and no summary statistics, an exploded chip with callouts, and a syllabus or localized updating state.
  * [POS]: Course overview inside the shared learning shell; the introduction never counts as a lesson.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -30,7 +30,6 @@ export default async function CoursePage({ params }: Props) {
   const groups = groupModules(course.lessons);
   const first = course.lessons[0];
   const document = getCatalog().documents.find((doc) => doc.url === course.url);
-  const stats = [t('moduleCount', { count: groups.length }), ui('lessonCount', { count: course.lessons.length }), ui('minutes', { count: course.durationMinutes })].join(' · ');
   return <div className="relative left-[calc((100vw-100%)/2)] mx-auto min-h-[calc(100vh-56px)] w-[min(64rem,100%)] self-center"><main id="main-content" className="[&_[role=note]]:mt-5" tabIndex={-1}>
     <section className="overflow-x-clip px-7 pt-[70px] pb-[72px] max-[721px]:px-4 max-[721px]:pt-9 max-[721px]:pb-7">
       <HeroGrid>
@@ -42,9 +41,8 @@ export default async function CoursePage({ params }: Props) {
           </p>
           <PageTitle variant="hero">{course.title}</PageTitle>
           <HeroLead className="mb-[22px]">{course.description}</HeroLead>
-          {first && <PageActions className="mt-0 gap-[18px]">
-            <Button asChild variant="action" size="action"><Link href={first.url} target="_blank" rel="noopener">{t('startFirst')}<ArrowRightIcon size={16} aria-hidden /></Link></Button>
-            <p className="m-0 font-mono text-[12px] text-muted-foreground">{stats}</p>
+          {first && <PageActions className="mt-0">
+            <Button asChild variant="action-raised" size="action"><Link href={first.url} target="_blank" rel="noopener">{t('startFirst')}<ArrowRightIcon size={16} aria-hidden /></Link></Button>
           </PageActions>}
           {document && <TranslationNotice document={document} sourceLocale={course.sourceLocale} />}
         </HeroCopy>
