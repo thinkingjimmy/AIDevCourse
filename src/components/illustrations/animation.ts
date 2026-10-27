@@ -1,5 +1,5 @@
 /**
- * [INPUT]: A decorative element, timed paint channels, and illustration-specific easing.
+ * [INPUT]: A decorative element, optional data-illustration-hover ancestor, timed paint channels, and illustration-specific easing.
  * [OUTPUT]: animateIllustration lifecycle cleanup and translatePart SVG positioning.
  * [POS]: Shared animation driver for Mac and chip artwork; React owns mount and cleanup.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
@@ -12,6 +12,7 @@ export function translatePart(element: Element, vector: readonly [number, number
 }
 
 export function animateIllustration(root: HTMLElement, definitions: AnimationChannel[], options: { intro: number; ease: (amount: number) => number }) {
+  const hoverRoot = root.closest<HTMLElement>('[data-illustration-hover]') ?? root;
   const channels = definitions.map((channel) => ({ ...channel, position: 0, delayLeft: 0 }));
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   let frame = 0;
@@ -85,9 +86,10 @@ export function animateIllustration(root: HTMLElement, definitions: AnimationCha
   const onLeave = (event: PointerEvent) => { if (event.pointerType !== 'touch') retarget(1); };
   root.dataset.settled = 'false';
   paint();
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches && hoverRoot.matches(':hover')) retarget(0);
   sync();
-  root.addEventListener('pointerenter', onEnter);
-  root.addEventListener('pointerleave', onLeave);
+  hoverRoot.addEventListener('pointerenter', onEnter);
+  hoverRoot.addEventListener('pointerleave', onLeave);
   const observer = new IntersectionObserver(([entry]) => {
     visible = Boolean(entry?.isIntersecting);
     sync();
@@ -98,7 +100,7 @@ export function animateIllustration(root: HTMLElement, definitions: AnimationCha
     stop();
     observer.disconnect();
     reduce.removeEventListener('change', sync);
-    root.removeEventListener('pointerenter', onEnter);
-    root.removeEventListener('pointerleave', onLeave);
+    hoverRoot.removeEventListener('pointerenter', onEnter);
+    hoverRoot.removeEventListener('pointerleave', onLeave);
   };
 }

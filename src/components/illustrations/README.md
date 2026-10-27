@@ -2,7 +2,7 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-- `animation.ts`: Shared animation channels, hover reversal, offscreen pause, and reduced-motion handling.
+- `animation.ts`: Shared animation channels, hover reversal from an optional data-illustration-hover ancestor, offscreen pause, and reduced-motion handling. The illustration remains its own hover target when no ancestor is marked.
 - `mac-explode.tsx`: Homepage Mac illustration, projection, part timing, and easing.
 - `mac-explode-markup.ts`: Trusted static Mac SVG artwork and animation targets.
 - `chip-explode.tsx`: Shared course chip illustration and layer timing; the hero keeps settled callouts, while catalog cards disable them.

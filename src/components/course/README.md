@@ -2,7 +2,7 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-- `course-card.tsx`: Linked course card with localized metadata, the shared chip illustration without leader lines or names, and the language menu's offset shadow on hover and keyboard focus.
+- `course-card.tsx`: Linked course card with localized metadata, a data-illustration-hover boundary for whole-card chip motion without callouts, and the language menu's offset shadow on hover and keyboard focus.
 - `course-layout.tsx`: Lesson shell, module navigation, progress, and session-persisted desktop state. The sidebar footer right-aligns the localized About link before the globe menu on desktop and mobile.
 - `empty-courses.tsx`: Localized empty catalog and links to available languages.
 - `lesson-navigation.tsx`: Previous and next lesson links; the first previous link returns to the course.

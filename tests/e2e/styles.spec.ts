@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Public pages, isolated fixture lessons, and optional Git-ignored screenshot references.
- * [OUTPUT]: Portable interaction checks and opt-in local visual comparisons.
+ * [OUTPUT]: Portable interaction checks, whole-card chip hover video evidence, and opt-in local visual comparisons.
  * [POS]: Styling acceptance suite; CI runs interactions without local baseline images.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -179,4 +179,52 @@ test('hero illustrations preserve their opening, hover, and callout behavior', a
   const path = test.info().outputPath('illustrations', 'opened-chip.png');
   await page.screenshot({ path });
   await test.info().attach('Opened chip with callouts', { path, contentType: 'image/png' });
+});
+
+test('the entire course card controls chip hover motion', async ({ browser, baseURL }) => {
+  test.skip(fixture, 'The public AI 101 card owns this interaction.');
+  test.setTimeout(20000);
+  const context = await browser.newContext({ baseURL, viewport: viewports[0], reducedMotion: 'no-preference', recordVideo: { dir: test.info().outputPath('video') } });
+  const page = await context.newPage();
+  try {
+    await page.goto('/en');
+    const card = page.locator('[data-slot="course-grid"]').getByRole('link', { name: 'AI 101', exact: true });
+    const chip = card.locator('[data-anatomy="chip"]');
+    const fan = chip.locator('[data-asm="fan"]');
+    await card.scrollIntoViewIfNeeded();
+    await page.mouse.move(0, 0);
+    await expect(chip).toHaveAttribute('data-settled', 'true');
+    await expect(fan).toHaveAttribute('transform', /translate/);
+    await card.getByRole('heading').hover();
+    await expect.poll(() => fan.getAttribute('transform')).toBeNull();
+    const closed = test.info().outputPath('card-hover-assembled.png');
+    await page.screenshot({ path: closed });
+    await test.info().attach('Card hover assembles the chip', { path: closed, contentType: 'image/png' });
+    await chip.hover();
+    await expect(fan).not.toHaveAttribute('transform');
+    await card.locator('p').last().hover();
+    await expect(fan).not.toHaveAttribute('transform');
+    await page.mouse.move(0, 0);
+    await expect(chip).toHaveAttribute('data-settled', 'true');
+    await expect(fan).toHaveAttribute('transform', /translate/);
+    await card.getByRole('heading').hover();
+    await expect.poll(() => fan.getAttribute('transform')).toBeNull();
+    await page.mouse.move(0, 0);
+    await expect(chip).toHaveAttribute('data-settled', 'true');
+    const opened = test.info().outputPath('card-hover-exploded.png');
+    await page.screenshot({ path: opened });
+    await test.info().attach('Leaving the card reopens the chip', { path: opened, contentType: 'image/png' });
+    await expect(chip.locator('.co')).toHaveCount(0);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const still = await fan.getAttribute('transform');
+    await card.getByRole('heading').hover();
+    await expect(fan).toHaveAttribute('transform', still!);
+    await expect(chip).toHaveAttribute('data-settled', 'true');
+    await card.click();
+    await expect(page).toHaveURL(/\/en\/courses\/ai-101$/);
+  } finally {
+    await context.close();
+    const path = await page.video()?.path();
+    if (path) await test.info().attach('Course card hover motion', { path, contentType: 'video/webm' });
+  }
 });
