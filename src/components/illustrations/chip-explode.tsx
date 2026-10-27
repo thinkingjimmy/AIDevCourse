@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Static exploded-chip SVG, the shared animation driver, and the iso-kit lift (up axis, per-layer distance, stagger).
- * [OUTPUT]: Decorative chip figure with optional callouts that opens once and stays open. Hover eases it shut and hides enabled callouts first.
+ * [OUTPUT]: Decorative chip figure with optional callouts that loops assembly and explosion while hovered and returns to the exploded pose on pointer leave.
  * [POS]: Course hero right column and cropped catalog artwork without callouts; both use the shared animation driver.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -40,7 +40,7 @@ export function ChipExplode({ callouts = true }: { callouts?: boolean }) {
       });
     });
 
-    return animateIllustration(root, channels, { intro: INTRO, ease });
+    return animateIllustration(root, channels, { intro: INTRO, ease, loopOnHover: true });
   }, []);
 
   return <div ref={ref} data-anatomy="chip" data-callouts={callouts ? 'true' : 'false'} className="pointer-events-auto absolute inset-0 bg-transparent" aria-hidden="true" dangerouslySetInnerHTML={{ __html: callouts ? CHIP_EXPLODE_SVG : CHIP_CARD_SVG }} />;

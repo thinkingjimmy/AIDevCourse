@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Public pages, isolated fixture lessons, and optional Git-ignored screenshot references.
- * [OUTPUT]: Portable interaction checks, Mac hover-loop and whole-card chip hover video evidence, and opt-in local visual comparisons.
+ * [OUTPUT]: Portable interaction checks, Mac and home/course chip hover-loop video evidence, and opt-in local visual comparisons.
  * [POS]: Styling acceptance suite; CI runs interactions without local baseline images.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -183,7 +183,7 @@ test('hero illustrations preserve their opening, hover, and callout behavior', a
 
 test('the entire course card controls chip hover motion', async ({ browser, baseURL }) => {
   test.skip(fixture, 'The public AI 101 card owns this interaction.');
-  test.setTimeout(20000);
+  test.setTimeout(30000);
   const context = await browser.newContext({ baseURL, viewport: viewports[0], reducedMotion: 'no-preference', recordVideo: { dir: test.info().outputPath('video') } });
   const page = await context.newPage();
   try {
@@ -201,9 +201,14 @@ test('the entire course card controls chip hover motion', async ({ browser, base
     await page.screenshot({ path: closed });
     await test.info().attach('Card hover assembles the chip', { path: closed, contentType: 'image/png' });
     await chip.hover();
-    await expect(fan).not.toHaveAttribute('transform');
     await card.locator('p').last().hover();
-    await expect(fan).not.toHaveAttribute('transform');
+    for (let cycle = 0; cycle < 2; cycle++) {
+      await expect.poll(() => fan.getAttribute('transform')).toBeNull();
+      await expect(chip).toHaveAttribute('data-settled', 'true');
+      await expect(fan).toHaveAttribute('transform', /translate/);
+      expect(await card.evaluate((element) => element.matches(':hover'))).toBe(true);
+    }
+    await expect(chip).toHaveAttribute('data-settled', 'false');
     await page.mouse.move(0, 0);
     await expect(chip).toHaveAttribute('data-settled', 'true');
     await expect(fan).toHaveAttribute('transform', /translate/);
@@ -226,6 +231,50 @@ test('the entire course card controls chip hover motion', async ({ browser, base
     await context.close();
     const path = await page.video()?.path();
     if (path) await test.info().attach('Course card hover motion', { path, contentType: 'video/webm' });
+  }
+});
+
+test('course chip hover loops and shows callouts after each opening', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ baseURL, viewport: viewports[0], reducedMotion: 'no-preference', recordVideo: { dir: test.info().outputPath('video') } });
+  const page = await context.newPage();
+  try {
+    await page.goto(`/en/courses/${courseSlug}`);
+    const chip = page.locator('[data-anatomy="chip"]');
+    const fan = chip.locator('[data-asm="fan"]');
+    const callout = chip.locator('.co').first();
+    await expect(chip).toHaveAttribute('data-settled', 'true');
+    await expect(callout).toHaveCSS('opacity', '1');
+    await chip.hover();
+    for (let cycle = 0; cycle < 2; cycle++) {
+      await expect.poll(() => fan.getAttribute('transform')).toBeNull();
+      await expect(callout).toHaveCSS('opacity', '0');
+      await expect(chip).toHaveAttribute('data-settled', 'true');
+      await expect.poll(() => callout.evaluate((element) => getComputedStyle(element).opacity), { intervals: [50] }).toBe('1');
+      expect(await chip.evaluate((element) => element.matches(':hover'))).toBe(true);
+    }
+    await expect(chip).toHaveAttribute('data-settled', 'false');
+    await page.mouse.move(0, 0);
+    await expect(chip).toHaveAttribute('data-settled', 'true');
+    const changesWhileStill = () => fan.evaluate((element) => new Promise<number>((resolve) => {
+      let changes = 0;
+      const observer = new MutationObserver(() => changes++);
+      observer.observe(element, { attributes: true, attributeFilter: ['transform'] });
+      setTimeout(() => { observer.disconnect(); resolve(changes); }, 2000);
+    }));
+    expect(await changesWhileStill()).toBe(0);
+    await chip.hover();
+    await expect.poll(() => fan.getAttribute('transform')).toBeNull();
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect(chip).toHaveAttribute('data-settled', 'true');
+    await expect(callout).toHaveCSS('opacity', '1');
+    expect(await changesWhileStill()).toBe(0);
+    const path = test.info().outputPath('course-chip-hover-loop.png');
+    await page.screenshot({ path });
+    await test.info().attach('Course chip reopened with callouts', { path, contentType: 'image/png' });
+  } finally {
+    await context.close();
+    const path = await page.video()?.path();
+    if (path) await test.info().attach('Course chip hover loop', { path, contentType: 'video/webm' });
   }
 });
 
