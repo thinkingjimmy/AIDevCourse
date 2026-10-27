@@ -1,6 +1,6 @@
 /**
  * [INPUT]: The production server, authored catalog, localized messages, and all five language routes.
- * [OUTPUT]: Homepage hero alignment, action and course-card surfaces, publication, locale, and accessibility evidence.
+ * [OUTPUT]: Homepage hero alignment, action and course-card surfaces with hero-only chip callouts, publication, locale, and accessibility evidence.
  * [POS]: Public-site browser matrix, valid with an empty or partial course library.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -108,6 +108,8 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       await expect(card.locator('[data-slot="card-footer"]')).toHaveCount(0);
       await expect(card.locator('svg')).toHaveCount(1);
       await expect(card.locator('[data-anatomy="chip"] svg')).toHaveCount(1);
+      await expect(card.locator('[data-anatomy="chip"]')).toHaveAttribute('data-callouts', 'false');
+      await expect(card.locator('[data-anatomy="chip"] .co')).toHaveCount(0);
       const columns = await grid.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length);
       const expectedColumns = viewport.width > 721 ? 2 : 1;
       expect(columns).toBe(expectedColumns);
@@ -134,6 +136,8 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       await card.press('Enter');
       await expect(page).toHaveURL(new RegExp(`${course.url}$`));
       await expect(page.locator('h1')).toHaveText('AI 101');
+      await expect(page.locator('[data-anatomy="chip"]')).toHaveAttribute('data-callouts', 'true');
+      await expect(page.locator('[data-anatomy="chip"] .co')).toHaveCount(6);
       if (!course.lessons.length) {
         await expect(page.locator('[data-slot="course-empty"]')).toContainText(messages.Course.updatingBody);
         await expect(page.getByRole('link', { name: messages.Course.startFirst, exact: true })).toHaveCount(0);

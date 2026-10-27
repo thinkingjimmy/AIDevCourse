@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Public course introduction, module groups, exploded-chip figure, and Phosphor action arrow.
- * [OUTPUT]: Course hero and a two-column syllabus, or a localized updating state when no lessons are published.
+ * [OUTPUT]: Course hero, with the exploded chip's leader lines and names, and a two-column syllabus, or a localized updating state when no lessons are published.
  * [POS]: Course overview inside the shared learning shell; the introduction never counts as a lesson.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -48,7 +48,7 @@ export default async function CoursePage({ params }: Props) {
           </PageActions>}
           {document && <TranslationNotice document={document} sourceLocale={course.sourceLocale} />}
         </HeroCopy>
-        <div className="relative aspect-[720/570] w-[min(100%,420px)] justify-self-center overflow-hidden bg-transparent max-[841px]:w-[min(100%,320px)]"><ChipExplode /></div>
+        <div className="relative aspect-[720/570] w-[min(100%,420px)] justify-self-center overflow-hidden bg-transparent max-[841px]:w-[min(100%,320px)]"><ChipExplode callouts /></div>
       </HeroGrid>
     </section>
     <hr className="relative left-1/2 m-0 -ml-[50vw] h-0 w-screen border-0 border-t border-border" />

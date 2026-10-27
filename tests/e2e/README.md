@@ -2,7 +2,7 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-- `site.spec.ts`: Public routing, homepage hero/header/catalog alignment, menu-matched actions, course-card hover/focus depth with desktop/mobile screenshots, empty states, SEO, accessibility, and no-JS reading.
+- `site.spec.ts`: Public routing, homepage hero/header/catalog alignment, menu-matched actions, course-card hover/focus depth and hidden chip callouts with desktop/mobile screenshots, empty states, SEO, accessibility, and no-JS reading.
 - `learning.spec.ts`: Fixture learning progress, multilingual search, IME, and responsive reading.
 - `navigation.spec.ts`: Brand identity across languages, metadata, image loading, responsive headers/sidebars, language menus, focus, persistence, and clipboard failures. Brand cases attach desktop and mobile screenshots.
 - `styles.spec.ts`: Illustration motion, shared controls, failure states, and optional appearance comparisons.

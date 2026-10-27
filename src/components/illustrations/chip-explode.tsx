@@ -1,14 +1,14 @@
 /**
  * [INPUT]: Static exploded-chip SVG, the shared animation driver, and the iso-kit lift (up axis, per-layer distance, stagger).
- * [OUTPUT]: Decorative course figure that opens once and stays open. Callouts appear after the last layer settles. Hover eases it shut from the current pose and hides the callouts first.
- * [POS]: Course hero right column. The slot is the fully exploded bounds.
+ * [OUTPUT]: Decorative chip figure with optional callouts that opens once and stays open. Hover eases it shut and hides enabled callouts first.
+ * [POS]: Course hero right column and cropped catalog artwork without callouts; both use the shared animation driver.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 'use client';
 
 import { useEffect, useRef } from 'react';
 import { animateIllustration, translatePart, type AnimationChannel } from './animation';
-import { CHIP_EXPLODE_SVG, CHIP_UP } from './chip-explode-markup';
+import { CHIP_CARD_SVG, CHIP_EXPLODE_SVG, CHIP_UP } from './chip-explode-markup';
 
 const INTRO = 0.4;
 const STAG = 0.07;
@@ -21,7 +21,7 @@ function ease(amount: number) {
   return 1 - (1 - t) ** 3;
 }
 
-export function ChipExplode() {
+export function ChipExplode({ callouts = true }: { callouts?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,5 +43,5 @@ export function ChipExplode() {
     return animateIllustration(root, channels, { intro: INTRO, ease });
   }, []);
 
-  return <div ref={ref} data-anatomy="chip" className="pointer-events-auto absolute inset-0 bg-transparent" aria-hidden="true" dangerouslySetInnerHTML={{ __html: CHIP_EXPLODE_SVG }} />;
+  return <div ref={ref} data-anatomy="chip" data-callouts={callouts ? 'true' : 'false'} className="pointer-events-auto absolute inset-0 bg-transparent" aria-hidden="true" dangerouslySetInnerHTML={{ __html: callouts ? CHIP_EXPLODE_SVG : CHIP_CARD_SVG }} />;
 }
