@@ -14,6 +14,6 @@ ja.json: Local configuration or complete language dictionary.
 
 zh.json: Local configuration or complete language dictionary.
 
-Course includes localized updating states for introductions published before lessons. Home includes the start-learning action (马上学习 in Chinese) and a catalog action used when no lesson is available.
+Course includes localized updating states for introductions published before lessons. Home includes the start-learning action (马上学习 in Chinese), the Fundamentals catalog heading (基础 in Chinese) without a subtitle, and a catalog action used when no lesson is available.
 
 [PROTOCOL]: Update this header when making changes, then check README.md.

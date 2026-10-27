@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Active locale, published course manifests, shared CourseCard, and the Phosphor action arrow.
- * [OUTPUT]: Homepage with a rail-aligned hero, menu-styled learning action, exploded Mac, and horizontal course cards.
+ * [OUTPUT]: Homepage with a rail-aligned hero, menu-styled learning action, exploded Mac, and a foundations catalog without a subtitle.
  * [POS]: Public entry surface; the learning action prioritizes AI 101's first published lesson.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -50,7 +50,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
     </PageContainer>
     <hr className="m-0 h-0 border-0 border-t border-border" />
     <PageContainer className="flex-[1_0_auto] pt-12 pb-[72px]" id="catalog">
-      <div className="mb-7"><h2 className="m-0 font-sans text-[22px] font-semibold tracking-[-.02em]">{t('courseTitle')}</h2><p className="m-0 mt-1 text-[14px] text-muted-foreground">{t('courseIntro')}</p></div>
+      <h2 className="m-0 mb-7 font-sans text-[22px] font-semibold tracking-[-.02em]">{t('courseTitle')}</h2>
       {courses.length ? <div data-slot="course-grid" className="grid grid-cols-2 gap-5 max-[721px]:grid-cols-1">
         {courses.map((item) => <CourseCard key={item.id} course={item} />)}
       </div> : <EmptyCourses locale={lang} />}

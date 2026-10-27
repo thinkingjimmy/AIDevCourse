@@ -14,7 +14,7 @@ layout.tsx: Static locale-specific HTML, inherited root brand metadata, self-hos
 
 not-found.tsx: Localized unavailable page inside the zinc frame, linking to an available course or home.
 
-page.tsx: Homepage with the zinc hero, exploded Mac, and a two-column CourseCard catalog that becomes one column on mobile. The hero starts with the title; its title, intro, and action share the header and catalog's left edge without an extra inset. Cards place text on the left and a cropped chip without leader lines or names on the right. The white, square start-learning action shares the language menu's border, muted text, and offset shadow. It opens AI 101's first published lesson in the current language; an unavailable lesson falls back to the catalog.
+page.tsx: Homepage with the zinc hero, exploded Mac, and a two-column CourseCard catalog that becomes one column on mobile. The catalog has a localized Fundamentals heading and no subtitle. The hero starts with the title; its title, intro, and action share the header and catalog's left edge without an extra inset. Cards place text on the left and a cropped chip without leader lines or names on the right. The white, square start-learning action shares the language menu's border, muted text, and offset shadow. It opens AI 101's first published lesson in the current language; an unavailable lesson falls back to the catalog.
 
 unavailable/: Nested module; see [unavailable/README.md](./unavailable/README.md).
 

@@ -166,6 +166,15 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       await expect(intro).toHaveCount(1);
       await expect(intro).toHaveText(messages.Home.intro);
       await expect(page.getByText(messages.Home.eyebrow, { exact: true })).toHaveCount(0);
+      const catalogHeading = page.getByRole('heading', { name: messages.Home.courseTitle, exact: true });
+      await expect(catalogHeading.locator('..').locator(':scope > p')).toHaveCount(0);
+      if (locale === 'zh') {
+        await expect(catalogHeading).toHaveText('基础');
+        const path = test.info().outputPath(`basics-catalog-${viewport.name}.png`);
+        await page.locator('#catalog').screenshot({ path });
+        await test.info().attach('Fundamentals catalog', { path, contentType: 'image/png' });
+        await page.evaluate(() => window.scrollTo(0, 0));
+      }
       const logo = await page.locator('header a').first().boundingBox();
       for (const element of [title, intro, action, page.getByRole('heading', { name: messages.Home.courseTitle, exact: true })]) {
         expect((await element.boundingBox())!.x).toBeCloseTo(logo!.x, 1);
