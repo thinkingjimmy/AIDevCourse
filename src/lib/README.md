@@ -4,6 +4,8 @@
 
 - [content/](./content/README.md): Publication schemas, content model, validation, and compiled server queries.
 - [i18n/](./i18n/README.md): Locale rules, message validation, and framework adapters.
+- [link-preview/](./link-preview/README.md): Published-link metadata, local article summaries, bounded public HTTPS reads, and caching.
+- `fonts.ts`: Shared self-hosted Geist, Geist Mono, and Geist Pixel variables for locale layouts and the root 404 document.
 - `metadata.ts`: Canonical, alternate, and social metadata using prefix-free English paths and an English x-default when available.
 - `progress.ts`: Manifest-registered achievement identities and guarded browser persistence for course achievements and recent visits; legacy completion records are ignored.
 - `redirects.ts`: Exact one-hop URL migration validation.

@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Course learning context, course sidebar controls, keyboard search, language data, and canonical locale paths.
- * [OUTPUT]: Lesson shell with the existing left sidebar and mobile sheet, plus a named reading container for centered article/TOC layouts. CourseFooter and persisted navigation state remain shared.
+ * [OUTPUT]: Lesson shell with a brand-only sidebar header, consistent sans-serif module labels, desktop/mobile navigation, and a named reading container. CourseFooter and persisted navigation state remain shared.
  * [POS]: Client lesson navigation; article content stays server rendered. Course overviews do not mount this.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -94,9 +94,9 @@ function ModuleTree() {
         const expanded = open[group.module] ?? group.module === currentModule;
         return <SidebarMenu className="gap-0" key={group.module}>
           <SidebarMenuItem>
-            <SidebarMenuButton className="h-auto justify-start gap-2 rounded-md px-2 py-[7px] text-sm leading-snug font-medium text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground" aria-expanded={expanded} onClick={() => setOpen((value) => ({ ...value, [group.module]: !expanded }))}>
-              <span className="flex-none font-mono text-xs font-normal text-muted-foreground">{String(index + 1).padStart(2, '0')}</span>
-              <span className="min-w-0 font-medium">{group.title}</span>
+            <SidebarMenuButton className="h-auto justify-start gap-2 rounded-md px-2 py-[7px] font-sans text-sm leading-snug font-medium text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground" aria-expanded={expanded} onClick={() => setOpen((value) => ({ ...value, [group.module]: !expanded }))}>
+              <span className="flex-none text-muted-foreground tabular-nums">{String(index + 1).padStart(2, '0')}</span>
+              <span className="min-w-0">{group.title}</span>
             </SidebarMenuButton>
             {expanded && <SidebarMenuSub className="m-0 mb-1.5 translate-x-0 gap-0 border-0 p-0">
               {group.lessons.map(({ lesson }) => {
@@ -121,16 +121,14 @@ function CourseSidebar({ locale, version, lessons, translations }: {
   locale: Locale; version: string; lessons: Record<string, SearchLessonMeta>; translations: Catalog['translations'];
 }) {
   const ui = useTranslations('Ui');
-  const { course } = useLearning();
   const { open, isMobile } = useSidebar();
   const toggleLabel = isMobile ? ui('close') : ui(open ? 'collapseSidebar' : 'expandSidebar');
   return <Sidebar label={ui('menu')}>
-    <SidebarHeader className="w-full gap-3.5 pt-[18px] pr-[18px] pb-2 pl-7 group-data-[collapsible=icon]:px-2">
+    <SidebarHeader className="w-full pt-[18px] pr-[18px] pb-2 pl-7 group-data-[collapsible=icon]:px-2">
       <div className="flex items-center justify-between gap-3">
         <SiteLogo href={localePath(locale)} className="text-ui group-data-[collapsible=icon]:hidden" aria-label={`${site.name} · ${ui('home')}`} />
         <SidebarTrigger aria-label={toggleLabel} title={toggleLabel} />
       </div>
-      <Link href={course.url} className="text-base leading-snug font-semibold text-inherit no-underline hover:text-foreground group-data-[collapsible=icon]:hidden">{course.title}</Link>
     </SidebarHeader>
     <SidebarContent className="w-full group-data-[collapsible=icon]:hidden">
       <ModuleTree />

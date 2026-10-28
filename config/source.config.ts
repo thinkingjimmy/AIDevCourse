@@ -1,6 +1,6 @@
 /**
- * [INPUT]: Validated publication catalog, isolated content mode, and Fumadocs Config API, canonical locale paths.
- * [OUTPUT]: A local MDX collection containing only allowed content files, plus allowlisted /design preview routes.
+ * [INPUT]: Validated publication catalog, isolated content mode, Fumadocs Config API, canonical locale paths, and the shared mark syntax extension.
+ * [OUTPUT]: A local MDX collection with ==text== highlighting, containing only allowed content files, plus allowlisted /design preview routes.
  * [POS]: Build-time compiler boundary; fixtures require an isolated test build.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -12,6 +12,7 @@ import { documentSchema } from '../src/lib/content/schema';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { locales } from '../src/lib/i18n/config';
 import { contentMode } from './content-mode.mjs';
+import { remarkMark } from 'remark-mark-highlight';
 const catalog = readCatalog();
 // Freeze the checked public boundary at build time; runtime routes need no filesystem access.
 mkdirSync(contentMode.generated, { recursive: true });
@@ -30,6 +31,7 @@ export const courses = defineDocs({
 });
 export default defineConfig({
   mdxOptions: {
+    remarkPlugins: [remarkMark],
     rehypeCodeOptions: {
       themes: { light: 'github-light', dark: 'github-light' },
       transformers: [{ pre(node) { node.properties['data-language'] = this.options.lang; } }],

@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs';
 import AxeBuilder from '@axe-core/playwright';
 
 const fixture = process.env.CONTENT_TEST === '1';
-const courseSlug = fixture ? 'ai-coding' : 'ai-101';
+const courseSlug = fixture ? 'ai-coding' : 'llm-101';
 const coursePath = (locale: string) => localePath(locale as Locale, `/courses/${courseSlug}`);
 const lessonPath = (locale = 'zh') => `${coursePath(locale)}/first-change`;
 
@@ -115,7 +115,10 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     await page.goto(lessonPath());
     await expect(page.getByRole('contentinfo')).toHaveCount(0);
     if (viewport.name === 'mobile') await page.getByRole('button', { name: dictionary('zh').Ui.menu, exact: true }).click();
-    await page.locator('[data-slot="sidebar-header"] a[href="/zh/courses/ai-coding"]').click();
+    const sidebarHeader = page.locator('[data-slot="sidebar-header"]');
+    await expect(sidebarHeader.getByRole('link')).toHaveCount(1);
+    await sidebarHeader.getByRole('link').click();
+    await page.locator(`[data-slot="course-grid"] a[href="${coursePath('zh')}"]`).click();
     await expect(page.getByRole('contentinfo')).toContainText(dictionary('zh').Home.footerLead);
   });
 }

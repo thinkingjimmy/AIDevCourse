@@ -2,13 +2,13 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-tokens.css: Tailwind theme entry, importing typography and defining shared colors, Geist font families, SVG paint colors, radius, and Fumadocs tokens. Author-note backgrounds reuse the border color used by callout shadows.
+tokens.css: Tailwind theme entry, importing typography and defining shared colors, Geist font families, SVG paint colors, radius, and Fumadocs tokens. Author notes use the shared background, border, and reading colors.
 
 typography.css: Rem-based text sizes, unitless line heights, and tracking tokens shared by public pages and design previews.
 
 globals.css: Public Tailwind/Fumadocs entry with explicit source scanning, Geist Latin stacks paired with Noto Sans SC for Chinese and Noto Sans JP for Japanese, and native defaults expressed with @apply, including focus, selection, no-JS controls, and reduced motion.
 
-prose.css: The course-prose Tailwind utility for Markdown reading, headings, links, code, images, and task lists, scoped above Fumadocs defaults. The shared quote-frame utility gives Markdown quotes, ChatMessage, and achievement challenges the same black border and offset shadow. Content selectors exclude not-prose components. Shiki retains syntax colors.
+prose.css: The course-prose Tailwind utility for Markdown reading, headings, links, code, images, and task lists, scoped above Fumadocs defaults. The shared quote-frame utility gives Markdown quotes, JimmyNote, ChatMessage, and achievement challenges the same black border and offset shadow. Content selectors exclude not-prose components. Shiki retains syntax colors.
 
 illustrations.css: Tailwind @apply rules for static SVG paint hooks and callout states. React supplies runtime animation values.
 
@@ -37,7 +37,7 @@ All font sizes use rem. These values assume the browser's default 16px root; do 
 | text-5xl | 48px | Desktop page titles |
 | text-hero | 56px | Desktop homepage title |
 
-PageTitle owns responsive hero, page, and lesson variants. Font weights use font-normal for text, font-medium for control emphasis, font-semibold for headings, and font-bold for active lesson navigation. The homepage title retains font-pixel font-normal.
+PageTitle owns responsive hero, page, and lesson variants. Font weights use font-normal for text, font-medium for control emphasis, font-semibold for headings, and font-bold for active lesson navigation. The homepage and 404 titles use font-pixel font-normal; the decorative 404 numeral uses the same font. Shared Latin font variables come from src/lib/fonts.ts, and Chinese/Japanese glyphs use the existing locale-specific fallbacks.
 
 Text utilities provide role defaults. Override line height only with shared roles: leading-heading for titles, leading-copy for compact UI copy, leading-body for descriptions, and leading-reading for authored content. Chinese and Japanese prose use leading-cjk. Use tracking-heading for display titles and tracking-label for short mono eyebrows. Avoid per-component numeric text, leading, or tracking values; structure:check rejects them.
 

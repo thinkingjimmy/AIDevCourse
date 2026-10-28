@@ -1,6 +1,6 @@
 /**
  * [INPUT]: Site Geist font variables, the shared typography scale, and zinc/Fumadocs palettes.
- * [OUTPUT]: Shared typography, color, illustration, radius, and content tokens, with author-note backgrounds matching callout shadows.
+ * [OUTPUT]: Shared typography, color, illustration, radius, and content tokens.
  * [POS]: Theme contract imported by the public site and the isolated preview document.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -32,8 +32,6 @@
   --color-surface: #fafafa;
   --color-line-soft: #eeeef0;
   --color-strong: #18181b;
-  --color-author-note: var(--color-border);
-  --color-author-note-foreground: #2b2b22;
   --color-done: #3f6b3a;
   --color-review: #6b5313;
   --color-mark: #f1de9c;

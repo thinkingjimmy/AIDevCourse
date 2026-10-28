@@ -2,7 +2,9 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-Ui dictionaries include sidebar collapse/expand labels and heading-link copy feedback; Language.label names the language menu; Language.change labels the sidebar submenu, Ui.more names its More button, and Course.achievementsTitle labels the medal summary. About introductions use the exact product name AIDevCourse in all five languages; domain URLs retain their lowercase spelling.
+Ui dictionaries include sidebar collapse/expand labels, heading-link copy feedback, and a direct localized Page not found title for the single 404 page; Language.label names the language menu; Language.change labels the sidebar submenu, Ui.more names its More button, and Course.achievementsTitle labels the medal summary. About introductions use the exact product name AIDevCourse in all five languages; domain URLs retain their lowercase spelling.
+
+Ui.linkPreview, Ui.linkPreviewLoading, and Ui.linkPreviewUnavailable label the page-preview tooltip, loading status, and unavailable fallback in all five languages.
 
 en.json: Local configuration or complete language dictionary.
 

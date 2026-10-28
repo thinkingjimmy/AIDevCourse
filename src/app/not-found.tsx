@@ -1,13 +1,11 @@
 /**
- * [INPUT]: English copy, Geist fonts, and the public catalog for paths outside any valid locale, canonical locale paths.
- * [OUTPUT]: Root 404 with Geist typography, the zinc header, footer, and the same two-column unavailable layout.
- * [POS]: Root error document for invalid locales and unknown paths the proxy does not rewrite.
+ * [INPUT]: English header/footer copy, shared Geist fonts, public catalog tools, and the single MissingPage renderer.
+ * [OUTPUT]: The root 404 document with the same typography, actions, and recovery content as locale 404 pages.
+ * [POS]: Root document adapter for invalid locales; MissingPage owns 404 presentation and recovery data.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
-import { localePath } from '@/lib/i18n/routing';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { sans, mono, pixel } from '@/lib/fonts';
 import { getCatalog } from '@/lib/content/source';
-import { htmlLanguages, languageNames, locales } from '@/lib/i18n/config';
 import { EnglishTools } from '@/components/layout/english-tools';
 import { SiteShell, SiteFooter } from '@/components/layout/page-primitives';
 import { SiteBar } from '@/components/layout/home-header';
@@ -15,22 +13,15 @@ import { MissingPage } from '@/components/layout/missing-page';
 import { lessonIndex } from '@/components/search/lessons';
 import en from '@/messages/en.json';
 import '@/styles/globals.css';
-const sans = Geist({ subsets: ['latin'], variable: '--font-geist', display: 'swap' });
-const mono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono', display: 'swap' });
 export default function GlobalNotFound() {
   const catalog = getCatalog();
-  const course = catalog.courses.find((item) => item.locale === 'en');
-  const languages = locales.filter((lang) => lang !== 'en').map((lang) => {
-    const alternate = catalog.courses.find((item) => item.locale === lang);
-    return { href: alternate?.url ?? localePath(lang), lang: htmlLanguages[lang], label: languageNames[lang] };
-  });
-  return <html lang="en" className={`light ${sans.variable} ${mono.variable}`}><body>
+  return <html lang="en" className={`light ${sans.variable} ${mono.variable} ${pixel.variable}`}><body>
     <a href="#main-content" className="fixed -top-[100px] left-4 z-[100] bg-foreground px-[18px] py-3 text-white focus:top-3">{en.Ui.skip}</a>
     <SiteShell>
       <SiteBar locale="en" about={en.Ui.about} homeLabel={en.Ui.home} navLabel={en.Home.navLabel}>
         <EnglishTools version={catalog.version} translations={catalog.translations} lessons={lessonIndex(catalog, 'en')} />
       </SiteBar>
-      <MissingPage title={en.Ui.notFoundTitle} body={en.Ui.notFoundBody} primaryHref={course?.url ?? '/'} primaryLabel={course?.title ?? en.Ui.backHome} homeHref="/" homeLabel={en.Ui.backHome} languagesLabel={en.Course.otherLanguages} languages={languages} />
+      <MissingPage locale="en" />
       <SiteFooter meta={en.Home.footerMeta}>{en.Home.footerLead}</SiteFooter>
     </SiteShell>
   </body></html>;

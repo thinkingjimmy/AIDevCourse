@@ -1,6 +1,6 @@
 /**
  * [INPUT]: A direct scan of content/zh, separate from the live homepage.
- * [OUTPUT]: The published zh AI 101 course, its lean lesson summaries, and the homepage facts used by design previews.
+ * [OUTPUT]: The published zh LLM 101 course, its lean lesson summaries, and the homepage facts used by design previews.
  * [POS]: Design-only reader. It is not used by the live home.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -12,7 +12,7 @@ import type { ContentDocument } from '@/lib/content/model';
 export const levelLabel = { beginner: '入门', intermediate: '进阶', advanced: '高级' } as const;
 
 export const tracks = [
-  { id: 'ai-101', title: 'AI 101', pending: false },
+  { id: 'llm-101', title: 'LLM 101', pending: false },
   { id: 'llm', title: 'LLM', pending: true, note: '模型、上下文与提示。目录里还没有课时。' },
   { id: 'agents', title: 'AI agents', pending: true, note: '把任务交给代理之前，先能检查它的改动。目录里还没有课时。' },
 ] as const;
@@ -64,15 +64,15 @@ function lessonFrom(doc: ContentDocument, moduleTitle: string, index: number): D
 
 export const loadDesignCourse = cache((): DesignCourse => {
   const scan = scanContent(join(process.cwd(), 'content'));
-  const courseDoc = scan.documents.find((doc) => doc.locale === 'zh' && doc.courseSlug === 'ai-101' && doc.data.kind === 'course');
-  if (!courseDoc || courseDoc.data.kind !== 'course') throw new Error('content/zh/ai-101 is missing a course index');
+  const courseDoc = scan.documents.find((doc) => doc.locale === 'zh' && doc.courseSlug === 'llm-101' && doc.data.kind === 'course');
+  if (!courseDoc || courseDoc.data.kind !== 'course') throw new Error('content/zh/llm-101 is missing a course index');
   const order = scan.order.get('zh') ?? [];
   const lessons = scan.documents
-    .filter((doc) => doc.locale === 'zh' && doc.courseSlug === 'ai-101' && doc.data.kind === 'lesson')
+    .filter((doc) => doc.locale === 'zh' && doc.courseSlug === 'llm-101' && doc.data.kind === 'lesson')
     .sort((a, b) => order.indexOf(a.file) - order.indexOf(b.file))
     .map((doc, index) => {
       const modulePath = doc.slug.slice(0, -1).join('/');
-      const moduleTitle = scan.labels.get(`zh/ai-101${modulePath ? `/${modulePath}` : ''}`) ?? courseDoc.data.title;
+      const moduleTitle = scan.labels.get(`zh/llm-101${modulePath ? `/${modulePath}` : ''}`) ?? courseDoc.data.title;
       return lessonFrom(doc, moduleTitle, index);
     });
   const modules: DesignModule[] = [];

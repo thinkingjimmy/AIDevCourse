@@ -1,20 +1,94 @@
 /**
- * [INPUT]: The real MDX preview, Chinese What a language model does lesson, responsive viewports, and a production server, canonical locale paths.
- * [OUTPUT]: Author-note, chat thinking/completed states with user/LLM avatars, reduced-motion behavior, lesson demos, question-only achievement prompts, explicit answer feedback, immediate earned cards, non-destructive retries after success with timestamp and count checks, and screenshot evidence.
+ * [INPUT]: The real MDX preview, local Jimmy avatar, Chinese generation and token lessons, responsive viewports, and a production server, canonical locale paths.
+ * [OUTPUT]: Author-note Markdown, border-embedded signatures, full-width reading, and avatar loading/alignment, chat thinking/completed states with user/LLM avatars, reduced-motion behavior, lesson demos, token encoding/decoding order and ID arrays, readable output and matching panels, question-only achievement prompts, explicit answer feedback, immediate earned cards, non-destructive retries after success with timestamp and count checks, and screenshot evidence.
  * [POS]: Component acceptance suite; local screenshots do not require baseline images.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import { localeCookie, type Locale } from '../../src/lib/i18n/config';
 import { localePath } from '../../src/lib/i18n/routing';
+import { readCatalog } from '../../src/lib/content/manifest';
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-for (const viewport of [{ name: 'desktop', width: 1280, height: 960 }, { name: 'mobile', width: 390, height: 844 }, { name: 'narrow', width: 320, height: 844 }]) {
+test.describe('Token encoding diagram', () => {
+  test.skip(process.env.CONTENT_TEST === '1', 'The lesson belongs to the published catalog.');
+
+  for (const scenario of [
+    { name: 'desktop', width: 1280, height: 960, javaScriptEnabled: true },
+    { name: 'narrow', width: 320, height: 844, javaScriptEnabled: true },
+    { name: 'enlarged', width: 390, height: 844, javaScriptEnabled: true },
+    { name: 'no-js', width: 390, height: 844, javaScriptEnabled: false },
+  ]) {
+    test(`preserves encoding order and reading on ${scenario.name}`, async ({ browser, baseURL }) => {
+      const context = await browser.newContext({ baseURL, viewport: scenario, javaScriptEnabled: scenario.javaScriptEnabled });
+      try {
+        const page = await context.newPage();
+        const response = await page.goto('/zh/courses/llm-101/what-is-a-token');
+        expect(response?.status()).toBe(200);
+        await page.evaluate(() => document.fonts.ready);
+        if (scenario.name === 'enlarged') await page.evaluate(() => { document.documentElement.style.fontSize = '24px'; });
+        const figure = page.getByRole('figure', { name: '文本编码、模型运算与输出解码的过程' });
+        await expect(figure).toBeVisible();
+        expect(await figure.evaluate((element) => element.previousElementSibling?.textContent)).toContain('每个词元对应一个 ID');
+        await expect(figure).toContainText('今天广州的天气如何？');
+        await expect(figure).toContainText('词元处理器 Tokenizer');
+        const pairs = figure.getByRole('listitem');
+        await expect(pairs.locator('dt')).toHaveText(['Token：今天', 'Token：广州', 'Token：的', 'Token：天气', 'Token：如何', 'Token：？']);
+        await expect(pairs.locator('dd')).toHaveText(['Token ID：47256', 'Token ID：132426', 'Token ID：1616', 'Token ID：167823', 'Token ID：24608', 'Token ID：4802']);
+        await expect(figure).toContainText('Token ID 按原顺序送入模型');
+        await expect(figure.getByLabel('输入 Token ID 数组')).toHaveText('[47256, 132426, 1616, 167823, 24608, 4802]');
+        await expect(figure.getByLabel('输出 Token ID 数组')).toHaveText('[47256]');
+        await expect(figure.getByText('LLM', { exact: true })).toBeVisible();
+        await expect(figure).not.toContainText('你输入的文本');
+        await expect(figure).not.toContainText('词元与 ID 沿用下文示例');
+        const panelStyle = (element: Element) => {
+          const style = getComputedStyle(element);
+          return { background: style.backgroundColor, color: style.color, padding: style.padding, font: style.font };
+        };
+        const inputStyle = await figure.getByText('今天广州的天气如何？', { exact: true }).evaluate(panelStyle);
+        expect(inputStyle.background).toBe('rgb(244, 244, 245)');
+        expect(await figure.getByText('LLM', { exact: true }).evaluate(panelStyle)).toEqual(inputStyle);
+        const decoder = figure.getByRole('group', { name: 'Tokenizer 解码' });
+        await expect(decoder).toContainText('解码 Decoding');
+        await expect(decoder.locator('dt')).toHaveText(['Token ID', 'Token']);
+        await expect(decoder.locator('dd')).toHaveText(['47256', '今天']);
+        const output = figure.locator('[data-token-output]');
+        await expect(output).toHaveText('今天');
+        expect(await output.evaluate(panelStyle)).toEqual(inputStyle);
+        const order = await figure.evaluate((element) => ({ text: element.textContent ?? '', decoderFits: element.querySelector('[aria-label="Tokenizer 解码"]')!.scrollWidth <= element.querySelector('[aria-label="Tokenizer 解码"]')!.clientWidth }));
+        expect(order.text).toMatch(/\[47256, 132426, 1616, 167823, 24608, 4802\].*LLM.*模型输出 Token ID.*\[47256\].*解码 Decoding.*47256.*今天.*呈现给用户.*今天/s);
+        expect(order.decoderFits).toBe(true);
+        for (const array of await figure.locator('code[aria-label]').all()) {
+          expect(await array.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+        }
+        const geometry = await figure.evaluate((element) => ({
+          figureWidth: element.clientWidth,
+          figureScrollWidth: element.scrollWidth,
+          pageWidth: document.documentElement.scrollWidth,
+          viewportWidth: innerWidth,
+          cells: [...element.querySelectorAll('li')].map((cell) => ({ text: cell.textContent, width: cell.clientWidth, scrollWidth: cell.scrollWidth })),
+        }));
+        expect(geometry.figureScrollWidth).toBeLessThanOrEqual(geometry.figureWidth);
+        expect(geometry.pageWidth).toBeLessThanOrEqual(geometry.viewportWidth);
+        for (const cell of geometry.cells) expect(cell.scrollWidth).toBeLessThanOrEqual(cell.width);
+        if (scenario.javaScriptEnabled) {
+          const accessibility = await new AxeBuilder({ page }).include('figure[aria-label="文本编码、模型运算与输出解码的过程"]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+          expect(accessibility.violations).toEqual([]);
+        }
+        await test.info().attach(`token-encoding-${scenario.name}`, { body: await figure.screenshot(), contentType: 'image/png' });
+        await test.info().attach('encoding-layout', { body: JSON.stringify(geometry, null, 2), contentType: 'application/json' });
+      } finally { await context.close(); }
+    });
+  }
+});
+
+for (const viewport of [{ name: 'desktop', width: 1280, height: 960 }, { name: 'mobile', width: 390, height: 844 }, { name: 'narrow', width: 320, height: 844 }, { name: 'enlarged', width: 390, height: 844 }]) {
   test(`JimmyNote renders authored Markdown on ${viewport.name}`, async ({ page }) => {
     await page.setViewportSize(viewport);
     const response = await page.goto('/design/components');
     expect(response?.status()).toBe(200);
     await page.evaluate(() => document.fonts.ready);
+    if (viewport.name === 'enlarged') await page.evaluate(() => { document.documentElement.style.fontSize = '24px'; });
     const notes = page.getByRole('note', { name: 'Jimmy', exact: true });
     await expect(notes).toHaveCount(2);
     await expect(notes.first()).toContainText('大企业的影子 AI');
@@ -24,10 +98,42 @@ for (const viewport of [{ name: 'desktop', width: 1280, height: 960 }, { name: '
     for (const note of await notes.all()) {
       const style = await note.evaluate((element) => {
         const computed = getComputedStyle(element);
-        return { background: computed.backgroundColor, color: computed.color, border: computed.borderTopWidth, shadow: computed.boxShadow };
+        return { background: computed.backgroundColor, color: computed.color, border: computed.borderTopWidth, radius: computed.borderRadius, shadow: computed.boxShadow };
       });
-      expect(style).toEqual({ background: 'rgb(228, 228, 231)', color: 'rgb(43, 43, 34)', border: '0px', shadow: 'none' });
+      expect(style).toMatchObject({ background: 'rgb(255, 255, 255)', color: 'rgb(63, 63, 70)', border: '1px', radius: '0px' });
+      expect(style.shadow).toContain('rgb(228, 228, 231) 4px 4px 0px 0px');
+      const frameStyle = (element: Element) => {
+        const computed = getComputedStyle(element);
+        return { border: computed.border, radius: computed.borderRadius, shadow: computed.boxShadow };
+      };
+      expect(await note.evaluate(frameStyle)).toEqual(await page.locator('[data-component="chat-message"]').first().evaluate(frameStyle));
       await expect(note.locator('[data-slot="alert-title"]')).toHaveText('Jimmy');
+      const avatar = note.locator('img');
+      await expect(avatar).toHaveAttribute('alt', '');
+      await expect(avatar).toHaveCSS('width', viewport.name === 'enlarged' ? '48px' : '32px');
+      await expect(avatar).toHaveCSS('height', viewport.name === 'enlarged' ? '48px' : '32px');
+      await avatar.scrollIntoViewIfNeeded();
+      await expect.poll(() => avatar.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+      const imageBounds = await avatar.boundingBox();
+      const titleBounds = await note.locator('[data-slot="alert-title"]').boundingBox();
+      expect(imageBounds!.x + imageBounds!.width).toBeLessThan(titleBounds!.x);
+      expect(Math.abs(imageBounds!.y + imageBounds!.height / 2 - titleBounds!.y - titleBounds!.height / 2)).toBeLessThan(1);
+      const frame = await note.boundingBox();
+      const signature = note.locator('[data-slot="note-signature"]');
+      await expect(signature).toHaveText('Jimmy');
+      await expect(signature).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+      expect(Math.abs(imageBounds!.y + imageBounds!.height / 2 - frame!.y)).toBeLessThanOrEqual(1);
+      const contentBounds = await note.locator('[data-slot="alert-description"]').boundingBox();
+      expect(contentBounds!.y).toBeGreaterThan(imageBounds!.y + imageBounds!.height);
+      const layout = await note.evaluate((element) => ({
+        left: element.getBoundingClientRect().left, width: element.getBoundingClientRect().width,
+        parentLeft: element.parentElement!.getBoundingClientRect().left, parentWidth: element.parentElement!.getBoundingClientRect().width,
+        fits: element.scrollWidth <= element.clientWidth,
+      }));
+      expect(layout.fits).toBe(true);
+      expect(Math.abs(layout.left - layout.parentLeft)).toBeLessThan(1);
+      expect(Math.abs(layout.width - layout.parentWidth)).toBeLessThan(1);
+      await test.info().attach('signature-layout', { body: JSON.stringify(layout, null, 2), contentType: 'application/json' });
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     const accessibility = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
@@ -35,6 +141,14 @@ for (const viewport of [{ name: 'desktop', width: 1280, height: 960 }, { name: '
     const path = test.info().outputPath(`jimmy-note-${viewport.name}.png`);
     await page.screenshot({ path, fullPage: true, animations: 'disabled' });
     await test.info().attach('JimmyNote preview', { path, contentType: 'image/png' });
+    const notePath = test.info().outputPath(`jimmy-note-avatar-${viewport.name}.png`);
+    const clip = await notes.first().evaluate((element) => {
+      const frame = element.getBoundingClientRect();
+      const signature = element.querySelector('[data-slot="note-signature"]')!.getBoundingClientRect();
+      return { x: frame.x + scrollX, y: signature.top + scrollY - 1, width: frame.width + 4, height: frame.bottom - signature.top + 6 };
+    });
+    await page.screenshot({ path: notePath, clip });
+    await test.info().attach('JimmyNote avatar', { path: notePath, contentType: 'image/png' });
   });
 }
 
@@ -45,6 +159,9 @@ test('JimmyNote and its links work without JavaScript', async ({ browser, baseUR
     await page.goto('/design/components');
     const notes = page.getByRole('note', { name: 'Jimmy', exact: true });
     await expect(notes).toHaveCount(2);
+    const avatar = notes.first().locator('img');
+    await avatar.scrollIntoViewIfNeeded();
+    await expect.poll(() => avatar.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
     await notes.nth(1).getByRole('link', { name: '写作说明' }).click();
     await expect(page).toHaveURL(/#authoring$/);
     await expect(page.locator('#authoring')).toBeInViewport();
@@ -103,7 +220,7 @@ test.describe('ChatMessage', () => {
       await test.info().attach(`chat-preview-${viewport.name}`, { body: await chat.screenshot(), contentType: 'image/png' });
 
       if (process.env.CONTENT_TEST !== '1') {
-        await page.goto('/zh/courses/ai-101/what-a-language-model-does');
+        await page.goto('/zh/courses/llm-101/what-a-language-model-does');
         const pending = page.locator('[data-component="chat"]').first();
         const prompt = pending.locator('[data-from="user"]');
         await expect(prompt).toHaveText('今天广州的天气如何？');
@@ -168,7 +285,7 @@ test.describe('ChatMessage', () => {
       await expect(page.locator('#authoring')).toBeInViewport();
       await test.info().attach('chat-no-js', { body: await chat.screenshot(), contentType: 'image/png' });
       if (process.env.CONTENT_TEST !== '1') {
-        await page.goto('/zh/courses/ai-101/what-a-language-model-does');
+        await page.goto('/zh/courses/llm-101/what-a-language-model-does');
         await expect(page.locator('[data-state="thinking"]').getByRole('status')).toHaveText('Thinking');
         await expect(page.locator('[data-state="thinking"] [data-slot="message-avatar"]')).toBeVisible();
         const conversation = page.locator('[data-component="chat"]').last();
@@ -184,7 +301,7 @@ test.describe('ChatMessage', () => {
   test('Thinking stays readable with reduced motion', async ({ page }) => {
     test.skip(process.env.CONTENT_TEST === '1', 'The example belongs to the published lesson.');
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto('/zh/courses/ai-101/what-a-language-model-does');
+    await page.goto('/zh/courses/llm-101/what-a-language-model-does');
     const thinking = page.locator('[data-state="thinking"]');
     await expect(thinking.getByRole('status')).toHaveText('Thinking');
     const spinner = thinking.locator('[data-slot="spinner"]');
@@ -200,20 +317,20 @@ test.describe('What a language model does lesson demos', () => {
   test.skip(process.env.CONTENT_TEST === '1', 'The lesson belongs to the published catalog.');
 
   test('renamed lesson keeps localized links, identity, and metadata aligned', async ({ page }) => {
-    const title = 'What a language model does';
     for (const locale of ['zh', 'en', 'ja', 'fr', 'es'] as const) {
-      const path = localePath(locale as Locale, `/courses/ai-101/what-a-language-model-does`);
+      const title = locale === 'zh' ? '大语言模型是如何生成回答的？' : 'What a language model does';
+      const path = localePath(locale as Locale, `/courses/llm-101/what-a-language-model-does`);
       await page.goto(localePath(locale as Locale, `/`));
       await expect(page.locator(`a[href="${path}"]`).first()).toBeVisible();
-      await page.goto(localePath(locale as Locale, `/courses/ai-101`));
+      await page.goto(localePath(locale as Locale, `/courses/llm-101`));
       await expect(page.getByRole('link', { name: title }).first()).toHaveAttribute('href', path);
       const response = await page.goto(path);
       expect(response?.status()).toBe(200);
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(title);
-      await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('lac:v1:ai-101:last') ?? 'null')?.lessonId)).toBe('what-a-language-model-does');
+      await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('lac:v1:llm-101:last') ?? 'null')?.lessonId)).toBe('what-a-language-model-does');
       await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${path}$`));
     }
-    await page.goto('/zh/courses/ai-101/what-a-language-model-does');
+    await page.goto('/zh/courses/llm-101/what-a-language-model-does');
     await test.info().attach('what-a-language-model-does-title-and-navigation', { body: await page.screenshot(), contentType: 'image/png' });
   });
 
@@ -223,7 +340,7 @@ test.describe('What a language model does lesson demos', () => {
       await page.setViewportSize(viewport);
       await page.clock.install({ time: new Date('2026-10-27T10:00:00Z') });
       await page.clock.pauseAt(new Date('2026-10-27T10:00:01Z'));
-      const response = await page.goto('/zh/courses/ai-101/what-a-language-model-does');
+      const response = await page.goto('/zh/courses/llm-101/what-a-language-model-does');
       expect(response?.status()).toBe(200);
       const generation = page.getByRole('figure', { name: '文字接龙演示' });
       await expect(generation).toHaveAttribute('data-ready', 'true');
@@ -281,7 +398,7 @@ test.describe('What a language model does lesson demos', () => {
 
     test(`menus use equal columns without an outer border on ${viewport.name}`, async ({ page }) => {
       await page.setViewportSize(viewport);
-      await page.goto('/zh/courses/ai-101/what-a-language-model-does');
+      await page.goto('/zh/courses/llm-101/what-a-language-model-does');
       const menus = page.getByRole('figure', { name: '两种菜单对比' });
       const native = menus.getByRole('combobox', { name: '浏览器原生菜单' });
       await expect(native.getByRole('option')).toHaveText(['请点击', '菜单 A', '菜单 B', '菜单 C']);
@@ -343,7 +460,7 @@ test.describe('What a language model does lesson demos', () => {
   test('generation respects reduced motion and enlarged text', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width: 320, height: 900 });
-    await page.goto('/zh/courses/ai-101/what-a-language-model-does');
+    await page.goto('/zh/courses/llm-101/what-a-language-model-does');
     await page.evaluate(() => { document.documentElement.style.fontSize = '20px'; });
     const generation = page.getByRole('figure', { name: '文字接龙演示' });
     await expect(generation).toHaveAttribute('data-complete', 'true');
@@ -363,7 +480,7 @@ test.describe('What a language model does lesson demos', () => {
     const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
     try {
       const page = await context.newPage();
-      await page.goto('/zh/courses/ai-101/what-a-language-model-does');
+      await page.goto('/zh/courses/llm-101/what-a-language-model-does');
       const generation = page.getByRole('figure', { name: '文字接龙演示' });
       await generation.getByText('查看完整生成过程', { exact: true }).click();
       await expect(generation.getByText('最终回答（虚构）：今天广州天气晴朗，温度在 28 ℃。', { exact: true })).toBeVisible();
@@ -385,18 +502,20 @@ test.describe('What a language model does lesson demos', () => {
       const english = nativeFooter.locator('.language-options a[hreflang="en"]');
       await expect(english).toBeInViewport();
       await english.click();
-      await expect(page).toHaveURL(/\/courses\/ai-101\/what-a-language-model-does$/);
+      await expect(page).toHaveURL(/\/courses\/llm-101\/what-a-language-model-does$/);
     } finally { await context.close(); }
   });
 });
 
 test.describe('Learning achievements', () => {
   test.skip(process.env.CONTENT_TEST === '1', 'The achievement belongs to the published Chinese lesson.');
-  const path = '/zh/courses/ai-101/what-a-language-model-does';
-  const key = 'lac:v1:ai-101:achievement:generation-vs-verification';
+  const path = '/zh/courses/llm-101/what-a-language-model-does';
+  const key = 'lac:v1:llm-101:achievement:generation-vs-verification';
   const block = '[data-achievement="generation-vs-verification"]';
   const count = '[data-achievement-count]';
-  const correct = '它生成了一句天气预报，真实天气仍需要查证。';
+  const correct = '它生成了一句天气预报，但这个回答不一定代表真实天气，仍需要查证。';
+  const explanation = '正如前文提到那样，模型的训练数据是有时间限制的，它无法获取训练数据之后的信息。在没有接入天气数据情况下，不可能知道今天广州的天气。它生成的回答只是基于训练数据的预测，并不代表真实天气。';
+  const takeaway = '模型的训练数据是有时间限制的，它无法获取训练数据之后的信息。所以，在没有接入天气数据情况下，不可能知道今天广州的天气。';
   async function expectCount(page: Page, value: number) {
     const mobile = (page.viewportSize()?.width ?? 1280) < 961;
     if (mobile) await page.getByRole('button', { name: '课程目录', exact: true }).click();
@@ -404,7 +523,8 @@ test.describe('Learning achievements', () => {
     const footer = page.locator('[data-sidebar="footer"]');
     await expect(footer.locator(count)).toBeVisible();
     await expect(page.locator('[data-sidebar="header"]').locator(count)).toHaveCount(0);
-    await expect(footer.getByRole('progressbar')).toHaveAttribute('aria-valuenow', String(value * 100));
+    const total = readCatalog().courses.find((course) => course.id === 'llm-101')?.achievements.length ?? 0;
+    await expect(footer.getByRole('progressbar')).toHaveAttribute('aria-valuenow', String(total ? value / total * 100 : 0));
     const earned = await footer.locator(count).boundingBox();
     const more = await footer.getByRole('button', { name: '更多', exact: true }).boundingBox();
     expect(earned!.x + earned!.width).toBeLessThan(more!.x);
@@ -465,7 +585,7 @@ test.describe('Learning achievements', () => {
       if (mobile) await expect(page.locator('[data-mobile="true"]')).toBeVisible();
       await more.click(); await page.getByRole('menuitem', { name: '修改语言', exact: true }).click();
       await page.locator('[data-slot="dropdown-menu-sub-content"] a[hreflang="en"]').click();
-      await expect(page).toHaveURL(/\/courses\/ai-101\/what-a-language-model-does$/);
+      await expect(page).toHaveURL(/\/courses\/llm-101\/what-a-language-model-does$/);
       expect((await context.cookies()).find((cookie) => cookie.name === localeCookie)?.value).toBe('en');
       if (mobile) await page.getByRole('button', { name: 'Course navigation', exact: true }).click();
       await page.getByRole('button', { name: 'More', exact: true }).click();
@@ -502,7 +622,7 @@ test.describe('Learning achievements', () => {
       await test.info().attach(`achievement-card-before-${viewport.name}`, { body: await challenge.screenshot(), contentType: 'image/png' });
       await challenge.getByRole('radio', { name: '回答这么具体，说明它知道广州的真实天气。' }).click();
       await expect(challenge.getByRole('status')).toContainText('回答不正确');
-      await expect(challenge.getByRole('status')).toContainText('具体的回答也可能只是生成结果，不能证明模型查过天气');
+      await expect(challenge.getByRole('status')).toContainText(explanation);
       await expect(challenge.getByRole('radio').first()).toBeChecked();
       await expect(challenge.getByRole('radio').first()).toHaveAttribute('aria-invalid', 'true');
       await expect(challenge.locator('[data-answer-feedback="incorrect"]')).toHaveCSS('border-top-width', '1px');
@@ -520,8 +640,8 @@ test.describe('Learning achievements', () => {
       }
       await expect(challenge).toHaveAttribute('data-state', 'unlocked');
       await expect(challenge.getByRole('status')).toContainText('回答正确');
-      await expect(challenge.getByText('具体的回答也可能只是生成结果，不能证明模型查过天气。生成回答和查证事实，是两件事。', { exact: true })).toHaveCount(0);
-      await expect(challenge.getByText('下次看到 AI 给出具体数字，你知道先确认它的数据来源。', { exact: true })).toBeVisible();
+      await expect(challenge.getByText(explanation, { exact: true })).toHaveCount(0);
+      await expect(challenge.getByText(takeaway, { exact: true })).toBeVisible();
       await expect(challenge.getByRole('heading')).toHaveText('🥇 成就已解锁 · 分清生成与查证');
       await expect(challenge.getByRole('heading')).toBeFocused();
       await expect(challenge.getByRole('radio')).toHaveCount(0);
@@ -547,7 +667,7 @@ test.describe('Learning achievements', () => {
       await expect(challenge.getByRole('status')).toBeEmpty();
       expect(await challenge.evaluate((element) => element.getAnimations().length)).toBe(0);
       expect(await page.evaluate((key) => localStorage.getItem(key), key)).toBe(saved);
-      expect(await page.evaluate(() => JSON.parse(localStorage.getItem('lac:v1:ai-101:last')!).lessonId)).toBe('what-a-language-model-does');
+      expect(await page.evaluate(() => JSON.parse(localStorage.getItem('lac:v1:llm-101:last')!).lessonId)).toBe('what-a-language-model-does');
       const accessibility = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
       expect(accessibility.violations).toEqual([]);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -610,9 +730,9 @@ test.describe('Learning achievements', () => {
 
   test('achievement shares tabs and translations without counting legacy or other-course records', async ({ page, context }) => {
     await page.addInitScript(() => {
-      localStorage.setItem('lac:v1:ai-101:lesson:what-a-language-model-does', JSON.stringify({ completed: true, updatedAt: '2026-10-01T00:00:00Z' }));
+      localStorage.setItem('lac:v1:llm-101:lesson:what-a-language-model-does', JSON.stringify({ completed: true, updatedAt: '2026-10-01T00:00:00Z' }));
       localStorage.setItem('lac:v1:other-course:achievement:generation-vs-verification', JSON.stringify({ unlockedAt: '2026-10-01T00:00:00Z' }));
-      localStorage.setItem('lac:v1:ai-101:achievement:unknown-achievement', JSON.stringify({ unlockedAt: '2026-10-01T00:00:00Z' }));
+      localStorage.setItem('lac:v1:llm-101:achievement:unknown-achievement', JSON.stringify({ unlockedAt: '2026-10-01T00:00:00Z' }));
     });
     await page.goto(path);
     await expect(page.locator(count)).toContainText('已解锁 0 项成就');
@@ -625,11 +745,11 @@ test.describe('Learning achievements', () => {
     await expect(other.locator(block).getByRole('status')).toBeEmpty();
     const labels = { en: '1 achievement unlocked', ja: '1 件の実績を解除', fr: '1 accomplissement débloqué', es: '1 logro desbloqueado' };
     for (const [locale, label] of Object.entries(labels)) {
-      await other.goto(localePath(locale as Locale, '/courses/ai-101/what-a-language-model-does'));
+      await other.goto(localePath(locale as Locale, '/courses/llm-101/what-a-language-model-does'));
       await expect(other.locator(count)).toContainText(label);
       await expect(other.locator(block)).toHaveCount(0);
     }
-    expect(await page.evaluate(() => localStorage.getItem('lac:v1:ai-101:lesson:what-a-language-model-does'))).toContain('"completed":true');
+    expect(await page.evaluate(() => localStorage.getItem('lac:v1:llm-101:lesson:what-a-language-model-does'))).toContain('"completed":true');
     await other.close();
     await page.evaluate((key) => localStorage.removeItem(key), key);
     await page.reload();

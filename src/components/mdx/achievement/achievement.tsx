@@ -1,17 +1,19 @@
 /**
- * [INPUT]: Validated article achievement definition, localized messages, course learning state, shared Alert/Button, and status icons.
- * [OUTPUT]: Achievement with a medal-labeled question, explicit answer feedback, immediate earned cards, retries, and a no-JavaScript explanation.
+ * [INPUT]: Validated achievement definition, localized messages, learning state, shared Alert/Button, Phosphor icons, and the confetti lifecycle.
+ * [OUTPUT]: Achievement with answer feedback, earned cards with a header retry icon, two-corner celebrations, and a no-JavaScript explanation.
  * [POS]: Reusable inline article milestone; correct answers reveal and save achievements immediately; retries preserve earned records.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 'use client';
 import { useEffect, useId, useRef, useState } from 'react';
 import { XCircleIcon } from '@phosphor-icons/react/dist/ssr/XCircle';
+import { ArrowCounterClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowCounterClockwise';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { useLearning } from '@/components/progress/progress-provider';
 import { useTranslations } from 'next-intl';
 import type { AchievementDefinition } from '@/lib/content/model';
+import { playAchievementConfetti } from './confetti';
 
 const optionLetter = (index: number): string => index < 26 ? String.fromCharCode(65 + index) : optionLetter(Math.floor(index / 26) - 1) + optionLetter(index % 26);
 
@@ -32,6 +34,7 @@ export function Achievement({ definition }: { definition: AchievementDefinition 
   const firstOption = useRef<HTMLInputElement>(null);
   const card = useRef<HTMLElement>(null);
   const pendingFocus = useRef<'question' | 'reward' | null>(null);
+  const stopCelebration = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     if (!unlocked || !pendingFocus.current) return;
@@ -43,12 +46,22 @@ export function Achievement({ definition }: { definition: AchievementDefinition 
       return () => cancelAnimationFrame(frame);
     }
     heading.current?.focus({ preventScroll: true });
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      card.current?.animate([{ opacity: 0.65 }, { opacity: 1 }], { duration: 700, easing: 'ease-out' });
-    }
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const emphasis = !motion.matches ? card.current?.animate([{ opacity: 0.65 }, { opacity: 1 }], { duration: 700, easing: 'ease-out' }) : undefined;
+    const stopConfetti = playAchievementConfetti();
+    const stop = () => { emphasis?.cancel(); stopConfetti(); };
+    const onMotionChange = () => { if (motion.matches) stop(); };
+    stopCelebration.current = stop;
+    motion.addEventListener('change', onMotionChange);
+    return () => {
+      stop();
+      stopCelebration.current = null;
+      motion.removeEventListener('change', onMotionChange);
+    };
   }, [unlocked, result, retrying]);
 
   const retry = () => {
+    stopCelebration.current?.();
     card.current?.getAnimations().forEach((animation) => animation.cancel());
     pendingFocus.current = 'question';
     setRetrying(true);
@@ -61,14 +74,16 @@ export function Achievement({ definition }: { definition: AchievementDefinition 
     data-achievement={id} data-state={showReward ? 'unlocked' : incorrect ? 'incorrect' : retrying ? 'retrying' : 'locked'}
     className="quote-frame not-prose my-8 border-foreground p-5">
     <AlertDescription className="gap-4">
-      {showReward ? <header className="flex flex-col gap-2">
-        <h3 ref={heading} id={titleId} tabIndex={-1} className="m-0 text-base leading-copy font-semibold">
+      {showReward ? <header className="flex items-start gap-3">
+        <h3 ref={heading} id={titleId} tabIndex={-1} className="m-0 min-w-0 flex-1 wrap-anywhere text-base leading-copy font-semibold">
           <span aria-hidden>🥇 </span>{t('unlocked', { title })}
         </h3>
+        <Button variant="ghost" size="icon-touch" className="-my-1 shrink-0 text-muted-foreground" aria-label={t('retry')} title={t('retry')} onClick={retry}>
+          <ArrowCounterClockwiseIcon size={20} aria-hidden />
+        </Button>
       </header> : <p className="text-xs font-medium tracking-label text-muted-foreground"><span aria-hidden>🥇 </span><span>{t('challenge')}</span></p>}
       {showReward ? <>
         <p>{takeaway}</p>
-        <Button variant="action-outline" size="action" className="self-start rounded-none" onClick={retry}>{t('retry')}</Button>
       </> : <>
         <form onSubmit={(event) => event.preventDefault()}>
           <fieldset disabled={!ready} className="m-0 min-w-0 border-0 p-0">

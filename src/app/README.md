@@ -10,7 +10,7 @@ design/: Homepage studies and /design/components writing-component previews. The
 
 layout.tsx: Shared AIDevCourse title template, favicon, and touch-icon metadata without imposing a fallback content language.
 
-not-found.tsx: Root 404 with Geist typography, the zinc header, footer, and the two-column unavailable layout.
+not-found.tsx: Root English document adapter with shared Geist/Geist Pixel fonts, header/footer tools, and the single MissingPage renderer.
 
 unavailable/: Nested module; see [unavailable/README.md](./unavailable/README.md).
 

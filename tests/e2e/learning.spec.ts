@@ -14,7 +14,7 @@ const path = (locale: string, slug = 'first-change') => localePath(locale as Loc
 const dictionary = (locale: Locale) => JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
 test('recent visits stay separate from achievements and legacy completion', async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem('lac:v1:ai-101:achievement:generation-vs-verification', JSON.stringify({ unlockedAt: '2026-10-01T00:00:00Z' }));
+    localStorage.setItem('lac:v1:llm-101:achievement:generation-vs-verification', JSON.stringify({ unlockedAt: '2026-10-01T00:00:00Z' }));
     localStorage.setItem('lac:v1:ai-coding:lesson:first-change', JSON.stringify({ completed: true, updatedAt: '2026-10-01T00:00:00Z' }));
   });
   await page.goto(path('zh'));
@@ -25,7 +25,7 @@ test('recent visits stay separate from achievements and legacy completion', asyn
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('lac:v1:ai-coding:last') ?? 'null')?.lessonId)).toBe('useful-context');
   await expect(page.locator('[data-achievement-count]')).toContainText('0 achievements unlocked');
   expect(await page.evaluate(() => localStorage.getItem('lac:v1:ai-coding:lesson:first-change'))).toContain('"completed":true');
-  expect(await page.evaluate(() => localStorage.getItem('lac:v1:ai-101:achievement:generation-vs-verification'))).not.toBeNull();
+  expect(await page.evaluate(() => localStorage.getItem('lac:v1:llm-101:achievement:generation-vs-verification'))).not.toBeNull();
   await test.info().attach('course-isolation-and-visits', { body: await page.screenshot(), contentType: 'image/png' });
 });
 for (const viewport of [{ name: 'desktop', width: 1280, height: 960 }, { name: 'mobile', width: 390, height: 844 }]) {
@@ -36,7 +36,7 @@ for (const viewport of [{ name: 'desktop', width: 1280, height: 960 }, { name: '
       localStorage.setItem('generic-fixture-seeded', 'yes');
       localStorage.setItem('lac:v1:ai-coding:achievement:unknown-achievement', JSON.stringify({ unlockedAt: '2026-10-01T00:00:00Z' }));
       localStorage.setItem('lac:v1:ai-coding:lesson:first-change', JSON.stringify({ completed: true, updatedAt: '2026-10-01T00:00:00Z' }));
-      localStorage.setItem('lac:v1:ai-101:achievement:generation-vs-verification', JSON.stringify({ unlockedAt: '2026-10-01T00:00:00Z' }));
+      localStorage.setItem('lac:v1:llm-101:achievement:generation-vs-verification', JSON.stringify({ unlockedAt: '2026-10-01T00:00:00Z' }));
     });
     await page.goto(path('zh', 'useful-context'));
     const expectProgress = async (count: number) => {
@@ -73,7 +73,7 @@ for (const viewport of [{ name: 'desktop', width: 1280, height: 960 }, { name: '
     await expectProgress(2);
     await expect(secondTab.locator('[data-achievement-count]')).toContainText('2 achievements unlocked');
     await expect(secondTab.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100');
-    expect(await page.evaluate(() => localStorage.getItem('lac:v1:ai-101:achievement:generation-vs-verification'))).not.toBeNull();
+    expect(await page.evaluate(() => localStorage.getItem('lac:v1:llm-101:achievement:generation-vs-verification'))).not.toBeNull();
     await test.info().attach(`generic-after-${viewport.name}`, { body: await second.screenshot({ animations: 'disabled' }), contentType: 'image/png' });
     const accessibility = await new AxeBuilder({ page }).include('[data-achievement]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(accessibility.violations).toEqual([]);

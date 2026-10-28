@@ -1,0 +1,25 @@
+---
+# [INPUT]: Shared ==text== syntax and the gray marker-stroke native mark renderer.
+# [OUTPUT]: Highlight examples covering Chinese, emphasis, links, headings, wrapping, escapes, and code literals.
+# [POS]: Writing-component preview used by scoped highlight acceptance checks.
+# [PROTOCOL]: Update this header when making changes, then check README.md.
+title: Text highlight examples
+---
+
+正文可以使用==浅灰色高亮==，保留原有文字颜色。
+
+==**重点**与*强调*可以一起使用==。
+
+==[返回写作说明](#authoring)==。
+
+==这是一段较长的高亮内容，用来检查手机和放大字体时的自动换行。每一行都应保留淡灰色背景，文字应完整显示，读者不需要横向滚动。高亮只用于需要读者注意的内容，正文仍然保持原有的阅读节奏。==
+
+### ==Highlighted heading==
+
+[Jump to highlighted heading](#highlighted-heading)
+
+行内代码 `==inline literal==`、转义文字 \==escaped literal==、未闭合文字 ==unclosed literal 都应保持原样。
+
+```text
+==fenced literal==
+```

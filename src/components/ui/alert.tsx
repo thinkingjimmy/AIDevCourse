@@ -1,6 +1,6 @@
 /**
- * [INPUT]: Native aside props and shared Tailwind notification tokens.
- * [OUTPUT]: Alert, AlertTitle, and AlertDescription with callout, plain notice, and author-note variants.
+ * [INPUT]: Native aside props, shared Tailwind notification tokens, and the quote-frame utility.
+ * [OUTPUT]: Alert, AlertTitle, and AlertDescription with callout, plain notice, and quote-framed author-note variants.
  * [POS]: shadcn-style notification composition shared by MDX and course surfaces.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -13,7 +13,7 @@ const alertVariants = cva('bg-background [&_p]:m-0', {
     variant: {
       default: 'my-[1.5em] flex gap-3.5 border border-foreground px-5 py-[18px] shadow-[4px_4px_0_var(--line)]',
       notice: 'block border border-border px-5 py-4 text-ui',
-      author: 'my-[1.5em] flex flex-col gap-2 bg-author-note p-4 text-author-note-foreground',
+      author: 'quote-frame relative mt-10 mb-7 block px-4 pt-8.5 pb-4 text-reading sm:px-5 sm:pb-5',
     },
   },
   defaultVariants: { variant: 'default' },

@@ -1,6 +1,6 @@
 /**
  * [INPUT]: The production server, authored catalog, localized messages, and all five language routes, canonical locale paths.
- * [OUTPUT]: Homepage Geist and locale-specific Noto font loading, hero alignment, action and course-card surfaces with hero-only chip callouts, publication, minimal-metadata rendering/search, locale negotiation with English fallback, and accessibility evidence.
+ * [OUTPUT]: Homepage Geist and locale-specific Noto font loading, hero alignment, action and course-card surfaces with hero-only chip callouts, LLM 101 identity/publication, minimal-metadata rendering/search, locale negotiation with English fallback, and accessibility evidence.
  * [POS]: Public-site browser matrix, valid with an empty or partial course library.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -98,6 +98,14 @@ test('negotiates only the homepage and keeps English paths prefix-free', async (
 test('production publishes course entries and removes withdrawn lessons from discovery', async ({ request }) => {
   test.skip(process.env.CONTENT_TEST === '1', 'The isolated fixture build is covered separately.');
   const catalog = readCatalog();
+  for (const locale of locales) {
+    const course = catalog.courses.find((item) => item.locale === locale && item.slug === 'llm-101');
+    expect(course).toMatchObject({ id: 'llm-101', title: 'LLM 101', url: localePath(locale, '/courses/llm-101') });
+  }
+  await test.info().attach('published-course-identities', {
+    body: JSON.stringify(catalog.courses.map(({ locale, id, slug, title, url }) => ({ locale, id, slug, title, url })), null, 2),
+    contentType: 'application/json',
+  });
   const paths = ['/zh', ...catalog.documents.map((document) => document.url), '/sitemap.xml', ...locales.map((lang) => `/api/search/${lang}`)];
   for (const path of paths) {
     const response = await request.get(path);
@@ -107,20 +115,20 @@ test('production publishes course entries and removes withdrawn lessons from dis
     expect(response.status(), path).toBe(200);
   }
   for (const lang of locales) expect((await request.get(localePath(lang as Locale, `/courses`), { maxRedirects: 0 })).status()).toBe(404);
-  const courses = await (await request.get('/zh/courses/ai-101')).text();
-  expect(courses).toContain('AI 101');
+  const courses = await (await request.get('/zh/courses/llm-101')).text();
+  expect(courses).toContain('LLM 101');
   const sitemap = await (await request.get('/sitemap.xml')).text();
   for (const locale of locales) {
     const search = await (await request.get(`/api/search/${locale}`)).text();
     for (const slug of ['strengths', 'tokens', 'first-workflow']) {
-      const path = localePath(locale as Locale, `/courses/ai-101/${slug}`);
+      const path = localePath(locale as Locale, `/courses/llm-101/${slug}`);
       if (catalog.documents.some((document) => document.url === path)) continue;
       expect((await request.get(path)).status()).toBe(404);
       expect(sitemap).not.toContain(path);
       expect(search).not.toContain(path);
     }
   }
-  for (const path of ['/zh/courses/ai-coding', '/zh/courses/ai-coding/workflow/verify-results', '/zh/courses/ai-101/models/strengths', '/zh/courses/ai-101/models']) {
+  for (const path of ['/zh/courses/ai-coding', '/zh/courses/ai-coding/workflow/verify-results', '/zh/courses/llm-101/models/strengths', '/zh/courses/llm-101/models']) {
     const missing = await request.get(path, { maxRedirects: 0 });
     expect(missing.status(), path).toBe(404);
   }
@@ -173,7 +181,7 @@ test.describe('English URL policy', () => {
     await expect(page.locator('link[hreflang="zh-Hans"]')).toHaveAttribute('href', /\/zh\/about$/);
 
     await context.addCookies([{ name: 'lac-language', value: 'zh', url: page.url() }]);
-    const path = process.env.CONTENT_TEST === '1' ? '/courses/ai-coding/first-change' : '/courses/ai-101/what-a-language-model-does';
+    const path = process.env.CONTENT_TEST === '1' ? '/courses/ai-coding/first-change' : '/courses/llm-101/what-a-language-model-does';
     const response = await page.goto(path);
     expect(response?.status()).toBe(200);
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
@@ -230,20 +238,20 @@ test.describe('English URL policy', () => {
 for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'tablet', width: 840, height: 960 }, { name: 'mobile', width: 390, height: 844 }, { name: 'narrow', width: 320, height: 844 }]) {
   for (const locale of locales) {
     test(`${locale}: course cards and updating state work on ${viewport.name}`, async ({ page }) => {
-      test.skip(process.env.CONTENT_TEST === '1', 'Public AI 101 cards use the authoring catalog.');
+      test.skip(process.env.CONTENT_TEST === '1', 'Public LLM 101 cards use the authoring catalog.');
       await page.setViewportSize(viewport);
       await page.emulateMedia({ reducedMotion: 'reduce' });
       const catalog = readCatalog();
       const messages = JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
-      const course = catalog.courses.find((item) => item.locale === locale && item.slug === 'ai-101')!;
+      const course = catalog.courses.find((item) => item.locale === locale && item.slug === 'llm-101')!;
       const errors: string[] = [];
       page.on('pageerror', (error) => errors.push(error.message));
       await page.goto(localePath(locale as Locale, `/`));
       await page.evaluate(() => document.fonts.ready);
       const grid = page.locator('[data-slot="course-grid"]');
-      const card = grid.getByRole('link', { name: 'AI 101', exact: true });
+      const card = grid.getByRole('link', { name: 'LLM 101', exact: true });
       await expect(card).toHaveCount(1);
-      await expect(card.getByRole('heading')).toHaveText('AI 101');
+      await expect(card.getByRole('heading')).toHaveText('LLM 101');
       await expect(card).toContainText(course.description);
       await expect(card.locator('[data-slot="card-footer"]')).toHaveCount(0);
       await expect(card.locator('svg')).toHaveCount(1);
@@ -275,7 +283,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       await card.focus();
       await card.press('Enter');
       await expect(page).toHaveURL(new RegExp(`${course.url}$`));
-      await expect(page.locator('h1')).toHaveText('AI 101');
+      await expect(page.locator('h1')).toHaveText('LLM 101');
       await expect(page.locator('[data-anatomy="chip"]')).toHaveAttribute('data-callouts', 'true');
       await expect(page.locator('[data-anatomy="chip"] .co')).toHaveCount(6);
       if (!course.lessons.length) {
@@ -327,7 +335,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       for (const element of [title, intro, action, page.getByRole('heading', { name: messages.Home.courseTitle, exact: true })]) {
         expect((await element.boundingBox())!.x).toBeCloseTo(logo!.x, 1);
       }
-      const course = catalog.courses.find((item) => item.locale === locale && item.slug === 'ai-101')!;
+      const course = catalog.courses.find((item) => item.locale === locale && item.slug === 'llm-101')!;
       await expect(action).toHaveAttribute('href', course.lessons[0].url);
       await page.locator('.language-picker summary').click();
       const menu = page.locator('.language-options');
@@ -352,7 +360,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
         await page.screenshot({ path, fullPage: true });
         await test.info().attach('Homepage action hover', { path, contentType: 'image/png' });
       }
-      const card = page.locator('[data-slot="course-grid"]').getByRole('link', { name: 'AI 101', exact: true });
+      const card = page.locator('[data-slot="course-grid"]').getByRole('link', { name: 'LLM 101', exact: true });
       const cardSurface = card.locator('[data-slot="card"]');
       await expect(cardSurface).toHaveCSS('box-shadow', 'none');
       await card.scrollIntoViewIfNeeded();
@@ -380,13 +388,13 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
 }
 
 test('course cards open the updating overview without JavaScript', async ({ browser, baseURL }) => {
-  test.skip(process.env.CONTENT_TEST === '1', 'Public AI 101 card.');
+  test.skip(process.env.CONTENT_TEST === '1', 'Public LLM 101 card.');
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false, reducedMotion: 'reduce', viewport: { width: 390, height: 844 } });
   try {
     const page = await context.newPage();
     await page.goto('/zh');
-    await page.locator('[data-slot="course-grid"]').getByRole('link', { name: 'AI 101', exact: true }).click();
-    await expect(page.locator('h1')).toHaveText('AI 101');
+    await page.locator('[data-slot="course-grid"]').getByRole('link', { name: 'LLM 101', exact: true }).click();
+    await expect(page.locator('h1')).toHaveText('LLM 101');
     await expect(page.getByRole('contentinfo')).toBeVisible();
     const path = test.info().outputPath('course-card-no-js.png');
     await page.screenshot({ path, fullPage: true });

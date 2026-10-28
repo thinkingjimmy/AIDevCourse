@@ -1,7 +1,7 @@
 /**
  * [INPUT]: Fumadocs Markdown, shared Tailwind typography, and Shiki palette variables.
  * [OUTPUT]: The shared quote-frame and course-prose Tailwind utilities, preserving reading roles above Fumadocs defaults.
- * [POS]: Shared MDX typography and article frame styles used by Markdown quotes, ChatMessage, and achievement challenges.
+ * [POS]: Shared MDX typography and article frame styles used by Markdown quotes, JimmyNote, ChatMessage, and achievement challenges.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 @utility quote-frame {

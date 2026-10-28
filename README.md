@@ -10,7 +10,9 @@ Authors declare single-choice achievements directly in MDX; validation builds ea
 
 Read courses in five languages, search the current language, and keep earned achievements and your last lesson in your browser. No account, database, model API key, or translation service is required.
 
-**Content status:** AI 101 has introductions in five languages. The Chinese What a language model does lesson explains LLM generation and input quality with interactive examples; the other languages retain welcome placeholders. The homepage learning action opens this first lesson. Engineering fixtures remain separate from published courses.
+Hover or focus Markdown page links to preview their title, summary, domain, and available cover. Local previews use the course catalog; optional external previews read public metadata on demand and keep navigation available when metadata cannot load.
+
+**Content status:** LLM 101 has introductions in five languages. The Chinese lessons cover LLM generation and input quality with interactive examples, followed by 什么是 Token on tokenization, context windows, and pricing; the other languages retain welcome placeholders. The homepage learning action opens this first lesson. Engineering fixtures remain separate from published courses.
 
 ## Quick start
 
@@ -23,13 +25,15 @@ pnpm dev
 
 Open [localhost:3000/zh](http://localhost:3000/zh). Body edits support hot reload. Restart after changing frontmatter, achievement declarations, file paths, or `meta.json` order.
 
+`pnpm dev` uses Webpack to avoid missing CSS chunk elements during Turbopack hot replacement. Restart a running development server after changing this command, then reload the browser once. Optional external previews retry proxy-generated DNS addresses through Cloudflare's HTTPS resolver; pages that reject metadata reads return an empty preview response and keep normal navigation.
+
 English uses `/`, `/about`, and `/courses/...`; other languages use `/zh`, `/ja`, `/fr`, and `/es` prefixes. Only `/` detects saved/browser language preferences, with English as the fallback. Design studies are available at `/design`; writing components are at `/design/components`.
 
 ## Commands
 
 | Command | Purpose |
 | --- | --- |
-| `pnpm dev` | Start the development server |
+| `pnpm dev` | Start the Webpack development server |
 | `pnpm check` | Structure, lint, types, content, dictionaries, and existing unit checks |
 | `pnpm audit --prod` | Check production dependencies against current advisories |
 | `pnpm build` | Validate and build published courses |

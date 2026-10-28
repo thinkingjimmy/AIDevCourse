@@ -50,6 +50,9 @@ importers:
       remark-gfm:
         specifier: 4.0.1
         version: 4.0.1
+      remark-mark-highlight:
+        specifier: 0.1.1
+        version: 0.1.1
       remark-mdx:
         specifier: 3.1.1
         version: 3.1.1
@@ -4507,6 +4510,9 @@ packages:
 
   remark-gfm@4.0.1:
     resolution: {integrity: sha512-1quofZ2RQ9EWdeN34S79+KExV1764+wCUGop5CPL1WGdD0ocPpu91lzPGbwWMECpEpd42kJGQwzRfyov9j4yNg==}
+
+  remark-mark-highlight@0.1.1:
+    resolution: {integrity: sha512-ot2AE37OKO2YQTcqyZ8VatEGJV/7CXk/RPJHk2TEVm04pT+JLCnoQb4Yj1vdOv2y4ZK45cDylj19gYVHqHz7Tw==}
 
   remark-mdx@3.1.1:
     resolution: {integrity: sha512-Pjj2IYlUY3+D8x00UJsIOg5BEvfMyeI+2uLPn9VO9Wg4MEtN/VTIq2NEJQfde9PnX15KgtHyl9S0BcTnWrIuWg==}
@@ -9930,6 +9936,8 @@ snapshots:
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
+
+  remark-mark-highlight@0.1.1: {}
 
   remark-mdx@3.1.1:
     dependencies:

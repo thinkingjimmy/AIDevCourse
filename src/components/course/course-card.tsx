@@ -1,5 +1,5 @@
 /**
- * [INPUT]: A localized course manifest, shared Card parts and theme tokens, and the course hero illustration.
+ * [INPUT]: A localized course manifest, shared Card parts and theme tokens, and the LLM 101 hero illustration.
  * [OUTPUT]: A linked course card with whole-card chip hover motion, an illustration panel without callouts, and offset depth on hover or keyboard focus.
  * [POS]: Server-rendered catalog entry; course metadata also supplies the overview hero.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
@@ -21,7 +21,7 @@ export async function CourseCard({ course }: { course: CourseManifest }) {
         <h3 id={titleId} className="m-0 text-2xl leading-heading font-semibold tracking-tight">{course.title}</h3>
         <p className="m-0 mt-2.5 text-sm leading-body text-muted-foreground">{course.description}</p>
       </CardContent>
-      {course.slug === 'ai-101' && <div data-slot="course-card-image" className="flex w-[38%] shrink-0 self-stretch items-center overflow-hidden bg-muted p-3">
+      {course.slug === 'llm-101' && <div data-slot="course-card-image" className="flex w-[38%] shrink-0 self-stretch items-center overflow-hidden bg-muted p-3">
         <div className="relative aspect-[580/570] w-full"><ChipExplode callouts={false} /></div>
       </div>}
     </Card>

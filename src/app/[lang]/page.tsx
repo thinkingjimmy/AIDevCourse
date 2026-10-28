@@ -1,7 +1,7 @@
 /**
  * [INPUT]: Active locale, published course manifests, shared CourseCard, and the Phosphor action arrow, canonical locale paths.
  * [OUTPUT]: Homepage with a rail-aligned Geist Pixel hero title, menu-styled learning action, exploded Mac, and a foundations catalog without a subtitle.
- * [POS]: Public entry surface; the learning action prioritizes AI 101's first published lesson.
+ * [POS]: Public entry surface; the learning action prioritizes LLM 101's first published lesson.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import { localePath } from '@/lib/i18n/routing';
@@ -29,7 +29,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
   const t = await getTranslations({ locale: lang, namespace: 'Home' });
   const course = await getTranslations({ locale: lang, namespace: 'Course' });
   const courses = getCourses(lang);
-  const startingCourse = courses.find((item) => item.id === 'ai-101') ?? courses.find((item) => item.lessons.length);
+  const startingCourse = courses.find((item) => item.id === 'llm-101') ?? courses.find((item) => item.lessons.length);
   const first = startingCourse?.lessons[0]?.url;
   return <main id="main-content" className="flex flex-[1_0_auto] flex-col" tabIndex={-1}>
     <PageContainer className="overflow-x-clip pt-[70px] pb-[72px] max-[721px]:pt-9 max-[721px]:pb-7">

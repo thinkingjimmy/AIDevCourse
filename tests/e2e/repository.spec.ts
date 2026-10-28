@@ -1,10 +1,13 @@
 /**
  * [INPUT]: Production routes, isolated authoring workspaces, and the real content CLI.
- * [OUTPUT]: Recovery, minimal-metadata and declarative achievement authoring, removed-field rejection, deployment-guard, and search-race evidence.
+ * [OUTPUT]: Unified localized 404 status, Geist Pixel and homepage-action parity with screenshots/JSON, recovery, authoring, deployment-guard, and search-race evidence.
  * [POS]: Scoped repository integration checks; temporary content never enters a deployment.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import { locales, htmlLanguages } from '../../src/lib/i18n/config';
+import { localePath } from '../../src/lib/i18n/routing';
 import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -134,18 +137,94 @@ test('achievement authoring CLI validates declarative questions and translations
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
 
-test('missing pages offer working recovery and language links', async ({ page, request }) => {
-  for (const path of ['/unknown-page', '/unknown-page', '/zh/courses/missing/lesson']) {
-    expect((await page.goto(path))?.status()).toBe(404);
-    const links = await page.locator('main a[href^="/"]').evaluateAll((items) => items.map((item) => item.getAttribute('href')!));
-    expect(links.length).toBeGreaterThan(0);
-    await page.locator('.language-picker summary').click();
-    links.push(...await page.locator('.language-options a').evaluateAll((items) => items.map((item) => item.getAttribute('href')!)));
-    for (const url of new Set(links)) expect((await request.get(url)).status(), `${path} → ${url}`).toBe(200);
-  }
-  const path = test.info().outputPath('recovery-links.png');
-  await page.screenshot({ path });
-  await test.info().attach('Missing page recovery', { path, contentType: 'image/png' });
+for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'mobile', width: 390, height: 844 }]) {
+  test(`missing pages share one design and homepage Hero actions on ${viewport.name}`, async ({ page, request }) => {
+    await page.setViewportSize(viewport);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const appearance = (element: HTMLElement) => {
+      const style = getComputedStyle(element);
+      return { border: style.border, radius: style.borderRadius, background: style.backgroundColor, color: style.color, shadow: style.boxShadow, height: style.height, font: style.font, padding: style.padding, outline: style.outline, outlineOffset: style.outlineOffset };
+    };
+    const evidence = [];
+    for (const locale of locales) {
+      const copy = JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
+      await page.context().clearCookies();
+      await page.goto(localePath(locale));
+      const heroAction = page.locator('main a[data-variant="action-raised"]').first();
+      await heroAction.focus();
+      const homeFocus = await heroAction.evaluate(appearance);
+      await heroAction.blur();
+      await page.mouse.move(0, 0);
+      const homeDefault = await heroAction.evaluate(appearance);
+      await heroAction.hover();
+      const homeHover = await heroAction.evaluate(appearance);
+      let markup = '';
+      const courseSlug = process.env.CONTENT_TEST === '1' ? 'ai-coding' : 'llm-101';
+      for (const suffix of ['/unknown-page', '/courses/missing/lesson', `/courses/${courseSlug}/missing-lesson`]) {
+        const path = localePath(locale, suffix);
+        expect((await page.goto(path))?.status(), path).toBe(404);
+        await page.evaluate(() => document.fonts.ready);
+        await expect(page.locator('html')).toHaveAttribute('lang', htmlLanguages[locale]);
+        await expect(page.locator('main')).toHaveCount(1);
+        await expect(page.getByRole('banner')).toHaveCount(1);
+        await expect(page.getByRole('contentinfo')).toHaveCount(1);
+        const title = page.getByRole('heading', { level: 1 });
+        await expect(title).toHaveText(copy.Ui.notFoundTitle);
+        await expect(title).toHaveCSS('font-family', /Geist Pixel/);
+        await expect(title).toHaveCSS('font-weight', '400');
+        const numeral = page.locator('main > p[aria-hidden="true"]');
+        await expect(numeral).toHaveText('404');
+        await expect(numeral).toHaveCSS('font-family', /Geist Pixel/);
+        const currentMarkup = await page.locator('main').innerHTML();
+        if (markup) expect(currentMarkup).toBe(markup);
+        markup = currentMarkup;
+        const actions = page.locator('main a[data-slot="button"]');
+        await expect(actions).toHaveCount(2);
+        await page.mouse.move(0, 0);
+        for (const action of await actions.all()) {
+          await expect(action).toHaveAttribute('data-variant', 'action-raised');
+          expect(await action.evaluate(appearance)).toEqual(homeDefault);
+          await action.hover();
+          expect(await action.evaluate(appearance)).toEqual(homeHover);
+          await page.mouse.move(0, 0);
+          await action.focus();
+          expect(await action.evaluate(appearance)).toEqual(homeFocus);
+          await expect(action).toBeFocused();
+          await action.blur();
+        }
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+        evidence.push({ path, status: 404, title: await title.textContent(), button: await actions.first().evaluate(appearance) });
+      }
+      const links = await page.locator('main a[href^="/"]').evaluateAll((items) => items.map((item) => item.getAttribute('href')!));
+      await page.locator('.language-picker summary').click();
+      links.push(...await page.locator('.language-options a').evaluateAll((items) => items.map((item) => item.getAttribute('href')!)));
+      for (const url of new Set(links)) expect((await request.get(url)).status(), url).toBe(200);
+      await page.keyboard.press('Escape');
+      // The pale numeral repeats the readable 404 label and is decorative.
+      const accessibility = await new AxeBuilder({ page }).exclude('main > p[aria-hidden="true"]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+      expect(accessibility.violations).toEqual([]);
+      await test.info().attach(`404-${locale}-${viewport.name}`, { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
+    }
+    expect((await page.goto('/de/unknown-page'))?.status()).toBe(404);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    await expect(page.locator('h1')).toHaveText('Page not found');
+    await test.info().attach('404 route and button evidence', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
+  });
+}
+
+test('missing page stays unified without JavaScript', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
+  try {
+    const page = await context.newPage();
+    expect((await page.goto('/zh/courses/missing/lesson'))?.status()).toBe(404);
+    await expect(page.locator('h1')).toHaveText('页面未找到');
+    await expect(page.locator('h1')).toHaveCSS('font-family', /Geist Pixel/);
+    const home = page.getByRole('link', { name: '返回首页', exact: true });
+    await expect(home).toHaveAttribute('data-variant', 'action-raised');
+    await test.info().attach('404-mobile-no-js', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
+    await home.click();
+    await expect(page).toHaveURL(/\/zh$/);
+  } finally { await context.close(); }
 });
 
 test('search does not activate an old result while a new query is pending', async ({ page }) => {

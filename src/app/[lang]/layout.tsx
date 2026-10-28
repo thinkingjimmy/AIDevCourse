@@ -1,11 +1,12 @@
 /**
- * [INPUT]: Validated route locale, current dictionary including shared achievement interface messages, root brand metadata, published lesson URLs, and the zinc site frame.
+ * [INPUT]: Validated route locale, shared Latin font variables, locale-specific Noto fonts, current dictionary, root brand metadata, published lesson URLs, and the zinc site frame.
  * [OUTPUT]: Static locale-specific HTML, Geist fonts with CSS-managed Pixel fallbacks and locale-selected Noto CJK fonts, sticky header, and narrowly scoped client providers.
  * [POS]: Public language root; language-prefixed pages never consult cookies.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
 import type { ReactNode } from 'react';
-import { Geist, Geist_Mono, Geist_Pixel, Noto_Sans_SC, Noto_Sans_JP } from 'next/font/google';
+import { Noto_Sans_SC, Noto_Sans_JP } from 'next/font/google';
+import { sans, mono, pixel } from '@/lib/fonts';
 import { notFound } from 'next/navigation';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { locales, isLocale, htmlLanguages } from '@/lib/i18n/config';
@@ -16,16 +17,6 @@ import { SiteFooter } from '@/components/layout/page-primitives';
 import { HomeHeader } from '@/components/layout/home-header';
 import { getCourses } from '@/lib/content/source';
 import '@/styles/globals.css';
-const sans = Geist({ subsets: ['latin'], variable: '--font-geist', display: 'swap' });
-const mono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono', display: 'swap' });
-// Turbopack needs an explicit list; the shared CSS stack supplies Geist and Noto fallbacks.
-const pixel = Geist_Pixel({
-  subsets: ['latin'],
-  variable: '--font-geist-pixel',
-  display: 'swap',
-  adjustFontFallback: false,
-  fallback: [],
-});
 // Load CJK slices only when the selected language renders matching glyphs.
 const chinese = Noto_Sans_SC({ variable: '--font-noto-sans-sc', display: 'swap', preload: false, adjustFontFallback: false });
 const japanese = Noto_Sans_JP({ variable: '--font-noto-sans-jp', display: 'swap', preload: false, adjustFontFallback: false });

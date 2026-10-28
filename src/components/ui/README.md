@@ -2,7 +2,7 @@
 
 > L2 | Parent: [../README.md](../README.md)
 
-- `alert.tsx`: Alert, title, and description with callout, notice, and author variants.
+- `alert.tsx`: Alert, title, and description with callout, notice, and quote-framed author variants; the author surface shares Markdown quotation borders and shadows and reserves space for an embedded top-edge signature.
 - `badge.tsx`: Compact outline and secondary labels for design previews.
 - `button.tsx`: Native buttons and link composition with shared action variants, including action-raised for square white home/course hero actions with an offset shadow.
 - `card.tsx`: Card and CardContent for course catalog surfaces.

@@ -10,7 +10,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 
 const fixture = process.env.CONTENT_TEST === '1';
-const courseSlug = fixture ? 'ai-coding' : 'ai-101';
+const courseSlug = fixture ? 'ai-coding' : 'llm-101';
 const lessonPath = (locale = 'zh', slug = 'first-change') => localePath(locale as Locale, `/courses/${courseSlug}/${slug}`);
 
 const languages = ['zh', 'en', 'ja', 'fr', 'es'] as const;
@@ -41,7 +41,7 @@ for (const locale of languages) {
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.setViewportSize(viewport);
       for (const [surface, path] of Object.entries({
-        home: localePath(locale as Locale, `/`), about: localePath(locale as Locale, `/about`), course: localePath(locale as Locale, `/courses/ai-101`),
+        home: localePath(locale as Locale, `/`), about: localePath(locale as Locale, `/about`), course: localePath(locale as Locale, `/courses/llm-101`),
         missing: localePath(locale as Locale, `/missing-style-check`),
       })) {
         await page.goto(path);
@@ -178,13 +178,13 @@ test('hero illustrations preserve their opening, hover, and callout behavior', a
 });
 
 test('the entire course card controls chip hover motion', async ({ browser, baseURL }) => {
-  test.skip(fixture, 'The public AI 101 card owns this interaction.');
+  test.skip(fixture, 'The public LLM 101 card owns this interaction.');
   test.setTimeout(30000);
   const context = await browser.newContext({ baseURL, viewport: viewports[0], reducedMotion: 'no-preference', recordVideo: { dir: test.info().outputPath('video') } });
   const page = await context.newPage();
   try {
     await page.goto('/');
-    const card = page.locator('[data-slot="course-grid"]').getByRole('link', { name: 'AI 101', exact: true });
+    const card = page.locator('[data-slot="course-grid"]').getByRole('link', { name: 'LLM 101', exact: true });
     const chip = card.locator('[data-anatomy="chip"]');
     const fan = chip.locator('[data-asm="fan"]');
     await card.scrollIntoViewIfNeeded();
@@ -222,7 +222,7 @@ test('the entire course card controls chip hover motion', async ({ browser, base
     await expect(fan).toHaveAttribute('transform', still!);
     await expect(chip).toHaveAttribute('data-settled', 'true');
     await card.click();
-    await expect(page).toHaveURL(/\/courses\/ai-101$/);
+    await expect(page).toHaveURL(/\/courses\/llm-101$/);
   } finally {
     await context.close();
     const path = await page.video()?.path();

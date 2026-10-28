@@ -1,6 +1,6 @@
 /**
- * [INPUT]: Markdown/MDX AST, a local image root, and component allowlist.
- * [OUTPUT]: Supported components, static question-only achievement definitions and option validation, safe headings, references, and authoring errors.
+ * [INPUT]: Markdown/MDX AST, the shared mark syntax extension, a local image root, and component allowlist.
+ * [OUTPUT]: Supported components including TokenizationDiagram, highlighted-text-aware headings/references, static question-only achievement definitions and option validation, and authoring errors.
  * [POS]: Syntax validation before trusted local content reaches the compiler.
  * [PROTOCOL]: Update this header when making changes, then check README.md.
  */
@@ -8,12 +8,13 @@ import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkMdx from 'remark-mdx';
 import remarkGfm from 'remark-gfm';
+import { remarkMark } from 'remark-mark-highlight';
 import { visit } from 'unist-util-visit';
 import { toString } from 'mdast-util-to-string';
 import GithubSlugger from 'github-slugger';
 import type { Root } from 'mdast';
 import type { AchievementDefinition, ContentDocument } from './model';
-export const supportedComponents = ['Callout', 'JimmyNote', 'Chat', 'ChatMessage', 'Steps', 'Step', 'LLMGenerationDemo', 'MenuComparisonDemo', 'Achievement', 'AchievementOption'] as const;
+export const supportedComponents = ['Callout', 'JimmyNote', 'Chat', 'ChatMessage', 'Steps', 'Step', 'LLMGenerationDemo', 'MenuComparisonDemo', 'TokenizationDiagram', 'Achievement', 'AchievementOption'] as const;
 type Element = {
   name: string; attributes: { type: string; name: string; value: unknown }[];
   children: { type: string; value?: string; name?: string; children?: Element['children'] }[];
@@ -21,7 +22,7 @@ type Element = {
 const achievementFields = ['id', 'title', 'question', 'answer', 'explanation', 'takeaway'] as const;
 const stableId = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export function inspectMarkdown(body: string, file: string) {
-  const tree = unified().use(remarkParse).use(remarkGfm).use(remarkMdx).parse(body) as Root;
+  const tree = unified().use(remarkParse).use(remarkGfm).use(remarkMdx).use(remarkMark).parse(body) as Root;
   const slugger = new GithubSlugger();
   const headings: ContentDocument['headings'] = [];
   const links: ContentDocument['links'] = [];
