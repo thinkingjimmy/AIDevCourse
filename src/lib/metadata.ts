@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Public translation map, locale, and configured site origin, canonical locale paths.
- * [OUTPUT]: Self-canonical metadata and reciprocal public-only alternates.
- * [POS]: Shared SEO derivation for pages and sitemap, using only catalogued lessons.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import type { Metadata } from 'next';
 import { locales, htmlLanguages, defaultLocale, type Locale } from './i18n/config';
 import { localePath, stripLocale } from './i18n/routing';

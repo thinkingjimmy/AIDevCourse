@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Radix DropdownMenu primitives, native composition props, Phosphor chevrons, and shared surface tokens.
- * [OUTPUT]: Dropdown root, trigger, content, items, and composable submenu parts, and optional portal containers for nested sheets.
- * [POS]: Shared shadcn-style action menu with Radix keyboard and focus management.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 'use client';
 
 import type { ComponentProps } from 'react';

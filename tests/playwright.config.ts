@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Built applications, browser projects, CI, and the local VISUAL_TEST opt-in.
- * [OUTPUT]: Real-server interaction E2E plus optional local screenshot comparisons.
- * [POS]: Repository E2E configuration; test content cannot deploy to Vercel.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { defineConfig, devices } from '@playwright/test';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';

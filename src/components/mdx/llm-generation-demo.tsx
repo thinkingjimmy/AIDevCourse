@@ -1,9 +1,3 @@
-/**
- * [INPUT]: React lifecycle, shared Button/quote-frame utilities, and the local generation model and animation driver.
- * [OUTPUT]: Automatic LLMGenerationDemo with equally padded content panels, candidate selection, context feedback, playback controls, and static reading support.
- * [POS]: Chinese lesson illustration registered by the existing MDX component map; the driver owns animated descendants after mount.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 'use client';
 
 import { useEffect, useId, useRef } from 'react';
@@ -29,7 +23,7 @@ export function LLMGenerationDemo() {
 
   return <figure ref={root} aria-label="文字接龙演示" lang="zh-CN" data-generation-demo data-complete="false" data-playing="true"
     className="quote-frame not-prose group/generation @container/generation relative my-8 p-4 text-base leading-reading sm:p-5">
-    <figcaption className="sr-only">按字符简化的生成演示：每轮选择概率最高的候选，将结果接回完整输入，再计算下一个字。问题是「{question}」，概率和天气均为虚构。</figcaption>
+    <figcaption className="text-sm font-medium">预测概率 → 按规则选择 → 继续生成</figcaption>
     <div data-paper id={rowsId} aria-hidden="true"
       className="relative h-[calc(var(--row-height)*2.5+var(--row-gap)*2)] overflow-hidden [--row-height:6rem] [--row-gap:0.875rem] [--candidate-size:2.5rem] [--candidate-gap:0.3125rem] [mask-image:linear-gradient(to_bottom,transparent,#000_calc(var(--row-height)/2))] @max-[600px]/generation:[--row-height:10.25rem] @max-[600px]/generation:[--row-gap:0.75rem] [@media(scripting:none)]:hidden">
       <div data-sheet className="flex flex-col gap-(--row-gap)">
@@ -78,8 +72,9 @@ export function LLMGenerationDemo() {
     <noscript><details className="text-sm leading-reading">
       <summary className="rounded-sm text-foreground">查看完整生成过程</summary>
       <ol className="mt-3 list-decimal space-y-2 pl-5 text-muted-foreground">
-        <li>输入「{question}」，生成「今」。</li>
-        <li>输入「{question}今」，生成「天」。</li>
+        <li>输入「{question}」，预测候选概率：「广」48%、「今」42%、「明」10%。</li>
+        <li>按概率采样，本次选中「今」（42%），而非概率最高的「广」（48%）。</li>
+        <li>输入「{question}今」，重新预测候选概率，再按规则选择，本次生成「天」。</li>
         <li>将结果接回完整输入，继续生成。</li>
         <li>最终回答（虚构）：{answer.join('')}</li>
       </ol>

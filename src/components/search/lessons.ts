@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Public catalog and one locale.
- * [OUTPUT]: Lesson URL to display meta (number, title, module) for search rows.
- * [POS]: Shared by the server header and the client search dialog.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import type { Locale } from '@/lib/i18n/config';
 import type { Catalog } from '@/lib/content/model';
 export type SearchLessonMeta = { number: string; title: string; module: string };

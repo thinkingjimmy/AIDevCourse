@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Isolated five-language production fixture build, canonical locale paths.
- * [OUTPUT]: Recent visits, declarative multi-article achievements with explicit answer feedback, immediate earned cards, course isolation, and translation sharing, multilingual search, and responsive reading evidence.
- * [POS]: Nonpublic engineering matrix; never runs fixtures in the deployment build.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { localePath } from '../../src/lib/i18n/routing';
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';

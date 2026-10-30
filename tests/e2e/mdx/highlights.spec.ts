@@ -1,9 +1,3 @@
-/**
- * [INPUT]: The real MDX writing preview, local marker-stroke SVG, the production server, browser viewports, and the authoring CLI with temporary course content.
- * [OUTPUT]: Gray marker-stroke rendering, nested formatting, literal preservation, heading/CLI alignment, wrapping, accessibility, and no-JavaScript screenshot/JSON evidence.
- * [POS]: Scoped MDX highlight acceptance checks; unit tests and production course edits are unnecessary.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -31,7 +25,7 @@ for (const scenario of [
       const preview = page.locator('#highlights');
       const marks = preview.locator('mark');
       await expect(marks).toHaveCount(5);
-      await expect(marks.first()).toHaveText('浅灰色高亮');
+      await expect(marks.first()).toHaveText('淡黄色高亮');
       await expect(marks.nth(1).locator('strong')).toHaveText('重点');
       await expect(marks.nth(1).locator('em')).toHaveText('强调');
       await expect(marks.nth(2).getByRole('link')).toHaveAttribute('href', '#authoring');
@@ -68,7 +62,7 @@ for (const scenario of [
       }
       const screenshot = test.info().outputPath(`highlights-${scenario.name}.png`);
       await preview.screenshot({ path: screenshot, animations: 'disabled' });
-      await test.info().attach('Gray text highlights', { path: screenshot, contentType: 'image/png' });
+      await test.info().attach('Pale yellow text highlights', { path: screenshot, contentType: 'image/png' });
       await test.info().attach('Highlight styles', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
       await preview.getByRole('link', { name: 'Jump to highlighted heading' }).click();
       await expect(page).toHaveURL(/#highlighted-heading$/);

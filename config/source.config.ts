@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Validated publication catalog, isolated content mode, Fumadocs Config API, canonical locale paths, and the shared mark syntax extension.
- * [OUTPUT]: A local MDX collection with ==text== highlighting, containing only allowed content files, plus allowlisted /design preview routes.
- * [POS]: Build-time compiler boundary; fixtures require an isolated test build.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { localePath } from '../src/lib/i18n/routing';
 import { defineConfig, defineDocs } from 'fumadocs-mdx/config';
 import { readCatalog } from '../src/lib/content/manifest';
@@ -13,6 +7,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { locales } from '../src/lib/i18n/config';
 import { contentMode } from './content-mode.mjs';
 import { remarkMark } from 'remark-mark-highlight';
+import { remarkMath, remarkValidateMath, rehypeMath, mathOptions } from '../src/lib/content/math';
 const catalog = readCatalog();
 // Freeze the checked public boundary at build time; runtime routes need no filesystem access.
 mkdirSync(contentMode.generated, { recursive: true });
@@ -31,7 +26,9 @@ export const courses = defineDocs({
 });
 export default defineConfig({
   mdxOptions: {
-    remarkPlugins: [remarkMark],
+    remarkPlugins: [remarkMark, remarkMath, remarkValidateMath],
+    // Render math before Shiki can treat its generated code nodes as a programming language.
+    rehypePlugins: (plugins) => [[rehypeMath, mathOptions], ...plugins],
     rehypeCodeOptions: {
       themes: { light: 'github-light', dark: 'github-light' },
       transformers: [{ pre(node) { node.properties['data-language'] = this.options.lang; } }],

@@ -1,9 +1,3 @@
-/**
- * [INPUT]: The three homepage routes.
- * [OUTPUT]: A short index that points at each preview without replacing /zh.
- * [POS]: Entry for /design.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { DesignFooter, DesignHeader } from './ui';

@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Static exploded-chip SVG, the shared animation driver, and the iso-kit lift (up axis, per-layer distance, stagger).
- * [OUTPUT]: Decorative chip figure with optional callouts that loops assembly and explosion while hovered and returns to the exploded pose on pointer leave.
- * [POS]: Course hero right column and cropped catalog artwork without callouts; both use the shared animation driver.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 'use client';
 
 import { useEffect, useRef } from 'react';

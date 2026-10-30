@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Native Fumadocs link props, Radix HoverCard, localized Ui labels, and preview JSON or an empty 204 response.
- * [OUTPUT]: LinkPreview with delayed page previews, request reuse, fallback text, and native link behavior.
- * [POS]: Shared Markdown anchor renderer registered by the MDX component registry.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';

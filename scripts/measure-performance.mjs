@@ -1,9 +1,3 @@
-/**
- * [INPUT]: A running production build, its sitemap, and installed Playwright Chromium.
- * [OUTPUT]: Mobile Lighthouse medians, request details, and gzip search sizes in .artifacts/performance.
- * [POS]: Optional local performance gate; discovers live URLs instead of assuming course slugs.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { chromium } from '@playwright/test';
 import lighthouse from 'lighthouse';
 import { mkdirSync, writeFileSync } from 'node:fs';

@@ -4,7 +4,7 @@ A multilingual learning site for local Markdown and MDX courses.
 
 **English** · [简体中文](./docs/README.zh.md)
 
-Next.js 16.3.8 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-intl 4.14.6 + Tailwind CSS 4.3.3
+Next.js 16.3.8 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-intl 4.14.6 + Tailwind CSS 4.3.3 + KaTeX 0.19.1
 
 Authors declare single-choice achievements directly in MDX; validation builds each course’s achievement inventory from its original articles.
 
@@ -12,20 +12,20 @@ Read courses in five languages, search the current language, and keep earned ach
 
 Hover or focus Markdown page links to preview their title, summary, domain, and available cover. Local previews use the course catalog; optional external previews read public metadata on demand and keep navigation available when metadata cannot load.
 
-**Content status:** LLM 101 has introductions in five languages. The Chinese lessons cover LLM generation and input quality with interactive examples, followed by 什么是 Token on tokenization, context windows, and pricing; the other languages retain welcome placeholders. The homepage learning action opens this first lesson. Engineering fixtures remain separate from published courses.
+**Content status:** LLM 101 has introductions in five languages. Its nine Chinese lessons form three modules: 大语言模型的工作原理 (`model-fundamentals`, four lessons on generation, tokens, sampling, and probabilities), 模型的训练与能力 (`model-training`, four lessons on pretraining, thinking, multimodal inputs, and model selection), and AI 应用的工作原理 (`ai-applications`, one lesson on chat history as model input). Other languages retain the first lesson's welcome placeholder in `model-fundamentals`. Lesson URLs and achievement identities stay unchanged when files move between modules. LLM 101 remains a beginner course without post-training lessons; Chat practice belongs beside the corresponding application concepts. The [authoring guide](./docs/authoring.md#llm-101-的课程范围) records future topics and the proposed intermediate Agent 101 boundary. The homepage learning action opens the first lesson. Coding 101 is available in Chinese, with two beginner lessons on JSON basics and calling an AI API, including optional curl practice and two achievements. Engineering fixtures remain separate from published courses.
 
 ## Quick start
 
-Use Node **22.17.0 or a later 22.x patch** and pnpm **10.30.3**.
+Use Node **22.17.0 or a later 22.x patch**, or **24.x**, and pnpm **10.30.3**. CI and production remain on Node 22.x.
 
 ```bash
 pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open [localhost:3000/zh](http://localhost:3000/zh). Body edits support hot reload. Restart after changing frontmatter, achievement declarations, file paths, or `meta.json` order.
+Open [localhost:3000/zh](http://localhost:3000/zh). Body edits and achievement declarations support hot reload; development validates current article definitions and course achievement inventories together. Restart after changing frontmatter, file paths, or `meta.json` order.
 
-`pnpm dev` uses Webpack to avoid missing CSS chunk elements during Turbopack hot replacement. Restart a running development server after changing this command, then reload the browser once. Optional external previews retry proxy-generated DNS addresses through Cloudflare's HTTPS resolver; pages that reject metadata reads return an empty preview response and keep normal navigation.
+`pnpm dev` uses Webpack with an in-memory development cache to avoid missing CSS chunks and unsupported dependency tracing. Geist, Geist Mono, Geist Pixel, and the Chinese/Japanese Noto fonts are installed as pinned Fontsource packages; development and builds do not download fonts from Google. Unicode ranges keep CJK font requests limited to the glyphs used on the page. Restart a running development server after changing this command, then reload the browser once. Optional external previews retry proxy-generated DNS addresses through Cloudflare's HTTPS resolver; pages that reject metadata reads return an empty preview response and keep normal navigation.
 
 English uses `/`, `/about`, and `/courses/...`; other languages use `/zh`, `/ja`, `/fr`, and `/es` prefixes. Only `/` detects saved/browser language preferences, with English as the fallback. Design studies are available at `/design`; writing components are at `/design/components`.
 
@@ -58,22 +58,16 @@ E2E starts its own server on port **3310**; set `E2E_PORT` if needed. Fixture bu
 
 ## Repository map
 
-<directory>
-
 | Directory | Responsibility |
 | --- | --- |
-| [`src/`](./src/README.md) | Routes, components, domain logic, dictionaries, and styles |
-| [`content/`](./content/README.md) | Published courses, organized by language |
-| [`config/`](./config/README.md) | MDX collection, lint rules, redirects, and environment example |
-| [`tests/`](./tests/README.md) | Browser checks, existing unit checks, and isolated content fixtures |
-| [`scripts/`](./scripts/README.md) | Content validation, dictionary validation, and performance measurement |
-| [`public/`](./public/README.md) | Official logo and icons, course images, and brand candidates |
-| [`docs/`](./docs/README.md) | Current requirements, architecture, authoring, deployment, and templates |
-| [`.github/`](./.github/README.md) | CI and contribution guidance |
-
-</directory>
-
-<config>
+| [`src/`](./src/) | Routes, components, domain logic, dictionaries, and styles |
+| [`content/`](./content/) | Published courses, organized by language |
+| [`config/`](./config/) | MDX collection, lint rules, redirects, and environment example |
+| [`tests/`](./tests/) | Browser checks, existing unit checks, and isolated content fixtures |
+| [`scripts/`](./scripts/) | Content validation, dictionary validation, and performance measurement |
+| [`public/`](./public/) | Official logo and icons, course images, and brand candidates |
+| [`docs/`](./docs/) | Current requirements, architecture, authoring, deployment, and templates |
+| [`.github/`](./.github/) | CI and contribution guidance |
 
 - `package.json`: Runtime constraints, pinned dependencies, scripts, license, and PostCSS settings.
 - `pnpm-lock.yaml`: Reproducible dependency resolution.
@@ -83,11 +77,9 @@ E2E starts its own server on port **3310**; set `E2E_PORT` if needed. Fixture bu
 - `.gitignore`: Excludes secrets, dependencies, caches, and generated evidence.
 - `LICENSE`: MIT license.
 
-</config>
-
 Routes compose components. `src/lib/content` owns publication and content identities; `src/lib/i18n` owns language rules. Small shared domains use direct files in `src/lib`. UI primitives use direct files in `src/components/ui`, with dialogs in `overlays`. The course sidebar stays with course components. Both hero illustrations share one animation driver.
 
-Directory READMEs list their members. Source headers describe inputs, exports, and responsibility. Keep those maps current when changing code. Maintained source files stay below 800 lines, and each directory contains at most eight maintained files.
+Maintained source files stay below 800 lines, and each directory contains at most eight maintained files.
 
 ## Contributing and deployment
 
@@ -98,5 +90,3 @@ The [requirements](./docs/requirements.md) define current behavior; the [archite
 Use a verified HTTPS origin for production. Local environment examples are in `config/.env.example`. Preview deployments use `noindex`. Course translations share achievements by stable IDs; unavailable translations link to an available course or the language homepage. Reading remains available when storage fails.
 
 Licensed under [MIT](./LICENSE).
-
-[PROTOCOL]: Update this header when making changes, then check README.md.

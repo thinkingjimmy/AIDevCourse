@@ -1,13 +1,8 @@
-/**
- * [INPUT]: Production routes, isolated authoring workspaces, and the real content CLI.
- * [OUTPUT]: Unified localized 404 status, Geist Pixel and homepage-action parity with screenshots/JSON, recovery, authoring, deployment-guard, and search-race evidence.
- * [POS]: Scoped repository integration checks; temporary content never enters a deployment.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { locales, htmlLanguages } from '../../src/lib/i18n/config';
 import { localePath } from '../../src/lib/i18n/routing';
+import type { Catalog } from '../../src/lib/content/model';
 import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -138,6 +133,58 @@ test('achievement authoring CLI validates declarative questions and translations
 });
 
 for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'mobile', width: 390, height: 844 }]) {
+  test(`runtime errors reuse the complete 404 page on ${viewport.name}`, async ({ page, request }) => {
+    test.setTimeout(120000);
+    await page.setViewportSize(viewport);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const evidence = [];
+    const catalog = JSON.parse(readFileSync(`${process.env.CONTENT_TEST === '1' ? '.source-test' : '.source'}/catalog.json`, 'utf8')) as Catalog;
+    for (const locale of locales) {
+      const copy = JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
+      await page.goto(localePath(locale, '/unknown-page'));
+      const reference = await page.locator('main').innerHTML();
+      const lessonPath = catalog.courses.find((course) => course.locale === locale)?.lessons[0]?.url;
+      for (const path of [localePath(locale), localePath(locale, '/about'), ...(lessonPath ? [lessonPath] : [])]) {
+        await page.context().clearCookies();
+        const response = await page.goto(path);
+        expect(response?.status(), path).toBe(200);
+        await expect.poll(() => page.locator('main').evaluate((element) => Object.keys(element).some((name) => name.startsWith('__reactFiber')))).toBe(true);
+        const injected = await page.locator('main').evaluate((element) => {
+          type Fiber = { return?: Fiber; memoizedProps?: { errorComponent?: unknown }; stateNode?: { setState(state: { error: Error }): void } };
+          const key = Object.keys(element).find((name) => name.startsWith('__reactFiber'));
+          if (!key) return false;
+          let fiber: Fiber | undefined = (element as unknown as Record<string, Fiber>)[key];
+          for (; fiber; fiber = fiber.return) {
+            if (fiber.memoizedProps?.errorComponent && fiber.stateNode?.setState) {
+              fiber.stateNode.setState({ error: new Error('Controlled runtime recovery check') });
+              return true;
+            }
+          }
+          return false;
+        });
+        expect(injected, path).toBe(true);
+        await expect(page.locator('h1')).toHaveText(copy.Ui.notFoundTitle);
+        await expect(page.getByRole('banner')).toHaveCount(1);
+        await expect(page.getByRole('contentinfo')).toHaveCount(1);
+        await expect(page.locator('main')).toHaveCount(1);
+        expect(await page.locator('main').innerHTML()).toBe(reference);
+        await expect(page.locator('main button')).toHaveCount(0);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+        for (const href of await page.locator('main a').evaluateAll((links) => links.map((link) => link.getAttribute('href')!))) {
+          expect((await request.get(href)).status(), href).toBe(200);
+        }
+        if (path === lessonPath) {
+          await page.evaluate(() => document.fonts.ready);
+          await test.info().attach(`runtime-404-${locale}-${viewport.name}`, { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
+        }
+        evidence.push({ path, originalStatus: response?.status(), title: await page.locator('h1').innerText(), matches404: true });
+        await page.getByRole('link', { name: copy.Ui.backHome, exact: true }).click();
+        await expect(page.locator('h1')).toHaveText(copy.Home.title);
+      }
+    }
+    await test.info().attach('Runtime 404 recovery evidence', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
+  });
+
   test(`missing pages share one design and homepage Hero actions on ${viewport.name}`, async ({ page, request }) => {
     await page.setViewportSize(viewport);
     await page.emulateMedia({ reducedMotion: 'reduce' });

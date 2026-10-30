@@ -1,9 +1,3 @@
-/**
- * [INPUT]: The validated public catalog, canonical locale paths.
- * [OUTPUT]: Actionable authoring errors and public coverage counts.
- * [POS]: Content quality gate used by check, build, and CI.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { localePath } from '../src/lib/i18n/routing';
 import { readCatalog } from '../src/lib/content/manifest';
 import { locales } from '../src/lib/i18n/config';

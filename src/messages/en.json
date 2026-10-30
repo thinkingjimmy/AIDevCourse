@@ -21,13 +21,10 @@
     "noJs": "Reading and language links work without JavaScript. Search, copying, and learning records require JavaScript.",
     "notFoundTitle": "Page not found",
     "notFoundBody": "The address may be incorrect, or this lesson may not be published in this language yet.",
-    "errorEyebrow": "Error",
-    "errorTitle": "This page had trouble loading",
-    "error": "Your reading progress is still stored in this browser.",
     "backHome": "Back to home",
-    "retry": "Try again",
     "copyAnchor": "Copy link to heading",
     "copyAnchorFailed": "Could not copy the link. Use the heading link.",
+    "keyTakeaway": "Key takeaway",
     "linkPreview": "Page preview",
     "linkPreviewLoading": "Loading page preview…",
     "linkPreviewUnavailable": "Preview unavailable. Open the link to view this page.",
@@ -81,7 +78,13 @@
     "updating": "Content is being updated",
     "updatingBody": "New lessons are being prepared. They will appear here when published.",
     "achievementCount": "{count, plural, one {# achievement unlocked} other {# achievements unlocked}}",
-    "achievementsTitle": "My achievements"
+    "achievementsTitle": "My achievements",
+    "achievementsCompletion": "Completion {percent}",
+    "achievementsCollectionCount": "/ {total} medals unlocked",
+    "achievementEarned": "Unlocked",
+    "achievementLocked": "Locked",
+    "achievementVisit": "Go to lesson: {title}",
+    "achievementsEmpty": "There are no achievements available yet."
   },
   "Search": {
     "open": "Search lessons",
@@ -113,5 +116,26 @@
     "correct": "Correct answer",
     "incorrect": "Incorrect answer",
     "retry": "Try again"
+  },
+  "Author": {
+    "website": "Personal website",
+    "label": "About the author and follow links",
+    "role": "Course author",
+    "intro": "Making complex AI easier to understand.",
+    "invitation": "Enjoying the course? Follow my updates.",
+    "starProject": "Star project",
+    "starProjectLabel": "Star this project on GitHub",
+    "follow": "Follow",
+    "followX": "Follow on X",
+    "followBilibili": "Follow on Bilibili",
+    "xiaohongshu": "Rednote",
+    "followXiaohongshu": "Follow on Rednote",
+    "xiaohongshuUnavailable": "Rednote profile coming soon",
+    "wechatTitle": "Find me on WeChat",
+    "wechatPrompt": "Scan to follow my channel",
+    "wechatNote": "Learn at your own pace.",
+    "wechatQrAlt": "QR code for Jimmy’s WeChat channel",
+    "qrPlaceholder": "QR coming soon",
+    "qrPlaceholderLabel": "WeChat QR placeholder; not scannable yet"
   }
 }

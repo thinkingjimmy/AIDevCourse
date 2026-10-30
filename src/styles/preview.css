@@ -1,13 +1,9 @@
-/**
- * [INPUT]: Shared Tailwind tokens, prose and quote-frame utilities, and Geist font variables.
- * [OUTPUT]: Isolated preview defaults using the same typography and article frame styles as public pages.
- * [POS]: /design entry; preview components use Tailwind instead of a page stylesheet.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 @layer theme, base, components, utilities;
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities) source(none);
+@import './fonts.css';
 @import './tokens.css';
+@import 'katex/dist/katex.min.css';
 @import './prose.css';
 @source '../';
 

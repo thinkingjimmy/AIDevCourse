@@ -1,9 +1,3 @@
-/**
- * [INPUT]: The published zh AI coding course.
- * [OUTPUT]: Catalog homepage: goals, lesson cards, topic map, and site principles.
- * [POS]: Design A. It does not replace /[lang].
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import type { Metadata } from 'next';

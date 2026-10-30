@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Public route snapshot, canonical language paths, and saved/browser language preference, canonical locale paths.
- * [OUTPUT]: Homepage-only 307 negotiation, prefix-free English rewrites, canonical /en redirects, and rendered 404 responses.
- * [POS]: Sole routing interceptor; article and About addresses always keep their declared language.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { NextResponse, type NextRequest } from 'next/server';
 import { defaultLocale, isLocale, localeCookie, negotiateLocale } from './lib/i18n/config';
 import { isNegotiatedPath, localePath, pathLocale, stripLocale } from './lib/i18n/routing';

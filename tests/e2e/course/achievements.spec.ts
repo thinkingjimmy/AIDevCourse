@@ -1,0 +1,132 @@
+import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import { readCatalog } from '../../../src/lib/content/manifest';
+import { globalAchievementCourses } from '../../../src/lib/content/model';
+
+const catalog = readCatalog();
+const course = catalog.courses.find((item) => item.locale === 'zh' && item.id === 'llm-101')!;
+const firstLesson = course.lessons[0];
+const firstAchievement = course.achievements[0];
+const firstDefinition = catalog.documents.find((doc) => doc.url === firstLesson.url)!.achievements[0];
+const globalCourses = globalAchievementCourses(catalog, 'zh');
+const total = globalCourses.reduce((count, item) => count + item.achievements.length, 0);
+
+test.skip(process.env.CONTENT_TEST === '1', 'Uses the published achievement inventory.');
+
+test('earned medals, four-column alignment, hover, and lesson navigation', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto(firstLesson.url);
+  await page.locator(`[data-achievement="${firstAchievement.id}"]`).getByRole('radio')
+    .nth(firstDefinition.options.findIndex((option) => option.value === firstDefinition.answer)).click();
+  const trigger = page.getByRole('button', { name: '我的成就', exact: true });
+  await expect(trigger.locator('svg')).toHaveCount(0);
+  const entryPadding = await trigger.evaluate((element) => {
+    const button = element.getBoundingClientRect();
+    const ring = element.querySelector('[role="progressbar"]')!.getBoundingClientRect();
+    return { left: ring.left - button.left, top: ring.top - button.top, bottom: button.bottom - ring.bottom };
+  });
+  expect(entryPadding.left).toBeGreaterThanOrEqual(8);
+  expect(entryPadding.top).toBe(8);
+  expect(entryPadding.bottom).toBe(8);
+  await trigger.click();
+  const dialog = page.getByRole('dialog', { name: '我的成就' });
+  await expect(dialog).toBeVisible();
+  await expect(page.locator('[data-slot="dialog-overlay"]')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(dialog.getByRole('progressbar')).toHaveAttribute('aria-valuenow', String(100 / total));
+  const medals = dialog.locator('[data-medal]');
+  await expect(medals).toHaveCount(total);
+  await expect(medals.first()).toHaveAttribute('data-earned', 'true');
+  await expect(medals.nth(1)).toHaveAttribute('data-earned', 'false');
+
+  const layout = await dialog.evaluate((element) => {
+    const progress = element.querySelector('[role="progressbar"]')!.getBoundingClientRect();
+    const emblems = [...element.querySelectorAll('[data-medal-emblem]')].map((item) => {
+      const { x, y, width, height } = item.getBoundingClientRect();
+      return { x, y, width, height };
+    });
+    return { progressX: progress.x, emblems, dialogWidth: element.getBoundingClientRect().width };
+  });
+  expect(layout.dialogWidth).toBeGreaterThanOrEqual(720);
+  expect(layout.emblems.slice(0, 4).every((item) => Math.abs(item.y - layout.emblems[0].y) < 1)).toBe(true);
+  expect(layout.emblems[4].y).toBeGreaterThan(layout.emblems[0].y);
+  expect(Math.abs(layout.emblems[0].x - layout.progressX)).toBeLessThanOrEqual(1);
+  expect(Math.abs(layout.emblems[4].x - layout.progressX)).toBeLessThanOrEqual(1);
+  const link = medals.nth(1).getByRole('link');
+  await expect(link).toHaveCSS('opacity', '0');
+  const before = await dialog.boundingBox();
+  await medals.nth(1).hover();
+  await expect(link).toHaveCSS('opacity', '1');
+  expect((await dialog.boundingBox())!.height).toBe(before!.height);
+  const accessibility = await new AxeBuilder({ page }).include('[data-course-achievements]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+  expect(accessibility.violations).toEqual([]);
+  const screenshot = testInfo.outputPath('achievement-gallery-desktop.png');
+  await dialog.screenshot({ path: screenshot });
+  await testInfo.attach('achievement-gallery-desktop', { path: screenshot, contentType: 'image/png' });
+  await testInfo.attach('achievement-gallery-layout', { body: JSON.stringify(layout, null, 2), contentType: 'application/json' });
+  await link.click();
+  await expect(page).toHaveURL(/what-is-a-token#achievement-token-boundaries$/);
+  await expect(dialog).toHaveCount(0);
+  await expect(page.locator('#achievement-token-boundaries')).toBeInViewport();
+  await page.reload();
+  await trigger.click();
+  await expect(dialog.locator('[data-medal]').first()).toHaveAttribute('data-earned', 'true');
+  await page.keyboard.press('Escape');
+  await expect(trigger).toBeFocused();
+  await trigger.press('Enter');
+  await expect(dialog).toBeVisible();
+  await page.getByRole('button', { name: '关闭', exact: true }).click();
+  await expect(trigger).toBeFocused();
+});
+
+for (const width of [320, 390]) {
+  test(`mobile ${width}: two columns, touch links, and sidebar dismissal`, async ({ browser }, testInfo) => {
+    const context = await browser.newContext({ viewport: { width, height: 844 }, hasTouch: true, baseURL: testInfo.project.use.baseURL });
+    const page = await context.newPage();
+    await page.goto(firstLesson.url);
+    await page.getByRole('button', { name: '课程目录', exact: true }).click();
+    await page.getByRole('button', { name: '我的成就', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: '我的成就' });
+    const medals = dialog.locator('[data-medal]');
+    await expect(medals).toHaveCount(total);
+    await expect(medals.first().getByRole('link')).toHaveCSS('opacity', '1');
+    const layout = await dialog.evaluate((element) => {
+      const emblems = [...element.querySelectorAll('[data-medal-emblem]')].map((item) => ({ x: item.getBoundingClientRect().x, y: item.getBoundingClientRect().y }));
+      const box = element.getBoundingClientRect();
+      return { emblems, left: box.left, right: box.right, viewport: innerWidth, overflow: element.scrollWidth > element.clientWidth };
+    });
+    expect(layout.emblems[0].y).toBe(layout.emblems[1].y);
+    expect(layout.emblems[2].y).toBeGreaterThan(layout.emblems[0].y);
+    expect(layout.left).toBeGreaterThanOrEqual(0);
+    expect(layout.right).toBeLessThanOrEqual(width);
+    expect(layout.overflow).toBe(false);
+    await testInfo.attach(`achievement-gallery-${width}`, { body: await dialog.screenshot(), contentType: 'image/png' });
+    await medals.nth(1).getByRole('link').click();
+    await expect(page).toHaveURL(/what-is-a-token#achievement-token-boundaries$/);
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await context.close();
+  });
+}
+
+test('translations use original exercises when the translated exercise is missing', async ({ page }) => {
+  const english = catalog.courses.find((item) => item.locale === 'en' && item.id === course.id)!;
+  await page.goto(english.lessons[0].url);
+  await page.getByRole('button', { name: 'My achievements', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'My achievements' });
+  await expect(dialog.locator('[data-medal]')).toHaveCount(total);
+  await expect(dialog.locator('[data-medal]').first()).toContainText(firstDefinition.title);
+  await expect(dialog.locator('[data-medal]').first().getByRole('link')).toHaveAttribute('href', `${firstLesson.url}#achievement-${firstAchievement.id}`);
+  await page.keyboard.press('Tab');
+  await expect(dialog.locator('[data-medal]').first().getByRole('link')).toBeFocused();
+  await expect(dialog.locator('[data-medal]').first().getByRole('link')).toHaveCSS('opacity', '1');
+});
+
+test('blocked storage keeps the gallery usable without inventing progress', async ({ page }, testInfo) => {
+  await page.addInitScript(() => Object.defineProperty(window, 'localStorage', { get() { throw new DOMException('Blocked', 'SecurityError'); } }));
+  await page.goto(firstLesson.url);
+  await page.getByRole('button', { name: '我的成就', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: '我的成就' });
+  await expect(dialog.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0');
+  await expect(dialog.locator('[data-earned="true"]')).toHaveCount(0);
+  await expect(dialog.locator('[data-medal]')).toHaveCount(total);
+  await testInfo.attach('achievement-gallery-blocked-storage', { body: await dialog.screenshot(), contentType: 'image/png' });
+});

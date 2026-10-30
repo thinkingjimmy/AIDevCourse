@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Shared deterministic search tokenizer and the actual Fumadocs export API.
- * [OUTPUT]: Cross-runtime CJK and accent-normalization regression checks.
- * [POS]: Search correctness tests independent of installed browser ICU dictionaries.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { expect, it } from 'vitest';
 import { tokenize, createSearchTokenizer } from '../../src/lib/search';
 import { createSearchAPI } from 'fumadocs-core/search/server';

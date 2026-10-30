@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Locale search export, a query, focus return callback, Phosphor icons, and shared Dialog/Input/Button primitives, canonical locale paths.
- * [OUTPUT]: Lazy, race-safe search with dialog-managed focus, keyboard/IME support, lesson number/module meta and retries.
- * [POS]: Isolated dialog boundary; cache URLs include locale and build version.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 'use client';
 import { localePath } from '@/lib/i18n/routing';
 import { useEffect, useMemo, useRef, useState } from 'react';

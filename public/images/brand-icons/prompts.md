@@ -1,7 +1,5 @@
 # AIDevCourse icon generation prompts
 
-> L2 | Parent: [README.md](./README.md)
-
 Generated on 2026-10-16 with the built-in `image_gen.imagegen` tool. Each image used one independent generation call with `transparent_background: true`. The PNGs are original generated outputs; no pixel edits were applied.
 
 ## 01-code-book — Code Book
@@ -63,6 +61,3 @@ Composition/framing: one single centered compact mark on a square 1024 x 1024 ca
 Constraints: actual transparent background; no white canvas, no checkerboard pattern drawn into the image, no background tile, no enclosing app-square, no gradient, no shadow, no 3D, no thin decorative detail, no illustration scene, no wordmark, no label, no watermark. This is an original brand symbol rather than a generic stock UI icon.
 Primary request: Design an original compact geometric monogram that interlocks the letters A, D, and C from AI Dev Course into a single highly resolved symbol. A triangular A-like interior, a rounded D-like outer right contour, and a deliberate C-like opening must share strokes and negative space rather than appear as three typed letters. Favor simple broad shapes and large open counters. One compact emblem, not a word. Avoid resembling an existing company's logo.
 ```
-
-[PROTOCOL]: Update this header when making changes, then check README.md.
-

@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Lesson content, the public catalog, and the parent course learning context.
- * [OUTPUT]: Full-bleed wiki shell around the article. The site header is not mounted on this route.
- * [POS]: Navigation boundary for lesson routes; course overviews use the parent frame directly.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import type { ReactNode } from 'react';
 import { LearnShell } from '@/components/course/course-layout';
 import { lessonIndex } from '@/components/search/lessons';

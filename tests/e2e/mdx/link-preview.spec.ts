@@ -1,9 +1,3 @@
-/**
- * [INPUT]: The production MDX registry, preview API, published catalog, and controlled external metadata responses.
- * [OUTPUT]: Hover, keyboard, loading/failure/image fallback, caching, viewport, touch, API-policy, and no-JavaScript screenshot/JSON evidence.
- * [POS]: Scoped link-preview acceptance checks using real pages and the real local preview service.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 

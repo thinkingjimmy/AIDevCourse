@@ -1,9 +1,3 @@
-/**
- * [INPUT]: English dictionary, catalog version, translation map, and lesson search meta.
- * [OUTPUT]: Keyboard-only search and the globe menu for the root 404 outside the locale request.
- * [POS]: Client island so the root document can reuse the header tools without a locale param.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 'use client';
 import { NextIntlClientProvider } from 'next-intl';
 import type { Locale } from '@/lib/i18n/config';

@@ -1,9 +1,3 @@
-/**
- * [INPUT]: The generated publication catalog, site origin, and the bounded remote metadata reader.
- * [OUTPUT]: Local article previews, cached outbound metadata, null for unavailable published pages, and undefined for unsupported links.
- * [POS]: Preview domain service; arbitrary user-supplied destinations never reach the network.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import 'server-only';
 import { unstable_cache } from 'next/cache';
 import catalog from '@catalog';

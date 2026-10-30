@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Authored heading props, localized copy labels, Phosphor icons, and shared Button.
- * [OUTPUT]: MDX heading with a native hash link and an accessible copy-link action.
- * [POS]: Shared heading renderer registered by components.tsx for all six heading levels.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 'use client';
 import { useEffect, useRef, useState, type ComponentProps } from 'react';
 import { useTranslations } from 'next-intl';

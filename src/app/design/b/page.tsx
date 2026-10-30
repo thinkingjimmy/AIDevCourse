@@ -1,9 +1,3 @@
-/**
- * [INPUT]: The published zh AI coding course.
- * [OUTPUT]: Editorial course page used as the homepage.
- * [POS]: Design B. It does not replace /[lang].
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { Badge } from '@/components/ui/badge';
 import type { Metadata } from 'next';
 import { levelLabel, loadDesignCourse } from '../catalog';

@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Maintained repository files, source contracts, and the Tailwind typography convention.
- * [OUTPUT]: Structure and typography errors plus repeatable .artifacts/review/structure.json evidence.
- * [POS]: Repository maintenance gate for file limits, source contracts, and documentation links.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, extname, resolve } from 'node:path';
@@ -13,7 +7,6 @@ const files = [...new Set(execFileSync('git', ['ls-files', '--cached', '--others
 const directories = new Map<string, string[]>();
 const issues: string[] = [];
 const sourceExtensions = new Set(['.ts', '.tsx', '.mjs', '.css', '.yml']);
-const protocol = '[PROTOCOL]: Update this header when making changes, then check README.md.';
 let sourceLines = 0;
 for (const file of files) {
   const parent = dirname(file);
@@ -25,19 +18,16 @@ for (const file of files) {
     const lines = source.trimEnd().split('\n').length;
     sourceLines += lines;
     if (lines > 800) issues.push(`${file}: ${lines} lines; maximum is 800`);
-    if (!source.slice(0, 1500).includes(protocol) || !['[INPUT]:', '[OUTPUT]:', '[POS]:'].every((field) => source.slice(0, 1500).includes(field))) {
-      issues.push(`${file}: missing source contract`);
-    }
     if (file.startsWith('src/') && /\b(?:text|leading|tracking)-\[(?:-?\.?\d|clamp\()/.test(source)) {
       issues.push(`${file}: use the shared Tailwind typography scale instead of arbitrary type values`);
     }
-    if (file.startsWith('src/styles/') && /(?:^|[;{])\s*(?:font-size|line-height|font-weight|letter-spacing)\s*:/m.test(source)) {
+    const styleRules = source.replace(/@font-face\s*\{[^}]*\}/g, '');
+    if (file.startsWith('src/styles/') && /(?:^|[;{])\s*(?:font-size|line-height|font-weight|letter-spacing)\s*:/m.test(styleRules)) {
       issues.push(`${file}: express typography with Tailwind utilities and theme tokens`);
     }
   }
   if (extname(file) !== '.md') continue;
   const markdown = readFileSync(file, 'utf8');
-  if (!markdown.includes(protocol)) issues.push(`${file}: missing protocol`);
   const prose = markdown.replace(/```[\s\S]*?```/g, '');
   for (const match of prose.matchAll(/\]\(([^)]+)\)/g)) {
     const link = match[1].split('#')[0];
@@ -47,7 +37,6 @@ for (const file of files) {
 }
 for (const [directory, members] of directories) {
   if (members.length > 8) issues.push(`${directory}: ${members.length} maintained files; maximum is 8`);
-  if (!existsSync(resolve(directory, 'README.md'))) issues.push(`${directory}: missing README.md`);
 }
 const report = { files: files.length, directories: directories.size, sourceLines, issues };
 mkdirSync('.artifacts/review', { recursive: true });

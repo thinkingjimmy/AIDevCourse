@@ -1,0 +1,84 @@
+---
+courseId: llm-101
+lessonId: what-is-a-token
+title: 什么是 Token？
+description: 了解 Token 的定义、作用、计算方式和影响因素。
+---
+
+## 一、Tokenization（词元化）
+
+第一讲，我们提到你可以将 LLM 看成一个「全自动文字接龙系统」。并且我们还使用了个问天气的例子来解释。
+
+其实上一讲描述的过程是我简化过后的版本。
+
+<KeyTakeaway>
+  本质上来说，大语言模型是一个包含大量参数、通过训练学出来的复杂数学函数，模型跑的全是矩阵运算，接收的是数字，输出的也是数字。
+</KeyTakeaway>
+
+所以当你将「今天广州的天气如何？」这个问题提交给 LLM 后，其实会先经过一个叫词元处理器（ Tokenizer ）的工具，这个工具会将文本切成一个个的词元（Token），每个词元还会映射成一个个的词元 ID （Token ID）。这个过程又称为编码。
+
+不同的模型会使用不同的词元处理器，但他们效果大致相同，以 ChatGPT-5x 的[词元处理器](https://platform.openai.com/tokenizer)为例，它会将你输入的文字（包含标点），先进行切分，再映射成数字（注意：不同模型使用的 Tokenizer 的切分方式和 ID 可能不同）。
+
+还是拿「今天广州的天气如何？」为例，这几个中文字会被切成 6 个词元，每个词元对应一个 ID。模型通过运算后，得出结果，此时结果会以 Token ID 的方式输出，这个 ID 又会被词元处理器解码成 Token 最后呈现给用户。
+
+<TokenizationDiagram />
+
+所以第一讲里，LLM 通过计算后返回的结果，并不一定就是一个中文字，而是有可能是一个词。
+
+<JimmyNote>
+  另外需要注意，前面这个天气的案例看起来是一个中文词对应一个
+  Token，但有的时候却不一定，比如「天气预报」中的「预报」会被分成「预」和「报」两个
+  Token。且不同语言也会有这种情况，比如 indivisible 会被切分成 indiv 和 isible
+  两个 Token。一般说来一个 Token 等于 3/4 个英文单词或者 1.5
+  个汉字，所以某些情况下，使用中文会更节省 Token 一些。
+</JimmyNote>
+
+## 二、搞懂这个概念有什么用？
+
+**第一，它能衡量模型读了多少、生成了多少。**
+
+你给大语言模型下达的指令对应==输入 Token==；模型生成的内容对应==输出 Token==。
+
+按 Token 收费的模型 API，会根据输入、输出等用量计算费用。如果你翻开 DeepSeek 官方 API 文档，你会看到[价格表](https://api-docs.deepseek.com/quick_start/pricing/)里是这么写的：百万 tokens 空闲时段输出 4 元。换句话说，空闲时段使用 V4 flash 模型，模型输出一百万个词元花费 4 元。
+
+另外，你还会看到一个 缓存未命中的空闲时段输入价格。那大语言模型是如何定价的呢？
+
+还是拿前面问天气的例子，用户提问「今天广州的天气如何？」，大语言模型回答「今天广州天气晴朗，温度在 28 ℃」。为了方便计算，我们假设：输入是 10 Token，输出是 20 Token。
+
+- 输入费 = 10 ÷ 1,000,000 × 1 = 0.00001 人民币
+- 输出费 = 20 ÷ 1,000,000 × 4 = 0.00008 人民币
+- 总费用 = 0.00001 + 0.00008 = 0.00009 人民币
+
+假设不连续提问的情况下，问 1 万次类似的问题，那大约就是 0.9 元人民币。
+
+**第二，衡量模型一次能处理多少内容。**
+
+现在市面上的所有大语言模型，都会有个所谓的上下文窗口（context window）的东西。比如 DeepSeek 的 V4 模型上下文窗口就是 1M Tokens（一百万个词元），而 V3.1 模型其上下文窗口则为 128K Tokens （12 万 8 千个词元）。
+
+简单理解就是模型一次性能处理的文本量。可以理解成模型当前的工作桌大小：桌上能同时放多少文字材料（这通常用 Token 来衡量）。
+
+换句话来说，旧版本的模型能处理的文本会更少。如果想让 V3.1 一次性写一本百万字的小说基本上就不可能了。
+
+从某种程度上来说，==上下文窗口越大，模型的能力就越强==。
+
+
+## 三、成就挑战
+
+<Achievement
+  id="token-boundaries"
+  title="看懂 Token 的边界"
+  question="关于 Token，下面哪种理解更准确？"
+  answer="text-pieces"
+  explanation="一个 Token 可以对应「今天」这样的两个汉字，也可能只对应词的一部分。不同 Tokenizer 还可能采用不同的切分方式和 ID，不能用字数或词数直接代替 Token 数量。"
+  takeaway="Token 不等于字数或词数；比较上下文窗口和计算费用时，要以模型实际使用的 Tokenizer 为准。"
+>
+  <AchievementOption value="whole-words">
+    Token 总是对应一个完整的字或单词。
+  </AchievementOption>
+  <AchievementOption value="text-pieces">
+    Token 是文本片段，可能是字、词，也可能是词的一部分。
+  </AchievementOption>
+  <AchievementOption value="same-tokenizer">
+    不同模型对同一段文字的 Token 切分和 ID 一定相同。
+  </AchievementOption>
+</Achievement>

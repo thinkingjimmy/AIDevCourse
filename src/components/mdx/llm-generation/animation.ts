@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Generation tracks with content-sized panels, the local timeline, browser lifecycle APIs, and motion preference.
- * [OUTPUT]: animateGeneration mount/cleanup lifecycle with automatic generation and embedded playback actions.
- * [POS]: Animation driver for LLMGenerationDemo; React owns mounting while this module owns animated descendants.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { answer, answerParts, generationFrame, pendingClass, placeholderClass, question, symbol, totalDuration, wordClass, type GenerationFrame } from './model';
 
 export function animateGeneration(root: HTMLElement) {
@@ -119,8 +113,8 @@ export function animateGeneration(root: HTMLElement) {
         letter.dataset.space = String(candidate.letter === ' ');
         element.querySelector('[data-probability-label]')!.textContent = frame.ready ? `${candidate.probability}%` : '—';
         element.dataset.probability = String(candidate.probability);
-        element.dataset.selected = String(frame.selected && candidate === frame.winner);
-        element.dataset.muted = String(frame.selected && candidate !== frame.winner);
+        element.dataset.selected = String(frame.selected && candidate === frame.chosen);
+        element.dataset.muted = String(frame.selected && candidate !== frame.chosen);
       });
       candidateGroup.hidden = frame.dropped;
       calculation.hidden = frame.dropped;
@@ -144,7 +138,7 @@ export function animateGeneration(root: HTMLElement) {
       const easedDrop = amount * amount * (3 - 2 * amount);
       const scale = 1 - .15 * easedDrop;
       const size = flight.offsetWidth;
-      flight.textContent = symbol(frame.winner.letter);
+      flight.textContent = symbol(frame.chosen.letter);
       flight.style.transform = `translate(${drop.x + (drop.targetX - drop.x) * easedDrop - size * scale / 2}px, ${drop.y + (drop.targetY - drop.y) * easedDrop - size * scale / 2}px) scale(${scale})`;
       flight.style.opacity = String(amount > .9 ? (1 - amount) * 10 : 1);
     } else flight.style.opacity = '0';

@@ -21,13 +21,10 @@
     "noJs": "本文と他言語へのリンクは JavaScript なしで利用できます。検索、コピー、学習記録には JavaScript が必要です。",
     "notFoundTitle": "ページが見つかりません",
     "notFoundBody": "URL が正しくないか、この言語のレッスンがまだ公開されていません。",
-    "errorEyebrow": "エラー",
-    "errorTitle": "ページの読み込みに問題が起きました",
-    "error": "保存済みの学習記録はこのブラウザーに残っています。",
     "backHome": "ホームに戻る",
-    "retry": "再試行",
     "copyAnchor": "見出しへのリンクをコピー",
     "copyAnchorFailed": "リンクをコピーできませんでした。見出しのリンクを使用してください。",
+    "keyTakeaway": "覚えておくこと",
     "linkPreview": "ページのプレビュー",
     "linkPreviewLoading": "プレビューを読み込み中…",
     "linkPreviewUnavailable": "プレビューを表示できません。リンクからページを開いてください。",
@@ -81,7 +78,13 @@
     "updating": "コンテンツを更新中",
     "updatingBody": "新しいレッスンを準備しています。公開後、ここに表示されます。",
     "achievementCount": "{count} 件の実績を解除",
-    "achievementsTitle": "実績"
+    "achievementsTitle": "実績",
+    "achievementsCompletion": "達成率 {percent}",
+    "achievementsCollectionCount": "/ {total} 個のメダルを獲得",
+    "achievementEarned": "獲得済み",
+    "achievementLocked": "未獲得",
+    "achievementVisit": "レッスンへ：{title}",
+    "achievementsEmpty": "まだ獲得できる実績はありません。"
   },
   "Search": {
     "open": "レッスンを検索",
@@ -113,5 +116,26 @@
     "correct": "正解です",
     "incorrect": "不正解です",
     "retry": "もう一度挑戦"
+  },
+  "Author": {
+    "website": "個人サイト",
+    "label": "著者とフォロー先",
+    "role": "このコースの著者",
+    "intro": "複雑な AI を、わかりやすく。",
+    "invitation": "コースを気に入ったら、最新情報もご覧ください。",
+    "starProject": "Star を送る",
+    "starProjectLabel": "GitHub でこのプロジェクトに Star を付ける",
+    "follow": "フォロー",
+    "followX": "X でフォロー",
+    "followBilibili": "Bilibili でフォロー",
+    "xiaohongshu": "小紅書",
+    "followXiaohongshu": "小紅書でフォロー",
+    "xiaohongshuUnavailable": "小紅書のプロフィールは準備中です",
+    "wechatTitle": "WeChat でもつながりましょう",
+    "wechatPrompt": "スキャンして公式アカウントをフォロー",
+    "wechatNote": "自分のペースで学びましょう。",
+    "wechatQrAlt": "Jimmy の WeChat 公式アカウントの QR コード",
+    "qrPlaceholder": "QR 準備中",
+    "qrPlaceholderLabel": "WeChat QR コードの仮表示。まだスキャンできません"
   }
 }

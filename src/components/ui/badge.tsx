@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Native span props and class-variance-authority variants.
- * [OUTPUT]: Badge for compact outlined labels and secondary metadata pills.
- * [POS]: Shared shadcn label primitive used across the design previews.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import type { ComponentProps } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';

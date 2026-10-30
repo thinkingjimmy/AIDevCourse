@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Public catalog and the same alternate-link derivation as metadata, canonical locale paths.
- * [OUTPUT]: Actual public language URLs and reciprocal hreflang entries.
- * [POS]: Search-engine discovery boundary; lists catalogued lessons and skips redirects.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { localePath } from '@/lib/i18n/routing';
 import type { MetadataRoute } from 'next';
 import { getCatalog } from '@/lib/content/source';

@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Explicit route migrations and a public URL allowlist.
- * [OUTPUT]: Invalid destination, collision, and unsafe redirect regression coverage.
- * [POS]: URL migration safety tests.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { it, expect } from 'vitest';
 import { validateRedirects } from '../../src/lib/redirects';
 it('accepts only exact one-hop migrations to published content', () => {

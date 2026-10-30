@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Validated achievement definition, localized messages, learning state, shared Alert/Button, Phosphor icons, and the confetti lifecycle.
- * [OUTPUT]: Achievement with answer feedback, earned cards with a header retry icon, two-corner celebrations, and a no-JavaScript explanation.
- * [POS]: Reusable inline article milestone; correct answers reveal and save achievements immediately; retries preserve earned records.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 'use client';
 import { useEffect, useId, useRef, useState } from 'react';
 import { XCircleIcon } from '@phosphor-icons/react/dist/ssr/XCircle';
@@ -70,7 +64,7 @@ export function Achievement({ definition }: { definition: AchievementDefinition 
     setAnnouncement('');
   };
 
-  return <Alert ref={card} variant="notice" role="region" aria-labelledby={titleId}
+  return <Alert ref={card} id={`achievement-${id}`} variant="notice" role="region" aria-labelledby={titleId}
     data-achievement={id} data-state={showReward ? 'unlocked' : incorrect ? 'incorrect' : retrying ? 'retrying' : 'locked'}
     className="quote-frame not-prose my-8 border-foreground p-5">
     <AlertDescription className="gap-4">

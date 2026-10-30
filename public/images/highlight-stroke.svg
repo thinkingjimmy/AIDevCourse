@@ -1,11 +1,5 @@
-<!--
-[INPUT]: A fixed, translucent neutral brush shape with uneven edges and fine ink gaps.
-[OUTPUT]: A self-contained transparent marker stroke used behind highlighted text.
-[POS]: Decorative MDX highlight background; repeats per wrapped inline fragment without clipping the text.
-[PROTOCOL]: Update this header when making changes, then check README.md.
--->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 48" preserveAspectRatio="none">
-  <path fill="#09090b" opacity=".08" d="M5 8C61 4 104 7 158 5S264 9 321 6 432 3 487 5 562 2 597 5L594 39C548 43 497 40 444 43S333 40 281 44 171 40 119 43 39 42 2 45Z"/>
-  <path fill="#09090b" opacity=".035" d="M1 15C76 11 123 15 192 12S304 16 376 11 505 12 599 8L597 34C531 36 482 33 413 37S291 35 224 38 85 35 4 39Z"/>
+  <path fill="#facc15" opacity=".38" d="M5 8C61 4 104 7 158 5S264 9 321 6 432 3 487 5 562 2 597 5L594 39C548 43 497 40 444 43S333 40 281 44 171 40 119 43 39 42 2 45Z"/>
+  <path fill="#facc15" opacity=".12" d="M1 15C76 11 123 15 192 12S304 16 376 11 505 12 599 8L597 34C531 36 482 33 413 37S291 35 224 38 85 35 4 39Z"/>
   <path fill="none" stroke="#fff" stroke-width=".65" opacity=".4" d="M11 16C68 14 115 17 178 15M242 31C305 29 363 33 424 30M462 19C508 17 546 20 587 17"/>
 </svg>

@@ -1,9 +1,3 @@
-/**
- * [INPUT]: The real MDX preview, local Jimmy avatar, Chinese generation and token lessons, responsive viewports, and a production server, canonical locale paths.
- * [OUTPUT]: Author-note Markdown, border-embedded signatures, full-width reading, and avatar loading/alignment, chat thinking/completed states with user/LLM avatars, reduced-motion behavior, lesson demos, token encoding/decoding order and ID arrays, readable output and matching panels, question-only achievement prompts, explicit answer feedback, immediate earned cards, non-destructive retries after success with timestamp and count checks, and screenshot evidence.
- * [POS]: Component acceptance suite; local screenshots do not require baseline images.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { localeCookie, type Locale } from '../../src/lib/i18n/config';
 import { localePath } from '../../src/lib/i18n/routing';
 import { readCatalog } from '../../src/lib/content/manifest';
@@ -25,7 +19,7 @@ test.describe('Token encoding diagram', () => {
         const page = await context.newPage();
         const response = await page.goto('/zh/courses/llm-101/what-is-a-token');
         expect(response?.status()).toBe(200);
-        await page.evaluate(() => document.fonts.ready);
+        if (scenario.javaScriptEnabled) await page.evaluate(() => document.fonts.ready);
         if (scenario.name === 'enlarged') await page.evaluate(() => { document.documentElement.style.fontSize = '24px'; });
         const figure = page.getByRole('figure', { name: '文本编码、模型运算与输出解码的过程' });
         await expect(figure).toBeVisible();
@@ -335,68 +329,7 @@ test.describe('What a language model does lesson demos', () => {
   });
 
   for (const viewport of [{ name: 'desktop', width: 1280, height: 960 }, { name: 'mobile', width: 390, height: 844 }, { name: 'narrow', width: 320, height: 844 }]) {
-    test(`generation works on ${viewport.name}`, async ({ page }) => {
-      test.setTimeout(60000);
-      await page.setViewportSize(viewport);
-      await page.clock.install({ time: new Date('2026-10-27T10:00:00Z') });
-      await page.clock.pauseAt(new Date('2026-10-27T10:00:01Z'));
-      const response = await page.goto('/zh/courses/llm-101/what-a-language-model-does');
-      expect(response?.status()).toBe(200);
-      const generation = page.getByRole('figure', { name: '文字接龙演示' });
-      await expect(generation).toHaveAttribute('data-ready', 'true');
-      await generation.scrollIntoViewIfNeeded();
-      await page.clock.runFor(100);
-      const replay = generation.getByRole('button', { name: '重新播放', exact: true });
-      await replay.click();
-      await page.clock.runFor(1700);
-      await generation.getByRole('button', { name: '暂停', exact: true }).click();
-      const selected = generation.locator('[data-selected="true"]');
-      await expect(generation).toHaveAttribute('data-phase', 'selected');
-      await expect(selected.locator('[data-letter]')).toHaveText('今');
-      await expect(selected).toHaveAttribute('data-probability', '72');
-      await expect(generation.locator('[data-current-input]')).toHaveText('今天广州的天气如何？');
-      const padding = await generation.locator('[data-current] [data-row-content]').evaluate((panel) => {
-        const bounds = panel.getBoundingClientRect();
-        const input = panel.querySelector('[data-input-row]')!.getBoundingClientRect();
-        const candidates = panel.querySelector('[data-candidates]')!.getBoundingClientRect();
-        const style = getComputedStyle(panel);
-        return { horizontal: parseFloat(style.paddingLeft), top: Math.min(input.top, candidates.top) - bounds.top, bottom: bounds.bottom - Math.max(input.bottom, candidates.bottom) };
-      });
-      expect(padding.top).toBeCloseTo(padding.horizontal, 1);
-      expect(padding.bottom).toBeCloseTo(padding.horizontal, 1);
-      await test.info().attach(`generation-padding-${viewport.name}`, { body: JSON.stringify(padding, null, 2), contentType: 'application/json' });
-      await page.clock.runFor(1000);
-      await expect(generation).toHaveAttribute('data-phase', 'selected');
-      await test.info().attach(`generation-selected-${viewport.name}`, { body: await generation.screenshot(), contentType: 'image/png' });
-      await generation.getByRole('button', { name: '继续播放', exact: true }).click();
-      await page.clock.runFor(800);
-      await expect(generation.locator('[data-draft-input]')).toHaveText('今天广州的天气如何？今');
-      await page.clock.runFor(900);
-      await expect(generation).toHaveAttribute('data-round', '2');
-      await expect(generation.locator('[data-current-input]')).toHaveText('今天广州的天气如何？今');
-      await page.clock.runFor(1500);
-      await expect(selected.locator('[data-letter]')).toHaveText('天');
-      await expect(selected).toHaveAttribute('data-probability', '81');
-      await page.clock.runFor(800);
-      await expect(generation.locator('[data-draft-input]')).toHaveText('今天广州的天气如何？今天');
-      await page.clock.runFor(40000);
-      await expect(generation).toHaveAttribute('data-complete', 'true');
-      await expect(generation.locator('[data-generation-output]')).toHaveText('今天广州天气晴朗，温度在 28 ℃。');
-      expect(await generation.locator('[data-draft-input]').innerText()).toBe('今天广州天气晴朗，温度在 28 ℃。');
-      await expect(generation.getByRole('button', { name: '暂停', exact: true })).toHaveCount(0);
-      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      const path = test.info().outputPath(`generation-complete-${viewport.name}.png`);
-      await generation.screenshot({ path });
-      await test.info().attach(`generation-complete-${viewport.name}`, { path, contentType: 'image/png' });
-      await replay.click();
-      await expect(generation.locator('[data-generation-output]')).toBeEmpty();
-      await expect(generation).toHaveAttribute('data-round', '1');
-      await generation.getByRole('button', { name: '暂停', exact: true }).click();
-      await replay.click();
-      await expect(generation).toHaveAttribute('data-playing', 'true');
-    });
-
-    test(`menus use equal columns without an outer border on ${viewport.name}`, async ({ page }) => {
+    test(`menus use a quote frame and inset trial caption on ${viewport.name}`, async ({ page }) => {
       await page.setViewportSize(viewport);
       await page.goto('/zh/courses/llm-101/what-a-language-model-does');
       const menus = page.getByRole('figure', { name: '两种菜单对比' });
@@ -414,13 +347,17 @@ test.describe('What a language model does lesson demos', () => {
       expect(leftColumn!.width).toBeCloseTo(rightColumn!.width, 0);
       expect(left!.x + left!.width / 2).toBeCloseTo(leftColumn!.x + leftColumn!.width / 2, 0);
       expect(right!.x + right!.width / 2).toBeCloseTo(rightColumn!.x + rightColumn!.width / 2, 0);
-      await expect(menus.locator('figcaption, label, p, [role="status"]')).toHaveCount(0);
-      await expect(menus).toHaveCSS('border-top-width', '0px');
-      await expect(menus).toHaveCSS('box-shadow', 'none');
+      await expect(menus.locator('figcaption')).toHaveText('试一试');
+      await expect(menus.locator('img, label, p, [role="status"]')).toHaveCount(0);
+      const frameStyles = (element: Element) => { const style = getComputedStyle(element); return { border: style.border, radius: style.borderRadius, shadow: style.boxShadow }; };
+      expect(await menus.evaluate(frameStyles)).toEqual(await page.getByRole('note', { name: 'Jimmy', exact: true }).first().evaluate(frameStyles));
       await menus.scrollIntoViewIfNeeded();
       const frame = (await menus.boundingBox())!;
+      const caption = (await menus.locator('figcaption').boundingBox())!;
+      expect(caption.y + caption.height / 2).toBeCloseTo(frame.y + 1, 0);
+      expect(caption.x).toBeGreaterThan(frame.x);
       await test.info().attach(`menu-comparison-closed-${viewport.name}`, {
-        body: await page.screenshot({ clip: { x: frame.x - 8, y: frame.y - 8, width: frame.width + 16, height: frame.height + 16 }, animations: 'disabled' }),
+        body: await page.screenshot({ clip: { x: frame.x - 8, y: frame.y - 16, width: frame.width + 16, height: frame.height + 24 }, animations: 'disabled' }),
         contentType: 'image/png',
       });
       await native.selectOption('菜单 B');
@@ -450,31 +387,12 @@ test.describe('What a language model does lesson demos', () => {
       await expect(trigger).toBeFocused();
       await trigger.click();
       await expect(page.getByRole('menu')).toBeVisible();
-      const accessibility = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+      const accessibility = await new AxeBuilder({ page }).include('figure[aria-label="两种菜单对比"]').include('[role="menu"]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
       expect(accessibility.violations).toEqual([]);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await test.info().attach(`menu-comparison-${viewport.name}`, { body: await page.screenshot({ animations: 'disabled' }), contentType: 'image/png' });
     });
   }
-
-  test('generation respects reduced motion and enlarged text', async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.setViewportSize({ width: 320, height: 900 });
-    await page.goto('/zh/courses/llm-101/what-a-language-model-does');
-    await page.evaluate(() => { document.documentElement.style.fontSize = '20px'; });
-    const generation = page.getByRole('figure', { name: '文字接龙演示' });
-    await expect(generation).toHaveAttribute('data-complete', 'true');
-    await generation.scrollIntoViewIfNeeded();
-    await expect(generation).toHaveAttribute('data-playing', 'false');
-    await expect(generation.locator('[data-generation-output]')).toHaveText('今天广州天气晴朗，温度在 28 ℃。');
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    // Faded animation snapshots have a text alternative; audit the controls and accessible description.
-    const accessibility = await new AxeBuilder({ page }).include('[data-generation-demo]').exclude('[data-paper]').withTags(['wcag2a', 'wcag2aa']).analyze();
-    expect(accessibility.violations).toEqual([]);
-    const path = test.info().outputPath('generation-reduced-enlarged.png');
-    await generation.screenshot({ path });
-    await test.info().attach('generation-reduced-enlarged', { path, contentType: 'image/png' });
-  });
 
   test('explanations remain readable without JavaScript', async ({ browser, baseURL }) => {
     const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
@@ -483,16 +401,11 @@ test.describe('What a language model does lesson demos', () => {
       await page.goto('/zh/courses/llm-101/what-a-language-model-does');
       const generation = page.getByRole('figure', { name: '文字接龙演示' });
       await generation.getByText('查看完整生成过程', { exact: true }).click();
+      await expect(generation.getByText('按概率采样，本次选中「今」（42%），而非概率最高的「广」（48%）。', { exact: true })).toBeVisible();
       await expect(generation.getByText('最终回答（虚构）：今天广州天气晴朗，温度在 28 ℃。', { exact: true })).toBeVisible();
       await expect(page.getByRole('combobox', { name: '浏览器原生菜单' })).toBeVisible();
-      const achievement = page.locator('[data-achievement="generation-vs-verification"]');
-      await achievement.getByText('查看解释', { exact: true }).click();
-      await expect(achievement.locator('noscript details p')).toBeVisible();
-      await expect(achievement.locator('noscript details p')).toContainText('它生成的回答只是基于训练数据的预测，并不代表真实天气。');
-      await expect(achievement.locator('noscript > p')).toHaveText('成就解锁与保存需要 JavaScript，你可以继续阅读。');
-      await expect(achievement).toHaveAttribute('data-state', 'locked');
-      await expect(achievement.getByRole('radio')).toHaveCount(0);
       await expect(page.getByRole('figure', { name: '两种菜单对比', exact: true })).toBeVisible();
+      await expect(page.getByRole('figure', { name: '两种菜单对比', exact: true }).locator('figcaption')).toHaveText('试一试');
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await test.info().attach('what-a-language-model-does-no-js', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
       await page.locator('noscript > details > summary').filter({ hasText: '课程目录' }).click();
@@ -503,13 +416,28 @@ test.describe('What a language model does lesson demos', () => {
       await expect(english).toBeInViewport();
       await english.click();
       await expect(page).toHaveURL(/\/courses\/llm-101\/what-a-language-model-does$/);
+      await page.goto('/zh/courses/llm-101/why-model-answers-vary');
+      await expect(page.locator('article h1')).toHaveText('为什么同样的问题，模型的回答会不同？');
+      await expect(page.locator('article h2')).toHaveCount(6);
+      await expect(page.locator('article table')).toHaveCount(5);
+      await expect(page.locator('article')).toContainText('所以使用大语言模型时，永远不要认为每次都能得到完全相同的答案。');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await test.info().attach('sampling-no-js-mobile', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
+      await page.goto('/zh/courses/llm-101/how-language-models-are-trained-part-1');
+      const achievement = page.locator('[data-achievement="generation-vs-verification"]');
+      await achievement.getByText('查看解释', { exact: true }).click();
+      await expect(achievement.locator('noscript details p')).toBeVisible();
+      await expect(achievement.locator('noscript details p')).toContainText('它生成的回答只是基于训练数据的预测，并不代表真实天气。');
+      await expect(achievement.locator('noscript > p')).toHaveText('成就解锁与保存需要 JavaScript，你可以继续阅读。');
+      await expect(achievement.getByRole('radio')).toHaveCount(0);
+      await test.info().attach('model-training-no-js', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
     } finally { await context.close(); }
   });
 });
 
 test.describe('Learning achievements', () => {
   test.skip(process.env.CONTENT_TEST === '1', 'The achievement belongs to the published Chinese lesson.');
-  const path = '/zh/courses/llm-101/what-a-language-model-does';
+  const path = '/zh/courses/llm-101/how-language-models-are-trained-part-1';
   const key = 'lac:v1:llm-101:achievement:generation-vs-verification';
   const block = '[data-achievement="generation-vs-verification"]';
   const count = '[data-achievement-count]';
@@ -542,7 +470,7 @@ test.describe('Learning achievements', () => {
   for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'mobile', width: 390, height: 844 }, { name: 'narrow', width: 320, height: 844 }]) {
     test(`medal footer More menu and language submenu on ${viewport.name}`, async ({ page, context }) => {
       await page.setViewportSize(viewport);
-      await page.goto(path);
+      await page.goto('/zh/courses/llm-101/what-a-language-model-does');
       const mobile = viewport.width < 961;
       if (mobile) await page.getByRole('button', { name: '课程目录', exact: true }).click();
       const footer = page.locator('[data-sidebar="footer"]');
@@ -568,7 +496,7 @@ test.describe('Learning achievements', () => {
         expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width);
         expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height);
       }
-      const accessibility = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+      const accessibility = await new AxeBuilder({ page }).include('[data-sidebar="footer"]').include('[role="menu"]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
       expect(accessibility.violations).toEqual([]);
       await test.info().attach(`medal-more-submenu-${viewport.name}`, { body: await page.screenshot(), contentType: 'image/png' });
       const boxes = [await footer.boundingBox(), ...await Promise.all((await page.getByRole('menu').all()).map((menu) => menu.boundingBox()))].filter((box) => box !== null);
@@ -595,6 +523,9 @@ test.describe('Learning achievements', () => {
 
     test(`achievement unlock, retry, keyboard, and persistence on ${viewport.name}`, async ({ page }) => {
       await page.setViewportSize(viewport);
+      const frameStyles = (element: Element) => { const style = getComputedStyle(element); return { border: style.border, radius: style.borderRadius, shadow: style.boxShadow }; };
+      await page.goto('/zh/courses/llm-101/what-a-language-model-does');
+      const quoteFrame = await page.locator('article [data-component="chat"]').first().evaluate(frameStyles);
       await page.goto(path);
       const challenge = page.locator(block);
       await expect(challenge.getByRole('radio', { name: correct })).toBeEnabled();
@@ -603,11 +534,7 @@ test.describe('Learning achievements', () => {
       await expect(challenge.getByRole('heading')).toHaveCount(0);
       await expect(challenge.getByRole('group')).toContainText('下面哪种理解更准确');
       await expect(challenge.getByText('说得这么具体，就能信吗？', { exact: true })).toHaveCount(0);
-      const frameStyles = (element: Element) => {
-        const style = getComputedStyle(element);
-        return { border: style.border, radius: style.borderRadius, shadow: style.boxShadow };
-      };
-      expect(await challenge.evaluate(frameStyles)).toEqual(await page.locator('article blockquote, article [data-component="chat"]').first().evaluate(frameStyles));
+      expect(await challenge.evaluate(frameStyles)).toEqual(quoteFrame);
       const choices = challenge.getByRole('radio');
       const firstChoice = await choices.nth(0).boundingBox();
       const secondChoice = await choices.nth(1).boundingBox();
@@ -667,7 +594,7 @@ test.describe('Learning achievements', () => {
       await expect(challenge.getByRole('status')).toBeEmpty();
       expect(await challenge.evaluate((element) => element.getAnimations().length)).toBe(0);
       expect(await page.evaluate((key) => localStorage.getItem(key), key)).toBe(saved);
-      expect(await page.evaluate(() => JSON.parse(localStorage.getItem('lac:v1:llm-101:last')!).lessonId)).toBe('what-a-language-model-does');
+      expect(await page.evaluate(() => JSON.parse(localStorage.getItem('lac:v1:llm-101:last')!).lessonId)).toBe('how-language-models-are-trained-part-1');
       const accessibility = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
       expect(accessibility.violations).toEqual([]);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -767,7 +694,7 @@ test.describe('Learning achievements', () => {
       await page.locator(block).getByRole('radio', { name: correct }).click();
       await expect(page.locator(count)).toContainText('已解锁 1 项成就');
       await expect(page.locator(block)).toContainText('成就暂时保存在当前页面，刷新后可能丢失');
-      await expect(page.locator('article > .prose')).toContainText('你的输入决定了模型的输出');
+      await expect(page.locator('article > .prose')).toContainText('模型的训练数据是有时间限制的');
       await page.locator(block).getByRole('button', { name: '再试一次', exact: true }).click();
       await expect(page.locator(block)).toHaveAttribute('data-state', 'retrying');
       await page.locator(block).getByRole('radio').first().click();

@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Local JimmyNote, highlight, link-preview, chat, and table MDX examples, a fixed Chinese request locale/UI messages, shared MDX registry, and design preview chrome.
- * [OUTPUT]: Writing-component previews that remain available without published lessons.
- * [POS]: Writing-component preview outside the published course catalog.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
@@ -12,7 +6,9 @@ import Examples from './examples.mdx';
 import Tables from './tables.mdx';
 import Chat from './chat.mdx';
 import Highlights from './highlights.mdx';
+import MathExamples from './math/examples.mdx';
 import Links from './links.mdx';
+import Takeaways from './takeaways.mdx';
 import { getMDXComponents } from '@/components/mdx/components';
 import { DesignFooter, DesignHeader } from '../ui';
 
@@ -28,6 +24,12 @@ export default function ComponentPreview() {
       <h2 className="m-0 mt-8 text-2xl font-semibold">Jimmy Note</h2>
       <p className="mt-3 mb-8 text-base text-muted-foreground">用于正文里的个人观察和补充说明。</p>
       <Examples components={getMDXComponents()} />
+      <section id="key-takeaways" className="mt-10 border-t border-border pt-6">
+        <h2 className="m-0 mb-3 text-2xl font-semibold">划重点</h2>
+        <p className="m-0 text-base text-muted-foreground">把需要记住的结论放在这里。</p>
+        <div className="course-prose prose" lang="zh-CN"><Takeaways components={getMDXComponents()} /></div>
+        <pre tabIndex={0} role="region" aria-label="KeyTakeaway MDX example" className="m-0 mt-6 overflow-x-auto rounded-md bg-muted p-4 font-mono text-caption leading-body"><code>{'<KeyTakeaway>\n**Remember this conclusion.**\n</KeyTakeaway>'}</code></pre>
+      </section>
       <section id="authoring" className="mt-10 border-t border-border pt-6">
         <h2 className="m-0 mb-3 text-lg font-semibold">MDX 用法</h2>
         <pre tabIndex={0} role="region" aria-label="MDX 示例" className="m-0 overflow-x-auto rounded-md bg-muted p-4 font-mono text-caption leading-body"><code>{'<JimmyNote>\nAdd a personal observation here.\n\nA second paragraph can include **emphasis** and [links](https://example.com).\n</JimmyNote>'}</code></pre>
@@ -35,6 +37,10 @@ export default function ComponentPreview() {
       <section id="highlights" className="mt-10 border-t border-border pt-6">
         <h2 className="m-0 mb-3 text-2xl font-semibold">文字高亮</h2>
           <div className="course-prose prose" lang="zh-CN"><Highlights components={getMDXComponents()} /></div>
+      </section>
+      <section id="math" className="mt-10 border-t border-border pt-6">
+        <h2 className="m-0 mb-3 text-2xl font-semibold">数学公式</h2>
+        <div className="course-prose prose" lang="zh-CN"><MathExamples components={getMDXComponents()} /></div>
       </section>
       <section id="link-previews" className="mt-10 border-t border-border pt-6">
         <h2 className="m-0 mb-3 text-2xl font-semibold">链接预览</h2>

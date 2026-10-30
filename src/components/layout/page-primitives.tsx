@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Native element props, Next.js links/images, shared site identity, and Tailwind theme tokens.
- * [OUTPUT]: Shared shells, image-based SiteLogo, token-based title variants, hero parts, and footer.
- * [POS]: Shared visual structure for public pages, status pages, and the lesson sidebar.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import type { ComponentProps, ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -25,8 +19,8 @@ export function PageContainer({ className, ...props }: ComponentProps<'div'>) {
 }
 
 export function SiteLogo({ className, ...props }: Omit<ComponentProps<typeof Link>, 'children'>) {
-  return <Link {...props} className={cn('inline-flex shrink-0 items-center gap-2 font-semibold tracking-tight text-inherit no-underline', className)}>
-    <Image src={site.logo} width={24} height={24} alt="" className="size-6 shrink-0" loading="eager" unoptimized /><span>{site.name}</span>
+  return <Link {...props} className={cn('inline-flex shrink-0 items-center text-inherit no-underline', className)}>
+    <Image src={site.logo} width={144} height={19} alt={site.name} className="h-auto w-36 shrink-0 max-[721px]:w-32" loading="eager" unoptimized />
   </Link>;
 }
 

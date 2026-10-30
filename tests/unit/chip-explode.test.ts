@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Exploded-chip SVG markup for the course hero and the catalog card.
- * [OUTPUT]: Regression coverage that the card drops leader lines and names while the hero keeps them.
- * [POS]: Illustration markup checks, independent of the browser.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { CHIP_CARD_SVG, CHIP_CARD_VIEWBOX, CHIP_EXPLODE_SVG } from '../../src/components/illustrations/chip-explode-markup';

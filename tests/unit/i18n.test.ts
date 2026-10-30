@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Locale negotiation rules and real five-language dictionaries.
- * [OUTPUT]: Routing priority, allowlist, and ICU parity regression coverage.
- * [POS]: Internationalization policy tests independent of framework middleware.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { locales, negotiateLocale, isLocale, htmlLanguages } from '../../src/lib/i18n/config';

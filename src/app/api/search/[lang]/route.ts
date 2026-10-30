@@ -1,9 +1,3 @@
-/**
- * [INPUT]: One validated language, visible course metadata, and public compiled lesson structure.
- * [OUTPUT]: Per-language search export whose fragments target rendered lesson headings.
- * [POS]: Static search endpoint; no dynamic query API or full-language download.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { createSearchAPI } from 'fumadocs-core/search/server';
 import { getCatalog, getArticle } from '@/lib/content/source';
 import { isLocale, locales } from '@/lib/i18n/config';

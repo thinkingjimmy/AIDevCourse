@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Current locale and real published content in other languages, canonical locale paths.
- * [OUTPUT]: Empty course library, an about link, and links to courses published in other languages.
- * [POS]: Homepage state when the active language has no published course.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { localePath } from '@/lib/i18n/routing';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';

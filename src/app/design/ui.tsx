@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Active design variant, shared SiteLogo, and configured site identity.
- * [OUTPUT]: Shared brand logo, variant switch, header, and footer for the three previews.
- * [POS]: Chrome for /design. It does not render the live site shell.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import Link from 'next/link';
 import { SiteLogo } from '@/components/layout/page-primitives';
 import { site } from '@/lib/site-config';

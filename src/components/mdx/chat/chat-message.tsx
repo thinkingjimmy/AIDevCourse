@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Native div props, a user/assistant sender, Markdown children, shared Spinner, Phosphor UserIcon/RobotIcon, and the quote-frame utility.
- * [OUTPUT]: Chat and ChatMessage with shared avatars, sender-specific bubbles, and an assistant Thinking state selected by configuration.
- * [POS]: Server-rendered chat message registered by the shared MDX component map.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import type { ComponentProps } from 'react';
 import { UserIcon } from '@phosphor-icons/react/dist/ssr/User';
 import { RobotIcon } from '@phosphor-icons/react/dist/ssr/Robot';

@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Fumadocs Markdown, shared Tailwind typography, and Shiki palette variables.
- * [OUTPUT]: The shared quote-frame and course-prose Tailwind utilities, preserving reading roles above Fumadocs defaults.
- * [POS]: Shared MDX typography and article frame styles used by Markdown quotes, JimmyNote, ChatMessage, and achievement challenges.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 @utility quote-frame {
   @apply rounded-none border border-foreground bg-background shadow-[4px_4px_0_var(--color-border)];
 }
@@ -23,6 +17,8 @@
     & :where(figure):not(:where(.not-prose, .not-prose *)) { @apply max-w-full min-w-0 rounded-none; }
     & :where(blockquote):not(:where(.not-prose, .not-prose *)) { @apply quote-frame mx-0 px-5 py-4 font-mono text-sm leading-reading text-foreground not-italic; }
     & :where(blockquote p):not(:where(.not-prose, .not-prose *)) { @apply m-0 before:content-none after:content-none; }
+    & :where(.katex-display) { @apply my-6 max-w-full overflow-x-auto overflow-y-hidden py-2; }
+    & :where(.katex-display > .katex) { @apply w-max min-w-full; }
     & :where(.contains-task-list) { @apply list-none border border-border p-0; }
     & :where(.task-list-item) { @apply m-0 flex items-start gap-3 px-4 py-3 text-ui; }
     & :where(.task-list-item + .task-list-item) { @apply border-t border-line-soft; }

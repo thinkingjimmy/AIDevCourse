@@ -1,18 +1,16 @@
-/**
- * [INPUT]: Published lesson URLs, the zinc header and footer, and the active route, canonical locale paths.
- * [OUTPUT]: Shared header, rails, and footer for locale pages, including course overviews. Lessons use their own shell.
- * [POS]: Single shell so About, 404, and the error boundary share the sticky header. Lessons use the wiki shell.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 'use client';
-import type { ReactNode } from 'react';
+import { createContext, useContext, type ReactNode } from 'react';
 import { SiteShell } from './page-primitives';
 import { usePathname } from 'next/navigation';
 import { canonicalPath } from '@/lib/i18n/routing';
-export function SiteFrame({ lessonPaths, header, footer, children }: {
-  lessonPaths: string[]; header: ReactNode; footer: ReactNode; children: ReactNode;
+const ErrorPageContext = createContext<ReactNode>(null);
+export function useErrorPage() { return useContext(ErrorPageContext); }
+export function SiteFrame({ lessonPaths, header, footer, errorPage, children }: {
+  lessonPaths: string[]; header: ReactNode; footer: ReactNode; errorPage: ReactNode; children: ReactNode;
 }) {
   const pathname = canonicalPath(usePathname() ?? '/');
-  if (lessonPaths.includes(pathname)) return children;
-  return <SiteShell>{header}{children}{footer}</SiteShell>;
+  const lesson = lessonPaths.includes(pathname);
+  return <ErrorPageContext value={lesson ? <SiteShell>{header}{errorPage}{footer}</SiteShell> : errorPage}>
+    {lesson ? children : <SiteShell>{header}{children}{footer}</SiteShell>}
+  </ErrorPageContext>;
 }

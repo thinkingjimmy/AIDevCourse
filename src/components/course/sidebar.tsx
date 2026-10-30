@@ -1,31 +1,22 @@
-/**
- * [INPUT]: Controlled desktop state, current route, localized labels, and Radix Sheet/Slot, canonical locale paths.
- * [OUTPUT]: Course sidebar composition with a 320px column, 48px rail, and mobile sheet.
- * [POS]: Course-only navigation primitives; course-layout.tsx supplies lesson content and persistence.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 'use client';
 import { canonicalPath } from '@/lib/i18n/routing';
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentProps } from 'react';
+import { createContext, useCallback, useContext, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type ComponentProps } from 'react';
 import { usePathname } from 'next/navigation';
 import { SidebarSimpleIcon } from '@phosphor-icons/react/dist/ssr/SidebarSimple';
+import { XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import { Slot } from 'radix-ui';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/overlays/sheet';
 import { cn } from '@/lib/utils';
 
-const mobileQuery = '(max-width: 960px)';
-function subscribeViewport(listener: () => void) {
-  const media = window.matchMedia(mobileQuery);
-  media.addEventListener('change', listener);
-  return () => media.removeEventListener('change', listener);
-}
+const desktopQuery = '(min-width: 961px)';
 
 type SidebarState = {
   open: boolean;
   isMobile: boolean;
   openMobile: boolean;
+  mobileDialogId: string;
   setOpenMobile: (open: boolean) => void;
   toggleSidebar: () => void;
 };
@@ -39,11 +30,18 @@ export function useSidebar() {
 export function SidebarProvider({ open, onOpenChange, className, style, children, ...props }: ComponentProps<'div'> & {
   open: boolean; onOpenChange: (open: boolean) => void;
 }) {
-  const isMobile = useSyncExternalStore(subscribeViewport, () => window.matchMedia(mobileQuery).matches, () => false);
+  const [mobilePath, setMobilePath] = useState<string | null>(null);
+  const mobileDialogId = useId();
+  const subscribeViewport = useCallback((listener: () => void) => {
+    const media = window.matchMedia(desktopQuery);
+    const change = () => { setMobilePath(null); listener(); };
+    media.addEventListener('change', change);
+    return () => media.removeEventListener('change', change);
+  }, []);
+  const isMobile = useSyncExternalStore(subscribeViewport, () => !window.matchMedia(desktopQuery).matches, () => false);
   const pathname = canonicalPath(usePathname());
   // A sheet belongs to the route that opened it; navigation closes it without an extra render effect.
-  const [mobilePath, setMobilePath] = useState<string | null>(null);
-  const openMobile = mobilePath === pathname;
+  const openMobile = isMobile && mobilePath === pathname;
   const setOpenMobile = useCallback((value: boolean) => setMobilePath(value ? pathname : null), [pathname]);
   const toggleSidebar = useCallback(() => {
     if (isMobile) setOpenMobile(!openMobile);
@@ -63,23 +61,34 @@ export function SidebarProvider({ open, onOpenChange, className, style, children
     return () => window.removeEventListener('keydown', handle);
   }, [isMobile, open, toggleSidebar]);
 
-  const value = useMemo(() => ({ open, isMobile, openMobile, setOpenMobile, toggleSidebar }), [open, isMobile, openMobile, setOpenMobile, toggleSidebar]);
+  const value = useMemo(() => ({ open, isMobile, openMobile, mobileDialogId, setOpenMobile, toggleSidebar }), [open, isMobile, openMobile, mobileDialogId, setOpenMobile, toggleSidebar]);
   return <SidebarContext.Provider value={value}>
     <div {...props} data-slot="sidebar-wrapper" style={style} className={cn('group/sidebar-wrapper flex min-h-svh w-full [--sidebar-width:20rem] [--sidebar-width-icon:3rem]', className)}>{children}</div>
   </SidebarContext.Provider>;
 }
 
 export function Sidebar({ label, className, children, ...props }: ComponentProps<'div'> & { label: string }) {
-  const { isMobile, open, openMobile, setOpenMobile } = useSidebar();
+  const { isMobile, open, openMobile, mobileDialogId, setOpenMobile } = useSidebar();
   const mobileTrigger = useRef<HTMLElement | null>(null);
   if (isMobile) return <Sheet open={openMobile} onOpenChange={setOpenMobile}>
-    <SheetContent data-sidebar="sidebar" data-slot="sidebar" data-mobile="true" aria-describedby={undefined}
-      className={cn('w-(--sidebar-width) bg-sidebar p-0 text-foreground [--sidebar-width:20rem]', className)}
-      onOpenAutoFocus={() => { mobileTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; }}
-      onCloseAutoFocus={(event) => { event.preventDefault(); if (mobileTrigger.current?.isConnected) mobileTrigger.current.focus(); }}
+    <SheetContent id={mobileDialogId} data-sidebar="sidebar" data-slot="sidebar" data-mobile="true" aria-describedby={undefined}
+      className={cn('h-dvh max-h-dvh w-[min(var(--sidebar-width),calc(100vw-1rem))] bg-sidebar p-0 text-foreground [--sidebar-width:20rem] sm:max-w-none', className)}
+      onOpenAutoFocus={() => {
+        const active = document.activeElement;
+        mobileTrigger.current = active instanceof HTMLElement && active !== document.body ? active : document.querySelector<HTMLElement>('[data-slot="mobile-sidebar-trigger"]');
+      }}
+      onCloseAutoFocus={(event) => {
+        event.preventDefault();
+        const previous = mobileTrigger.current;
+        const trigger = previous?.isConnected && previous.getClientRects().length ? previous : document.querySelector<HTMLButtonElement>('[data-slot="sidebar-container"] [data-sidebar="trigger"]');
+        trigger?.focus({ preventScroll: true });
+      }}
       onEscapeKeyDown={(event) => { if (event.target instanceof Element && event.target.closest('details[open]')) event.preventDefault(); }}>
       <SheetTitle className="sr-only">{label}</SheetTitle>
-      <div {...props} className="mobile-course-bar flex h-full w-full flex-col items-center">{children}</div>
+      <div {...props} className="mobile-course-bar flex h-full min-h-0 w-full flex-col items-center" onClick={(event) => {
+        const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
+        if (link && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey && link.getAttribute('target') !== '_blank') setOpenMobile(false);
+      }}>{children}</div>
     </SheetContent>
   </Sheet>;
   return <div className="group peer hidden text-sidebar-foreground min-[961px]:block" data-state={open ? 'expanded' : 'collapsed'} data-collapsible={open ? '' : 'icon'} data-slot="sidebar">
@@ -92,24 +101,25 @@ export function Sidebar({ label, className, children, ...props }: ComponentProps
 
 export function SidebarTrigger({ className, onClick, ...props }: ComponentProps<typeof Button>) {
   const { toggleSidebar, isMobile, openMobile, open } = useSidebar();
+  const Icon = isMobile ? XIcon : SidebarSimpleIcon;
   return <Button {...props} data-sidebar="trigger" data-slot="sidebar-trigger" variant="ghost" size="icon-touch" aria-expanded={isMobile ? openMobile : open}
-    className={cn('shrink-0 text-muted-foreground', className)} onClick={(event) => {
+    className={cn('size-9 shrink-0 text-muted-foreground before:-inset-1 group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:before:-inset-1.5', className)} onClick={(event) => {
       onClick?.(event);
       if (!event.defaultPrevented) { event.currentTarget.focus(); toggleSidebar(); }
-    }}><SidebarSimpleIcon size={20} aria-hidden /></Button>;
+    }}><Icon size={20} className="size-5 group-data-[collapsible=icon]:size-4" aria-hidden /></Button>;
 }
 
 export function SidebarInset({ className, ...props }: ComponentProps<'main'>) {
   return <main {...props} data-slot="sidebar-inset" className={cn('relative flex w-full flex-1 flex-col bg-background', className)} />;
 }
 export function SidebarHeader({ className, ...props }: ComponentProps<'div'>) {
-  return <div {...props} data-slot="sidebar-header" data-sidebar="header" className={cn('flex flex-col gap-2 p-2', className)} />;
+  return <div {...props} data-slot="sidebar-header" data-sidebar="header" className={cn('flex shrink-0 flex-col gap-2 p-2', className)} />;
 }
 export function SidebarFooter({ className, ...props }: ComponentProps<'div'>) {
-  return <div {...props} data-slot="sidebar-footer" data-sidebar="footer" className={cn('flex flex-col gap-2 p-2', className)} />;
+  return <div {...props} data-slot="sidebar-footer" data-sidebar="footer" className={cn('flex shrink-0 flex-col gap-2 p-2', className)} />;
 }
 export function SidebarContent({ className, ...props }: ComponentProps<'div'>) {
-  return <div {...props} data-slot="sidebar-content" data-sidebar="content" className={cn('flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden', className)} />;
+  return <div {...props} data-slot="sidebar-content" data-sidebar="content" className={cn('flex min-h-0 flex-1 flex-col gap-2 overflow-x-hidden overflow-y-auto overscroll-contain group-data-[collapsible=icon]:overflow-hidden', className)} />;
 }
 export function SidebarGroup({ className, ...props }: ComponentProps<'div'>) {
   return <div {...props} data-slot="sidebar-group" data-sidebar="group" className={cn('relative flex w-full min-w-0 flex-col p-2', className)} />;

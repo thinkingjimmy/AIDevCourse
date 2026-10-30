@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Current locale, public content version, and lesson search metadata.
- * [OUTPUT]: Cmd/Ctrl+K search with focus restoration and no visible entry control.
- * [POS]: Shared keyboard controller; the search engine loads only after opening.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';

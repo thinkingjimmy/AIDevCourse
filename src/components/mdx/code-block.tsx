@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Server-highlighted code, Phosphor copy/status icons, and current-locale feedback.
- * [OUTPUT]: Reused Fumadocs code surface with truthful clipboard status.
- * [POS]: Client-side copy action registered by components.tsx; highlighting stays at build time.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 'use client';
 import { useRef, useState, type ComponentProps } from 'react';
 import { CodeBlock, Pre } from 'fumadocs-ui/components/codeblock';

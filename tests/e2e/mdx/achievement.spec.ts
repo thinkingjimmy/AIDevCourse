@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Published Chinese achievements, native browser animations, responsive viewports, and learning storage.
- * [OUTPUT]: Header retry layout, keyboard focus, dense multicolor bursts with varied shapes and staggered launches, cleanup, and reduced-motion evidence.
- * [POS]: Achievement presentation E2E; screenshots and JSON record repeatable animation positions and interaction outcomes.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 

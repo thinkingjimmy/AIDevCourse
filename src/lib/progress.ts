@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Browser storage, stable course/lesson identities, and the published course achievement inventory.
- * [OUTPUT]: LearningStorage, LearningState, and coursePrefix for registered course achievements.
- * [POS]: Sole learning-record adapter; keeps recent visits and earned achievements separate from legacy completion.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 export type LearningState = { unlocked: Record<string, string>; last?: string; failed: boolean };
 type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 const validId = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;

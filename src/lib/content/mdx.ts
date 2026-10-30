@@ -1,28 +1,24 @@
-/**
- * [INPUT]: Markdown/MDX AST, the shared mark syntax extension, a local image root, and component allowlist.
- * [OUTPUT]: Supported components including TokenizationDiagram, highlighted-text-aware headings/references, static question-only achievement definitions and option validation, and authoring errors.
- * [POS]: Syntax validation before trusted local content reaches the compiler.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkMdx from 'remark-mdx';
 import remarkGfm from 'remark-gfm';
 import { remarkMark } from 'remark-mark-highlight';
+import { remarkMath, validateMath } from './math';
 import { visit } from 'unist-util-visit';
 import { toString } from 'mdast-util-to-string';
 import GithubSlugger from 'github-slugger';
 import type { Root } from 'mdast';
 import type { AchievementDefinition, ContentDocument } from './model';
-export const supportedComponents = ['Callout', 'JimmyNote', 'Chat', 'ChatMessage', 'Steps', 'Step', 'LLMGenerationDemo', 'MenuComparisonDemo', 'TokenizationDiagram', 'Achievement', 'AchievementOption'] as const;
+export const supportedComponents = ['Callout', 'JimmyNote', 'KeyTakeaway', 'Chat', 'ChatMessage', 'ChatMessageSequence', 'Steps', 'Step', 'LLMGenerationDemo', 'MenuComparisonDemo', 'TokenizationDiagram', 'TokenProbabilityDiagram', 'LLMPretrainingOverview', 'LLMSingleRoundTrainingDemo', 'LLMMultiRoundTrainingDemo', 'Achievement', 'AchievementOption'] as const;
 type Element = {
   name: string; attributes: { type: string; name: string; value: unknown }[];
   children: { type: string; value?: string; name?: string; children?: Element['children'] }[];
 };
 const achievementFields = ['id', 'title', 'question', 'answer', 'explanation', 'takeaway'] as const;
 const stableId = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-export function inspectMarkdown(body: string, file: string) {
-  const tree = unified().use(remarkParse).use(remarkGfm).use(remarkMdx).use(remarkMark).parse(body) as Root;
+export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
+  const tree = unified().use(remarkParse).use(remarkGfm).use(remarkMdx).use(remarkMark).use(remarkMath).parse(body) as Root;
+  validateMath(tree, file, lineOffset);
   const slugger = new GithubSlugger();
   const headings: ContentDocument['headings'] = [];
   const links: ContentDocument['links'] = [];
@@ -55,7 +51,16 @@ export function inspectMarkdown(body: string, file: string) {
     if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
       const element = node as unknown as Element;
       if (!supportedComponents.includes(element.name as typeof supportedComponents[number])) fail(`Unknown component: ${element.name}`);
-      if (element.name === 'Chat' && element.attributes.length) fail('Chat does not accept attributes');
+      if (['ChatMessageSequence', 'LLMPretrainingOverview', 'LLMSingleRoundTrainingDemo', 'LLMMultiRoundTrainingDemo', 'TokenProbabilityDiagram'].includes(element.name)) {
+        if (element.attributes.length) fail(`${element.name} does not accept attributes`);
+        if (node.type !== 'mdxJsxFlowElement') fail(`${element.name} must be a standalone block`);
+        if (element.children.some((child) => child.type !== 'text' || child.value?.trim())) fail(`${element.name} does not accept children`);
+      }
+      if (['Chat', 'KeyTakeaway'].includes(element.name) && element.attributes.length) fail(`${element.name} does not accept attributes`);
+      if (element.name === 'KeyTakeaway') {
+        if (node.type === 'mdxJsxTextElement') fail('KeyTakeaway must be a standalone block');
+        if (!toString(node).trim()) fail('KeyTakeaway requires text to remember');
+      }
       if (element.name === 'ChatMessage') {
         const sender = element.attributes.find((attribute) => attribute.name === 'from');
         if (!sender || !['user', 'assistant'].includes(sender.value as string)) fail('ChatMessage requires from="user" or from="assistant"');

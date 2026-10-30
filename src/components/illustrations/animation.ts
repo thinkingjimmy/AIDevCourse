@@ -1,9 +1,3 @@
-/**
- * [INPUT]: A decorative element, optional data-illustration-hover ancestor, timed paint channels, and illustration-specific easing.
- * [OUTPUT]: animateIllustration lifecycle cleanup with optional hover looping and translatePart SVG positioning.
- * [POS]: Shared animation driver for Mac and chip artwork; React owns mount and cleanup.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 export type AnimationChannel = { delay: number; duration: number; paint: (amount: number) => void };
 const HOVER_PAUSE = 0.6;
 

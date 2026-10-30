@@ -1,9 +1,3 @@
-/**
- * [INPUT]: A direct scan of content/zh, separate from the live homepage.
- * [OUTPUT]: The published zh LLM 101 course, its lean lesson summaries, and the homepage facts used by design previews.
- * [POS]: Design-only reader. It is not used by the live home.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { cache } from 'react';
 import { join } from 'node:path';
 import { scanContent } from '@/lib/content/scan';

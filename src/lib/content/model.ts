@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Validated metadata, the shared locale type, and ordered lesson summaries.
- * [OUTPUT]: Content and declarative achievements with question-only prompts, stable identities, rendered anchors, and module grouping without manual lesson metadata.
- * [POS]: Framework-free contract shared by content processing and server/client consumers.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import type { Locale } from '../i18n/config';
 import type { DocumentData } from './schema';
 export type AchievementDefinition = {
@@ -11,7 +5,7 @@ export type AchievementDefinition = {
   answer: string; explanation: string; takeaway: string;
   options: { value: string; label: string }[];
 };
-export type CourseAchievement = { id: string; lessonId: string };
+export type CourseAchievement = { id: string; lessonId: string; title: string; url: string };
 export type ContentDocument = {
   file: string; locale: Locale; courseSlug: string; slug: string[]; url: string;
   data: DocumentData; headings: { id: string; title: string; depth: number }[];
@@ -28,11 +22,22 @@ export type CourseManifest = {
   goals: string[]; audience: string; prerequisites: string[];
   lessons: LessonSummary[]; achievements: CourseAchievement[];
 };
+export type AchievementCourse = Pick<CourseManifest, 'id' | 'title' | 'achievements'>;
 export type Translation = { locale: Locale; url: string; headings: string[] };
 export type Catalog = {
   documents: ContentDocument[]; courses: CourseManifest[];
   translations: Record<string, Translation[]>; version: string;
 };
+export function globalAchievementCourses(catalog: Catalog, locale: Locale): AchievementCourse[] {
+  const selected = new Map<string, CourseManifest>();
+  for (const course of catalog.courses) {
+    const current = selected.get(course.id);
+    if (!current || course.locale === locale || current.locale !== locale && course.locale === course.sourceLocale) {
+      selected.set(course.id, course);
+    }
+  }
+  return [...selected.values()].map(({ id, title, achievements }) => ({ id, title, achievements }));
+}
 export function identity(document: ContentDocument) {
   return document.data.kind === 'course' ? document.data.courseId : `${document.data.courseId}:${document.data.lessonId}`;
 }

@@ -1,9 +1,3 @@
-/**
- * [INPUT]: The published zh AI coding course, including the first lesson's real task and diff.
- * [OUTPUT]: Studio homepage with a topic rail, metrics, and the actual code change.
- * [POS]: Design C. It does not replace /[lang].
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { Badge } from '@/components/ui/badge';
 import type { Metadata } from 'next';
 import Link from 'next/link';

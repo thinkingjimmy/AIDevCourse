@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Validated article achievement definitions and the generic client challenge.
- * [OUTPUT]: getAchievementComponents binds authored MDX declarations to serializable challenge data.
- * [POS]: Server MDX adapter; the same parsed declarations drive rendering and course statistics.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import type { MDXComponents } from 'mdx/types';
 import type { AchievementDefinition } from '@/lib/content/model';
 import { Achievement } from './achievement';

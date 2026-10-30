@@ -21,13 +21,10 @@
     "noJs": "正文与语言链接无需 JavaScript。搜索、代码复制和学习记录需要启用 JavaScript。",
     "notFoundTitle": "页面未找到",
     "notFoundBody": "地址可能有误，或这篇课时尚未以当前语言发布。",
-    "errorEyebrow": "出错了",
-    "errorTitle": "页面加载出了问题",
-    "error": "已保存的学习记录仍保留在此浏览器。",
     "backHome": "返回首页",
-    "retry": "重试",
     "copyAnchor": "复制标题链接",
     "copyAnchorFailed": "链接复制失败，请使用标题链接。",
+    "keyTakeaway": "划重点",
     "linkPreview": "页面预览",
     "linkPreviewLoading": "正在加载页面预览…",
     "linkPreviewUnavailable": "暂时无法预览，点击链接查看页面。",
@@ -81,7 +78,13 @@
     "updating": "内容更新中",
     "updatingBody": "新的课文正在准备中，发布后会显示在这里。",
     "achievementCount": "已解锁 {count} 项成就",
-    "achievementsTitle": "我的成就"
+    "achievementsTitle": "我的成就",
+    "achievementsCompletion": "完成度 {percent}",
+    "achievementsCollectionCount": "/ {total} 枚勋章已点亮",
+    "achievementEarned": "已解锁",
+    "achievementLocked": "未解锁",
+    "achievementVisit": "前往课程：{title}",
+    "achievementsEmpty": "暂时还没有可解锁的成就。"
   },
   "Search": {
     "open": "搜索课时",
@@ -113,5 +116,26 @@
     "correct": "回答正确",
     "incorrect": "回答不正确",
     "retry": "再试一次"
+  },
+  "Author": {
+    "website": "个人网站",
+    "label": "作者与关注方式",
+    "role": "这门课的作者",
+    "intro": "把复杂的 AI，讲得简单一点。",
+    "invitation": "如果你喜欢这门课，欢迎关注我的更新。",
+    "starProject": "给项目 Star",
+    "starProjectLabel": "在 GitHub 为本项目加 Star",
+    "follow": "关注",
+    "followX": "关注 X",
+    "followBilibili": "关注哔哩哔哩",
+    "xiaohongshu": "小红书",
+    "followXiaohongshu": "关注小红书",
+    "xiaohongshuUnavailable": "小红书主页即将开放",
+    "wechatTitle": "也可以在微信找到我",
+    "wechatPrompt": "扫码关注公众号",
+    "wechatNote": "慢慢学，持续进步。",
+    "wechatQrAlt": "关注 Jimmy 公众号的二维码",
+    "qrPlaceholder": "二维码占位",
+    "qrPlaceholderLabel": "公众号二维码占位，暂不可扫描"
   }
 }

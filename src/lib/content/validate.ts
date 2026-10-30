@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Parsed language documents, explicit order, and local public assets, canonical locale paths.
- * [OUTPUT]: Identity, achievement ownership and translation alignment, ordering, and link validation against public routes and rendered anchors.
- * [POS]: Central publication policy used before any route, search, or SEO output.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { existsSync } from 'node:fs';
 import { resolve, sep } from 'node:path';
 import { identity, renderedAnchors, type ContentDocument } from './model';

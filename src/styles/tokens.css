@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Site Geist font variables, the shared typography scale, and zinc/Fumadocs palettes.
- * [OUTPUT]: Shared typography, color, illustration, radius, and content tokens.
- * [POS]: Theme contract imported by the public site and the isolated preview document.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 @import './typography.css';
 
 @theme inline {

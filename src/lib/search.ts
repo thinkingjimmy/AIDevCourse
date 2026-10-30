@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Searchable text in the five supported writing systems.
- * [OUTPUT]: Deterministic CJK character/bigram and accent-folded word tokens.
- * [POS]: Shared Fumadocs search-engine adapter; avoids browser ICU segmentation drift.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { create, type Tokenizer } from 'zbsearch';
 export function tokenize(text: string): string[] {
   const tokens = new Set<string>();

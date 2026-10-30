@@ -1,9 +1,3 @@
-/**
- * [INPUT]: A localized course manifest, shared Card parts and theme tokens, and the LLM 101 hero illustration.
- * [OUTPUT]: A linked course card with whole-card chip hover motion, an illustration panel without callouts, and offset depth on hover or keyboard focus.
- * [POS]: Server-rendered catalog entry; course metadata also supplies the overview hero.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import type { CourseManifest } from '@/lib/content/model';

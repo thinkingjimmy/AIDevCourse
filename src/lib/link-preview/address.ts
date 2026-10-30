@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Node DNS and IP primitives, a page URL, and the shared request deadline.
- * [OUTPUT]: A validated public IPv4 address, with HTTPS DNS fallback for proxy-generated benchmark addresses.
- * [POS]: Address policy shared by page, redirect, and cover reads; private addresses are never accepted.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import 'server-only';
 import { lookup } from 'node:dns/promises';
 import type { LookupAddress } from 'node:dns';

@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Public pages, isolated fixture lessons, and optional Git-ignored screenshot references, canonical locale paths.
- * [OUTPUT]: Typography, responsive reading, illustration video evidence, and optional visual comparisons.
- * [POS]: Styling acceptance suite; CI runs interactions without local baseline images.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import type { Locale } from '../../src/lib/i18n/config';
 import { localePath } from '../../src/lib/i18n/routing';
 import { test, expect, type Page } from '@playwright/test';
@@ -423,8 +417,8 @@ async function verifyLessonReading(page: Page) {
   expect(geometry.centerError).toBeLessThan(1);
   expect(geometry.articleWidth).toBeLessThanOrEqual(42.5 * geometry.fontSize + 1);
   expect(geometry.overflow).toBe(false);
-  expect(geometry.tocVisible).toBe(geometry.tocCount > 0 && geometry.region.contentWidth >= 56 * geometry.fontSize - 0.1);
-  expect(geometry.group.width).toBeCloseTo(Math.min(geometry.region.contentWidth, (geometry.tocVisible ? 56 : 42.5) * geometry.fontSize), 0);
+  expect(geometry.tocVisible).toBe(geometry.tocCount > 0 && geometry.region.contentWidth >= 64 * geometry.fontSize - 0.1);
+  expect(geometry.group.width).toBeCloseTo(Math.min(geometry.region.contentWidth, (geometry.tocVisible ? 65.5 : 42.5) * geometry.fontSize), 0);
   return geometry;
 }
 
@@ -456,7 +450,7 @@ for (const width of [961, 1024, 1100, 1280, 1440, 1920, 2560]) {
     const collapsed = await verifyLessonReading(page);
     expect(collapsed.sidebar).toEqual({ visible: true, left: 0, width: 48 });
     expect(collapsed.region.left).toBe(48);
-    if (width === 1100) {
+    if (width === 1280) {
       expect(expanded.tocVisible).toBe(false);
       expect(collapsed.tocVisible).toBe(true);
     }

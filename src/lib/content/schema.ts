@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Zod and the shared locale whitelist.
- * [OUTPUT]: Strict author metadata schemas that add an internal course/lesson discriminator after validation.
- * [POS]: Authoring contract reused by the validator and MDX compiler.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { z } from 'zod';
 import { locales } from '../i18n/config';
 const id = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);

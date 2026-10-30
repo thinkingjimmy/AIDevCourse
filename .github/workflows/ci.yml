@@ -1,7 +1,3 @@
-# [INPUT]: Pull requests and main-branch changes with a frozen pnpm lockfile.
-# [OUTPUT]: Dependency, source, and browser gates with best-effort evidence uploads.
-# [POS]: Repository CI; test fixtures never enter the deployment build.
-# [PROTOCOL]: Update this header when making changes, then check README.md.
 name: Quality
 on:
   push:

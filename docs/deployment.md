@@ -1,12 +1,10 @@
 # 部署与回滚
 
-> L2 | Parent: [README.md](./README.md)
-
 仓库提供 Vercel 标准 Next.js 配置和 GitHub Actions 工作流。实际部署状态以远程项目、CI 结果和发布记录为准。产品范围见 [需求说明](./requirements.md)。
 
 ## 环境
 
-使用 Node 22.x（最低 22.17.0，CI 固定 22.17.0）、pnpm 10.30.3。Vercel Framework Preset 选择 Next.js，Root Directory 为仓库根目录；Install Command 为 `pnpm install --frozen-lockfile`，Build Command 为 `pnpm build`，Output Directory 使用框架默认值。
+生产环境使用 Node 22.x（最低 22.17.0，CI 固定 22.17.0）、pnpm 10.30.3；本地开发也支持 Node 24.x。字体随固定版本的 Fontsource 依赖安装，开发和构建无需访问 Google Fonts。Vercel Framework Preset 选择 Next.js，Root Directory 为仓库根目录；Install Command 为 `pnpm install --frozen-lockfile`，Build Command 为 `pnpm build`，Output Directory 使用框架默认值。
 
 生产环境设置 `SITE_URL` 为最终 HTTPS origin，不带路径、查询参数或片段。代码在 `VERCEL_ENV=production` 时拒绝缺失、占位或非 HTTPS 域名。`config/.env.example` 说明本地变量，实际环境文件不提交。
 
@@ -31,5 +29,3 @@
 ## 回滚
 
 在 Vercel 将上一可用部署重新提升为生产，并记录回滚原因、时间和部署 ID。不要运行浏览器存储清理，不要重置用户学习记录。回滚后重做上述冒烟，检查域名、缓存、语言协商和已恢复的文章范围。内容版本较旧时可能重新出现文章，但稳定 ID 仍用于关联浏览器学习记录；不要将旧完成标记转换为成就。
-
-[PROTOCOL]: Update this header when making changes, then check README.md.

@@ -1,0 +1,252 @@
+---
+courseId: coding-101
+lessonId: call-ai-with-json
+title: 01 用 JSON 调用 AI API：给 AI 寄一张任务单
+description: 从任务单到 AI 回复，逐步看懂请求地址、密钥、JSON 请求和返回数据，并完成一次可选的真实调用。
+---
+
+这一课，我们要请 AI 帮一个小忙：**用中文给小朋友解释，为什么下雨后有时能看见彩虹。**
+
+你已经知道怎么读 JSON。如果还不熟悉大括号、方括号和双引号，可以先看[上一课](/zh/courses/coding-101/what-is-json)。
+
+先跟着示例走一遍，再决定要不要真实发送。**阅读、改任务单和回答成就题，都不需要 API 密钥。**
+
+## 一、API 就像一个收任务的窗口
+
+平时，你在聊天软件里打字，再点“发送”。如果你想让自己写的程序向 AI 提问，就需要一个程序能使用的窗口。这种窗口叫 **API**。
+
+你可以把这次调用想成寄信：
+
+| 寄信时需要什么 | 调用 AI API 时是什么 |
+| --- | --- |
+| 收信地址 | 接口地址，告诉工具把资料送到哪里。 |
+| 通行证 | API 密钥，证明这次请求可以使用谁的账号。 |
+| 任务单 | JSON 请求，写明使用哪个模型、问什么问题。 |
+| 送信工具 | 帮我们发送请求的程序。这一课用 curl。 |
+| 回信 | API 返回的数据，也叫响应。 |
+
+整个过程是：
+
+```text
+Write a JSON task
+       |
+       v
+Send it to the AI API
+       |
+       v
+Read the JSON response
+       |
+       v
+Find the answer and check it
+```
+
+从上到下就是：写任务单 → 发送 → 读回信 → 找到并检查答案。
+
+**JSON 是任务单的格式，API 是收任务的窗口，模型才负责生成回答。**
+
+## 二、把问题放进 JSON
+
+本课以 OpenAI 的 **Responses API** 为例。不同公司的窗口可能要求不同的字段，不能只换地址就认定能用。
+
+如果你在 [LLM 101 的 Chat 教程](/zh/courses/llm-101/how-ai-chat-works)里见过 `messages`，那是另一种聊天接口的写法。本课使用的接口把输入放在 `input` 里。按对应接口的规则填写就好。
+
+先写最小的一张任务单：
+
+```json
+{
+  "model": "gpt-6-astra",
+  "input": "Explain in Chinese, in two short sentences for a child, why rainbows can appear after rain."
+}
+```
+
+只有两项，逐项读：
+
+- `model`：用哪个 AI 模型。这里的值是模型名称。
+- `input`：交给 AI 的内容。英文任务的意思是：“用中文，用两句短话，给小朋友解释雨后为什么可能出现彩虹。”
+
+`input` 的值也能直接写中文。这里保留英文，是为了方便你对照代码和说明。
+
+这两个名字是接口规定的。把 `input` 改成自己起的 `question`，虽然仍可能是合法 JSON，接口却不一定接受。
+
+模型名称取自 [OpenAI 官方文本生成示例](https://developers.openai.com/api/docs/guides/text)。真实调用前，请由账号持有人确认该模型可用；如果不可用，将 `model` 的值改为账号可用且支持 Responses API 的文本模型。
+
+<KeyTakeaway>
+**JSON 格式正确**，只说明任务单写得符合标点和资料规则。**接口接受任务**，还要求字段、模型、密钥等信息符合这个 API 的要求。
+</KeyTakeaway>
+
+## 三、可选实操：把任务单发出去
+
+<Callout title="先和大人一起准备" type="info">
+真实 API 调用可能产生费用。小朋友请和家长或老师一起操作，由大人管理账号、密钥和额度。没有账号也可以直接跳到下一节，阅读示例回信。
+</Callout>
+
+你需要一台电脑、能连接接口的网络，以及有可用额度的 API 账号。准备步骤可参考 [OpenAI 官方快速入门](https://developers.openai.com/api/docs/quickstart)。
+
+下面的命令适用于 macOS 或 Linux 的终端，以及 Windows 的 WSL / Git Bash。终端是一个用文字命令操作电脑的窗口。**这些命令不适用于直接粘贴到 Windows PowerShell。**
+
+### 第一步：保存任务单
+
+在电脑上新建一个文件夹，例如 `ai-json-practice`。用纯文本编辑器，在里面新建一个 **`request.json`** 文件，把上一节的任务单复制进去并保存。
+
+确认文件使用 UTF-8 编码，名字不是 `request.json.txt`。不要用 Word 文档代替这个文件。
+
+打开终端，输入 `cd`、一个空格，再输入这个文件夹的路径，按回车。`cd` 的意思是“进入这个文件夹”。路径里有空格时，用英文双引号包住整个路径。
+
+然后输入：
+
+```bash
+curl --version
+```
+
+看见 curl 的版本信息，就能继续。curl 是帮我们发送请求的工具。如果提示找不到命令，请让家长或老师先帮你准备 curl。
+
+### 第二步：准备通行证
+
+由账号持有人准备 API 密钥。在同一个终端里，将下面的占位文字换成自己的密钥，再执行：
+
+```bash
+export OPENAI_API_KEY="replace-with-your-api-key"
+```
+
+这一步把密钥放进当前终端的一个“有名字的小盒子”，叫**环境变量**。后面的命令通过 `OPENAI_API_KEY` 这个名字取用它。关闭终端后，重新练习需要再设置。
+
+**密钥像能花钱的通行证。**不要写进 `request.json`，不要发到聊天群、截图或公开代码里，也不要放进网页代码。上面的设置命令可能保存在终端历史里，请在自己的电脑上由账号持有人操作。
+
+将来做网页时，应让服务器保管密钥并调用 AI API。这一课只在自己的电脑终端里练习。
+
+### 第三步：发送一次请求
+
+确认 `request.json` 已保存，并且终端仍在同一个文件夹。把下面整段一次复制进终端，按回车，等待返回：
+
+```bash
+curl https://api.openai.com/v1/responses \
+  --request POST \
+  --header "Content-Type: application/json" \
+  --header "Authorization: Bearer $OPENAI_API_KEY" \
+  --data-binary @request.json \
+  --output response.json \
+  --write-out '\nHTTP %{http_code}\n'
+```
+
+不用背命令，按“寄信”的思路读：
+
+| 命令里的部分 | 作用 |
+| --- | --- |
+| `https://api.openai.com/v1/responses` | 收任务的地址。 |
+| `--request POST` | 用 POST 方式提交任务。 |
+| `Content-Type: application/json` | 告诉窗口：“这次发送的内容是 JSON。” |
+| `Authorization: Bearer ...` | 带上密钥；`$OPENAI_API_KEY` 取出刚才保存的值。 |
+| `--data-binary @request.json` | 读取任务单文件，把里面的内容发出去。`@` 表示从文件读取。 |
+| `--output response.json` | 把回信存到 `response.json`，方便打开查看。 |
+| `--write-out ...` | 在终端显示 HTTP 状态码，帮我们判断请求结果。 |
+
+每行末尾的反斜杠 `\` 表示“下一行还是同一条命令”。它属于终端命令，不属于 JSON。反斜杠后面不要加空格。
+
+密钥和内容类型写在请求的“附加说明”里，叫**请求头**；`request.json` 的内容是**请求体**。它们一起组成请求。
+
+## 四、收到回信，去哪里找答案？
+
+如果终端显示 `HTTP 200`，表示这次 HTTP 请求成功。用编辑器打开同一文件夹里的 `response.json`。
+
+下面是**删去其他字段、只保留阅读重点的示意回信**。它不是实际调用记录，你收到的内容可能不同：
+
+```json
+{
+  "id": "resp_example",
+  "status": "completed",
+  "output": [
+    {
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "Sunlight bends and splits into colors in raindrops. A rainbow can appear when the light reaches your eyes at the right angle."
+        }
+      ]
+    }
+  ]
+}
+```
+
+为了方便对照，示意答案用英文，意思是：“阳光在雨滴里改变方向，并分成不同颜色。光以合适的角度进入眼睛时，我们就可能看见彩虹。”真实任务要求的是中文；如果实际回复没有遵守，也要检查并改进要求。
+
+像拆信一样，从外到里找：
+
+1. 先看 `status`。`completed` 表示生成已完成；如果是其他状态，先检查是否中断或失败。
+2. 找到 `output`，它是一份列表。
+3. 在列表中找 `type` 为 `message` 的项目。
+4. 打开它的 `content` 列表，找 `type` 为 `output_text` 的项目。
+5. 里面的 `text` 才是这一段回答。若有多段文本，按顺序阅读。
+
+别把 `output` 的第一项永远当作答案。里面也可能有其他类型的项目。官方的[文本生成说明](https://developers.openai.com/api/docs/guides/text)也提醒，要按项目类型查找；一些官方 SDK 提供了 `output_text` 帮助取出文字。
+
+**收到 200，不代表 AI 的答案一定正确。**还要看生成是否完成、有没有按要求回答，以及事实是否可靠。
+
+## 五、发不出去时，先看哪里？
+
+先看终端的状态码，再打开 `response.json` 阅读错误说明。错误回信不一定有 `output`，不要在里面硬找答案。
+
+| 看到什么 | 先做什么 |
+| --- | --- |
+| curl 提示读不到文件 | 检查是否进入了正确文件夹，文件是否真的叫 `request.json`。 |
+| `HTTP 400` | 读错误说明。检查 JSON 标点、字段和必填内容。 |
+| `HTTP 401` | 请账号持有人检查密钥是否正确、有效。不要把密钥发给别人检查。 |
+| 提示模型不存在或无权使用 | 检查 `model` 名称，并确认账号拥有对应模型的使用权限。 |
+| `HTTP 429` | 可能发得太快，也可能额度或用量已达限制。先读具体错误，再决定等待或检查账号。 |
+| `HTTP 500` 或 `HTTP 503` | 服务可能暂时异常。稍后再试，不要连续重复发送。 |
+| 连接失败或 `HTTP 000` | 没收到 HTTP 回信。先检查网络和地址。 |
+
+这些状态码的含义可对照 [OpenAI 官方错误说明](https://developers.openai.com/api/docs/guides/error-codes)。
+
+## 六、用 JSON 发任务，就一定收到 JSON 格式的答案吗？
+
+这里有两层，要分开看：
+
+- **回信的外包装**：API 返回 JSON，包含 `status`、`output` 等字段。
+- **AI 写的答案**：上面 `text` 里的内容是普通文字。
+
+就像信封有固定格式，信里的作文仍然可以自由写。用 JSON 发送问题，不会自动让 AI 的答案也变成一张资料清单。
+
+如果只在问题里加一句“请返回 JSON”，模型仍可能没按要求写。正式程序需要固定字段时，可以进一步学习 [Structured Outputs（结构化输出）](https://developers.openai.com/api/docs/guides/structured-outputs)：它用一份叫 JSON Schema 的规则，说明“答案必须有哪些格子、每格是什么类型”。程序仍需处理拒绝回答、生成中断等情况，并检查内容。
+
+现在先记住：**请求用 JSON、API 回信用 JSON、答案本身也要符合 JSON，是三个不同的要求。**
+
+## 七、自己换一个问题
+
+把 `request.json` 里的 `input` 改成下面的任务。它的意思是：“用中文，用两句短话解释磁铁为什么能吸住一些金属。”
+
+```json
+{
+  "model": "gpt-6-astra",
+  "input": "Explain in Chinese, in two short sentences for a child, why magnets attract some metals."
+}
+```
+
+没有密钥时，只练习修改文件就可以。有密钥时，保存文件，再运行一次发送命令。**每次发送都可能计费，并会覆盖旧的 `response.json`。**想保留两次结果，先给旧回信换一个文件名。
+
+用这四项检查自己的结果：
+
+1. 我只改了 `input` 的值，保留了接口要求的字段。
+2. JSON 的双引号、逗号和括号仍然正确。
+3. 如果真实发送，我检查了状态码、生成状态，并找到了回复文字。
+4. 我核对了答案是否是中文、是否简短、内容是否合理。
+
+练习后可以关闭终端，并让账号持有人按需撤销练习密钥。
+
+<Achievement
+  id="understand-ai-api-request"
+  title="看懂一次 AI API 调用"
+  question="你想把彩虹问题换成磁铁问题。应该怎么做？"
+  answer="change-input-and-check"
+  explanation="input 存放提问。修改它的值后，仍要保持 JSON 格式正确。真实发送后，检查状态码和生成状态，再找到并核对答案。密钥放在请求头里，不能公开。"
+  takeaway="写好任务单只是第一步。一次完整调用还包括发送、读回信和检查答案。"
+>
+  <AchievementOption value="rename-field">把 input 改名为 magnet，接口会自己猜出我的意思。</AchievementOption>
+  <AchievementOption value="change-input-and-check">修改 input 的值，保留正确格式。发送后检查状态，并找到、核对回复文字。</AchievementOption>
+  <AchievementOption value="trust-json">只要文件是 JSON，AI 就会自动收到，而且答案一定正确。</AchievementOption>
+</Achievement>
+
+<KeyTakeaway>
+你已经能看懂一次调用：**用 JSON 写任务，用工具发给 API，从回信里找答案，再检查答案。**这就是让程序和 AI 合作的第一步。
+</KeyTakeaway>

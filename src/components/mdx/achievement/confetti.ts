@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Browser viewport, reduced-motion preference, and the native Web Animations API.
- * [OUTPUT]: playAchievementConfetti starts dense, staggered two-corner bursts and returns an idempotent cleanup function.
- * [POS]: Decorative achievement feedback; owns its temporary viewport layer and animation lifecycle.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 
 const colors = ['#ffca28', '#ff5a36', '#ff2d95', '#b84dff', '#536dfe', '#00b8ff', '#00d8a0', '#ffd740'];
 

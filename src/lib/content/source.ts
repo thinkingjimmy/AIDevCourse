@@ -1,23 +1,20 @@
-/**
- * [INPUT]: Mode-specific catalog and Fumadocs MDX aliases, plus locale configuration, canonical locale paths.
- * [OUTPUT]: Explicit-language course/lesson queries by public URL, and compiled article lookup by file path.
- * [POS]: Server-only facade; public consumers cannot bypass the catalog.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import 'server-only';
 import { cache } from 'react';
 import { loader } from 'fumadocs-core/source';
 import { courses } from '@source';
 import publicCatalog from '@catalog';
-import type { Catalog } from './model';
+import { readCatalog } from './manifest';
+import { globalAchievementCourses, type Catalog } from './model';
 import { locales, defaultLocale, type Locale } from '../i18n/config';
 import { localePath } from '../i18n/routing';
-export const getCatalog = cache(() => publicCatalog as Catalog);
+// MDX hot reloads independently of the catalog generated at startup.
+export const getCatalog = cache(() => process.env.NODE_ENV === 'development' ? readCatalog() : publicCatalog as Catalog);
 const compiled = loader({
   baseUrl: '/courses', source: courses.toFumadocsSource(),
   i18n: { languages: [...locales], defaultLanguage: defaultLocale, parser: 'dir', hideLocale: 'default-locale', fallbackLanguage: null },
 });
 export function getCourses(lang: Locale) { return getCatalog().courses.filter((course) => course.locale === lang); }
+export function getAchievementCourses(lang: Locale) { return globalAchievementCourses(getCatalog(), lang); }
 export function getCourse(lang: Locale, slug: string) { return getCourses(lang).find((course) => course.slug === slug); }
 export function getLesson(lang: Locale, course: string, slug: string[]) {
   const url = localePath(lang, `/courses/${course}/${slug.join('/')}`);

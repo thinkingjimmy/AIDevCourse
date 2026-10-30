@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Message dictionaries and the ICU message AST parser.
- * [OUTPUT]: Key, text, syntax, and interpolation parity validation.
- * [POS]: Pure dictionary contract; plural categories may vary between languages.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { parse, TYPE, type MessageFormatElement } from '@formatjs/icu-messageformat-parser';
 type Dictionary = { [key: string]: string | Dictionary };
 export function flattenMessages(dictionary: Dictionary, prefix = ''): Record<string, string> {

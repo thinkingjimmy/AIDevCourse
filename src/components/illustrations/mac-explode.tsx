@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Static exploded-Mac SVG markup, the shared animation driver, and the scheme-A stagger.
- * [OUTPUT]: Decorative hero that opens once, loops assembly and explosion while hovered, and returns to the exploded pose on pointer leave.
- * [POS]: Homepage right column. The slot is the fully exploded bounds.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 'use client';
 
 import { useEffect, useRef } from 'react';

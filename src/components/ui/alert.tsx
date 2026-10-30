@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Native aside props, shared Tailwind notification tokens, and the quote-frame utility.
- * [OUTPUT]: Alert, AlertTitle, and AlertDescription with callout, plain notice, and quote-framed author-note variants.
- * [POS]: shadcn-style notification composition shared by MDX and course surfaces.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import type { ComponentProps } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';

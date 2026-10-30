@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Five-language courses in tests/fixtures/ and temporary authoring mutations.
- * [OUTPUT]: Publication, identity, unique lesson-slug, ordering and unsafe-content regression coverage.
- * [POS]: Content-policy tests independent of compiled framework caches.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { afterEach, describe, expect, it } from 'vitest';
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';

@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Static SVG paint hooks, shared Tailwind anatomy tokens, and settled state.
- * [OUTPUT]: Tailwind-based SVG fills, strokes, diagram labels, and callout fades.
- * [POS]: Shared artwork layer; React owns animation and TSX utilities own stage layout.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 @layer components {
   [data-anatomy] .iso-svg { @apply block size-full overflow-visible bg-transparent; }
   [data-anatomy] .iso-svg path,

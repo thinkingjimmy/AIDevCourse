@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Filesystem scan, publication policy, and explicit ordering.
- * [OUTPUT]: One public catalog with lean lesson summaries, localized manifests with source-language achievement inventories, and identity-based translation maps.
- * [POS]: Framework-independent content builder shared by checks and the app.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 import { scanContent, contentRoot } from './scan';
@@ -33,7 +27,14 @@ export function readCatalog(options: { root?: string; publicRoot?: string } = {}
     const sourceOrder = scan.order.get(course.sourceLocale) ?? [];
     const achievements = visible.filter((doc) => doc.locale === course.sourceLocale && doc.data.courseId === course.courseId && doc.data.kind === 'lesson')
       .sort((a, b) => sourceOrder.indexOf(a.file) - sourceOrder.indexOf(b.file))
-      .flatMap((doc) => doc.achievements.map((achievement) => ({ id: achievement.id, lessonId: doc.data.kind === 'lesson' ? doc.data.lessonId : '' })));
+      .flatMap((doc) => doc.achievements.map((achievement) => {
+        const lessonId = doc.data.kind === 'lesson' ? doc.data.lessonId : '';
+        const translated = visible.find((item) => item.locale === document.locale && item.data.courseId === course.courseId &&
+          item.data.kind === 'lesson' && item.data.lessonId === lessonId);
+        const localAchievement = translated?.achievements.find((item) => item.id === achievement.id);
+        return { id: achievement.id, lessonId, title: localAchievement?.title ?? achievement.title,
+          url: `${localAchievement ? translated!.url : doc.url}#achievement-${achievement.id}` };
+      }));
     courses.push({ id: course.courseId, locale: document.locale, slug: document.courseSlug, title: course.title,
       description: course.description, url: document.url, sourceLocale: course.sourceLocale, level: course.level,
       goals: course.goals, audience: course.audience, prerequisites: course.prerequisites,

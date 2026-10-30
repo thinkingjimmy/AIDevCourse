@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Native table element props, shared Tailwind tokens, and cn class composition.
- * [OUTPUT]: Native keyboard-scrollable Table and semantic header, body, footer, row, cell, and caption parts.
- * [POS]: Shared shadcn-style data primitives, used by the MDX registry for all authored tables.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import type { ComponentProps } from 'react';
 import { cn } from '@/lib/utils';
 

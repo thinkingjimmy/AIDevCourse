@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Explicit URL history entries and the final public URL set, canonical locale paths.
- * [OUTPUT]: Validated one-hop redirects with existing public targets.
- * [POS]: Authoring URL migration contract; stable lesson IDs preserve progress separately.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { isLocale } from './i18n/config';
 export type RedirectEntry = { source: string; destination: string };
 export function validateRedirects(entries: RedirectEntry[], publicUrls: Set<string>) {

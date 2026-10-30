@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Five local dictionaries and the cross-language content catalog.
- * [OUTPUT]: ICU/key parity checks, dictionary coverage, and translation identity validation.
- * [POS]: Internationalization quality gate; missing normal translations are not errors.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { readFileSync } from 'node:fs';
 import { locales } from '../src/lib/i18n/config';
 import { validateDictionaries } from '../src/lib/i18n/validate';

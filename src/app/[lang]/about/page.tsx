@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Localized product, persistence, cookie, and privacy explanations, canonical locale paths.
- * [OUTPUT]: About page in the zinc frame: mono eyebrow, two-line title, and a three-column section grid.
- * [POS]: Public usage guide; makes local-only storage and translation coverage clear.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { localePath } from '@/lib/i18n/routing';
 import { PageContainer, PageTitle, PageEyebrow } from '@/components/layout/page-primitives';
 import { notFound } from 'next/navigation';

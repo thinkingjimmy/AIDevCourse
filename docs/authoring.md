@@ -1,7 +1,5 @@
 # 作者与译者指南
 
-> L2 | Parent: [README.md](./README.md)
-
 课程只从 `content/<lang>/` 编译。网站页面无需逐篇修改。当前产品行为见 [需求说明](./requirements.md)，数据流见 [架构说明](./architecture.md)。
 
 ## 本地启动
@@ -31,7 +29,7 @@
 
 ## 编写与检查
 
-正文使用 `==text==` 添加淡灰色荧光笔式高亮。笔触边缘略有起伏，并保留轻微叠色与笔痕；底色只覆盖文字中下部，文字颜色、字号和字重保持原样。可包住强调、链接和标题文字，也可用于 `JimmyNote` 等组件的正文。内容换行时，每一行都会保留背景。无需 import，也无需手写 `<mark>`。
+正文使用 `==text==` 添加淡黄色荧光笔式高亮。笔触边缘略有起伏，并保留轻微叠色与笔痕；底色只覆盖文字中下部，文字颜色、字号和字重保持原样。可包住强调、链接和标题文字，也可用于 `JimmyNote` 等组件的正文。内容换行时，每一行都会保留背景。无需 import，也无需手写 `<mark>`。
 
 ```mdx
 Use ==a key point== in a paragraph.
@@ -40,9 +38,25 @@ Combine ==**bold** and *emphasis*== when needed.
 
 行内代码和围栏代码里的 `==text==` 保持原样；写成 `\==text==` 可显示字面的等号。未闭合的标记保持普通文本。成就选项仍使用纯文本标签。
 
+正文支持 LaTeX 数学公式：行内使用 `$y = ax + b$`；独立公式的前后 `$$` 各占一行。支持分数、上下标、求和、矩阵，以及 `aligned` 多行公式。公式在编译时排版，无 JavaScript 也可阅读，同时提供供辅助技术读取的 MathML；样式和字体均从本站加载。长独立公式在自己的区域内横向滚动，不会撑宽文章。
+
+```mdx
+Use $y = ax + b$ in a paragraph.
+
+$$
+y = ax + b
+$$
+
+$$
+\frac{1}{n} \sum_{i=1}^{n} x_i
+$$
+```
+
+普通价格写成 `\$10`，避免美元符号被识别为公式。行内代码、普通围栏代码及转义的美元符号保持原样；未闭合的行内公式保持普通文本。无效 LaTeX 会使内容检查或编译失败，错误包含文件、公式起始行列和原因。不支持完整 LaTeX 文档、公式自动编号、交叉引用或自定义宏配置。可在 [公式预览](http://localhost:3000/design/components#math) 检查显示。
+
 普通 Markdown 页面链接自动支持预览，无需添加组件或 import。鼠标悬停 350ms 或键盘聚焦后显示标题、摘要、域名和可用的封面；鼠标移入卡片后保持显示，Escape 关闭。站内已发布课程和课时使用本地标题与简介；外部 HTTPS 链接按需读取页面元数据并缓存。未提供元数据或读取失败时显示域名与提示，链接仍可打开。触屏点击和无 JavaScript 时直接跳转。同页锚点、邮件和下载链接保留原行为。可在 [链接预览](http://localhost:3000/design/components#link-previews) 检查效果。
 
-标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`Chat`、`ChatMessage`、`Steps`、`Step`、`LLMGenerationDemo`、`MenuComparisonDemo`、`TokenizationDiagram`、`Achievement`、`AchievementOption`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
+标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`KeyTakeaway`、`Chat`、`ChatMessage`、`ChatMessageSequence`、`Steps`、`Step`、`LLMGenerationDemo`、`MenuComparisonDemo`、`TokenizationDiagram`、`TokenProbabilityDiagram`、`LLMPretrainingOverview`、`LLMSingleRoundTrainingDemo`、`LLMMultiRoundTrainingDemo`、`Achievement`、`AchievementOption`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
 
 ```mdx
 <Callout title="Check the result" type="info">
@@ -58,6 +72,14 @@ Add a personal observation here.
 
 Use **emphasis** and [links](https://example.com) when useful.
 </JimmyNote>
+```
+
+`KeyTakeaway` 用于「划重点」，突出读者需要记住的结论。它与 `JimmyNote` 共用外框、阴影和正文排版，上边框嵌入固定标签，标签随界面语言切换。正文支持多段文字、强调、高亮、列表、行内代码和链接，无需 import 或 JavaScript。组件必须独立成块且包含文字，不接受参数；不要把它放进行内文字中。可在 [划重点预览](http://localhost:3000/design/components#key-takeaways) 检查效果。
+
+```mdx
+<KeyTakeaway>
+**Keep a source for claims that need to be accurate.**
+</KeyTakeaway>
 ```
 
 `ChatMessage` 用于文章里的静态对话示例，参考 [shadcn Message](https://ui.shadcn.com/docs/ai-elements/radix/message) 的布局。组件复用引用块的黑色直角边框和右下偏移阴影，并保留内边距；`from="user"` 显示右侧灰色气泡及圆形用户图标头像，`from="assistant"` 显示左侧浅色描边气泡及机器人头像。两种头像共用浅灰底和灰色图标。头像随消息角色自动显示，无需配置图片。正文支持多段 Markdown、强调和链接，无需 import 或 JavaScript。
@@ -95,7 +117,7 @@ An LLM generates text from the context you provide.
 
 站内链接使用最终公开路径或当前文章 `#heading`。英文使用 `/courses/...`，其他语言保留前缀，如 `/zh/courses/...`；禁止在正文链接中使用 `/en` 别名。课时公开地址不含模块，例如 `/zh/courses/llm-101/strengths`；同一课程内课时 slug 必须唯一。跨语言链接文字必须包含目标语言自称，例如 `[English: What AI is good at](/courses/llm-101/strengths)`，且目标文件已经存在。不可链接不存在的课时或锚点。课程总览只渲染元数据和目录，支持 `#course-catalog`；课程介绍正文中的标题不会渲染，不能作为锚点。课程列表位于语言首页，`/{lang}/courses` 不存在。外部资料可用 HTTPS 链接，不做视频嵌入。
 
-文章 frontmatter 只填写 `courseId`、`lessonId`、`title` 和 `description`。`lessonId` 是稳定身份，修改标题或文件名时保持不变。类型由文件位置自动推导：课程根目录的 `index.mdx` / `index.md` 是课程介绍，其他已排序文章是课时。不要手填 `kind`，也无需维护阅读时长、文章分类、验证日期或修订版本。
+文章 frontmatter 只填写 `courseId`、`lessonId`、`title` 和 `description`。标题不含手写课时序号；课程目录与 Sidebar 按模块和课时顺序自动生成 `01`、`02` 等模块编号，以及 `1.1`、`2.1` 等课时编号。调整 `meta.json` 顺序后，编号随目录更新，无需修改文章。`lessonId` 是稳定身份，修改标题或文件名时保持不变。类型由文件位置自动推导：课程根目录的 `index.mdx` / `index.md` 是课程介绍，其他已排序文章是课时。不要手填 `kind`，也无需维护阅读时长、文章分类、验证日期或修订版本。
 
 ```bash
 pnpm content:check
@@ -137,15 +159,23 @@ pnpm build
 
 ## 互动需求
 
+中文版「AI Chat 是如何工作的？」在寄信类比段落后使用 `<ChatMessageSequence />`。这是无参数、无子内容的独立块，无需 import。组件进入可视区域后，先演示直接发送文本被服务器拒绝，模型未调用；再演示格式正确的 JSON 请求、模型生成回复、服务器返回 JSON、产品提取文本后呈现给用户。格式错误与正确分别用红叉和绿勾标识。消息气泡悬浮在当前箭头旁，尖角指向实际线条中点，不撑高图表；窄屏和放大字体时重新测量位置。演示播放一次后停止，支持暂停、继续和重新演示；离开可视区域或切到后台时暂停。仅切换离散步骤，不产生连续位移动画。无 JavaScript 时静态展示两次尝试的完整过程。内容为本地教学示例，不调用模型，也不写入学习进度。
+
+中文版「模型是如何预训练的？」在「预训练的大致流程」使用 `<LLMPretrainingOverview />` 替换三步说明列表。它是无参数、无子内容的独立块，无需 import。顶部三个 tab 切换筛选清洗、Token 编码和预测训练，支持鼠标指针、方向键、Home 和 End。数据来源配有图标；训练文本使用灰底，不带示例或底部说明。Token 编码与原有 `<TokenizationDiagram />` 共用天气问题、六组词元及 ID，标签合并为「Tokenizer（Token → Token ID）」。预测训练显示「预测下一个 Token → 对照原文 → 调整参数」，返回箭头从调整参数连回预测节点；窄屏改为纵向流程，返回线沿左侧连接。组件复用训练图解的直角边框，不增加脚注或动画；无 JavaScript 时显示完整静态流程，不读写学习进度。
+
+中文版「模型是如何算出 Token 概率的？」在「从简单类比到真实模型」末尾使用 `<TokenProbabilityDiagram />`。组件是无参数、无子内容的独立块，无需 import。它静态展示「今天下雨，出门记得带…」→ 大量相互连接的计算 → 多个分数 → 对应的「伞、雨衣、帽子」等候选 → 按采样策略选择一个 Token ID，并以「伞」作为结果示例。计算网络从上向下展开，分数与候选逐列对齐，全部候选通过曲线汇入同一个采样步骤。分数编号是示意标签，不虚构实际词表 ID；分数转概率已在上文讲解，图中不另设阶段。复用引用黑框、浅灰输入和采样背景，不增加标题、脚注、动画或操作按钮。服务端完整渲染，窄屏、放大字体和无 JavaScript 时均可阅读。
+
+中文版「模型是如何预训练的？」使用 `<LLMSingleRoundTrainingDemo />`，展示 00 初始化、01 预测、02 对照、03 调参数，沿用正文的「y = ax + b → 分数 → Softmax → 概率」类比。初始化只展示「伞、雨衣、帽子」各自的 a、b，不显示输入、分数、概率或正确答案；点击「开始预测」后展示「今天雨天，出门记得带…」，将下雨简化为固定的 x = 1。对照步骤在输入旁揭晓原文答案「伞」，保留原模型数值。调参数步骤保留左侧原模型，在右侧新增调整后的模型，突出 a、b 的变化；窄屏上下排列。「伞」的 a、b 从 0.50、1.10 调整为 0.60、1.20，分数从 1.60 变为 1.80。分数和 Softmax 概率由教学参数实际计算，显示为两位小数与整数百分比。不显示底部解释栏，步骤提示仅供屏幕阅读器使用。02 对照在「伞」的概率旁显示中文手写旁注与手绘箭头，解释原文答案和 25% 预测概率之间的差距；仅这一页显示，窄屏与放大字体时在概率条上方顺序排列，避免遮挡公式。手写字体为本地 WOFF2 子集，首次显示旁注时加载，授权文件与字体一同保留。随后用 `<LLMMultiRoundTrainingDemo />` 展示同一输入和候选的多轮概率记录，「伞」依次为 25%、45%、60%、72%，前两组分布与单轮模型共用数据。两者都是独立、无参数、无子内容的块级组件，无需 import；不请求模型或网络、不记录学习进度。共用引用边框、按钮和输入展示，不显示组件标题、训练原文块或示意脚注。一轮版支持上一步与返回初始化，两者均支持重新演示和无 JavaScript 静态阅读。
+
 中文版「什么是 Token？」在编码说明后使用 `<TokenizationDiagram />`。组件不接受参数，无需 import。它静态展示天气问题经过 Tokenizer 切分成 6 个词元、映射为文中对应的 Token ID，再以数组 `[47256, 132426, 1616, 167823, 24608, 4802]` 按原顺序送入 LLM；随后展示模型输出 Token ID 数组 `[47256]`、经 Tokenizer 解码为「今天」、呈现给用户的过程。列数随容器宽度和读者字体大小调整；无 JavaScript 时仍完整显示。
 
 该文在 Token 与字词边界的补充说明之后、实际用途之前，通过 `<Achievement>` 声明「看懂 Token 的边界」，稳定 ID 为 `token-boundaries`。三项单选用于区分完整字词、文本片段和不同 Tokenizer 的差异；答对后与第一课的成就一起计入课程进度，无需手动修改总数。
 
-中文版「What a language model does」使用 `<LLMGenerationDemo />` 展示固定虚构回答的自动逐字生成过程，使用 `<MenuComparisonDemo />` 比较原生选择控件与 shadcn 风格菜单。这两个组件不接受参数，无需 import，也不调用模型或外部接口。生成演示逐轮显示完整输入和候选概率，选择概率最高的字符后，将它接入下一轮输入，再向上换行。组件内提供暂停、继续播放和重新播放；离开可视区域或切换到后台时暂停计时，减少动态效果模式下直接显示完整结果，无 JavaScript 时提供可展开的静态说明。菜单支持键盘操作和独立的选择反馈。中文版 `what-a-language-model-does.mdx` 通过通用 `<Achievement>` 声明「分清生成与查证」。它保留原有引用边框、原生单选交互和解锁反馈；稳定身份为 `llm-101:what-a-language-model-does:generation-vs-verification`，成就使用 `llm-101` 课程命名空间内独立的存储键。
+中文版「What a language model does」使用 `<LLMGenerationDemo />` 展示固定虚构回答的自动逐字生成过程，使用 `<MenuComparisonDemo />` 比较原生选择控件与 shadcn 风格菜单。这两个组件不接受参数，无需 import，也不调用模型或外部接口。生成演示逐轮显示完整输入和候选概率，再展示按概率采样的固定结果（包含未选中最高概率候选的轮次），将选中的 Token 接入下一轮输入，再向上换行。顶部仅保留「预测概率 → 按规则选择 → 继续生成」，不显示第二行动态说明或底部解释段落；演示以单字简化 Token，候选、概率、采样结果和天气均为固定的虚构示例。组件内提供暂停、继续播放和重新播放；离开可视区域或切换到后台时暂停计时，减少动态效果模式下直接显示完整结果，无 JavaScript 时提供可展开的静态说明。菜单比较使用与作者注释相同的直角边框和右下偏移阴影，上边框嵌入「试一试」文字，不显示头像；两个按钮仍等宽居中。菜单支持键盘操作和独立的选择反馈，无 JavaScript 时仍显示边框、标题和原生菜单。中文版 `what-a-language-model-does.mdx` 在文章末尾通过通用 `<Achievement>` 声明「把需求说清楚」，稳定 ID 为 `input-shapes-output`。三项单选引导读者补充使用场景、交互要求和参考示例，而不是依赖模糊要求或角色指令保证结果。「分清生成与查证」使用稳定 ID `generation-vs-verification`，位于 `how-language-models-are-trained-part-1.mdx`。两项成就均使用课程命名空间内独立的存储键。
 
 ### 文章成就
 
-新增成就只需在文章 MDX 中填写题目和选项，无需修改 TSX、注册组件或维护成就总数。开发环境修改成就声明后重启 `pnpm dev`，以重新生成经过校验的文章定义与课程清单。
+新增成就只需在文章 MDX 中填写题目和选项，无需修改 TSX、注册组件或维护成就总数。开发环境修改成就声明后会热更新；文章定义与课程成就清单在请求中读取最新内容并统一校验，无需重启 `pnpm dev`。生产环境仍使用构建时生成的清单。
 
 ```mdx
 <Achievement
@@ -171,6 +201,41 @@ pnpm build
 
 计分考试、视频播放器、其他交互练习和提示词对比暂不实现。现有组件不足时，先记录真实材料、输入、状态、失败处理和验收条件，并更新 [需求说明](./requirements.md)。不要提前创建空组件。
 
-当前 LLM 101 发布五语课程介绍、中文版「What a language model does」和《什么是 Token》正文与其他语言的第一课欢迎占位文档。课程介绍位于 `content/<lang>/llm-101/index.mdx`，第一课为 `what-a-language-model-does.mdx`，中文第二课为 `content/zh/llm-101/what-is-a-token.mdx`，按原稿保留正文且暂不添加译文。两课的稳定 ID 分别为 `what-a-language-model-does` 与 `what-is-a-token`，用于关联最近访问与成就，不依赖课时标题或 URL。首页「马上学习」按 `meta.json` 中的顺序进入第一课。新增课时需在 `pages` 中列出对应文件或模块，课时 URL 为 `/{lang}/courses/llm-101/{lesson}`。`tests/fixtures` 中的 `ai-coding` 只用于工程验证，不属于公开课程。
+## LLM 101 的课程范围
 
-[PROTOCOL]: Update this header when making changes, then check README.md.
+LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程介绍、九节中文正文与其他语言的第一课欢迎占位文档。课程介绍位于 `content/<lang>/llm-101/index.mdx`，已有课时按下面三个模块组织。
+
+| 模块目录 | 模块名称 | 已发布课时 |
+| --- | --- | --- |
+| `model-fundamentals` | 大语言模型的工作原理 | 1.1 生成回答；1.2 Token；1.3 采样与回答的随机性；1.4 从参数与候选分数理解 Token 概率 |
+| `model-training` | 模型的训练与能力 | 2.1 模型是如何预训练的；2.2 模型的「深度思考」是怎么回事；2.3 模型是如何看图和听声音的；2.4 如何选择适合自己的大语言模型 |
+| `ai-applications` | AI 应用的工作原理 | 3.1 AI Chat 是如何工作的 |
+
+02 用四篇文章连接预训练、深度思考、多模态输入和模型选择，不安排后训练、强化学习或训练算法的深入教程。2.2 通过预算题的教学草稿解释推理、展示摘要和计算成本，并声明草稿不是实际模型的 Thinking 记录；补充固定网络层数与中间 Token 带来的计算轮次，介绍 test-time scaling 的串行推导、候选筛选与过度思考限制。2.3 通过编码器类比解释图像特征、语音转写与音频理解，区分输入和输出能力。两篇都保留实际用途与独立成就，稳定 ID 分别为 thinking-is-not-verification、distinguish-audio-inputs。选型课保留原 slug 与成就 ID，只调整到 2.4。
+
+所有模块用自己的 `meta.json` 排序。其他语言已有的第一课同步放入 `model-fundamentals`，保持译文路径与中文原文一致；没有译文的模块不创建空目录。公开 URL 不包含模块目录。各课保留稳定的 `lessonId`、slug 和成就 ID；仅移动模块不需要重定向，也不改变学习记录。首页「马上学习」仍按 `meta.json` 的顺序进入第一课。`tests/fixtures` 中的 `ai-coding` 只用于工程验证，不属于公开课程。
+
+### 03 的后续写作方向
+
+下表是写作规划，除 3.1 外尚未发布。只有完成正文后才加入 `meta.json`；不创建空课时或指向未发布内容的链接。
+
+每篇采用「实际问题 → 简单原理 → Chat 操作练习 → 检查结果」的顺序。使用方法放在对应教程中，避免单独重复一套产品使用手册。具体产品的按钮、配额或界面操作以写作时的实际产品为准。
+
+| 课时 | 主题 | 对应的 Chat 使用练习 |
+| --- | --- | --- |
+| 3.1 | AI Chat 是如何工作的 | 在同一对话和新对话中提问，对比哪些历史信息进入输入 |
+| 3.2 | 提示词如何影响回答 | 写清目标、对象、限制和示例，比较输出并修改要求 |
+| 3.3 | 上下文与记忆 | 判断何时继续对话、何时新建对话，以及如何保存必要背景 |
+| 3.4 | 文件、知识库与 RAG | 上传资料并要求引用原文，核对回答是否有依据 |
+| 3.5 | 工具调用 | 使用联网搜索或代码执行，检查调用记录和实际结果 |
+| 3.6 | MCP | 理解应用如何连接外部工具与资料，在支持的产品中检查连接与授权 |
+| 3.7 | Skills | 理解可复用的任务指令、资料和脚本，尝试安装或使用一个适合任务的 Skill |
+| 3.8 | 从 AI Chat 到 Agent | 区分一次回答与连续执行，认识 Agent 的目标、工具、检查与停止条件，为 Agent 101 建立前置概念 |
+
+权限、敏感资料、来源核对和结果验证随练习一起讲解。MCP、Skills 和工具调用分别解释职责，不画成必须依次安装的层级。
+
+### Agent 101 的课程边界
+
+Agent 101 规划为独立中级课程，目前未创建或发布。前置能力是理解模型生成、上下文、工具调用，以及 LLM 101 的 3.8；不要求学习后训练。
+
+建议围绕 ReAct loop、运行状态与停止条件、Coding Agent 的代码阅读与修改、终端工具与 E2E 验证、上下文管理、失败恢复和权限边界展开，以完成可验证的任务为目标。ReAct loop 是推理与行动交替的模式，不是 React 前端框架。MCP 与 Skills 的基础概念留在 LLM 101，在 Agent 101 中讲如何把它们用于持续执行的工作流。

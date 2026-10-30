@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Isolated content paths, Fumadocs YAML parsing, metadata schemas, and Markdown inspection, canonical locale paths.
- * [OUTPUT]: Documents with path-inferred kind, canonical public URLs, explicit per-language ordering, module labels, and validated achievement declarations.
- * [POS]: Filesystem adapter; no UI consumer reads content directories directly.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { frontmatter } from 'fumadocs-core/content/md/frontmatter';
@@ -55,7 +49,7 @@ export function scanContent(root: string) {
       const slug = isIndex ? [] : parts.slice(2);
       const publicSlug = isIndex ? '' : slug[slug.length - 1];
       const url = localePath(locale, `/courses/${parts[1]}${publicSlug ? `/${publicSlug}` : ''}`);
-      const { headings, links, achievements } = inspectMarkdown(parsed.content, file);
+      const { headings, links, achievements } = inspectMarkdown(parsed.content, file, (parsed.matter.match(/\n/g) ?? []).length);
       documents.push({ file: relativePath(root, file), locale, courseSlug: parts[1], slug, url, data, body: parsed.content, headings, links, achievements, sourceUrl: '' });
     }
     for (const page of meta.pages) {

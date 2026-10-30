@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Fumadocs MDX, next-intl, isolated content-mode paths, and reviewed URL migrations.
- * [OUTPUT]: Validated Next.js configuration and security headers.
- * [POS]: Application build boundary; content policy lives in src/lib/content.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { createMDX } from 'fumadocs-mdx/next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import redirects from './config/redirects.json' with { type: 'json' };
@@ -26,7 +20,9 @@ const aliases = {
 export default withMDX(withIntl({
   agentRules: false,
   turbopack: { root: process.cwd(), resolveAlias: aliases },
-  webpack(config) {
+  webpack(config, { dev }) {
+    // Dynamic imports in MDX and i18n dependencies cannot be traced by the filesystem cache.
+    if (dev) config.cache = { type: 'memory' };
     config.resolve.alias = { ...config.resolve.alias, ...Object.fromEntries(Object.entries(aliases).map(([key, path]) => [key, resolve(path)])) };
     return config;
   },

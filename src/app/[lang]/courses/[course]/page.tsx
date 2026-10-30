@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Public course introduction, module groups, exploded-chip figure, and Phosphor action arrow.
- * [OUTPUT]: Container-aligned course hero with a Geist Pixel title, shared raised action and no summary statistics, an exploded chip with callouts, and a syllabus without manual lesson metadata or a localized updating state.
- * [POS]: Course overview inside the shared learning shell; the introduction never counts as a lesson.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import Link from 'next/link';
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import { notFound } from 'next/navigation';

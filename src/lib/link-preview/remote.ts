@@ -1,9 +1,3 @@
-/**
- * [INPUT]: An allowlisted HTTPS page URL, the public-address policy, and Node HTTPS primitives.
- * [OUTPUT]: Bounded, text-only page metadata from public destinations.
- * [POS]: Network boundary for external link previews; each redirect is checked and DNS is pinned to prevent rebinding.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import 'server-only';
 import { request } from 'node:https';
 import { publicAddress } from './address';

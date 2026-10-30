@@ -1,9 +1,3 @@
-/**
- * [INPUT]: The production server, authored catalog, localized messages, and all five language routes, canonical locale paths.
- * [OUTPUT]: Homepage Geist and locale-specific Noto font loading, hero alignment, action and course-card surfaces with hero-only chip callouts, LLM 101 identity/publication, minimal-metadata rendering/search, locale negotiation with English fallback, and accessibility evidence.
- * [POS]: Public-site browser matrix, valid with an empty or partial course library.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import type { Locale } from '../../src/lib/i18n/config';
 import { localePath } from '../../src/lib/i18n/routing';
 import { test, expect } from '@playwright/test';
@@ -23,7 +17,7 @@ for (const locale of locales) {
         await expect(page.locator('body')).toHaveCSS('font-family', /^["']?Geist["']?(?:,|\s)/);
         const loadedFonts = await page.evaluate(() => Array.from(document.fonts)
           .filter((font) => font.status === 'loaded').map((font) => font.family.replaceAll('"', '')));
-        const cjkFamily = locale === 'zh' ? 'Noto Sans SC' : locale === 'ja' ? 'Noto Sans JP' : undefined;
+        const cjkFamily = locale === 'zh' ? 'Noto Sans SC Variable' : locale === 'ja' ? 'Noto Sans JP Variable' : undefined;
         if (cjkFamily) {
           await expect(page.locator('body')).toHaveCSS('font-family', new RegExp(cjkFamily));
           expect(loadedFonts).toContain(cjkFamily);
@@ -317,7 +311,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       await expect(intro).toHaveCSS('font-family', /^["']?Geist["']?(?:,|\s)/);
       const loadedFonts = await page.evaluate(() => Array.from(document.fonts)
         .filter((font) => font.status === 'loaded').map((font) => font.family.replaceAll('"', '')));
-      expect(loadedFonts).toContain('Geist');
+      expect(loadedFonts).toContain('Geist Variable');
       expect(loadedFonts).toContain('Geist Pixel');
       await expect(intro).toHaveCount(1);
       await expect(intro).toHaveText(messages.Home.intro);

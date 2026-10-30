@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Tailwind's rem-based type scale and the site's reading and display roles.
- * [OUTPUT]: Shared font-size, unitless leading, and tracking utilities for every route.
- * [POS]: Typography contract imported by tokens.css for public pages and design previews.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 @theme {
   --text-caption: 0.8125rem;
   --text-caption--line-height: 1.5;

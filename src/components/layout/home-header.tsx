@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Locale and the public catalog version, canonical locale paths.
- * [OUTPUT]: Single-row zinc header with the logo on the left and About immediately before the globe menu on the right.
- * [POS]: Shared by every locale page through the site frame, and by the root 404 bar.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { localePath } from '@/lib/i18n/routing';
 import type { ReactNode } from 'react';
 import Link from 'next/link';

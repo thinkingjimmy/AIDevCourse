@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Saved language preference, weighted browser languages, and the English fallback policy.
- * [OUTPUT]: Locale whitelist, display names, HTML tags, and cookie-first browser negotiation with English fallback.
- * [POS]: Single language configuration shared by routing, content, and UI.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 export const locales = ['en', 'zh', 'ja', 'fr', 'es'] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = 'en';

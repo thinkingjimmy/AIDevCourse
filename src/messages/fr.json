@@ -21,13 +21,10 @@
     "noJs": "La lecture et les liens de langue fonctionnent sans JavaScript. La recherche, la copie et la progression nécessitent JavaScript.",
     "notFoundTitle": "Page introuvable",
     "notFoundBody": "L’adresse est peut-être incorrecte, ou cette leçon n’est pas encore publiée dans cette langue.",
-    "errorEyebrow": "Erreur",
-    "errorTitle": "Le chargement de la page a échoué",
-    "error": "Votre progression enregistrée reste dans ce navigateur.",
     "backHome": "Retour à l’accueil",
-    "retry": "Réessayer",
     "copyAnchor": "Copier le lien du titre",
     "copyAnchorFailed": "Le lien n’a pas pu être copié. Utilisez le lien du titre.",
+    "keyTakeaway": "À retenir",
     "linkPreview": "Aperçu de la page",
     "linkPreviewLoading": "Chargement de l’aperçu…",
     "linkPreviewUnavailable": "Aperçu indisponible. Ouvrez le lien pour voir cette page.",
@@ -81,7 +78,13 @@
     "updating": "Contenu en cours de mise à jour",
     "updatingBody": "De nouvelles leçons sont en préparation. Elles apparaîtront ici une fois publiées.",
     "achievementCount": "{count, plural, one {# accomplissement débloqué} other {# accomplissements débloqués}}",
-    "achievementsTitle": "Mes accomplissements"
+    "achievementsTitle": "Mes accomplissements",
+    "achievementsCompletion": "Progression {percent}",
+    "achievementsCollectionCount": "/ {total} médailles débloquées",
+    "achievementEarned": "Débloquée",
+    "achievementLocked": "Verrouillée",
+    "achievementVisit": "Voir la leçon : {title}",
+    "achievementsEmpty": "Aucune médaille n’est disponible pour le moment."
   },
   "Search": {
     "open": "Rechercher une leçon",
@@ -113,5 +116,26 @@
     "correct": "Bonne réponse",
     "incorrect": "Réponse incorrecte",
     "retry": "Réessayer"
+  },
+  "Author": {
+    "website": "Site personnel",
+    "label": "Auteur et liens pour le suivre",
+    "role": "Auteur du cours",
+    "intro": "Rendre les notions complexes d’IA plus simples.",
+    "invitation": "Ce cours vous plaît ? Suivez mes publications.",
+    "starProject": "Star GitHub",
+    "starProjectLabel": "Ajouter une étoile au projet sur GitHub",
+    "follow": "Suivre",
+    "followX": "Suivre sur X",
+    "followBilibili": "Suivre sur Bilibili",
+    "xiaohongshu": "Rednote",
+    "followXiaohongshu": "Suivre sur Rednote",
+    "xiaohongshuUnavailable": "Profil Rednote bientôt disponible",
+    "wechatTitle": "Retrouvez-moi sur WeChat",
+    "wechatPrompt": "Scannez pour suivre mon compte",
+    "wechatNote": "Apprenez à votre rythme.",
+    "wechatQrAlt": "Code QR du compte WeChat de Jimmy",
+    "qrPlaceholder": "QR à venir",
+    "qrPlaceholderLabel": "Emplacement du code QR WeChat, pas encore utilisable"
   }
 }

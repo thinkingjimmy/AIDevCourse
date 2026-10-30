@@ -1,9 +1,3 @@
-/**
- * [INPUT]: React state, native select, shared Button styles, and shadcn-style DropdownMenu parts.
- * [OUTPUT]: A borderless layout with equal-width columns, centered button-styled menu controls, fixed click labels, and accessible selection feedback.
- * [POS]: Chinese What a language model does comparison showing how component choices change interaction.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 'use client';
 
 import { useState } from 'react';
@@ -16,7 +10,8 @@ export function MenuComparisonDemo() {
   const [nativeChoice, setNativeChoice] = useState('');
   const [customChoice, setCustomChoice] = useState('');
 
-  return <figure aria-label="两种菜单对比" lang="zh-CN" className="not-prose my-8 grid grid-cols-2 p-5">
+  return <figure aria-label="两种菜单对比" lang="zh-CN" className="quote-frame not-prose relative my-8 grid grid-cols-2 px-5 pt-8 pb-5">
+    <figcaption className="absolute start-2.5 top-0 -translate-y-1/2 bg-background px-1.5 text-sm leading-copy font-medium text-foreground sm:start-3.5">试一试</figcaption>
     <div className="flex justify-center">
       <div className="relative w-24">
         <Button asChild variant="outline" size="action" className="block w-full cursor-pointer appearance-none text-base text-transparent hover:text-transparent">

@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Native input props and the shared Tailwind theme.
- * [OUTPUT]: Input with composable className and native form attributes.
- * [POS]: Shared shadcn input primitive used by search.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import * as React from "react"
 import { cn } from "@/lib/utils"
 

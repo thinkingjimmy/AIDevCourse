@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Public translation map, current URL, Phosphor icons, shared Button and dropdown submenu primitives, and the site border token, canonical locale paths.
- * [OUTPUT]: Native globe menu and Radix language submenu sharing canonical links, valid hashes, fallback explanations, and preference saving.
- * [POS]: Progressive-enhancement language control shared by desktop and mobile.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 'use client';
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';

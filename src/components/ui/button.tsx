@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Native button props, Radix Slot composition, and class-variance-authority variants.
- * [OUTPUT]: Button and buttonVariants for site actions, square raised hero actions, shadcn primitives, and compact icon controls with a 44px hit area.
- * [POS]: Single action component; product variants preserve the existing site's geometry.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"

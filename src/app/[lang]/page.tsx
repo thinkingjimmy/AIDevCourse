@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Active locale, published course manifests, shared CourseCard, and the Phosphor action arrow, canonical locale paths.
- * [OUTPUT]: Homepage with a rail-aligned Geist Pixel hero title, menu-styled learning action, exploded Mac, and a foundations catalog without a subtitle.
- * [POS]: Public entry surface; the learning action prioritizes LLM 101's first published lesson.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { localePath } from '@/lib/i18n/routing';
 import Link from 'next/link';
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';

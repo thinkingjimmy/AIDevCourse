@@ -1,9 +1,3 @@
-/**
- * [INPUT]: Supported locale configuration and public or internal pathnames.
- * [OUTPUT]: Canonical public paths, URL locale parsing, prefix removal, and homepage-only negotiation.
- * [POS]: Shared URL policy for the catalog, proxy, navigation, metadata, and validation.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { defaultLocale, isLocale, type Locale } from './config';
 
 export function localePath(locale: Locale, path = '/') {

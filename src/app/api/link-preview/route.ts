@@ -1,9 +1,3 @@
-/**
- * [INPUT]: A bounded href query and the published-catalog preview service.
- * [OUTPUT]: Cached preview JSON, 204 for unavailable metadata, 404 for unsupported links, and 502 for unexpected service failures.
- * [POS]: Same-origin endpoint used only after an MDX link preview opens.
- * [PROTOCOL]: Update this header when making changes, then check README.md.
- */
 import { getLinkPreview } from '@/lib/link-preview/service';
 
 export const runtime = 'nodejs';
