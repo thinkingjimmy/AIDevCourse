@@ -10,6 +10,104 @@ const lessonPath = (locale = 'zh', slug = 'first-change') => localePath(locale a
 const languages = ['zh', 'en', 'ja', 'fr', 'es'] as const;
 const viewports = [{ name: 'desktop', width: 1440, height: 960 }, { name: 'mobile', width: 390, height: 844 }];
 const dictionary = (locale: string) => JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
+
+test.describe('Homepage primary action', () => {
+  async function captureAction(page: Page, name: string) {
+    const path = test.info().outputPath(`${name}.png`);
+    await page.screenshot({ path, animations: 'disabled' });
+    await test.info().attach(name, { path, contentType: 'image/png' });
+  }
+
+  test('homepage primary action moves only the arrow on hover and keeps a stable hit area', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 960 });
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/zh');
+    await page.evaluate(() => document.fonts.ready);
+    const action = page.locator('[data-slot="home-primary-action"]');
+    const face = action.locator('[data-slot="home-primary-face"]');
+    const arrow = action.locator('[data-slot="home-primary-arrow"]');
+    const destination = (await action.getAttribute('href'))!;
+    await expect(action).toHaveAccessibleName(dictionary('zh').Home.start);
+    await expect(face).toHaveCSS('background-color', 'rgb(9, 9, 11)');
+    await expect(face).toHaveCSS('color', 'rgb(255, 255, 255)');
+    await expect(face).toHaveCSS('border-radius', '3px');
+    const hitArea = (await action.boundingBox())!;
+    const restingFace = (await face.boundingBox())!;
+    const restingArrow = (await arrow.boundingBox())!;
+    expect(hitArea.height).toBeGreaterThanOrEqual(44);
+    await action.focus();
+    await expect(action).toBeFocused();
+    await expect(action).toHaveCSS('outline-style', 'solid');
+    await expect(face).toHaveCSS('translate', 'none');
+    await captureAction(page, 'home-action-focus');
+    await action.blur();
+    await action.hover();
+    await expect.poll(async () => (await arrow.boundingBox())!.x - restingArrow.x).toBeCloseTo(4, 1);
+    expect(await face.boundingBox()).toEqual(restingFace);
+    expect(await action.boundingBox()).toEqual(hitArea);
+    await captureAction(page, 'home-action-hover');
+    await page.mouse.down();
+    try {
+      await expect.poll(() => face.evaluate(element => parseFloat(getComputedStyle(element).scale))).toBeCloseTo(0.96, 2);
+      expect(await action.boundingBox()).toEqual(hitArea);
+      await captureAction(page, 'home-action-pressed');
+    } finally {
+      await page.mouse.move(0, 0);
+      await page.mouse.up();
+    }
+    await expect.poll(async () => (await face.boundingBox())!.y).toBeCloseTo(restingFace.y, 1);
+    await captureAction(page, 'home-action-resting');
+    await test.info().attach('Stable action geometry', { body: JSON.stringify({ hitArea, restingFace, restingArrow }, null, 2), contentType: 'application/json' });
+    await action.focus();
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(new URL(destination, page.url()).href);
+  });
+
+  test('homepage primary action respects touch and reduced motion', async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ baseURL, viewport: { width: 390, height: 844 }, hasTouch: true });
+    try {
+      const page = await context.newPage();
+      await page.goto('/zh');
+      const action = page.locator('[data-slot="home-primary-action"]');
+      const face = action.locator('[data-slot="home-primary-face"]');
+      const arrow = action.locator('[data-slot="home-primary-arrow"]');
+      expect(await page.evaluate(() => matchMedia('(hover: hover) and (pointer: fine)').matches)).toBe(false);
+      await action.hover();
+      await expect(face).toHaveCSS('translate', 'none');
+      await expect(arrow).toHaveCSS('translate', 'none');
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.mouse.down();
+      try {
+        await expect(face).toHaveCSS('scale', 'none');
+        await expect(face).toHaveCSS('translate', 'none');
+        await expect(arrow).toHaveCSS('translate', 'none');
+        expect(parseFloat(await face.evaluate(element => getComputedStyle(element).transitionDuration))).toBeLessThanOrEqual(0.00001);
+      } finally {
+        await page.mouse.move(0, 0);
+        await page.mouse.up();
+      }
+      await page.evaluate(() => { document.documentElement.style.fontSize = '20px'; });
+      expect((await action.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await captureAction(page, 'home-action-touch-enlarged');
+    } finally { await context.close(); }
+  });
+
+  test('homepage primary action keeps native navigation without JavaScript', async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
+    try {
+      const page = await context.newPage();
+      await page.goto('/zh');
+      const action = page.getByRole('link', { name: dictionary('zh').Home.start, exact: true });
+      const destination = (await action.getAttribute('href'))!;
+      await expect(action).toBeVisible();
+      await captureAction(page, 'home-action-no-js');
+      await action.click();
+      await expect(page).toHaveURL(new URL(destination, page.url()).href);
+    } finally { await context.close(); }
+  });
+});
+
 test.setTimeout(90000);
 test.beforeEach(({ browserName }, testInfo) => {
   test.skip(fixture && testInfo.title.startsWith('appearance:'), 'Local references cover public pages.');
@@ -332,7 +430,7 @@ for (const viewport of [...viewports, { name: 'narrow', width: 320, height: 844 
           await expect(prose).toHaveCSS('font-size', '16px');
           await expect.poll(() => prose.evaluate((element) => parseFloat(getComputedStyle(element).lineHeight))).toBeCloseTo(['zh', 'ja'].includes(locale) ? 31.2 : 29.6, 2);
           if (locale === 'zh') {
-            await expect(prose.locator('h2').first()).toHaveCSS('font-size', '20px');
+            await expect(prose.locator('h2').first()).toHaveCSS('font-size', '30px');
             await expect(prose.locator('h2').first()).toHaveCSS('font-weight', '600');
           }
         }
@@ -372,6 +470,60 @@ for (const viewport of [...viewports, { name: 'narrow', width: 320, height: 844 
   });
 }
 
+for (const viewport of [...viewports, { name: 'narrow', width: 320, height: 844 }]) {
+  test(`shadcn heading hierarchy remains readable on ${viewport.name}`, async ({ page }) => {
+    test.skip(fixture, 'Uses the published model selection lesson.');
+    await page.setViewportSize(viewport);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto(lessonPath('zh', 'how-to-choose-a-language-model'));
+    await settle(page);
+    const prose = page.locator('.course-prose');
+    const h2 = prose.getByRole('heading', { level: 2, name: /Q3：如何评判哪个模型更强/ });
+    const h3 = prose.getByRole('heading', { level: 3, name: '先通过公开评测缩小范围' });
+    await expect(h2).toHaveCSS('font-size', '30px');
+    await expect(h3).toHaveCSS('font-size', '24px');
+    await expect(h2).toHaveCSS('font-weight', '600');
+    await expect(h3).toHaveCSS('font-weight', '600');
+    await expect(h2).toHaveCSS('border-bottom-width', '1px');
+    await expect(h3).toHaveCSS('border-bottom-width', '0px');
+    await expect(prose).toHaveCSS('font-size', '16px');
+    const evidence = [];
+    for (const enlarged of [false, true]) {
+      if (enlarged) await page.evaluate(() => { document.documentElement.style.fontSize = '20px'; });
+      await expect(h2).toHaveCSS('font-size', enlarged ? '37.5px' : '30px');
+      await expect(h3).toHaveCSS('font-size', enlarged ? '30px' : '24px');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      for (const heading of [h2, h3]) {
+        const geometry = await heading.evaluate(element => {
+          const style = getComputedStyle(element);
+          const bounds = element.getBoundingClientRect();
+          return {
+            title: element.querySelector('a')?.textContent,
+            size: style.fontSize,
+            leading: style.lineHeight,
+            margin: style.marginTop,
+            fits: [...element.children].every(child => {
+              const box = child.getBoundingClientRect();
+              return box.left >= bounds.left - 1 && box.right <= bounds.right + 1
+                && (child.tagName !== 'A' || child.scrollWidth <= child.clientWidth + 1);
+            }),
+          };
+        });
+        expect(geometry.fits).toBe(true);
+        evidence.push({ enlarged, ...geometry });
+      }
+      await h2.evaluate(element => element.scrollIntoView({ block: 'start' }));
+      const path = test.info().outputPath(`shadcn-hierarchy-${viewport.name}${enlarged ? '-enlarged' : ''}.png`);
+      await page.screenshot({ path, animations: 'disabled' });
+      await test.info().attach('Heading hierarchy', { path, contentType: 'image/png' });
+    }
+    await h3.locator('a').click();
+    await expect(h3).toBeInViewport();
+    expect(decodeURIComponent(new URL(page.url()).hash)).toBe(`#${await h3.getAttribute('id')}`);
+    await test.info().attach('Heading metrics', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
+  });
+}
+
 test('Tailwind reading hides unavailable controls without JavaScript', async ({ browser, baseURL }) => {
   test.skip(fixture, 'Uses the published reading surface.');
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
@@ -393,19 +545,32 @@ async function lessonReadingGeometry(page: Page) {
   return page.locator('[data-slot="lesson-region"]').evaluate((element) => {
     const region = element.getBoundingClientRect();
     const style = getComputedStyle(element);
+    const paddingLeft = parseFloat(style.paddingLeft);
+    const paddingRight = parseFloat(style.paddingRight);
     const group = element.querySelector('[data-slot="lesson-reading-group"]')!.getBoundingClientRect();
     const article = element.querySelector('article')!.getBoundingClientRect();
     const toc = element.querySelector('[data-slot="lesson-toc"]');
+    const tocBox = toc?.getBoundingClientRect();
+    const rail = element.querySelector('[data-slot="lesson-rail"]');
+    const railBox = rail?.getBoundingClientRect();
     const sidebar = document.querySelector('[data-slot="sidebar-container"]');
     const sidebarBox = sidebar?.getBoundingClientRect();
     return {
       fontSize: parseFloat(getComputedStyle(document.documentElement).fontSize),
-      region: { left: region.left, width: region.width, contentWidth: region.width - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight) },
+      viewportWidth: innerWidth,
+      region: { left: region.left, width: region.width, contentWidth: region.width - paddingLeft - paddingRight },
       group: { left: group.left, width: group.width },
       articleWidth: article.width,
-      centerError: Math.abs((group.left + group.right - region.left - region.right) / 2),
+      articleLeft: article.left,
+      articleRight: article.right,
+      centerError: Math.abs((group.left + group.right - region.left - paddingLeft - region.right + paddingRight) / 2),
       tocCount: toc ? 1 : 0,
       tocVisible: !!toc?.getClientRects().length,
+      tocRight: tocBox?.right ?? 0,
+      tocLeft: tocBox?.left ?? 0,
+      railVisible: !!rail?.getClientRects().length,
+      railLeft: railBox?.left ?? 0,
+      railWidth: railBox?.width ?? 0,
       sidebar: { visible: !!sidebar?.getClientRects().length, left: sidebarBox?.left ?? 0, width: sidebarBox?.width ?? 0 },
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
     };
@@ -417,8 +582,17 @@ async function verifyLessonReading(page: Page) {
   expect(geometry.centerError).toBeLessThan(1);
   expect(geometry.articleWidth).toBeLessThanOrEqual(42.5 * geometry.fontSize + 1);
   expect(geometry.overflow).toBe(false);
-  expect(geometry.tocVisible).toBe(geometry.tocCount > 0 && geometry.region.contentWidth >= 64 * geometry.fontSize - 0.1);
-  expect(geometry.group.width).toBeCloseTo(Math.min(geometry.region.contentWidth, (geometry.tocVisible ? 65.5 : 42.5) * geometry.fontSize), 0);
+  expect(geometry.tocVisible).toBe(geometry.tocCount > 0 && geometry.viewportWidth >= 961);
+  const maximum = 42.5 + (geometry.railVisible ? 23 : 0);
+  expect(geometry.group.width).toBeCloseTo(Math.min(geometry.region.contentWidth, maximum * geometry.fontSize), 0);
+  if (geometry.tocVisible) {
+    expect(geometry.tocRight).toBeLessThanOrEqual(geometry.articleLeft);
+    expect(geometry.tocLeft - geometry.sidebar.left - geometry.sidebar.width).toBeCloseTo(0.5 * geometry.fontSize, 0);
+  }
+  if (geometry.railVisible) {
+    expect(geometry.railWidth).toBeCloseTo(21 * geometry.fontSize, 0);
+    expect(geometry.railLeft - geometry.articleRight).toBeCloseTo(2 * geometry.fontSize, 0);
+  }
   return geometry;
 }
 
@@ -451,8 +625,10 @@ for (const width of [961, 1024, 1100, 1280, 1440, 1920, 2560]) {
     expect(collapsed.sidebar).toEqual({ visible: true, left: 0, width: 48 });
     expect(collapsed.region.left).toBe(48);
     if (width === 1280) {
-      expect(expanded.tocVisible).toBe(false);
+      expect(expanded.tocVisible).toBe(true);
       expect(collapsed.tocVisible).toBe(true);
+      expect(expanded.railVisible).toBe(false);
+      expect(collapsed.railVisible).toBe(true);
     }
     await attachReadingEvidence(page, `reading-${width}-collapsed`, collapsed);
     await page.keyboard.press('Control+b');
@@ -476,11 +652,11 @@ for (const width of [320, 390, 768, 960]) {
     const box = (await sheet.boundingBox())!;
     expect(box.x).toBeGreaterThanOrEqual(0);
     expect(box.x + box.width).toBeLessThanOrEqual(width);
-    const more = sheet.getByRole('button', { name: dictionary('zh').Ui.more, exact: true });
-    await more.click();
-    await expect(page.getByRole('menuitem', { name: dictionary('zh').Ui.about, exact: true })).toBeVisible();
+    const languageTrigger = sheet.getByRole('button', { name: dictionary('zh').Language.label, exact: true });
+    await languageTrigger.click();
+    await expect(page.locator('.language-options a[hreflang="en"]')).toBeVisible();
     await page.keyboard.press('Escape');
-    await expect(more).toBeFocused();
+    await expect(languageTrigger).toBeFocused();
     await sheet.getByRole('button', { name: dictionary('zh').Ui.close, exact: true }).click();
     await expect(sheet).not.toBeVisible();
     await expect(menu).toBeFocused();

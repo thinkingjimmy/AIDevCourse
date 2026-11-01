@@ -36,7 +36,7 @@ export default withMDX(withIntl({
       { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
       { key: 'X-Frame-Options', value: 'DENY' },
       { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
-      { key: 'Content-Security-Policy', value: "object-src 'none'; frame-src 'none'; base-uri 'self'; frame-ancestors 'none'" },
+      { key: 'Content-Security-Policy', value: "object-src 'none'; frame-src https://www.youtube-nocookie.com https://platform.twitter.com https://syndication.twitter.com https://platform.x.com https://syndication.x.com; base-uri 'self'; frame-ancestors 'none'" },
       ...(process.env.VERCEL_ENV !== 'production' ? [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }] : []),
     ] }];
   },

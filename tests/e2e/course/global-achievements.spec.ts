@@ -27,7 +27,7 @@ test('existing course records form one global inventory across courses and langu
   const dialog = page.getByRole('dialog', { name: '我的成就' });
   await expect(dialog.locator('[data-medal]')).toHaveCount(total);
   await expect(dialog.locator('[data-earned="true"]')).toHaveCount(2);
-  await expect(dialog.getByRole('progressbar')).toHaveAttribute('aria-valuenow', String(200 / total));
+  await expect.poll(async () => Number(await dialog.getByRole('progressbar').getAttribute('aria-valuenow'))).toBeCloseTo(200 / total, 8);
   const otherCourse = dialog.locator(`[data-medal-course="${second.id}"]`).first();
   await expect(otherCourse).toHaveAttribute('data-earned', 'true');
   await otherCourse.hover();
@@ -57,7 +57,7 @@ test('unlocks from another course update an open gallery across tabs and after c
   const exercise = definition(achievement.url, achievement.id);
   await other.locator(`[data-achievement="${achievement.id}"]`).getByRole('radio').nth(exercise.options.findIndex((option) => option.value === exercise.answer)).click();
   await expect(dialog.locator(`[data-medal-course="${second.id}"][data-medal="${achievement.id}"]`)).toHaveAttribute('data-earned', 'true');
-  await expect(dialog.getByRole('progressbar')).toHaveAttribute('aria-valuenow', String(100 / total));
+  await expect.poll(async () => Number(await dialog.getByRole('progressbar').getAttribute('aria-valuenow'))).toBeCloseTo(100 / total, 8);
   const saved = await other.evaluate((name) => localStorage.getItem(name), key(second.id, achievement.id));
   await other.reload();
   await expect(other.locator(`[data-achievement="${achievement.id}"]`)).toHaveAttribute('data-state', 'unlocked');

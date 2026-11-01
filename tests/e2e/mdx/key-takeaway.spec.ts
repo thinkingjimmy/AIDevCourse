@@ -31,11 +31,14 @@ for (const scenario of [
         const style = getComputedStyle(element);
         return { border: style.border, radius: style.borderRadius, shadow: style.boxShadow, background: style.backgroundColor, color: style.color };
       };
-      const reference = await page.getByRole('note', { name: 'Jimmy', exact: true }).first().evaluate(frameStyle);
+      const reference = { border: '1px solid rgb(9, 9, 11)', radius: '0px', background: 'rgb(255, 255, 255)', color: 'rgb(63, 63, 70)' };
       const evidence = [];
       for (const note of await notes.all()) {
-        expect(await note.evaluate(frameStyle)).toEqual(reference);
-        await expect(note.locator('[data-slot="alert-title"]')).toHaveText('划重点');
+        const frame = await note.evaluate(frameStyle);
+        expect(frame).toMatchObject(reference);
+        expect(frame.shadow).toContain('rgb(228, 228, 231) 4px 4px 0px 0px');
+        await expect(note.locator('[data-slot="alert-title"]')).toHaveText('💡 划重点');
+        await expect(note.locator('[data-slot="alert-title"] [aria-hidden="true"]')).toHaveText('💡 ');
         const layout = await note.evaluate((element) => {
           const frame = element.getBoundingClientRect();
           const label = element.querySelector('[data-slot="note-signature"]')!.getBoundingClientRect();

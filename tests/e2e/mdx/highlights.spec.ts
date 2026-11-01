@@ -35,7 +35,10 @@ for (const scenario of [
       await expect(preview.locator('code').filter({ hasText: '==inline literal==' })).toHaveText('==inline literal==');
       await expect(preview.locator('pre code')).toHaveText('==fenced literal==');
       await expect(preview.locator('code mark')).toHaveCount(0);
-      const noteMark = page.getByRole('note', { name: 'Jimmy', exact: true }).nth(1).locator('mark');
+      const noteButton = page.locator('[data-note-trigger-for="writing-context"]');
+      const floatingNote = scenario.javaScriptEnabled && await noteButton.isVisible();
+      if (floatingNote) await noteButton.click();
+      const noteMark = page.locator('#jimmy-note-writing-context mark');
       await expect(noteMark).toHaveText('正文没有展开的背景');
       const evidence = [];
       for (const mark of [...await marks.all(), noteMark]) {
@@ -54,6 +57,7 @@ for (const scenario of [
         expect(style.decoration).toBe('clone');
         evidence.push(style);
       }
+      if (floatingNote) await page.keyboard.press('Escape');
       expect(await marks.nth(3).evaluate((element) => element.getClientRects().length)).toBeGreaterThan(1);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       if (scenario.javaScriptEnabled) {

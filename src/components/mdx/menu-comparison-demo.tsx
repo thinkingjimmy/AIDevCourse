@@ -11,7 +11,7 @@ export function MenuComparisonDemo() {
   const [customChoice, setCustomChoice] = useState('');
 
   return <figure aria-label="两种菜单对比" lang="zh-CN" className="quote-frame not-prose relative my-8 grid grid-cols-2 px-5 pt-8 pb-5">
-    <figcaption className="absolute start-2.5 top-0 -translate-y-1/2 bg-background px-1.5 text-sm leading-copy font-medium text-foreground sm:start-3.5">试一试</figcaption>
+    <figcaption className="absolute start-2.5 top-0 -translate-y-1/2 bg-background px-1.5 text-sm leading-copy font-medium text-foreground sm:start-3.5"><span aria-hidden>🧪 </span>试一试</figcaption>
     <div className="flex justify-center">
       <div className="relative w-24">
         <Button asChild variant="outline" size="action" className="block w-full cursor-pointer appearance-none text-base text-transparent hover:text-transparent">

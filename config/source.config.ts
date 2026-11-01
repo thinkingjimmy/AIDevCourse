@@ -8,6 +8,7 @@ import { locales } from '../src/lib/i18n/config';
 import { contentMode } from './content-mode.mjs';
 import { remarkMark } from 'remark-mark-highlight';
 import { remarkMath, remarkValidateMath, rehypeMath, mathOptions } from '../src/lib/content/math';
+import { remarkNumberJimmyNotes } from '../src/lib/content/note-numbers';
 const catalog = readCatalog();
 // Freeze the checked public boundary at build time; runtime routes need no filesystem access.
 mkdirSync(contentMode.generated, { recursive: true });
@@ -26,7 +27,7 @@ export const courses = defineDocs({
 });
 export default defineConfig({
   mdxOptions: {
-    remarkPlugins: [remarkMark, remarkMath, remarkValidateMath],
+    remarkPlugins: [remarkMark, remarkMath, remarkValidateMath, remarkNumberJimmyNotes],
     // Render math before Shiki can treat its generated code nodes as a programming language.
     rehypePlugins: (plugins) => [[rehypeMath, mathOptions], ...plugins],
     rehypeCodeOptions: {

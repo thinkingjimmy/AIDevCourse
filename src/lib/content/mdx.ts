@@ -9,7 +9,8 @@ import { toString } from 'mdast-util-to-string';
 import GithubSlugger from 'github-slugger';
 import type { Root } from 'mdast';
 import type { AchievementDefinition, ContentDocument } from './model';
-export const supportedComponents = ['Callout', 'JimmyNote', 'KeyTakeaway', 'Chat', 'ChatMessage', 'ChatMessageSequence', 'Steps', 'Step', 'LLMGenerationDemo', 'MenuComparisonDemo', 'TokenizationDiagram', 'TokenProbabilityDiagram', 'LLMPretrainingOverview', 'LLMSingleRoundTrainingDemo', 'LLMMultiRoundTrainingDemo', 'Achievement', 'AchievementOption'] as const;
+import { parseXUrl, parseYouTubeUrl } from '../embeds/urls';
+export const supportedComponents = ['Callout', 'JimmyNote', 'JimmyNoteAnchor', 'KeyTakeaway', 'Chat', 'ChatMessage', 'ChatThinking', 'ChatMessageSequence', 'XEmbed', 'YouTube', 'Steps', 'Step', 'LLMGenerationDemo', 'MenuComparisonDemo', 'TokenizationDiagram', 'TokenProbabilityDiagram', 'LLMPretrainingOverview', 'LLMSingleRoundTrainingDemo', 'LLMMultiRoundTrainingDemo', 'Achievement', 'AchievementOption'] as const;
 type Element = {
   name: string; attributes: { type: string; name: string; value: unknown }[];
   children: { type: string; value?: string; name?: string; children?: Element['children'] }[];
@@ -23,11 +24,13 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
   const headings: ContentDocument['headings'] = [];
   const links: ContentDocument['links'] = [];
   const achievements: AchievementDefinition[] = [];
+  const noteAnchors = new Set<string>();
+  const notes = new Set<string>();
   const options = new Set<unknown>();
   const definitions = new Map<string, string>();
   visit(tree, 'definition', (node) => { definitions.set(node.identifier, node.url); });
   const fail = (message: string) => { throw new Error(`${file}: ${message}`); };
-  visit(tree, (node) => {
+  visit(tree, (node, _index, parent) => {
     if (node.type === 'heading') {
       if (node.depth === 1) fail('Use level-two headings; the lesson title is the only h1');
       const title = toString(node);
@@ -56,7 +59,7 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
         if (node.type !== 'mdxJsxFlowElement') fail(`${element.name} must be a standalone block`);
         if (element.children.some((child) => child.type !== 'text' || child.value?.trim())) fail(`${element.name} does not accept children`);
       }
-      if (['Chat', 'KeyTakeaway'].includes(element.name) && element.attributes.length) fail(`${element.name} does not accept attributes`);
+      if (['Chat', 'ChatThinking', 'KeyTakeaway'].includes(element.name) && element.attributes.length) fail(`${element.name} does not accept attributes`);
       if (element.name === 'KeyTakeaway') {
         if (node.type === 'mdxJsxTextElement') fail('KeyTakeaway must be a standalone block');
         if (!toString(node).trim()) fail('KeyTakeaway requires text to remember');
@@ -67,8 +70,19 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
         const state = element.attributes.find((attribute) => attribute.name === 'state');
         if (state && !['complete', 'thinking'].includes(state.value as string)) fail('ChatMessage state must be "complete" or "thinking"');
         if (state?.value === 'thinking' && sender?.value !== 'assistant') fail('Only assistant messages support state="thinking"');
+        if (state?.value === 'thinking' && element.children.some((child) => child.type !== 'text' || child.value?.trim())) fail('Thinking state does not accept content; use ChatThinking inside a completed assistant message');
+        if (element.children.filter((child) => child.name === 'ChatThinking').length > 1) fail('ChatMessage accepts at most one ChatThinking');
       }
-      const allowed: readonly string[] = element.name === 'Achievement' ? achievementFields : element.name === 'AchievementOption' ? ['value'] : element.name === 'ChatMessage' ? ['from', 'state'] : ['title', 'type'];
+      if (element.name === 'ChatThinking') {
+        if (node.type !== 'mdxJsxFlowElement') fail('ChatThinking must be a standalone block');
+        const owner = parent as unknown as Element | undefined;
+        const sender = owner?.attributes?.find((attribute) => attribute.name === 'from');
+        const state = owner?.attributes?.find((attribute) => attribute.name === 'state');
+        if (owner?.name !== 'ChatMessage' || sender?.value !== 'assistant' || state?.value === 'thinking') fail('ChatThinking must be a direct child of a completed assistant ChatMessage');
+        if (!toString(node).trim()) fail('ChatThinking requires reasoning content');
+      }
+      const embed = element.name === 'XEmbed' || element.name === 'YouTube';
+      const allowed: readonly string[] = embed ? ['url', 'title'] : element.name === 'JimmyNoteAnchor' ? ['id', 'variant'] : element.name === 'JimmyNote' ? ['anchor'] : element.name === 'Achievement' ? achievementFields : element.name === 'AchievementOption' ? ['value'] : element.name === 'ChatMessage' ? ['from', 'state'] : ['title', 'type'];
       const attributes: Record<string, string> = {};
       for (const attribute of element.attributes) {
         if (attribute.type !== 'mdxJsxAttribute' || !allowed.includes(attribute.name) || typeof attribute.value !== 'string') {
@@ -76,6 +90,32 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
         }
         if (Object.hasOwn(attributes, attribute.name)) fail(`Duplicate attribute ${attribute.name} on ${element.name}`);
         attributes[attribute.name] = attribute.value as string;
+      }
+      if (embed) {
+        if (node.type !== 'mdxJsxFlowElement') fail(`${element.name} must be a standalone block`);
+        if (element.children.some((child) => child.type !== 'text' || child.value?.trim())) fail(`${element.name} does not accept children`);
+        if (attributes.title !== undefined && !attributes.title.trim()) fail(`${element.name} title must not be empty`);
+        const target = element.name === 'XEmbed' ? parseXUrl(attributes.url ?? '') : parseYouTubeUrl(attributes.url ?? '');
+        if (!target) fail(`${element.name} requires a valid HTTPS ${element.name === 'XEmbed' ? 'X post' : 'YouTube video'} URL`);
+        links.push({ url: target!.source, image: false, label: attributes.title || element.name });
+      }
+      if (element.name === 'JimmyNote' || element.name === 'JimmyNoteAnchor') {
+        const isAnchor = element.name === 'JimmyNoteAnchor';
+        const image = isAnchor && attributes.variant === 'image';
+        if (isAnchor && attributes.variant && !['text', 'image'].includes(attributes.variant)) fail('JimmyNoteAnchor variant must be text or image');
+        if (image) {
+          if (node.type !== 'mdxJsxFlowElement') fail('Image JimmyNoteAnchor must be a standalone block');
+          const children = element.children.flatMap((child) => child.type === 'paragraph' ? child.children ?? [] : [child])
+            .filter((child) => child.type !== 'text' || child.value?.trim());
+          if (children.length !== 1 || !['image', 'imageReference'].includes(children[0].type)) fail('Image JimmyNoteAnchor requires exactly one image');
+        } else if (isAnchor && node.type !== 'mdxJsxTextElement') fail('JimmyNoteAnchor must be inline');
+        if (!isAnchor && node.type !== 'mdxJsxFlowElement') fail('JimmyNote must be a standalone block');
+        if (!image && !toString(node).trim()) fail(`${element.name} requires text`);
+        const id = attributes[isAnchor ? 'id' : 'anchor'];
+        if (!stableId.test(id ?? '')) fail(`${element.name} requires a stable ASCII identifier`);
+        const ids = isAnchor ? noteAnchors : notes;
+        if (ids.has(id)) fail(`Duplicate ${element.name}: ${id}`);
+        ids.add(id);
       }
       if (element.name === 'AchievementOption') {
         if (!options.has(node)) fail('AchievementOption must be a direct child of Achievement');
@@ -107,6 +147,8 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
       }
     }
   });
+  for (const id of notes) if (!noteAnchors.has(id)) fail(`Missing JimmyNoteAnchor: ${id}`);
+  for (const id of noteAnchors) if (!notes.has(id)) fail(`Missing JimmyNote: ${id}`);
   // JSX inside code fences remains ordinary text and never enters this policy.
-  return { headings, links, achievements, plainText: toString(tree) };
+  return { headings, links, achievements, hasJimmyNotes: notes.size > 0, plainText: toString(tree) };
 }

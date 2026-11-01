@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
-import { setRequestLocale } from 'next-intl/server';
-import messages from '@/messages/zh.json';
+import { getMessages, setRequestLocale } from 'next-intl/server';
+import { isLocale } from '@/lib/i18n/config';
 import Examples from './examples.mdx';
 import Tables from './tables.mdx';
 import Chat from './chat.mdx';
@@ -9,21 +9,31 @@ import Highlights from './highlights.mdx';
 import MathExamples from './math/examples.mdx';
 import Links from './links.mdx';
 import Takeaways from './takeaways.mdx';
+import Embeds from './embeds/examples.mdx';
 import { getMDXComponents } from '@/components/mdx/components';
+import { NoteRail, NoteScope } from '@/components/mdx/notes/note-scope';
 import { DesignFooter, DesignHeader } from '../ui';
 
 export const metadata: Metadata = { title: { absolute: 'Writing components · AIDevCourse' } };
 
-export default function ComponentPreview() {
-  setRequestLocale('zh');
+export default async function ComponentPreview({ searchParams }: { searchParams: Promise<{ lang?: string }> }) {
+  const { lang } = await searchParams;
+  const locale = isLocale(lang) ? lang : 'zh';
+  setRequestLocale(locale);
+  const messages = await getMessages({ locale });
   return <>
     <DesignHeader />
-    <NextIntlClientProvider locale="zh" messages={{ Ui: messages.Ui }}>
+    <NextIntlClientProvider locale={locale} messages={{ Ui: messages.Ui, Author: messages.Author }}>
     <main id="main" className="mx-auto w-[min(760px,calc(100%-32px))] py-12">
       <h1 className="m-0 text-title leading-heading font-semibold tracking-tight">正文组件</h1>
-      <h2 className="m-0 mt-8 text-2xl font-semibold">Jimmy Note</h2>
-      <p className="mt-3 mb-8 text-base text-muted-foreground">用于正文里的个人观察和补充说明。</p>
-      <Examples components={getMDXComponents()} />
+      <section id="jimmy-notes" className="mx-[calc((100%-min(65.5rem,100vw-2rem))/2)] mt-8 w-[min(65.5rem,calc(100vw-2rem))] @container/lesson">
+        <h2 className="m-0 text-2xl font-semibold">Jimmy Note</h2>
+        <p className="mt-3 mb-8 text-base text-muted-foreground">浅橙色高亮关联作者批注；右下折线接入直角卡片，空间不足时点击数字上标阅读，编号按正文顺序自动生成。</p>
+        <NoteScope className="grid min-w-0 grid-cols-[minmax(0,1fr)] items-start gap-x-8 @[64rem]/lesson:grid-cols-[minmax(0,1fr)_21rem]">
+          <article className="course-prose prose"><Examples components={getMDXComponents()} /></article>
+          <NoteRail />
+        </NoteScope>
+      </section>
       <section id="key-takeaways" className="mt-10 border-t border-border pt-6">
         <h2 className="m-0 mb-3 text-2xl font-semibold">划重点</h2>
         <p className="m-0 text-base text-muted-foreground">把需要记住的结论放在这里。</p>
@@ -32,7 +42,7 @@ export default function ComponentPreview() {
       </section>
       <section id="authoring" className="mt-10 border-t border-border pt-6">
         <h2 className="m-0 mb-3 text-lg font-semibold">MDX 用法</h2>
-        <pre tabIndex={0} role="region" aria-label="MDX 示例" className="m-0 overflow-x-auto rounded-md bg-muted p-4 font-mono text-caption leading-body"><code>{'<JimmyNote>\nAdd a personal observation here.\n\nA second paragraph can include **emphasis** and [links](https://example.com).\n</JimmyNote>'}</code></pre>
+        <pre tabIndex={0} role="region" aria-label="MDX 示例" className="m-0 overflow-x-auto rounded-md bg-muted p-4 font-mono text-caption leading-body"><code>{'Read <JimmyNoteAnchor id="context">this text</JimmyNoteAnchor>.\n\n<JimmyNote anchor="context">\nAdd a personal observation here.\n\nA second paragraph can include **emphasis** and [links](https://example.com).\n</JimmyNote>'}</code></pre>
       </section>
       <section id="highlights" className="mt-10 border-t border-border pt-6">
         <h2 className="m-0 mb-3 text-2xl font-semibold">文字高亮</h2>
@@ -40,7 +50,7 @@ export default function ComponentPreview() {
       </section>
       <section id="math" className="mt-10 border-t border-border pt-6">
         <h2 className="m-0 mb-3 text-2xl font-semibold">数学公式</h2>
-        <div className="course-prose prose" lang="zh-CN"><MathExamples components={getMDXComponents()} /></div>
+        <NoteScope><div className="course-prose prose" lang="zh-CN"><MathExamples components={getMDXComponents()} /></div></NoteScope>
       </section>
       <section id="link-previews" className="mt-10 border-t border-border pt-6">
         <h2 className="m-0 mb-3 text-2xl font-semibold">链接预览</h2>
@@ -53,6 +63,10 @@ export default function ComponentPreview() {
       <section id="chat" className="mt-10 border-t border-border pt-6">
         <h2 className="m-0 mb-3 text-2xl font-semibold">Chat Message</h2>
         <Chat components={getMDXComponents()} />
+      </section>
+      <section id="embeds" className="mt-10 border-t border-border pt-6">
+        <h2 className="m-0 mb-3 text-2xl font-semibold">X · YouTube</h2>
+        <div className="course-prose prose"><Embeds components={getMDXComponents()} /></div>
       </section>
     </main>
     </NextIntlClientProvider>

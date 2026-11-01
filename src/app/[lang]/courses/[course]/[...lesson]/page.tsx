@@ -7,8 +7,8 @@ import { identity } from '@/lib/content/model';
 import { getMDXComponents } from '@/components/mdx/components';
 import { LessonVisit } from '@/components/progress/lesson-visit';
 import { LessonNavigation } from '@/components/course/lesson-navigation';
-import { AuthorCard } from '@/components/course/author-card';
 import { LessonToc } from '@/components/course/outline/lesson-toc';
+import { NoteRail, NoteScope } from '@/components/mdx/notes/note-scope';
 import { pageMetadata } from '@/lib/metadata';
 import { cn } from '@/lib/utils';
 type Props = { params: Promise<{ lang: string; course: string; lesson: string[] }> };
@@ -24,10 +24,12 @@ export default async function LessonPage({ params }: Props) {
   const t = await getTranslations({ locale: lang, namespace: 'Course' });
   const Body = article.data.body;
   const toc = (article.data.toc ?? []).filter((item) => item.depth === 2);
-  return <div data-slot="lesson-reading-group" className={cn(
-    'mx-auto grid w-full max-w-[42.5rem] min-w-0 grid-cols-[minmax(0,1fr)] items-start gap-x-8',
-    toc.length > 0 && '@[64rem]/lesson:max-w-[65.5rem] @[64rem]/lesson:grid-cols-[minmax(0,1fr)_21rem]',
+  const hasToc = toc.length > 0;
+  return <NoteScope key={doc.url} data-slot="lesson-reading-group" className={cn(
+    'mx-auto grid w-full max-w-[42.5rem] min-w-0 grid-cols-[minmax(0,1fr)] items-start',
+    doc.hasJimmyNotes && '@[64rem]/lesson:max-w-[65.5rem] @[64rem]/lesson:grid-cols-[minmax(0,1fr)_23rem]',
   )}>
+    {hasToc && <LessonToc items={toc} label={t('onThisPage')} hasNotes={doc.hasJimmyNotes} />}
     <article id="main-content" className="block min-w-0 pt-9 pb-20 max-[961px]:pt-7 max-[961px]:pb-[72px]" tabIndex={-1}>
       <PageTitle variant="lesson">{doc.data.title}</PageTitle>
       {doc.data.description ? <p className="m-0 mb-5 max-w-none text-base leading-body text-muted-foreground">{doc.data.description}</p> : null}
@@ -35,9 +37,6 @@ export default async function LessonPage({ params }: Props) {
       <LessonVisit lessonId={doc.data.lessonId} />
       <LessonNavigation course={course} lessonId={doc.data.lessonId} />
     </article>
-    {toc.length > 0 && <aside data-slot="lesson-aside" className="sticky top-7 hidden max-h-[calc(100svh-3.5rem)] min-w-0 overflow-y-auto px-1 pt-9 pb-5 @[64rem]/lesson:block">
-      <LessonToc items={toc} label={t('onThisPage')} />
-      <AuthorCard locale={lang} className="mx-auto" />
-    </aside>}
-  </div>;
+    {doc.hasJimmyNotes && <NoteRail className="ml-8" />}
+  </NoteScope>;
 }

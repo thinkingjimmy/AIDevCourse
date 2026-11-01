@@ -2,9 +2,11 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { XCircleIcon } from '@phosphor-icons/react/dist/ssr/XCircle';
 import { ArrowCounterClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowCounterClockwise';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { MedalIcon } from '@phosphor-icons/react/dist/ssr/Medal';
 import { Button } from '@/components/ui/button';
+import { FramedNote } from '@/components/mdx/notes/framed-note';
 import { useLearning } from '@/components/progress/progress-provider';
+import { AchievementGallery } from '@/components/progress/achievement-gallery';
 import { useTranslations } from 'next-intl';
 import type { AchievementDefinition } from '@/lib/content/model';
 import { playAchievementConfetti } from './confetti';
@@ -64,24 +66,29 @@ export function Achievement({ definition }: { definition: AchievementDefinition 
     setAnnouncement('');
   };
 
-  return <Alert ref={card} id={`achievement-${id}`} variant="notice" role="region" aria-labelledby={titleId}
+  return <FramedNote ref={card} id={`achievement-${id}`} role="region" aria-labelledby={titleId}
+    label={showReward ? t('unlocked', { title }) : t('challenge')}
     data-achievement={id} data-state={showReward ? 'unlocked' : incorrect ? 'incorrect' : retrying ? 'retrying' : 'locked'}
-    className="quote-frame not-prose my-8 border-foreground p-5">
-    <AlertDescription className="gap-4">
-      {showReward ? <header className="flex items-start gap-3">
-        <h3 ref={heading} id={titleId} tabIndex={-1} className="m-0 min-w-0 flex-1 wrap-anywhere text-base leading-copy font-semibold">
-          <span aria-hidden>🥇 </span>{t('unlocked', { title })}
-        </h3>
-        <Button variant="ghost" size="icon-touch" className="-my-1 shrink-0 text-muted-foreground" aria-label={t('retry')} title={t('retry')} onClick={retry}>
-          <ArrowCounterClockwiseIcon size={20} aria-hidden />
-        </Button>
-      </header> : <p className="text-xs font-medium tracking-label text-muted-foreground"><span aria-hidden>🥇 </span><span>{t('challenge')}</span></p>}
+    signature={showReward ? <h3 ref={heading} id={titleId} tabIndex={-1} className="m-0 min-w-0 wrap-anywhere text-sm leading-copy font-medium text-foreground">
+      <span aria-hidden>🥇 </span>{t('unlocked', { title })}
+    </h3> : <span className="text-sm leading-copy font-medium text-foreground"><span aria-hidden>🥇 </span><span>{t('challenge')}</span></span>}>
+    <div className="flex min-w-0 flex-col gap-4">
       {showReward ? <>
         <p>{takeaway}</p>
+        <footer className="flex flex-wrap items-center gap-3">
+          <Button variant="action-outline" className="h-auto min-h-11 max-w-full touch-manipulation rounded-none px-4 whitespace-normal" onClick={retry}>
+            <ArrowCounterClockwiseIcon size={20} aria-hidden /><span>{t('retry')}</span>
+          </Button>
+          <AchievementGallery>
+            <Button variant="action-outline" className="h-auto min-h-11 max-w-full touch-manipulation rounded-none px-4 whitespace-normal">
+              <MedalIcon size={20} aria-hidden /><span>{t('viewAll')}</span>
+            </Button>
+          </AchievementGallery>
+        </footer>
       </> : <>
         <form onSubmit={(event) => event.preventDefault()}>
           <fieldset disabled={!ready} className="m-0 min-w-0 border-0 p-0">
-            <legend id={titleId} className="w-full p-0 text-ui leading-reading">{question}</legend>
+            <legend id={titleId} className="w-full p-0 text-base leading-reading">{question}</legend>
             <div className="mt-4 grid gap-3 [@media(scripting:none)]:hidden">
               {options.map((choice, index) => <label key={choice.value} className="flex min-h-12 cursor-pointer items-start gap-3 border border-border bg-background px-4 py-3 text-sm leading-copy text-foreground hover:bg-surface has-checked:border-foreground has-checked:bg-surface has-disabled:cursor-not-allowed">
                 <input ref={index === 0 ? firstOption : undefined} type="radio" name={titleId} value={choice.value} checked={selected === choice.value}
@@ -121,6 +128,6 @@ export function Achievement({ definition }: { definition: AchievementDefinition 
         </div>
       </div>
       {unlocked && learning.failed && <p role="status" className="text-sm text-muted-foreground">{t('saveFailed')}</p>}
-    </AlertDescription>
-  </Alert>;
+    </div>
+  </FramedNote>;
 }

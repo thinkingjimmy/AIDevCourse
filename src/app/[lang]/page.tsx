@@ -32,10 +32,13 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
           <PageTitle variant="hero" className="font-pixel font-normal">{t('title')}</PageTitle>
           <HeroLead>{t('intro')}</HeroLead>
           <PageActions>
-            <Button asChild variant="action-raised" size="action">
-              <Link href={courses.length ? first ?? '#catalog' : localePath(lang, '/about')}>
-                {courses.length ? first ? t('start') : t('browseCourses') : course('aboutSite')}
-                {courses.length > 0 && <ArrowRightIcon size={16} aria-hidden />}
+            <Button asChild variant="plain" size="reset" className="group/home-start relative min-h-11 rounded-(--radius) text-ui leading-none font-medium text-white">
+              <Link data-slot="home-primary-action" href={courses.length ? first ?? '#catalog' : localePath(lang, '/about')}>
+                <span data-slot="home-primary-face" className="relative inline-flex h-11 items-center justify-center gap-3 overflow-hidden rounded-(--radius) bg-foreground px-5 shadow-sm motion-safe:transition-transform motion-safe:duration-150 motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-[:active:hover]/home-start:scale-[0.96]">
+                  <span aria-hidden className="pointer-events-none absolute inset-0 bg-white/8 opacity-0 group-hover/home-start:opacity-100 motion-safe:transition-opacity motion-safe:duration-150 motion-safe:ease-out" />
+                  <span className="relative">{courses.length ? first ? t('start') : t('browseCourses') : course('aboutSite')}</span>
+                  {courses.length > 0 && <ArrowRightIcon data-slot="home-primary-arrow" size={16} aria-hidden className="relative motion-safe:transition-transform motion-safe:duration-150 motion-safe:ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-safe:group-hover/home-start:translate-x-1 motion-safe:group-[:active:hover]/home-start:translate-x-0" />}
+                </span>
               </Link>
             </Button>
           </PageActions>

@@ -56,7 +56,22 @@ $$
 
 普通 Markdown 页面链接自动支持预览，无需添加组件或 import。鼠标悬停 350ms 或键盘聚焦后显示标题、摘要、域名和可用的封面；鼠标移入卡片后保持显示，Escape 关闭。站内已发布课程和课时使用本地标题与简介；外部 HTTPS 链接按需读取页面元数据并缓存。未提供元数据或读取失败时显示域名与提示，链接仍可打开。触屏点击和无 JavaScript 时直接跳转。同页锚点、邮件和下载链接保留原行为。可在 [链接预览](http://localhost:3000/design/components#link-previews) 检查效果。
 
-标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`KeyTakeaway`、`Chat`、`ChatMessage`、`ChatMessageSequence`、`Steps`、`Step`、`LLMGenerationDemo`、`MenuComparisonDemo`、`TokenizationDiagram`、`TokenProbabilityDiagram`、`LLMPretrainingOverview`、`LLMSingleRoundTrainingDemo`、`LLMMultiRoundTrainingDemo`、`Achievement`、`AchievementOption`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
+使用独立的 `<XEmbed url="..." />` 嵌入单条公开 X 帖子，使用 `<YouTube url="..." />` 嵌入单个 YouTube 视频。两个组件均无需 import，只接受必填的静态 `url` 与可选的非空 `title` 字符串，不接受子内容，不能放在行内。可在 [嵌入预览](http://localhost:3000/design/components#embeds) 检查显示。普通链接继续显示链接预览，不会自动转换为播放器。
+
+```mdx
+<XEmbed url="https://x.com/API/status/133640144317198338" />
+
+<YouTube
+  url="https://youtu.be/M7lc1UVf-VE?t=1m30s"
+  title="YouTube player demonstration"
+/>
+```
+
+X 接受 `x.com` 和 `twitter.com` 的帖子链接，包括移动端域名与 `/i/status/`、`/i/web/status/` 格式。YouTube 接受 `youtube.com/watch?v=...`、`youtu.be/...`、`youtube.com/shorts/...` 和 `/embed/...`，也接受隐私增强域名的 `/embed/...`。链接必须使用 HTTPS，不得包含账号、密码或非标准端口；不支持个人主页、时间线和播放列表。起始时间优先读取 `start`，其次是 `t` 查询参数，最后是 `#t=`；支持整数秒与 `1h2m3s` 格式。其他分享参数不会传入播放器。
+
+X 使用官方组件，在接近视口时加载，全页共用一次脚本。脚本加载最多等待 10 秒，单条帖子整体最多等待 15 秒；失败时显示本地化提示。YouTube 使用隐私增强播放器，延迟加载，不自动播放，支持全屏与移动端内联播放；窄屏保留至少 200px 高度。X 仅在加载失败或无 JavaScript 时显示原站链接；加载成功后使用帖子自带的查看入口。YouTube 始终保留原站链接。嵌入会直接连接相应平台，受平台隐私政策及可用性影响；隐私增强模式不表示完全没有网络请求或跟踪。构建不请求平台接口，也不需要 API 密钥。
+
+标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`JimmyNoteAnchor`、`KeyTakeaway`、`Chat`、`ChatMessage`、`ChatThinking`、`ChatMessageSequence`、`XEmbed`、`YouTube`、`Steps`、`Step`、`LLMGenerationDemo`、`MenuComparisonDemo`、`TokenizationDiagram`、`TokenProbabilityDiagram`、`LLMPretrainingOverview`、`LLMSingleRoundTrainingDemo`、`LLMMultiRoundTrainingDemo`、`Achievement`、`AchievementOption`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
 
 ```mdx
 <Callout title="Check the result" type="info">
@@ -64,17 +79,34 @@ Read the diff and verify the actual behavior.
 </Callout>
 ```
 
-`JimmyNote` 用于个人观察或补充说明，采用「边框署名」设计：复用引用块的黑色直角边框、右下偏移阴影和页面同色底，圆形作者头像和「Jimmy」名称嵌在上边框中。备注整体与正文对齐，内容使用完整宽度。头像与名称由组件自动提供。正文支持多段文字、强调和链接，无需 import。可在 [组件预览](http://localhost:3000/design/components) 检查样式。
+`JimmyNote` 用于与原文关联的个人观察或补充说明。用行内 `JimmyNoteAnchor` 包住原有文字，再用独立的 `JimmyNote` 提供批注；两者通过相同的 `id` 和 `anchor` 配对。标识使用小写英文字母、数字和连字符，同一篇文章内必须唯一且一一对应；文字锚点和批注都必须有文字；图片锚点必须包含一张带有有效替代文本的 Markdown 图片。文字锚点显示浅橙色高亮，不加下划线。可用文章容器达到 64rem 时，批注显示在 21rem 右栏。高亮末行右下角的橙色圆点，经约 12px 短斜线后水平接入卡片左边缘的设定偏移位置。卡片使用直角、白底、同色边框及浅橙色偏移阴影；边框和连线共用 1.5px 线宽，并按浏览器实际边框像素对齐。卡片按原文顺序至少间隔 16px；密集批注的连线先从行间进入栏间空隙，再连接卡片，避免穿过文字。右侧批注与独立左侧目录互不占位，正文和右栏布局保持稳定。空间不足时，高亮末尾显示无底色的数字上标，点击打开浮层。编译时按正文锚点的出现顺序自动生成 1、2、3 等编号，图片锚点也参与排序；每篇文章从 1 开始，即使批注块写在锚点前面，编号仍按锚点顺序排列。数字只显示在批注入口；展开后的卡片和无 JavaScript 备注不在 Jimmy 署名旁重复显示编号，但为屏幕阅读器保留对应编号的说明。可见编号在各语言中统一使用数字，按钮和批注的无障碍说明由 UI 字典本地化。上标保留至少 44px 的点击区域，支持键盘打开、Escape 关闭和焦点返回。无需手写编号；`noteNumber` 是编译器内部属性，源文不接受该属性。头像、Jimmy 署名和「本文作者」说明自动提供，右侧依次显示 Star、小红书、X、哔哩哔哩和公众号二维码五个无边框图标。前四个链接复用站点作者配置；二维码支持悬停或点击查看，暂时复用作者弹窗中的占位内容。桌面图标保持紧凑并与作者信息同排居中；浮层中图标换行后与头像左边缘对齐。触屏点击区域至少为 44px。按 Escape 关闭二维码浮层后仍保留原批注，并返回二维码按钮；点击两层浮层外部时一并关闭。内容支持多段 Markdown、强调、高亮、公式和链接。禁用 JavaScript 时，批注完整显示在原位置。无需 import，可在 [组件预览](http://localhost:3000/design/components#jimmy-notes) 检查效果；通过 `?lang=en`、`?lang=ja`、`?lang=fr` 或 `?lang=es` 可切换交互控件的语言，示例正文保持原文。
 
 ```mdx
-<JimmyNote>
+Read <JimmyNoteAnchor id="context">this text</JimmyNoteAnchor>.
+
+<JimmyNote anchor="context">
 Add a personal observation here.
 
 Use **emphasis** and [links](https://example.com) when useful.
 </JimmyNote>
 ```
 
-`KeyTakeaway` 用于「划重点」，突出读者需要记住的结论。它与 `JimmyNote` 共用外框、阴影和正文排版，上边框嵌入固定标签，标签随界面语言切换。正文支持多段文字、强调、高亮、列表、行内代码和链接，无需 import 或 JavaScript。组件必须独立成块且包含文字，不接受参数；不要把它放进行内文字中。可在 [划重点预览](http://localhost:3000/design/components#key-takeaways) 检查效果。
+
+Use `variant="image"` on a standalone `JimmyNoteAnchor` to attach a note to an image. Keep exactly one Markdown image or image reference inside the anchor. The image retains its original alt text and appearance. Wide layouts connect the midpoint of its right edge to the note’s left border at the configured inset; narrow layouts show a numbered marker inset 12px from the image’s top and right edges, with a light backplate for contrast and a 44px minimum target. Without JavaScript, the note stays readable after the image.
+
+```mdx
+<JimmyNoteAnchor id="illustration-credit" variant="image">
+
+![A model predicts the next character.](/images/courses/what-a-language-model-does/next-character.webp)
+
+</JimmyNoteAnchor>
+
+<JimmyNote anchor="illustration-credit">
+Thanks to [ian-xiaohei-illustrations](https://github.com/helloianneo/ian-xiaohei-illustrations) for the illustration tools.
+</JimmyNote>
+```
+
+`KeyTakeaway` 用于「划重点」，突出读者需要记住的结论。它保留引用块的黑色直角外框、偏移阴影和完整正文宽度，上边框嵌入固定标签，标签随界面语言切换。正文支持多段文字、强调、高亮、列表、行内代码和链接，无需 import 或 JavaScript。组件必须独立成块且包含文字，不接受参数；不要把它放进行内文字中。可在 [划重点预览](http://localhost:3000/design/components#key-takeaways) 检查效果。
 
 ```mdx
 <KeyTakeaway>
@@ -98,7 +130,7 @@ An LLM generates text from the context you provide.
 </Chat>
 ```
 
-`ChatMessage` 的 `state` 配置决定显示状态。默认 `state="complete"` 显示正常回复气泡；`from="assistant" state="thinking"` 参考 [shadcn Reasoning](https://ui.shadcn.com/docs/ai-elements/radix/reasoning) 的状态行，显示 LLM 头像、旋转指示和 Thinking 文字，不带消息气泡，也无需填写正文。它只展示文章里的思考状态示意，不调用模型。系统开启减少动态效果时停止旋转；无 JavaScript 时仍可阅读。
+`ChatMessage` 的 `state` 配置决定显示状态。默认 `state="complete"` 显示正常回复气泡；`from="assistant" state="thinking"` 参考 [shadcn Reasoning](https://ui.shadcn.com/docs/ai-elements/radix/reasoning) 的状态行，显示 LLM 头像、旋转指示和 Thinking 文字，不带消息气泡，也不接受正文。它只展示文章里的思考状态示意，不调用模型。系统开启减少动态效果时停止旋转；无 JavaScript 时仍可阅读。
 
 ```mdx
 <Chat>
@@ -107,7 +139,20 @@ An LLM generates text from the context you provide.
 </Chat>
 ```
 
-`ChatMessage` 接受必填的静态 `from="user"` 或 `from="assistant"`，以及可选的 `state="complete"` 或 `state="thinking"`；thinking 只用于 assistant。`Chat` 不接受参数；`Achievement` 和 `AchievementOption` 的字段见下方「文章成就」。其他组件只允许静态 `title` / `type` 字符串。禁止 import、JavaScript 表达式、原始 HTML、iframe、脚本和未知组件；代码围栏里的示例不会执行。注册入口为 `src/components/mdx/components.tsx`，不要为了单篇文章绕过校验器。
+要展示已完成的思考内容，在 assistant 的完整回复内添加一个独立块 `<ChatThinking>`。标签内写思考正文，标签外写最终回答。思考区默认展开，点击 Thinking 或使用键盘可折叠；它与最终回答共用一个头像，不显示持续转圈。正文支持多段 Markdown、强调、链接和行末 `\` 换行。展开与折叠使用原生 HTML，无 JavaScript 时也可操作。下方展示的是作者配置的教学示例，不调用模型。
+
+```mdx
+<ChatMessage from="assistant">
+<ChatThinking>
+Break it down.\
+37 × 48 = 37 × (50 − 2) = 1776
+</ChatThinking>
+
+The answer is **1776**.
+</ChatMessage>
+```
+
+`ChatMessage` 接受必填的静态 `from="user"` 或 `from="assistant"`，以及可选的 `state="complete"` 或 `state="thinking"`；thinking 只用于 assistant。`ChatThinking` 不接受参数，只能直接放在 `state="complete"`（默认值）的 assistant 消息内，且每条消息最多一个，正文不能为空。`Chat` 不接受参数；`Achievement` 和 `AchievementOption` 的字段见下方「文章成就」；`XEmbed` 和 `YouTube` 仅接受上方说明的 `url` / `title`。其他组件只允许静态 `title` / `type` 字符串。禁止 import、JavaScript 表达式、原始 HTML、iframe、脚本和未知组件；代码围栏里的示例不会执行。注册入口为 `src/components/mdx/components.tsx`，不要为了单篇文章绕过校验器。
 
 本地图片放到 `public/images/`，正文使用有意义的本语言 alt。编译器从图片读取宽高。这里的素材任何人都能访问，不能存放密钥或未公开的敏感素材。
 
@@ -115,7 +160,7 @@ An LLM generates text from the context you provide.
 ![The steps from a goal to a verified change](/images/courses/change-cycle.svg)
 ```
 
-站内链接使用最终公开路径或当前文章 `#heading`。英文使用 `/courses/...`，其他语言保留前缀，如 `/zh/courses/...`；禁止在正文链接中使用 `/en` 别名。课时公开地址不含模块，例如 `/zh/courses/llm-101/strengths`；同一课程内课时 slug 必须唯一。跨语言链接文字必须包含目标语言自称，例如 `[English: What AI is good at](/courses/llm-101/strengths)`，且目标文件已经存在。不可链接不存在的课时或锚点。课程总览只渲染元数据和目录，支持 `#course-catalog`；课程介绍正文中的标题不会渲染，不能作为锚点。课程列表位于语言首页，`/{lang}/courses` 不存在。外部资料可用 HTTPS 链接，不做视频嵌入。
+站内链接使用最终公开路径或当前文章 `#heading`。英文使用 `/courses/...`，其他语言保留前缀，如 `/zh/courses/...`；禁止在正文链接中使用 `/en` 别名。课时公开地址不含模块，例如 `/zh/courses/llm-101/strengths`；同一课程内课时 slug 必须唯一。跨语言链接文字必须包含目标语言自称，例如 `[English: What AI is good at](/courses/llm-101/strengths)`，且目标文件已经存在。不可链接不存在的课时或锚点。课程总览只渲染元数据和目录，支持 `#course-catalog`；课程介绍正文中的标题不会渲染，不能作为锚点。课程列表位于语言首页，`/{lang}/courses` 不存在。外部资料可用 HTTPS 链接；X 帖子与 YouTube 视频可使用专用嵌入组件。
 
 文章 frontmatter 只填写 `courseId`、`lessonId`、`title` 和 `description`。标题不含手写课时序号；课程目录与 Sidebar 按模块和课时顺序自动生成 `01`、`02` 等模块编号，以及 `1.1`、`2.1` 等课时编号。调整 `meta.json` 顺序后，编号随目录更新，无需修改文章。`lessonId` 是稳定身份，修改标题或文件名时保持不变。类型由文件位置自动推导：课程根目录的 `index.mdx` / `index.md` 是课程介绍，其他已排序文章是课时。不要手填 `kind`，也无需维护阅读时长、文章分类、验证日期或修订版本。
 
@@ -161,7 +206,7 @@ pnpm build
 
 中文版「AI Chat 是如何工作的？」在寄信类比段落后使用 `<ChatMessageSequence />`。这是无参数、无子内容的独立块，无需 import。组件进入可视区域后，先演示直接发送文本被服务器拒绝，模型未调用；再演示格式正确的 JSON 请求、模型生成回复、服务器返回 JSON、产品提取文本后呈现给用户。格式错误与正确分别用红叉和绿勾标识。消息气泡悬浮在当前箭头旁，尖角指向实际线条中点，不撑高图表；窄屏和放大字体时重新测量位置。演示播放一次后停止，支持暂停、继续和重新演示；离开可视区域或切到后台时暂停。仅切换离散步骤，不产生连续位移动画。无 JavaScript 时静态展示两次尝试的完整过程。内容为本地教学示例，不调用模型，也不写入学习进度。
 
-中文版「模型是如何预训练的？」在「预训练的大致流程」使用 `<LLMPretrainingOverview />` 替换三步说明列表。它是无参数、无子内容的独立块，无需 import。顶部三个 tab 切换筛选清洗、Token 编码和预测训练，支持鼠标指针、方向键、Home 和 End。数据来源配有图标；训练文本使用灰底，不带示例或底部说明。Token 编码与原有 `<TokenizationDiagram />` 共用天气问题、六组词元及 ID，标签合并为「Tokenizer（Token → Token ID）」。预测训练显示「预测下一个 Token → 对照原文 → 调整参数」，返回箭头从调整参数连回预测节点；窄屏改为纵向流程，返回线沿左侧连接。组件复用训练图解的直角边框，不增加脚注或动画；无 JavaScript 时显示完整静态流程，不读写学习进度。
+中文版「模型是如何预训练的？」在「预训练的大致流程」使用 `<LLMPretrainingOverview />`。它是无参数、无子内容的独立块，无需 import。顶部三个 tab 分别切换筛选清洗、Token 编码和预测训练的手绘图片，支持鼠标指针、方向键、Home 和 End。三张图片共用固定 16:9 区域，预先加载，切换时不改变内容高度；点击或用键盘打开图片可以放大查看，Escape 关闭并返回原控件。素材位于 `public/images/courses/how-language-models-are-trained/`，PNG 原图和生图提示词位于 `assets/how-language-models-are-trained-illustrations/`。Token 图片沿用 `<TokenizationDiagram />` 的天气问题、六组词元及 ID，替换文字说明从共享数据生成；修改该示例时必须同步图片。预测训练图片保留「预测下一个 Token → 对照原文 → 调整参数」及返回预测的循环。组件复用训练图解的直角边框，不增加标题或脚注；无 JavaScript 时依次显示三张图片及步骤名称，不读写学习进度。
 
 中文版「模型是如何算出 Token 概率的？」在「从简单类比到真实模型」末尾使用 `<TokenProbabilityDiagram />`。组件是无参数、无子内容的独立块，无需 import。它静态展示「今天下雨，出门记得带…」→ 大量相互连接的计算 → 多个分数 → 对应的「伞、雨衣、帽子」等候选 → 按采样策略选择一个 Token ID，并以「伞」作为结果示例。计算网络从上向下展开，分数与候选逐列对齐，全部候选通过曲线汇入同一个采样步骤。分数编号是示意标签，不虚构实际词表 ID；分数转概率已在上文讲解，图中不另设阶段。复用引用黑框、浅灰输入和采样背景，不增加标题、脚注、动画或操作按钮。服务端完整渲染，窄屏、放大字体和无 JavaScript 时均可阅读。
 
@@ -171,7 +216,7 @@ pnpm build
 
 该文在 Token 与字词边界的补充说明之后、实际用途之前，通过 `<Achievement>` 声明「看懂 Token 的边界」，稳定 ID 为 `token-boundaries`。三项单选用于区分完整字词、文本片段和不同 Tokenizer 的差异；答对后与第一课的成就一起计入课程进度，无需手动修改总数。
 
-中文版「What a language model does」使用 `<LLMGenerationDemo />` 展示固定虚构回答的自动逐字生成过程，使用 `<MenuComparisonDemo />` 比较原生选择控件与 shadcn 风格菜单。这两个组件不接受参数，无需 import，也不调用模型或外部接口。生成演示逐轮显示完整输入和候选概率，再展示按概率采样的固定结果（包含未选中最高概率候选的轮次），将选中的 Token 接入下一轮输入，再向上换行。顶部仅保留「预测概率 → 按规则选择 → 继续生成」，不显示第二行动态说明或底部解释段落；演示以单字简化 Token，候选、概率、采样结果和天气均为固定的虚构示例。组件内提供暂停、继续播放和重新播放；离开可视区域或切换到后台时暂停计时，减少动态效果模式下直接显示完整结果，无 JavaScript 时提供可展开的静态说明。菜单比较使用与作者注释相同的直角边框和右下偏移阴影，上边框嵌入「试一试」文字，不显示头像；两个按钮仍等宽居中。菜单支持键盘操作和独立的选择反馈，无 JavaScript 时仍显示边框、标题和原生菜单。中文版 `what-a-language-model-does.mdx` 在文章末尾通过通用 `<Achievement>` 声明「把需求说清楚」，稳定 ID 为 `input-shapes-output`。三项单选引导读者补充使用场景、交互要求和参考示例，而不是依赖模糊要求或角色指令保证结果。「分清生成与查证」使用稳定 ID `generation-vs-verification`，位于 `how-language-models-are-trained-part-1.mdx`。两项成就均使用课程命名空间内独立的存储键。
+中文版「What a language model does」使用 `<LLMGenerationDemo />` 展示固定虚构回答的自动逐字生成过程，使用 `<MenuComparisonDemo />` 比较原生选择控件与 shadcn 风格菜单。这两个组件不接受参数，无需 import，也不调用模型或外部接口。生成演示逐轮显示完整输入和候选概率，再展示按概率采样的固定结果（包含未选中最高概率候选的轮次），将选中的 Token 接入下一轮输入，再向上换行。顶部仅保留「预测概率 → 按规则选择 → 继续生成」，不显示第二行动态说明或底部解释段落；演示以单字简化 Token，候选、概率、采样结果和天气均为固定的虚构示例。组件内提供暂停、继续播放和重新播放；离开可视区域或切换到后台时暂停计时，减少动态效果模式下直接显示完整结果，无 JavaScript 时提供可展开的静态说明。菜单比较使用与作者注释相同的直角边框和右下偏移阴影，上边框嵌入「试一试」文字，不显示头像；两个按钮仍等宽居中。菜单支持键盘操作和独立的选择反馈，无 JavaScript 时仍显示边框、标题和原生菜单。中文版 `what-a-language-model-does.mdx` 在文章末尾通过通用 `<Achievement>` 声明「把需求说清楚」，稳定 ID 为 `input-shapes-output`。三项单选引导读者补充使用场景、交互要求和参考示例，而不是依赖模糊要求或角色指令保证结果。「分清生成与查证」使用稳定 ID `generation-vs-verification`，位于 `how-language-models-are-trained.mdx`。两项成就均使用课程命名空间内独立的存储键。
 
 ### 文章成就
 
@@ -199,35 +244,35 @@ pnpm build
 
 「再试一次」显示为成就标题首行最右侧的回转箭头图标，保留本地化的无障碍名称和悬停提示。每次主动答对，包括重试答对，都会从屏幕左右底角连续三波向上撒花，约三秒后结束。桌面共 240 片、窄屏共 160 片，使用八种鲜亮颜色和不同大小的方片、圆片与彩带，喷射范围覆盖屏幕中上部。答错、刷新恢复与标签页同步不播放；系统启用减少动态效果时也不播放。重试、离开页面或切换到减少动态效果会清理动画。这些行为由通用组件提供，不需要增加 MDX 参数。
 
-计分考试、视频播放器、其他交互练习和提示词对比暂不实现。现有组件不足时，先记录真实材料、输入、状态、失败处理和验收条件，并更新 [需求说明](./requirements.md)。不要提前创建空组件。
+计分考试、自建视频播放器、其他交互练习和提示词对比暂不实现。现有组件不足时，先记录真实材料、输入、状态、失败处理和验收条件，并更新 [需求说明](./requirements.md)。不要提前创建空组件。
 
 ## LLM 101 的课程范围
 
-LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程介绍、九节中文正文与其他语言的第一课欢迎占位文档。课程介绍位于 `content/<lang>/llm-101/index.mdx`，已有课时按下面三个模块组织。
+LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程介绍、十一节中文正文与其他语言的第一课欢迎占位文档。课程介绍位于 `content/<lang>/llm-101/index.mdx`，已有课时按下面三个模块组织。
 
 | 模块目录 | 模块名称 | 已发布课时 |
 | --- | --- | --- |
 | `model-fundamentals` | 大语言模型的工作原理 | 1.1 生成回答；1.2 Token；1.3 采样与回答的随机性；1.4 从参数与候选分数理解 Token 概率 |
-| `model-training` | 模型的训练与能力 | 2.1 模型是如何预训练的；2.2 模型的「深度思考」是怎么回事；2.3 模型是如何看图和听声音的；2.4 如何选择适合自己的大语言模型 |
-| `ai-applications` | AI 应用的工作原理 | 3.1 AI Chat 是如何工作的 |
+| `model-training` | 模型的训练与能力 | 2.1 模型是如何预训练的；2.2 模型的「深度思考」是怎么回事；2.3 模型是如何看图和听声音的；2.4 开源模型、参数量与本地运行；2.5 如何选择适合自己的大语言模型 |
+| `ai-applications` | AI 应用的工作原理 | 3.1 AI Chat 是如何工作的；3.2 Tool 是什么 |
 
-02 用四篇文章连接预训练、深度思考、多模态输入和模型选择，不安排后训练、强化学习或训练算法的深入教程。2.2 通过预算题的教学草稿解释推理、展示摘要和计算成本，并声明草稿不是实际模型的 Thinking 记录；补充固定网络层数与中间 Token 带来的计算轮次，介绍 test-time scaling 的串行推导、候选筛选与过度思考限制。2.3 通过编码器类比解释图像特征、语音转写与音频理解，区分输入和输出能力。两篇都保留实际用途与独立成就，稳定 ID 分别为 thinking-is-not-verification、distinguish-audio-inputs。选型课保留原 slug 与成就 ID，只调整到 2.4。
+02 用五篇文章连接预训练、深度思考、多模态输入、开源模型与本地运行和模型选择，不安排后训练、强化学习或训练算法的深入教程。2.2 通过预算题的教学草稿解释推理、展示摘要和计算成本，并声明草稿不是实际模型的 Thinking 记录；补充固定网络层数与中间 Token 带来的计算轮次，介绍 test-time scaling 的串行推导、候选筛选与过度思考限制。2.3 通过编码器类比解释图像特征、语音转写与音频理解，区分输入和输出能力。两篇都保留实际用途与独立成就，稳定 ID 分别为 thinking-is-not-verification、distinguish-audio-inputs。2.4 将原选型课中关于开源与闭源、参数量、MoE 和本地运行的问题独立成课，保留原文、公式与批注；2.5 保留模型评测、选型与练习，原 slug 与成就 ID 不变。
 
 所有模块用自己的 `meta.json` 排序。其他语言已有的第一课同步放入 `model-fundamentals`，保持译文路径与中文原文一致；没有译文的模块不创建空目录。公开 URL 不包含模块目录。各课保留稳定的 `lessonId`、slug 和成就 ID；仅移动模块不需要重定向，也不改变学习记录。首页「马上学习」仍按 `meta.json` 的顺序进入第一课。`tests/fixtures` 中的 `ai-coding` 只用于工程验证，不属于公开课程。
 
 ### 03 的后续写作方向
 
-下表是写作规划，除 3.1 外尚未发布。只有完成正文后才加入 `meta.json`；不创建空课时或指向未发布内容的链接。
+下表是写作规划，3.1 和 3.2 已发布，其余尚未发布。只有完成正文后才加入 `meta.json`；不创建空课时或指向未发布内容的链接。
 
 每篇采用「实际问题 → 简单原理 → Chat 操作练习 → 检查结果」的顺序。使用方法放在对应教程中，避免单独重复一套产品使用手册。具体产品的按钮、配额或界面操作以写作时的实际产品为准。
 
 | 课时 | 主题 | 对应的 Chat 使用练习 |
 | --- | --- | --- |
 | 3.1 | AI Chat 是如何工作的 | 在同一对话和新对话中提问，对比哪些历史信息进入输入 |
-| 3.2 | 提示词如何影响回答 | 写清目标、对象、限制和示例，比较输出并修改要求 |
-| 3.3 | 上下文与记忆 | 判断何时继续对话、何时新建对话，以及如何保存必要背景 |
-| 3.4 | 文件、知识库与 RAG | 上传资料并要求引用原文，核对回答是否有依据 |
-| 3.5 | 工具调用 | 使用联网搜索或代码执行，检查调用记录和实际结果 |
+| 3.2 | Tool 是什么 | 查询天气并检查调用记录、预报日期、来源和返回结果；成就 ID 为 `tool-request-vs-execution` |
+| 3.3 | 提示词如何影响回答 | 写清目标、对象、限制和示例，比较输出并修改要求 |
+| 3.4 | 上下文与记忆 | 判断何时继续对话、何时新建对话，以及如何保存必要背景 |
+| 3.5 | 文件、知识库与 RAG | 上传资料并要求引用原文，核对回答是否有依据 |
 | 3.6 | MCP | 理解应用如何连接外部工具与资料，在支持的产品中检查连接与授权 |
 | 3.7 | Skills | 理解可复用的任务指令、资料和脚本，尝试安装或使用一个适合任务的 Skill |
 | 3.8 | 从 AI Chat 到 Agent | 区分一次回答与连续执行，认识 Agent 的目标、工具、检查与停止条件，为 Agent 101 建立前置概念 |

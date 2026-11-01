@@ -23,9 +23,9 @@ description: 了解 Token 的定义、作用、计算方式和影响因素。
 
 <TokenizationDiagram />
 
-所以第一讲里，LLM 通过计算后返回的结果，并不一定就是一个中文字，而是有可能是一个词。
+所以第一讲里，LLM 通过计算后返回的结果，<JimmyNoteAnchor id="token-boundaries">并不一定就是一个中文字，而是有可能是一个词</JimmyNoteAnchor>。
 
-<JimmyNote>
+<JimmyNote anchor="token-boundaries">
   另外需要注意，前面这个天气的案例看起来是一个中文词对应一个
   Token，但有的时候却不一定，比如「天气预报」中的「预报」会被分成「预」和「报」两个
   Token。且不同语言也会有这种情况，比如 indivisible 会被切分成 indiv 和 isible

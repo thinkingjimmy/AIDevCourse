@@ -10,7 +10,7 @@ export type ContentDocument = {
   file: string; locale: Locale; courseSlug: string; slug: string[]; url: string;
   data: DocumentData; headings: { id: string; title: string; depth: number }[];
   links: { url: string; image: boolean; label: string }[];
-  body: string; sourceUrl: string; achievements: AchievementDefinition[];
+  body: string; sourceUrl: string; achievements: AchievementDefinition[]; hasJimmyNotes: boolean;
 };
 export type LessonSummary = {
   id: string; title: string; description: string; url: string;

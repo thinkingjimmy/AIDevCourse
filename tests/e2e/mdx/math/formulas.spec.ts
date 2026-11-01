@@ -23,10 +23,11 @@ for (const scenario of [
       if (scenario.javaScriptEnabled) await page.evaluate(() => document.fonts.ready);
       if (scenario.name === 'enlarged') await page.evaluate(() => { document.documentElement.style.fontSize = '24px'; });
       const preview = page.locator('#math');
-      await expect(preview.locator('.katex')).toHaveCount(8);
+      const formulaCount = scenario.javaScriptEnabled ? 7 : 8;
+      await expect(preview.locator('.katex')).toHaveCount(formulaCount);
       await expect(preview.locator('.katex-display')).toHaveCount(5);
-      await expect(preview.locator('math')).toHaveCount(8);
-      await expect(preview.locator('.katex-html[aria-hidden="true"]')).toHaveCount(8);
+      await expect(preview.locator('math')).toHaveCount(formulaCount);
+      await expect(preview.locator('.katex-html[aria-hidden="true"]')).toHaveCount(formulaCount);
       await expect(preview.locator('.katex-error')).toHaveCount(0);
       const annotations = await preview.locator('annotation[encoding="application/x-tex"]').allTextContents();
       expect(annotations).toContain('y = ax + b');
@@ -34,7 +35,11 @@ for (const scenario of [
       expect(annotations.some((source) => source.includes('\\sum'))).toBe(true);
       expect(annotations.some((source) => source.includes('\\begin{bmatrix}'))).toBe(true);
       expect(annotations.some((source) => source.includes('\\begin{aligned}'))).toBe(true);
-      await expect(preview.getByRole('note', { name: 'Jimmy', exact: true }).locator('.katex')).toHaveCount(1);
+      if (scenario.javaScriptEnabled) {
+        await preview.locator('[data-note-trigger-for="formula-parameters"]').click();
+        await expect(page.getByRole('dialog', { name: 'Jimmy 的批注', exact: true }).locator('.katex')).toHaveCount(1);
+        await page.keyboard.press('Escape');
+      } else await expect(preview.getByRole('note', { name: 'Jimmy', exact: true }).locator('.katex')).toHaveCount(1);
       await expect(preview.locator('p').filter({ hasText: '价格使用转义' })).toHaveText('价格使用转义美元符号：$10 与 $20。');
       await expect(preview.locator('p').filter({ hasText: '未闭合标记' })).toContainText('$unclosed literal');
       await expect(preview.locator('code').filter({ hasText: '$y = ax + b$' })).toHaveText('$y = ax + b$');
@@ -64,7 +69,13 @@ for (const scenario of [
       try { await expect.poll(() => longFormula.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0); }
       finally { await page.keyboard.up('ArrowRight'); }
       await longFormula.evaluate((element) => { element.scrollLeft = 0; });
-      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      const pageGeometry = await page.evaluate(() => ({
+        width: innerWidth, scrollWidth: document.documentElement.scrollWidth,
+        overflow: [...document.querySelectorAll('main, main *')].filter(element => element.getBoundingClientRect().right > innerWidth + 1)
+          .slice(0, 12).map(element => ({ tag: element.tagName, className: element.getAttribute('class'), right: element.getBoundingClientRect().right })),
+      }));
+      await test.info().attach('Formula page width', { body: JSON.stringify(pageGeometry, null, 2), contentType: 'application/json' });
+      expect(pageGeometry.scrollWidth).toBeLessThanOrEqual(pageGeometry.width);
       expect(fonts.some((font) => /KaTeX/.test(font.url))).toBe(true);
       expect(fonts.every((font) => new URL(font.url).origin === new URL(baseURL!).origin && font.status === 200)).toBe(true);
       if (scenario.javaScriptEnabled) {

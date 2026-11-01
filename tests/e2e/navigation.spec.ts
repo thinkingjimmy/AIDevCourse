@@ -23,18 +23,20 @@ test('model selection follows training and precedes chat', async ({ page: overvi
   await overview.setViewportSize({ width: 1440, height: 960 });
   const generation = '/zh/courses/llm-101/what-a-language-model-does';
   const sampling = '/zh/courses/llm-101/why-model-answers-vary';
-  const training = '/zh/courses/llm-101/how-language-models-are-trained-part-1';
+  const training = '/zh/courses/llm-101/how-language-models-are-trained';
   const probability = '/zh/courses/llm-101/how-models-calculate-token-probabilities';
   const tokens = '/zh/courses/llm-101/what-is-a-token';
   const chat = '/zh/courses/llm-101/how-ai-chat-works';
+  const tools = '/zh/courses/llm-101/what-is-a-tool';
   const selection = '/zh/courses/llm-101/how-to-choose-a-language-model';
   const thinking = '/zh/courses/llm-101/how-model-thinking-works';
   const multimodal = '/zh/courses/llm-101/how-models-see-and-hear';
+  const modelBasics = '/zh/courses/llm-101/open-models-and-local-deployment';
   const title = readCatalog().documents.find((document) => document.url === training)!.data.title;
   await overview.goto(coursePath('zh'));
   const links = overview.locator('section[aria-labelledby="course-catalog"] a');
   const order = await links.evaluateAll((elements) => elements.map((element) => element.getAttribute('href')));
-  expect(order).toEqual([generation, tokens, sampling, probability, training, thinking, multimodal, selection, chat]);
+  expect(order).toEqual([generation, tokens, sampling, probability, training, thinking, multimodal, modelBasics, selection, chat, tools]);
   const [page] = await Promise.all([overview.waitForEvent('popup'), links.filter({ hasText: title }).click()]);
   await expect(page).toHaveURL(new RegExp(`${training}$`));
   await expect(page.locator('article h1')).toHaveText(title);
@@ -103,9 +105,9 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     const storageKey = 'lac:v1:llm-101:achievement:chat-history-as-input';
     await page.goto(coursePath('zh'));
     const links = page.locator('section[aria-labelledby="course-catalog"] a');
-    await expect(links).toHaveCount(9);
-    await expect(links.last()).toHaveAttribute('href', chat);
-    await expect(links.last()).toContainText('AI Chat 是如何工作的？');
+    await expect(links).toHaveCount(11);
+    await expect(links.nth(9)).toHaveAttribute('href', chat);
+    await expect(links.nth(9)).toContainText('AI Chat 是如何工作的？');
     await page.goto(selection);
     await expect(page.locator('article nav').last().locator('a').last()).toHaveAttribute('href', chat);
     await page.locator('article nav').last().locator('a').last().click();
@@ -231,7 +233,7 @@ for (const width of [1440, 320, 390]) {
     expect(layout.lessonLeft).toBeCloseTo(layout.moduleLeft, 1);
     expect(layout.titleLeft - layout.lessonLeft).toBe(66);
     expect(layout.lessonNumberLeft).toBeCloseTo(layout.moduleNumberLeft, 1);
-    expect(layout.buttons).toEqual([44, 44]);
+    expect(layout.buttons).toEqual([44, 44, 44]);
     expect(layout.paddingTop).toBe('8px');
     expect(layout.paddingBottom).toBe('8px');
     expect(layout.paddingLeft).toBe('8px');
@@ -279,8 +281,8 @@ for (const width of [1440, 320, 390]) {
     await expect(lessons).toHaveCount(0);
     await moduleToggle.press('Enter');
     await expect(lessons.first()).toBeVisible();
-    await sidebar.getByRole('button', { name: copy.Ui.more, exact: true }).click();
-    await expect(page.getByRole('menuitem', { name: copy.Ui.about, exact: true })).toBeVisible();
+    await sidebar.getByRole('button', { name: copy.Language.label, exact: true }).click();
+    await expect(page.locator('.language-options a[hreflang="en"]')).toBeVisible();
     await page.keyboard.press('Escape');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     const achievements = sidebar.getByRole('button', { name: copy.Course.achievementsTitle, exact: true });
@@ -292,11 +294,12 @@ for (const width of [1440, 320, 390]) {
       const buttonBox = element.getBoundingClientRect();
       const ringBox = element.querySelector('[role="progressbar"]')!.getBoundingClientRect();
       const textBox = element.querySelector('[data-achievement-count]')!.parentElement!.getBoundingClientRect();
-      const moreButton = footer.querySelector('button[aria-haspopup="menu"]')!;
-      const moreBox = moreButton.getBoundingClientRect();
+      const languageButton = footer.querySelector('button[aria-haspopup="menu"]')!;
+      const authorButton = footer.querySelector('[data-slot="author-dialog-trigger"]')!;
+      const authorBox = authorButton.getBoundingClientRect();
       return {
-        radii: [getComputedStyle(element).borderRadius, getComputedStyle(moreButton).borderRadius],
-        outside: [buttonBox.left - footerBox.left, buttonBox.top - footerBox.top - parseFloat(getComputedStyle(footer).borderTopWidth), footerBox.bottom - buttonBox.bottom, footerBox.right - moreBox.right],
+        radii: [getComputedStyle(element).borderRadius, getComputedStyle(languageButton).borderRadius],
+        outside: [buttonBox.left - footerBox.left, buttonBox.top - footerBox.top - parseFloat(getComputedStyle(footer).borderTopWidth), footerBox.bottom - buttonBox.bottom, footerBox.right - authorBox.right],
         ringInsets: [ringBox.left - buttonBox.left, ringBox.top - buttonBox.top, buttonBox.bottom - ringBox.bottom],
         textInsets: [textBox.top - buttonBox.top, buttonBox.bottom - textBox.bottom, buttonBox.right - textBox.right],
       };
@@ -329,23 +332,18 @@ for (const width of [1440, 320, 390]) {
 }
 
 for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'mobile', width: 390, height: 844 }]) {
-  test(`course overview shares home hero styles and the localized footer on ${viewport.name}`, async ({ page }) => {
+  test(`course overview preserves hero layout and the localized footer on ${viewport.name}`, async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    const appearance = (element: HTMLElement) => {
-      const style = getComputedStyle(element);
-      return { border: style.border, radius: style.borderRadius, background: style.backgroundColor, color: style.color, shadow: style.boxShadow, height: style.height, font: style.font, padding: style.padding };
-    };
     for (const locale of ['zh', 'en', 'ja', 'fr', 'es']) {
       const copy = dictionary(locale);
-      await page.goto(localePath(locale as Locale, `/`));
-      const homeAction = await page.getByRole('link', { name: copy.Home.start, exact: true }).evaluate(appearance);
       await page.goto(coursePath(locale));
       await page.evaluate(() => document.fonts.ready);
       const title = page.locator('main h1');
       const hero = title.locator('..');
       const action = page.getByRole('link', { name: copy.Course.startFirst, exact: true });
-      expect(await action.evaluate(appearance)).toEqual(homeAction);
+      await expect(action).toHaveCSS('height', '44px');
+      await expect(action).toHaveCSS('background-color', 'rgb(255, 255, 255)');
       await expect(action.locator('..').locator('p')).toHaveCount(0);
       await expect(action).toHaveAttribute('target', '_blank');
       const logo = (await page.locator('header a').first().boundingBox())!;
@@ -380,7 +378,7 @@ test('search uses shortcuts without header or sidebar buttons', async ({ page })
     await page.goto(path);
     await page.waitForLoadState('networkidle');
     await expect(page.getByRole('button', { name: copy.Search.open, exact: true })).toHaveCount(0);
-    const language = page.getByRole('button', { name: copy.Ui.more, exact: true }).or(page.locator('.language-picker summary'));
+    const language = page.getByRole('button', { name: copy.Language.label, exact: true }).or(page.locator('.language-picker summary'));
     await language.focus();
     await page.keyboard.press('Control+k');
     await expect(page.getByRole('textbox', { name: copy.Search.open })).toBeFocused();
@@ -398,7 +396,7 @@ test('search uses shortcuts without header or sidebar buttons', async ({ page })
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(lessonPath());
   await page.getByRole('button', { name: copy.Ui.menu, exact: true }).click();
-  const language = page.getByRole('button', { name: copy.Ui.more, exact: true }).or(page.locator('.language-picker summary'));
+  const language = page.getByRole('button', { name: copy.Language.label, exact: true }).or(page.locator('.language-picker summary'));
   await language.focus();
   await page.keyboard.press('Control+k');
   await expect(page.getByRole('textbox', { name: copy.Search.open })).toBeFocused();
@@ -409,21 +407,13 @@ test('search uses shortcuts without header or sidebar buttons', async ({ page })
 });
 
 async function openLanguages(page: Page, locale: string) {
-  const more = page.getByRole('button', { name: dictionary(locale).Ui.more, exact: true });
-  const submenu = await more.isVisible();
-  if (submenu) {
-    await more.click();
-    const change = page.getByRole('menuitem', { name: dictionary(locale).Language.change, exact: true });
-    await change.focus(); await change.press('ArrowRight');
-  }
-  const trigger = page.locator('.language-picker summary');
-  if (!submenu) {
-    await expect(trigger).toHaveAccessibleName(dictionary(locale).Language.label);
-    await expect(trigger).toHaveText('');
-    await expect(trigger.locator('svg')).toHaveAttribute('viewBox', '0 0 256 256');
-    await trigger.focus();
-    await page.keyboard.press('Enter');
-  }
+  const menuTrigger = page.locator('[data-slot="language-menu-trigger"]');
+  const trigger = await menuTrigger.isVisible() ? menuTrigger : page.locator('.language-picker summary');
+  await expect(trigger).toHaveAccessibleName(dictionary(locale).Language.label);
+  await expect(trigger).toHaveText('🌐');
+  await expect(trigger.locator('svg')).toHaveCount(0);
+  await trigger.focus();
+  await page.keyboard.press('Enter');
   const menu = page.locator('.language-options');
   await expect(menu).toBeVisible();
   await expect(menu.locator('a')).toHaveCount(5);
@@ -480,7 +470,7 @@ test('sidebar collapse preserves focus, reading space, and navigation state', as
   await expect(toggle).toHaveAccessibleName(dictionary('zh').Ui.expandSidebar);
   await expect(toggle).toBeFocused();
   await expect(page.locator('.course-navigation')).not.toBeVisible();
-  await expect(page.getByRole('button', { name: dictionary('zh').Ui.more, exact: true })).not.toBeVisible();
+  await expect(page.getByRole('button', { name: dictionary('zh').Language.label, exact: true })).not.toBeVisible();
   await expect.poll(async () => (await page.locator('[data-slot="sidebar-gap"]').boundingBox())!.width).toBe(48);
   await expect(page.locator('article > .prose')).toBeVisible();
   const report = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
@@ -549,8 +539,7 @@ test('mobile sidebar closes from the logo row and keeps language choices in the 
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
   await page.getByRole('button', { name: copy.Ui.menu, exact: true }).click();
-  await page.getByRole('button', { name: copy.Ui.more, exact: true }).click();
-  await page.getByRole('menuitem', { name: copy.Language.change, exact: true }).click();
+  await page.getByRole('button', { name: copy.Language.label, exact: true }).click();
   await page.locator('.language-options a[hreflang="en"]').click();
   await expect(page).toHaveURL(/\/courses\/ai-coding\/first-change$/);
   await page.getByRole('button', { name: dictionary('en').Ui.menu, exact: true }).click();

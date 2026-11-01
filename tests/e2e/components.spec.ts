@@ -76,95 +76,6 @@ test.describe('Token encoding diagram', () => {
   }
 });
 
-for (const viewport of [{ name: 'desktop', width: 1280, height: 960 }, { name: 'mobile', width: 390, height: 844 }, { name: 'narrow', width: 320, height: 844 }, { name: 'enlarged', width: 390, height: 844 }]) {
-  test(`JimmyNote renders authored Markdown on ${viewport.name}`, async ({ page }) => {
-    await page.setViewportSize(viewport);
-    const response = await page.goto('/design/components');
-    expect(response?.status()).toBe(200);
-    await page.evaluate(() => document.fonts.ready);
-    if (viewport.name === 'enlarged') await page.evaluate(() => { document.documentElement.style.fontSize = '24px'; });
-    const notes = page.getByRole('note', { name: 'Jimmy', exact: true });
-    await expect(notes).toHaveCount(2);
-    await expect(notes.first()).toContainText('大企业的影子 AI');
-    await expect(notes.nth(1).locator('p')).toHaveCount(2);
-    await expect(notes.nth(1).locator('p strong')).toContainText('自己的观察');
-    await expect(notes.nth(1).getByRole('link', { name: '写作说明' })).toHaveAttribute('href', '#authoring');
-    for (const note of await notes.all()) {
-      const style = await note.evaluate((element) => {
-        const computed = getComputedStyle(element);
-        return { background: computed.backgroundColor, color: computed.color, border: computed.borderTopWidth, radius: computed.borderRadius, shadow: computed.boxShadow };
-      });
-      expect(style).toMatchObject({ background: 'rgb(255, 255, 255)', color: 'rgb(63, 63, 70)', border: '1px', radius: '0px' });
-      expect(style.shadow).toContain('rgb(228, 228, 231) 4px 4px 0px 0px');
-      const frameStyle = (element: Element) => {
-        const computed = getComputedStyle(element);
-        return { border: computed.border, radius: computed.borderRadius, shadow: computed.boxShadow };
-      };
-      expect(await note.evaluate(frameStyle)).toEqual(await page.locator('[data-component="chat-message"]').first().evaluate(frameStyle));
-      await expect(note.locator('[data-slot="alert-title"]')).toHaveText('Jimmy');
-      const avatar = note.locator('img');
-      await expect(avatar).toHaveAttribute('alt', '');
-      await expect(avatar).toHaveCSS('width', viewport.name === 'enlarged' ? '48px' : '32px');
-      await expect(avatar).toHaveCSS('height', viewport.name === 'enlarged' ? '48px' : '32px');
-      await avatar.scrollIntoViewIfNeeded();
-      await expect.poll(() => avatar.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
-      const imageBounds = await avatar.boundingBox();
-      const titleBounds = await note.locator('[data-slot="alert-title"]').boundingBox();
-      expect(imageBounds!.x + imageBounds!.width).toBeLessThan(titleBounds!.x);
-      expect(Math.abs(imageBounds!.y + imageBounds!.height / 2 - titleBounds!.y - titleBounds!.height / 2)).toBeLessThan(1);
-      const frame = await note.boundingBox();
-      const signature = note.locator('[data-slot="note-signature"]');
-      await expect(signature).toHaveText('Jimmy');
-      await expect(signature).toHaveCSS('background-color', 'rgb(255, 255, 255)');
-      expect(Math.abs(imageBounds!.y + imageBounds!.height / 2 - frame!.y)).toBeLessThanOrEqual(1);
-      const contentBounds = await note.locator('[data-slot="alert-description"]').boundingBox();
-      expect(contentBounds!.y).toBeGreaterThan(imageBounds!.y + imageBounds!.height);
-      const layout = await note.evaluate((element) => ({
-        left: element.getBoundingClientRect().left, width: element.getBoundingClientRect().width,
-        parentLeft: element.parentElement!.getBoundingClientRect().left, parentWidth: element.parentElement!.getBoundingClientRect().width,
-        fits: element.scrollWidth <= element.clientWidth,
-      }));
-      expect(layout.fits).toBe(true);
-      expect(Math.abs(layout.left - layout.parentLeft)).toBeLessThan(1);
-      expect(Math.abs(layout.width - layout.parentWidth)).toBeLessThan(1);
-      await test.info().attach('signature-layout', { body: JSON.stringify(layout, null, 2), contentType: 'application/json' });
-    }
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    const accessibility = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-    expect(accessibility.violations).toEqual([]);
-    const path = test.info().outputPath(`jimmy-note-${viewport.name}.png`);
-    await page.screenshot({ path, fullPage: true, animations: 'disabled' });
-    await test.info().attach('JimmyNote preview', { path, contentType: 'image/png' });
-    const notePath = test.info().outputPath(`jimmy-note-avatar-${viewport.name}.png`);
-    const clip = await notes.first().evaluate((element) => {
-      const frame = element.getBoundingClientRect();
-      const signature = element.querySelector('[data-slot="note-signature"]')!.getBoundingClientRect();
-      return { x: frame.x + scrollX, y: signature.top + scrollY - 1, width: frame.width + 4, height: frame.bottom - signature.top + 6 };
-    });
-    await page.screenshot({ path: notePath, clip });
-    await test.info().attach('JimmyNote avatar', { path: notePath, contentType: 'image/png' });
-  });
-}
-
-test('JimmyNote and its links work without JavaScript', async ({ browser, baseURL }) => {
-  const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
-  try {
-    const page = await context.newPage();
-    await page.goto('/design/components');
-    const notes = page.getByRole('note', { name: 'Jimmy', exact: true });
-    await expect(notes).toHaveCount(2);
-    const avatar = notes.first().locator('img');
-    await avatar.scrollIntoViewIfNeeded();
-    await expect.poll(() => avatar.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
-    await notes.nth(1).getByRole('link', { name: '写作说明' }).click();
-    await expect(page).toHaveURL(/#authoring$/);
-    await expect(page.locator('#authoring')).toBeInViewport();
-    const path = test.info().outputPath('jimmy-note-no-js.png');
-    await page.screenshot({ path, fullPage: true });
-    await test.info().attach('JimmyNote without JavaScript', { path, contentType: 'image/png' });
-  } finally { await context.close(); }
-});
-
 test.describe('ChatMessage', () => {
   for (const viewport of [{ name: 'desktop', width: 1280, height: 960 }, { name: 'mobile', width: 390, height: 844 }, { name: 'narrow', width: 320, height: 844 }]) {
     test(`renders Markdown and sender alignment on ${viewport.name}`, async ({ page }) => {
@@ -172,7 +83,7 @@ test.describe('ChatMessage', () => {
       await page.goto('/design/components');
       const chat = page.locator('#chat');
       const messages = chat.locator('[data-component="chat-message"]');
-      await expect(messages).toHaveCount(3);
+      await expect(messages).toHaveCount(4);
       const user = messages.first();
       const assistant = messages.nth(1);
       await expect(user).toHaveAttribute('data-from', 'user');
@@ -347,10 +258,11 @@ test.describe('What a language model does lesson demos', () => {
       expect(leftColumn!.width).toBeCloseTo(rightColumn!.width, 0);
       expect(left!.x + left!.width / 2).toBeCloseTo(leftColumn!.x + leftColumn!.width / 2, 0);
       expect(right!.x + right!.width / 2).toBeCloseTo(rightColumn!.x + rightColumn!.width / 2, 0);
-      await expect(menus.locator('figcaption')).toHaveText('试一试');
+      await expect(menus.locator('figcaption')).toHaveText('🧪 试一试');
+      await expect(menus.locator('figcaption [aria-hidden="true"]')).toHaveText('🧪 ');
       await expect(menus.locator('img, label, p, [role="status"]')).toHaveCount(0);
       const frameStyles = (element: Element) => { const style = getComputedStyle(element); return { border: style.border, radius: style.borderRadius, shadow: style.boxShadow }; };
-      expect(await menus.evaluate(frameStyles)).toEqual(await page.getByRole('note', { name: 'Jimmy', exact: true }).first().evaluate(frameStyles));
+      expect(await menus.evaluate(frameStyles)).toEqual(await page.locator('[data-component="key-takeaway"]').first().evaluate(frameStyles));
       await menus.scrollIntoViewIfNeeded();
       const frame = (await menus.boundingBox())!;
       const caption = (await menus.locator('figcaption').boundingBox())!;
@@ -405,7 +317,7 @@ test.describe('What a language model does lesson demos', () => {
       await expect(generation.getByText('最终回答（虚构）：今天广州天气晴朗，温度在 28 ℃。', { exact: true })).toBeVisible();
       await expect(page.getByRole('combobox', { name: '浏览器原生菜单' })).toBeVisible();
       await expect(page.getByRole('figure', { name: '两种菜单对比', exact: true })).toBeVisible();
-      await expect(page.getByRole('figure', { name: '两种菜单对比', exact: true }).locator('figcaption')).toHaveText('试一试');
+      await expect(page.getByRole('figure', { name: '两种菜单对比', exact: true }).locator('figcaption')).toHaveText('🧪 试一试');
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await test.info().attach('what-a-language-model-does-no-js', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
       await page.locator('noscript > details > summary').filter({ hasText: '课程目录' }).click();
@@ -423,7 +335,7 @@ test.describe('What a language model does lesson demos', () => {
       await expect(page.locator('article')).toContainText('所以使用大语言模型时，永远不要认为每次都能得到完全相同的答案。');
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await test.info().attach('sampling-no-js-mobile', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
-      await page.goto('/zh/courses/llm-101/how-language-models-are-trained-part-1');
+      await page.goto('/zh/courses/llm-101/how-language-models-are-trained');
       const achievement = page.locator('[data-achievement="generation-vs-verification"]');
       await achievement.getByText('查看解释', { exact: true }).click();
       await expect(achievement.locator('noscript details p')).toBeVisible();
@@ -437,7 +349,7 @@ test.describe('What a language model does lesson demos', () => {
 
 test.describe('Learning achievements', () => {
   test.skip(process.env.CONTENT_TEST === '1', 'The achievement belongs to the published Chinese lesson.');
-  const path = '/zh/courses/llm-101/how-language-models-are-trained-part-1';
+  const path = '/zh/courses/llm-101/how-language-models-are-trained';
   const key = 'lac:v1:llm-101:achievement:generation-vs-verification';
   const block = '[data-achievement="generation-vs-verification"]';
   const count = '[data-achievement-count]';

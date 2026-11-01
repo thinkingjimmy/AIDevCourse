@@ -6,8 +6,10 @@
   &.prose {
     @apply mt-2 max-w-none min-w-0 text-base leading-reading text-reading;
     &:lang(zh-Hans), &:lang(ja) { @apply leading-cjk; }
-    & :where(h2):not(:where(.not-prose, .not-prose *)) { @apply mt-9 mb-2 font-sans text-xl leading-snug font-semibold tracking-tight text-foreground; }
-    & :where(h3):not(:where(.not-prose, .not-prose *)) { @apply text-xl font-semibold text-foreground; }
+    & :where(h2, h3, h4):not(:where(.not-prose, .not-prose *)) { @apply font-sans font-semibold tracking-tight text-balance text-foreground; }
+    & :where(h2):not(:where(.not-prose, .not-prose *)) { @apply mt-10 mb-4 border-b border-border pb-2 text-3xl leading-heading first:mt-0; }
+    & :where(h3):not(:where(.not-prose, .not-prose *)) { @apply mt-8 mb-3 text-2xl leading-tight; }
+    & :where(h4):not(:where(.not-prose, .not-prose *)) { @apply mt-6 mb-2 text-xl; }
     & :where(h2, h3, h4) button { @apply [font:inherit] text-inherit; }
     & :where(a):not(:where(.not-prose, .not-prose *)) { @apply text-foreground underline underline-offset-4; }
     & :where(h2, h3, h4) :where(a) { @apply text-inherit no-underline; }

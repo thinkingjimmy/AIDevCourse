@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-const lesson = '/zh/courses/llm-101/how-language-models-are-trained-part-1';
+const lesson = '/zh/courses/llm-101/how-language-models-are-trained';
 
 async function capture(figure: Locator, name: string) {
   await figure.scrollIntoViewIfNeeded();

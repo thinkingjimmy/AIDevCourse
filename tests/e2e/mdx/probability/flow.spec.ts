@@ -78,11 +78,9 @@ test.describe('Token probability flow diagram', () => {
         expect(evidence.surfaces.input).toBe(evidence.surfaces.sampling);
         expect(evidence.surfaces.sampling).not.toBe(evidence.surfaces.foreground);
         expect(evidence.overflow).toEqual([]);
-        const referenceFrame = await page.getByRole('note', { name: 'Jimmy', exact: true }).first().evaluate((element) => {
-          const style = getComputedStyle(element);
-          return { border: style.border, radius: style.borderRadius, shadow: style.boxShadow };
-        });
-        expect(evidence.frame).toEqual(referenceFrame);
+        expect(evidence.frame.border).toBe('1px solid rgb(9, 9, 11)');
+        expect(evidence.frame.radius).toBe('0px');
+        expect(evidence.frame.shadow).toContain('rgb(228, 228, 231) 4px 4px 0px 0px');
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
         if (scenario.javaScriptEnabled) {
           const accessibility = await new AxeBuilder({ page }).include('[data-token-probability-diagram]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();

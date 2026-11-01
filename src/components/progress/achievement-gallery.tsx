@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 import Link from 'next/link';
 import { useFormatter, useTranslations } from 'next-intl';
 import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
@@ -25,7 +25,7 @@ const medalIcons = {
   'generation-vs-verification': MagnifyingGlassIcon,
 };
 
-export function AchievementGallery() {
+export function AchievementGallery({ children }: { children?: ReactElement }) {
   const [open, setOpen] = useState(false);
   const t = useTranslations('Course');
   const ui = useTranslations('Ui');
@@ -42,22 +42,22 @@ export function AchievementGallery() {
 
   return <Dialog open={open} onOpenChange={setOpen}>
     <DialogTrigger asChild>
-      <Button variant="plain" size="reset" disabled={!ready} aria-label={t('achievementsTitle')}
-        className="h-11 min-w-0 flex-1 justify-start gap-2.5 rounded-md p-2 text-left hover:bg-sidebar-accent">
+      {children ?? <Button variant="plain" size="reset" disabled={!ready} aria-label={t('achievementsTitle')} title={t('achievementsTitle')}
+        className="h-11 min-w-0 flex-1 justify-start gap-2.5 rounded-md p-2 text-left hover:bg-sidebar-accent group-data-[collapsible=icon]:size-11 group-data-[collapsible=icon]:flex-none group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:focus-visible:-outline-offset-2">
         <span role="progressbar" aria-label={t('achievementsTitle')} aria-valuetext={countLabel}
           aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-busy={!ready}
           className="flex size-7 shrink-0 items-center justify-center rounded-full p-0.5"
           style={{ background: `conic-gradient(var(--color-foreground) ${percent}%, var(--color-border) 0)` }}>
           <span aria-hidden className="flex size-full items-center justify-center rounded-full bg-sidebar text-base">🥇</span>
         </span>
-        <span className="flex h-7 min-w-0 flex-1 flex-col justify-between">
+        <span className="flex h-7 min-w-0 flex-1 flex-col justify-between group-data-[collapsible=icon]:hidden">
           <span className="block truncate text-caption leading-none font-medium text-foreground">{t('achievementsTitle')}</span>
           <span data-achievement-count className="block truncate text-xs leading-none text-muted-foreground tabular-nums">{countLabel}</span>
         </span>
-      </Button>
+      </Button>}
     </DialogTrigger>
-    <DialogContent data-course-achievements overlayClassName="bg-transparent"
-      className="top-1/2 max-h-[calc(100dvh-32px)] w-[min(760px,calc(100vw-32px))] -translate-y-1/2 rounded-none border-foreground shadow-[4px_4px_0_var(--color-border)] max-sm:top-1/2">
+    <DialogContent data-course-achievements overlayClassName="bg-background/60 backdrop-blur-sm"
+      className="top-1/2 max-h-[calc(100dvh-32px)] w-[min(760px,calc(100vw-32px))] -translate-y-1/2 rounded-none border-border shadow-[4px_4px_0_var(--color-border)] max-sm:top-1/2">
       <header className="flex shrink-0 items-center justify-between gap-4 px-6 pt-5 max-sm:px-4">
         <DialogTitle className="m-0 text-xl leading-snug font-semibold tracking-tight">{t('achievementsTitle')}</DialogTitle>
         <DialogClose asChild><Button variant="action-outline" size="icon-touch" className="rounded-none" aria-label={ui('close')}><XIcon size={18} aria-hidden /></Button></DialogClose>

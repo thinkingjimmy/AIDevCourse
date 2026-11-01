@@ -2,10 +2,9 @@
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { GlobeIcon } from '@phosphor-icons/react/dist/ssr/Globe';
 import { CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';
 import { Button } from '@/components/ui/button';
-import { DropdownMenuItem, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/overlays/dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/overlays/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { locales, languageNames, htmlLanguages, localeCookie, defaultLocale, type Locale } from '@/lib/i18n/config';
 import { canonicalPath, localePath, stripLocale } from '@/lib/i18n/routing';
@@ -30,8 +29,8 @@ export function LanguageSwitcher({ locale, translations, side = 'bottom' }: Lang
       ref.current.open = false; ref.current.querySelector('summary')?.focus();
     }
   }}>
-    <Button asChild variant="ghost" size="icon-touch" className="list-none text-muted-foreground [&::-webkit-details-marker]:hidden">
-      <summary aria-label={t('label')} title={t('label')}><GlobeIcon size={20} aria-hidden /></summary>
+    <Button asChild variant="ghost" size="icon-touch" className="list-none text-lg [&::-webkit-details-marker]:hidden">
+      <summary aria-label={t('label')} title={t('label')}><span aria-hidden>🌐</span></summary>
     </Button>
     <nav className={cn('language-options absolute right-0 z-[60] max-h-[75dvh] w-max max-w-[calc(100vw-32px)] overflow-auto border border-border bg-background p-1.5 text-ui leading-copy font-normal text-muted-foreground shadow-[4px_4px_0_var(--line)]', side === 'top' ? 'bottom-[calc(100%+10px)]' : 'top-[calc(100%+10px)]')} aria-label={t('label')}>
       <LanguageLinks locale={locale} translations={translations} />
@@ -39,14 +38,16 @@ export function LanguageSwitcher({ locale, translations, side = 'bottom' }: Lang
   </details>;
 }
 
-export function LanguageSubmenu({ locale, translations, container }: LanguageProps & { container?: HTMLElement | null }) {
+export function LanguageMenu({ locale, translations, container }: LanguageProps & { container?: HTMLElement | null }) {
   const t = useTranslations('Language');
-  return <DropdownMenuSub>
-    <DropdownMenuSubTrigger><GlobeIcon size={18} aria-hidden />{t('change')}</DropdownMenuSubTrigger>
-    <DropdownMenuSubContent container={container} className="language-options w-max min-w-0 max-w-[min(calc(100vw-24px),var(--radix-dropdown-menu-content-available-width))]" aria-label={t('label')}>
+  return <DropdownMenu modal={false}>
+    <DropdownMenuTrigger asChild>
+      <Button data-slot="language-menu-trigger" variant="ghost" size="icon" aria-label={t('label')} title={t('label')} className="size-11 shrink-0 text-lg [@media(scripting:none)]:hidden"><span aria-hidden>🌐</span></Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent container={container} side="top" align="end" collisionPadding={12} className="language-options w-max min-w-0 max-w-[min(calc(100vw-24px),var(--radix-dropdown-menu-content-available-width))]" aria-label={t('label')}>
       <LanguageLinks locale={locale} translations={translations} menu />
-    </DropdownMenuSubContent>
-  </DropdownMenuSub>;
+    </DropdownMenuContent>
+  </DropdownMenu>;
 }
 
 function LanguageLinks({ locale, translations, menu = false }: LanguageProps & { menu?: boolean }) {

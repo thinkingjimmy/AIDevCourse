@@ -185,26 +185,20 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     await test.info().attach('Runtime 404 recovery evidence', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
   });
 
-  test(`missing pages share one design and homepage Hero actions on ${viewport.name}`, async ({ page, request }) => {
+  test(`missing pages share one design and consistent action geometry on ${viewport.name}`, async ({ page, request }) => {
     await page.setViewportSize(viewport);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     const appearance = (element: HTMLElement) => {
       const style = getComputedStyle(element);
-      return { border: style.border, radius: style.borderRadius, background: style.backgroundColor, color: style.color, shadow: style.boxShadow, height: style.height, font: style.font, padding: style.padding, outline: style.outline, outlineOffset: style.outlineOffset };
+      return { borderWidth: style.borderWidth, borderStyle: style.borderStyle, radius: style.borderRadius, shadow: style.boxShadow, height: style.height, font: style.font, padding: style.padding, outlineWidth: style.outlineWidth, outlineStyle: style.outlineStyle, outlineOffset: style.outlineOffset };
     };
     const evidence = [];
     for (const locale of locales) {
       const copy = JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
       await page.context().clearCookies();
-      await page.goto(localePath(locale));
-      const heroAction = page.locator('main a[data-variant="action-raised"]').first();
-      await heroAction.focus();
-      const homeFocus = await heroAction.evaluate(appearance);
-      await heroAction.blur();
-      await page.mouse.move(0, 0);
-      const homeDefault = await heroAction.evaluate(appearance);
-      await heroAction.hover();
-      const homeHover = await heroAction.evaluate(appearance);
+      let sharedDefault: ReturnType<typeof appearance> | undefined;
+      let sharedHover: ReturnType<typeof appearance> | undefined;
+      let sharedFocus: ReturnType<typeof appearance> | undefined;
       let markup = '';
       const courseSlug = process.env.CONTENT_TEST === '1' ? 'ai-coding' : 'llm-101';
       for (const suffix of ['/unknown-page', '/courses/missing/lesson', `/courses/${courseSlug}/missing-lesson`]) {
@@ -230,12 +224,16 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
         await page.mouse.move(0, 0);
         for (const action of await actions.all()) {
           await expect(action).toHaveAttribute('data-variant', 'action-raised');
-          expect(await action.evaluate(appearance)).toEqual(homeDefault);
+          await expect(action).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+          sharedDefault ??= await action.evaluate(appearance);
+          expect(await action.evaluate(appearance)).toEqual(sharedDefault);
           await action.hover();
-          expect(await action.evaluate(appearance)).toEqual(homeHover);
+          sharedHover ??= await action.evaluate(appearance);
+          expect(await action.evaluate(appearance)).toEqual(sharedHover);
           await page.mouse.move(0, 0);
           await action.focus();
-          expect(await action.evaluate(appearance)).toEqual(homeFocus);
+          sharedFocus ??= await action.evaluate(appearance);
+          expect(await action.evaluate(appearance)).toEqual(sharedFocus);
           await expect(action).toBeFocused();
           await action.blur();
         }

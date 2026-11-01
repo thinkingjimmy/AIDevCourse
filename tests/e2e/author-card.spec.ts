@@ -5,13 +5,26 @@ import type { Locale } from '../../src/lib/i18n/config';
 import { localePath } from '../../src/lib/i18n/routing';
 
 const lesson = '/zh/courses/llm-101/why-model-answers-vary';
-const dictionary = (locale: string) => JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8')).Author;
+const messages = (locale: string) => JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
+const dictionary = (locale: string) => messages(locale).Author;
 test.beforeEach(() => { test.skip(process.env.CONTENT_TEST === '1', 'Uses the published lessons.'); });
 
 async function capture(page: Page, name: string) {
   const path = test.info().outputPath(`${name}.png`);
   await page.screenshot({ path, animations: 'disabled' });
   await test.info().attach(name, { path, contentType: 'image/png' });
+}
+
+async function openAuthor(page: Page, locale = 'zh') {
+  const trigger = page.getByRole('button', { name: dictionary(locale).label, exact: true });
+  if (!await trigger.isVisible()) {
+    const mobile = page.locator('[data-slot="mobile-sidebar-trigger"]');
+    if (await mobile.isVisible()) await mobile.click();
+    else await page.locator('[data-slot="sidebar-trigger"]').click();
+  }
+  await trigger.click();
+  await expect(page.getByRole('dialog', { name: dictionary(locale).label })).toBeVisible();
+  return trigger;
 }
 
 async function verifyCard(page: Page, locale = 'zh') {
@@ -36,7 +49,9 @@ async function verifyCard(page: Page, locale = 'zh') {
   const identityBounds = (await identity.boundingBox())!;
   const websiteBounds = (await website.boundingBox())!;
   expect(websiteBounds.x + websiteBounds.width).toBeCloseTo(identityBounds.x + identityBounds.width, 0);
-  expect(websiteBounds.y + websiteBounds.height / 2).toBeCloseTo(identityBounds.y + identityBounds.height / 2, 0);
+  const columns = await identity.evaluate(element => getComputedStyle(element).gridTemplateColumns.split(' ').length);
+  if (columns === 3) expect(websiteBounds.y + websiteBounds.height / 2).toBeCloseTo(identityBounds.y + identityBounds.height / 2, 0);
+  else expect(websiteBounds.width).toBeCloseTo(identityBounds.width, 0);
   await expect(card.getByRole('link', { name: t.starProjectLabel })).toHaveAttribute('href', 'https://github.com/thinkingjimmy/aidevcourse');
   const x = card.getByRole('link', { name: t.followX, exact: true });
   await expect(x).toHaveAttribute('href', 'https://x.com/thinkingjimmy');
@@ -61,17 +76,20 @@ async function verifyCard(page: Page, locale = 'zh') {
   await expect(x).toHaveText('');
   await expect(xiaohongshu).toHaveText('');
   const actions = card.locator('[data-slot="author-actions"]');
+  expect(await actions.getByRole('link').evaluateAll(links => links.map(link => link.getAttribute('aria-label'))))
+    .toEqual([t.starProjectLabel, t.followXiaohongshu, t.followX, t.followBilibili]);
   await expect(actions.getByRole('link', { name: t.website, exact: true })).toHaveCount(0);
   const actionBounds = await actions.locator('[data-slot="button"]').evaluateAll(buttons => buttons.map(button => {
     const { top, height } = button.getBoundingClientRect();
     return { top, height };
   }));
   expect(actionBounds).toHaveLength(4);
-  expect(actionBounds.every(bounds => bounds.top === actionBounds[0].top && bounds.height === actionBounds[0].height)).toBe(true);
+  expect(actionBounds.every(bounds => bounds.height === actionBounds[0].height)).toBe(true);
+  expect(new Set(actionBounds.map(bounds => bounds.top)).size).toBeLessThanOrEqual(2);
   for (const link of [x, xiaohongshu, bilibili]) {
     const bounds = (await link.boundingBox())!;
-    expect(bounds.width).toBeGreaterThanOrEqual(40);
-    expect(bounds.height).toBeGreaterThanOrEqual(40);
+    expect(bounds.width + 0.01).toBeGreaterThanOrEqual(link === xiaohongshu ? 56 : 48);
+    expect(bounds.height + 0.01).toBeGreaterThanOrEqual(40);
     const icon = (await link.locator('[data-slot="author-brand-icon"]').boundingBox())!;
     expect(Math.abs(icon.x + icon.width / 2 - bounds.x - bounds.width / 2)).toBeLessThanOrEqual(1);
     expect(Math.abs(icon.y + icon.height / 2 - bounds.y - bounds.height / 2)).toBeLessThanOrEqual(1.5);
@@ -85,8 +103,8 @@ async function verifyCard(page: Page, locale = 'zh') {
   await image.scrollIntoViewIfNeeded();
   await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
   const geometry = await card.evaluate(element => {
-    const bounds = element.getBoundingClientRect();
-    const frame = element.querySelector('[data-slot="card"]')!;
+    const frame = element.closest('[data-author-dialog]')!;
+    const bounds = frame.getBoundingClientRect();
     const frameStyle = getComputedStyle(frame);
     const radii = [...element.querySelectorAll('[data-slot="button"], [data-slot="author-wechat"], [role="img"]')].map(item => getComputedStyle(item).borderRadius);
     return {
@@ -110,100 +128,141 @@ async function verifyCard(page: Page, locale = 'zh') {
   return { card, geometry };
 }
 
-test('wide lesson outline preserves complete titles and working author links', async ({ page }) => {
+test('author dialog opens beside the language menu and preserves working links', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto(lesson);
   await page.evaluate(() => document.fonts.ready);
+  await page.locator('article h2').last().scrollIntoViewIfNeeded();
   const toc = page.locator('[data-slot="lesson-toc"]');
-  const aside = page.locator('[data-slot="lesson-aside"]');
   await expect(toc).toBeVisible();
-  const titles = await toc.locator('a').evaluateAll(links => links.map(link => {
-    const style = getComputedStyle(link);
-    return { title: link.textContent, lines: Math.round((link.getBoundingClientRect().height - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom)) / parseFloat(style.lineHeight)) };
-  }));
-  expect(titles.length).toBe(await page.locator('article h2').count());
-  expect(titles.every(item => item.lines === 1)).toBe(true);
-  expect((await aside.boundingBox())!.width).toBeCloseTo(336, 0);
-  expect((await page.locator('article').boundingBox())!.width).toBeCloseTo(680, 0);
-  const { card, geometry } = await verifyCard(page);
-  const accessibility = await new AxeBuilder({ page }).include('[data-slot="lesson-aside"]').analyze();
+  await expect(page.locator('[data-slot="author-card"]')).toHaveCount(0);
+  const footer = page.locator('[data-slot="sidebar-footer"]');
+  const trigger = footer.getByRole('button', { name: dictionary('zh').label, exact: true });
+  await expect(trigger).toHaveText('👋');
+  const hand = (await trigger.boundingBox())!;
+  const language = (await footer.locator('[data-slot="language-menu-trigger"]').boundingBox())!;
+  expect(hand.x + hand.width).toBeLessThanOrEqual(language.x);
+  expect(await footer.getByRole('button').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label'))))
+    .toEqual([messages('zh').Course.achievementsTitle, dictionary('zh').label, messages('zh').Language.label]);
+  await expect(footer.locator('[data-slot="language-menu-trigger"]')).toHaveText('🌐');
+  expect(hand.width).toBeGreaterThanOrEqual(44);
+  await capture(page, 'sidebar-footer-button-order');
+  await openAuthor(page);
+  const { geometry } = await verifyCard(page);
+  const dialog = page.getByRole('dialog', { name: dictionary('zh').label });
+  await expect(page.locator('[data-slot="dialog-overlay"]')).toHaveCSS('backdrop-filter', 'blur(8px)');
+  const accessibility = await new AxeBuilder({ page }).include('[data-author-dialog]').analyze();
   expect(accessibility.violations).toEqual([]);
-  await capture(page, 'wide-outline-and-author-card');
-  const cardScreenshot = test.info().outputPath('author-card.png');
-  await card.screenshot({ path: cardScreenshot, animations: 'disabled' });
-  await test.info().attach('Author card detail', { path: cardScreenshot, contentType: 'image/png' });
+  await capture(page, 'author-dialog-desktop');
+  const screenshot = test.info().outputPath('author-card.png');
+  await dialog.screenshot({ path: screenshot });
+  await test.info().attach('Author dialog detail', { path: screenshot, contentType: 'image/png' });
+  await dialog.getByRole('button', { name: messages('zh').Ui.close, exact: true }).click();
+  await expect(trigger).toBeFocused();
+  await trigger.press('Enter');
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(trigger).toBeFocused();
+  await trigger.click();
+  await page.locator('[data-slot="dialog-overlay"]').click({ position: { x: 16, y: 16 } });
+  await expect(dialog).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+  await expect(toc).toBeVisible();
   await toc.locator('a').last().click();
   await expect(page.locator('article h2').last()).toBeInViewport();
-  await test.info().attach('Wide reading geometry', { body: JSON.stringify({ titles, author: geometry }, null, 2), contentType: 'application/json' });
+  await test.info().attach('Author dialog geometry', { body: JSON.stringify(geometry, null, 2), contentType: 'application/json' });
 });
 
-test('author card stays hidden when the right rail is unavailable', async ({ page }) => {
-  const evidence = [];
-  for (const width of [1280, 1024, 960, 768, 390, 320]) {
-    await page.setViewportSize({ width, height: 844 });
+test('author dialog remains reachable on narrow and short screens', async ({ page }) => {
+  for (const viewport of [{ width: 1280, height: 844 }, { width: 960, height: 600 }, { width: 390, height: 844 }, { width: 320, height: 568 }, { width: 390, height: 320 }]) {
+    await page.setViewportSize(viewport);
     await page.goto(lesson);
-    await expect(page.locator('[data-slot="lesson-toc"]')).toBeHidden();
-    await expect(page.locator('[data-slot="author-card"]')).toBeHidden();
-    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-    await expect(page.locator('[data-slot="lesson-aside"]')).toBeHidden();
-    const geometry = await page.locator('[data-slot="lesson-reading-group"]').evaluate(group => ({
-      groupHeight: group.getBoundingClientRect().height,
-      articleHeight: group.querySelector('article')!.getBoundingClientRect().height,
-      overflow: document.documentElement.scrollWidth > innerWidth,
-    }));
-    expect(geometry.groupHeight).toBeCloseTo(geometry.articleHeight, 0);
-    expect(geometry.overflow).toBe(false);
-    await capture(page, `author-card-hidden-${width}`);
-    evidence.push({ viewport: width, ...geometry });
+    await expect(page.locator('[data-slot="author-card"]')).toHaveCount(0);
+    const trigger = await openAuthor(page);
+    await verifyCard(page);
+    const dialog = page.getByRole('dialog', { name: dictionary('zh').label });
+    const close = dialog.getByRole('button', { name: messages('zh').Ui.close, exact: true });
+    await expect(close).toBeInViewport();
+    const bounds = (await dialog.boundingBox())!;
+    expect(bounds.y).toBeGreaterThanOrEqual(0);
+    expect(bounds.y + bounds.height).toBeLessThanOrEqual(viewport.height);
+    await capture(page, `author-dialog-${viewport.width}-${viewport.height}`);
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+    if (viewport.width <= 960) await expect(page.locator('[data-mobile="true"]')).toBeVisible();
   }
-  await page.setViewportSize({ width: 1280, height: 960 });
-  await page.goto(lesson);
-  const toggle = page.locator('[data-slot="sidebar-trigger"]');
-  await toggle.click();
-  await expect(page.locator('[data-slot="lesson-toc"]')).toBeVisible();
-  await verifyCard(page);
-  await toggle.click();
-  await expect(page.locator('[data-slot="author-card"]')).toBeHidden();
-  await page.setViewportSize({ width: 1440, height: 960 });
-  await verifyCard(page);
-  await test.info().attach('Responsive author card visibility', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
 });
 
-test('author card follows outline availability across languages and enlarged text', async ({ page }) => {
-  await page.setViewportSize({ width: 1920, height: 960 });
+test('author dialog follows the selected language and enlarged text', async ({ page }) => {
   const evidence = [];
   for (const locale of ['en', 'zh', 'ja', 'fr', 'es'] as Locale[]) {
+    await page.setViewportSize({ width: 1440, height: 960 });
     await page.goto(localePath(locale, '/courses/llm-101/what-a-language-model-does'));
-    const hasHeadings = await page.locator('[data-slot="lesson-toc"]').count() > 0;
-    if (hasHeadings) evidence.push({ locale, ...(await verifyCard(page, locale)).geometry });
-    else await expect(page.locator('[data-slot="author-card"]')).toHaveCount(0);
-    await page.evaluate(() => { document.documentElement.style.fontSize = '20px'; });
+    await openAuthor(page, locale);
+    evidence.push({ locale, ...(await verifyCard(page, locale)).geometry });
+    await page.keyboard.press('Escape');
     await page.setViewportSize({ width: 390, height: 844 });
-    await expect(page.locator('[data-slot="author-card"]')).toBeHidden();
-    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-    await capture(page, `author-card-hidden-enlarged-${locale}`);
-    evidence.push({ locale, enlarged: true, cardVisible: false });
-    await page.setViewportSize({ width: 1920, height: 960 });
+    await page.evaluate(() => { document.documentElement.style.fontSize = '20px'; });
+    await openAuthor(page, locale);
+    await verifyCard(page, locale);
+    await capture(page, `author-dialog-enlarged-${locale}`);
+    await page.keyboard.press('Escape');
+    await page.locator('[data-slot="language-menu-trigger"]').click();
+    const menu = page.getByRole('menu', { name: messages(locale).Language.label });
+    await expect(menu.getByRole('menuitem')).toHaveCount(5);
+    await expect(menu.locator('a[aria-current="true"]')).toHaveAttribute('hreflang', locale === 'zh' ? 'zh-Hans' : locale);
+    await expect(menu.locator('[data-slot="dropdown-menu-sub-trigger"]')).toHaveCount(0);
+    await page.keyboard.press('Escape');
   }
-  await test.info().attach('Localized author cards', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
+  await test.info().attach('Localized author dialogs', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
 });
 
-test('author card respects right-rail visibility without JavaScript', async ({ browser, baseURL }) => {
+for (const width of [1440, 390]) {
+  test(`footer opens language choices directly at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/zh/courses/llm-101/what-a-language-model-does');
+    if (width < 961) await page.locator('[data-slot="mobile-sidebar-trigger"]').click();
+    const footer = page.locator('[data-slot="sidebar-footer"]');
+    await expect(footer.getByRole('button', { name: messages('zh').Ui.more, exact: true })).toHaveCount(0);
+    await expect(footer.getByRole('link', { name: messages('zh').Ui.about, exact: true })).toHaveCount(0);
+    const trigger = footer.getByRole('button', { name: messages('zh').Language.label, exact: true });
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+    const menu = page.getByRole('menu', { name: messages('zh').Language.label });
+    await expect(menu).toBeVisible();
+    await expect(menu.getByRole('menuitem')).toHaveCount(5);
+    await expect(menu.locator('[data-slot="dropdown-menu-sub-trigger"]')).toHaveCount(0);
+    await expect(menu.getByRole('menuitem', { name: messages('zh').Ui.about, exact: true })).toHaveCount(0);
+    await page.keyboard.press('ArrowDown');
+    expect(await menu.evaluate(element => element.contains(document.activeElement))).toBe(true);
+    await capture(page, `footer-language-menu-${width}`);
+    await page.keyboard.press('Escape');
+    await expect(trigger).toBeFocused();
+    if (width < 961) await expect(page.locator('[data-mobile="true"]')).toBeVisible();
+    await trigger.click();
+    await menu.locator('a[hreflang="en"]').click();
+    await expect(page).toHaveURL(/\/courses\/llm-101\/what-a-language-model-does$/);
+    await expect(page.locator('[data-mobile="true"]')).toHaveCount(0);
+  });
+}
+
+test('author website and language choices remain available without JavaScript', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false });
   try {
     const page = await context.newPage();
     for (const width of [1440, 390]) {
-      await page.setViewportSize({ width, height: 600 });
+      await page.setViewportSize({ width, height: 844 });
       await page.goto(lesson);
-      if (width === 1440) {
-        const { card } = await verifyCard(page);
-        await card.getByRole('link').last().scrollIntoViewIfNeeded();
-        await expect(card.getByRole('link').last()).toBeInViewport();
-      } else {
-        await expect(page.locator('[data-slot="author-card"]')).toBeHidden();
-        await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-      }
-      await capture(page, `author-card-no-js-${width}`);
+      if (width < 961) await page.locator('[data-slot="mobile-native-menu"] > summary').click();
+      await expect(page.getByRole('link', { name: dictionary('zh').website, exact: true })).toHaveAttribute('href', 'https://jimmywong.dev');
+      await expect(page.locator('[data-slot="author-dialog-trigger"]')).toBeHidden();
+      await expect(page.locator('[data-author-dialog]')).toHaveCount(0);
+      await expect(page.locator('[data-slot="author-card"]')).toHaveCount(0);
+      const language = page.locator('.language-picker summary').filter({ visible: true });
+      await language.click();
+      await expect(page.locator('.language-options:visible a')).toHaveCount(5);
+      await capture(page, `author-footer-no-js-${width}`);
     }
   } finally { await context.close(); }
 });
@@ -236,18 +295,18 @@ test('lesson outline follows reading without changing the URL or page position',
   await links.nth(3).click();
   await expect(active).toHaveAttribute('href', (await links.nth(3).getAttribute('href'))!);
   await expect(headings.nth(3)).toBeInViewport();
-  const style = await active.evaluate(element => {
+  const style = await active.locator('[data-slot="lesson-toc-marker"]').evaluate(element => {
     const css = getComputedStyle(element);
-    return { text: css.color, indicator: css.borderLeftColor, weight: css.fontWeight, indicatorWidth: css.borderLeftWidth };
+    return { color: css.backgroundColor, height: css.height };
   });
-  expect(style.text).toBe(style.indicator);
-  expect(style.weight).toBe('500');
-  expect(style.indicatorWidth).toBe('2px');
+  expect(style.color).toBe('rgb(9, 9, 11)');
+  expect(style.height).toBe('3px');
   await capture(page, 'lesson-outline-current-section');
-  await page.setViewportSize({ width: 1440, height: 400 });
+  await page.setViewportSize({ width: 1440, height: 160 });
   await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
   await expect(active).toHaveAttribute('href', (await links.last().getAttribute('href'))!);
   await expect(active).toBeInViewport();
+  expect(await toc.evaluate(element => element.scrollTop)).toBeGreaterThan(0);
   const pageBottom = await page.evaluate(() => window.scrollY);
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(pageBottom);
   await capture(page, 'lesson-outline-short-viewport');

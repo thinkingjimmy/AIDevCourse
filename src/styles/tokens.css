@@ -29,6 +29,10 @@
   --color-done: #3f6b3a;
   --color-review: #6b5313;
   --color-mark: #f1de9c;
+  --color-note-connector: oklch(0.726 0.169 57.254);
+  --color-note-highlight: oklch(0.92 0.045 57.254);
+  --color-note-ink: oklch(0.42 0.1 57.254);
+  --note-line-width: 1.5px;
   --color-reading: #3f3f46;
   --color-anatomy-paper: #fbfbfa;
   --color-anatomy-shade-0: #dcdcd9;

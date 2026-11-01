@@ -11,7 +11,7 @@ import { SiteLogo } from '@/components/layout/page-primitives';
 import { LanguageSwitcher } from '@/components/layout/language-switcher';
 import { groupModules, type Catalog } from '@/lib/content/model';
 import type { Locale } from '@/lib/i18n/config';
-import { site } from '@/lib/site-config';
+import { author, site } from '@/lib/site-config';
 import { CourseFooter } from './course-footer';
 import { SearchShortcut } from '../search/search-shortcut';
 import type { SearchLessonMeta } from '../search/lessons';
@@ -143,6 +143,7 @@ function CourseSidebar({ locale, version, lessons, translations }: {
 
 function CourseMobileHeader({ locale, translations }: { locale: Locale; translations: Catalog['translations'] }) {
   const ui = useTranslations('Ui');
+  const authorText = useTranslations('Author');
   const { openMobile, mobileDialogId, setOpenMobile } = useSidebar();
   const controlClassName = 'ml-auto h-11 shrink-0 gap-2 rounded-(--radius) px-2 text-sm leading-copy font-medium max-[400px]:w-11 max-[400px]:px-0';
   return <header data-slot="mobile-course-header" className="mobile-course-bar sticky top-0 z-30 hidden border-b border-border bg-surface max-[961px]:block">
@@ -157,7 +158,7 @@ function CourseMobileHeader({ locale, translations }: { locale: Locale; translat
         <div className="absolute top-[calc(100%+6px)] right-0 z-40 max-h-[calc(100dvh-5rem)] w-[min(20rem,calc(100vw-2.5rem))] overflow-y-auto overscroll-contain border border-border bg-sidebar shadow-[4px_4px_0_var(--line)]">
           <ModuleTree staticMode />
           <div className="flex items-center justify-between gap-3 border-t border-border p-2">
-            <Link href={localePath(locale, '/about')} className="px-2 py-3 text-sm text-muted-foreground">{ui('about')}</Link>
+            <Button asChild variant="ghost" size="icon" className="size-11 shrink-0 text-lg"><a href={author.websiteUrl} target="_blank" rel="noopener noreferrer" aria-label={authorText('website')}><span aria-hidden>👋</span></a></Button>
             <LanguageSwitcher locale={locale} translations={translations} side="top" />
           </div>
         </div>
@@ -172,9 +173,9 @@ export function LearnShell({ locale, version, lessons, translations, children }:
   const open = useSyncExternalStore(subscribeSidebar, readSidebarOpen, () => true);
   return <SidebarProvider className="bg-background text-foreground" open={open} onOpenChange={setSidebarOpen}>
     <CourseSidebar locale={locale} version={version} lessons={lessons} translations={translations} />
-    <SidebarInset className="min-w-0 bg-background">
+    <SidebarInset className="min-w-0 bg-background [--lesson-sidebar-width:var(--sidebar-width)] peer-data-[collapsible=icon]:[--lesson-sidebar-width:var(--sidebar-width-icon)]">
       <CourseMobileHeader locale={locale} translations={translations} />
-      <div data-slot="lesson-region" className="@container/lesson min-w-0 flex-1 px-8 max-[961px]:px-5">{children}</div>
+      <div data-slot="lesson-region" className="@container/lesson min-w-0 flex-1 px-8 max-[961px]:px-5 min-[961px]:has-[[data-slot=lesson-toc]]:pl-20">{children}</div>
     </SidebarInset>
   </SidebarProvider>;
 }

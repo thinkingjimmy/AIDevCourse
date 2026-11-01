@@ -121,7 +121,7 @@ test('development CSS and achievement edits stay aligned without restarting', as
       { path: '/ja', status: 200, family: 'Noto Sans JP Variable' },
       { path: '/?lang=en', status: 200, family: 'Geist Variable' },
       { path: '/zh/courses/llm-101', status: 200, family: 'Noto Sans SC Variable' },
-      { path: '/zh/courses/llm-101/how-language-models-are-trained-part-1', status: 200, family: 'Noto Sans SC Variable' },
+      { path: '/zh/courses/llm-101/how-language-models-are-trained', status: 200, family: 'Noto Sans SC Variable' },
       { path: '/design/components', status: 200, family: 'Geist Variable' },
       { path: '/zh/unknown-page', status: 404, family: 'Noto Sans SC Variable' },
     ]) {

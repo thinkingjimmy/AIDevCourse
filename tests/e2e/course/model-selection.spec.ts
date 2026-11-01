@@ -2,21 +2,22 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 const course = '/zh/courses/llm-101';
+const modelBasics = `${course}/open-models-and-local-deployment`;
 const lesson = `${course}/how-to-choose-a-language-model`;
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published model selection lesson.');
 
-test('follow thinking and multimodal lessons into model selection and retain achievements', async ({ page }, testInfo) => {
-  await page.goto(`${course}/how-language-models-are-trained-part-1`);
+test('thinking and multimodal lessons retain achievements', async ({ page }, testInfo) => {
+  await page.goto(`${course}/how-language-models-are-trained`);
   for (const entry of [
-    { slug: 'how-model-thinking-works', title: '模型的「深度思考」是怎么回事？', achievement: 'thinking-is-not-verification', text: '980 元' },
-    { slug: 'how-models-see-and-hear', title: '模型是如何看图和听声音的？', achievement: 'distinguish-audio-inputs', text: '语音转文字、理解音频、生成语音' },
+    { slug: 'how-model-thinking-works', title: '模型的「深度思考」是怎么回事？', achievement: 'thinking-is-not-verification', text: '980 元', headings: 6 },
+    { slug: 'how-models-see-and-hear', title: '模型是如何看图和听声音的？', achievement: 'distinguish-audio-inputs', text: '语音转文字、理解音频、生成语音', headings: 4 },
   ]) {
     await page.locator('article nav').getByRole('link', { name: /下一课/ }).click();
     await expect(page).toHaveURL(`${course}/${entry.slug}`);
     await expect(page.locator('article h1')).toHaveText(entry.title);
     await expect(page.locator('article > .prose')).toContainText(entry.text);
-    await expect(page.locator('article h2')).toHaveCount(6);
+    await expect(page.locator('article h2')).toHaveCount(entry.headings);
     const challenge = page.locator(`[data-achievement="${entry.achievement}"]`);
     await challenge.getByRole('radio').first().click();
     await expect(challenge).toHaveAttribute('data-state', 'incorrect');
@@ -30,11 +31,30 @@ test('follow thinking and multimodal lessons into model selection and retain ach
     await page.screenshot({ path: screenshot, fullPage: true, animations: 'disabled' });
     await testInfo.attach(entry.slug, { path: screenshot, contentType: 'image/png' });
   }
+});
+
+test('follow model basics into selection and retain its achievement', async ({ page }, testInfo) => {
+  await page.goto(`${course}/how-models-see-and-hear`);
+  await page.locator('article nav').getByRole('link', { name: /下一课/ }).click();
+  await expect(page).toHaveURL(modelBasics);
+  await expect(page.locator('article h1')).toHaveText('开源模型、参数量与本地运行');
+  await expect(page.locator('article h2')).toHaveText([
+    'Q1：开源和闭源模型是什么？', 'Q2: 开源和闭源有何区别？', 'Q2：模型里的 B 代表什么？',
+    'Q3：什么是混合专家（MoE）模型？', 'Q4：我的电脑能运行 DeepSeek-V4.1-Flash 模型吗？',
+  ]);
+  await expect(page.locator('article > .prose')).toContainText('5520 亿个参数');
+  await expect(page.locator('[data-jimmy-note-anchor]')).toHaveCount(2);
+  await expect(page.locator('article .katex')).toHaveCount(1);
+  await expect(page.locator('[data-achievement]')).toHaveCount(0);
+  await expect(page.locator('article nav').getByRole('link', { name: /上一课/ })).toHaveAttribute('href', `${course}/how-models-see-and-hear`);
+  const basicsAccessibility = await new AxeBuilder({ page }).include('article').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+  expect(basicsAccessibility.violations).toEqual([]);
+  await testInfo.attach('model-basics-independent-lesson', { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
   await page.locator('article nav').getByRole('link', { name: /下一课/ }).click();
   await expect(page).toHaveURL(lesson);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('如何选择适合自己的大语言模型？');
-  await expect(page.locator('article h2').filter({ hasText: /^Q[1-4]：/ })).toHaveCount(4);
-  await expect(page.locator('article > .prose')).toContainText('600 亿个参数');
+  await expect(page.locator('article h2').filter({ hasText: /^Q[1-4]：/ })).toHaveText(['Q3：如何评判哪个模型更强？', 'Q4：我应该使用何种模型？']);
+  await expect(page.locator('article nav').getByRole('link', { name: /上一课/ })).toHaveAttribute('href', modelBasics);
   const achievement = page.locator('[data-achievement="choose-model-for-task"]');
   await achievement.getByRole('radio').first().click();
   await expect(achievement).toHaveAttribute('data-state', 'incorrect');
@@ -50,16 +70,39 @@ test('follow thinking and multimodal lessons into model selection and retain ach
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('AI Chat 是如何工作的？');
 });
 
+test('split model basics keeps its desktop notes and mobile popovers', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1536, height: 960 });
+  await page.goto(modelBasics);
+  for (const id of ['002', '003']) {
+    await expect(page.locator(`[data-jimmy-note-card="${id}"]`)).toBeVisible();
+    await expect(page.locator(`[data-note-connector="${id}"]`)).toHaveAttribute('d', /^M /);
+  }
+  await testInfo.attach('model-basics-desktop-notes', { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const id of ['002', '003']) {
+    await page.locator(`[data-note-trigger-for="${id}"]`).click();
+    const dialog = page.getByRole('dialog', { name: 'Jimmy 的批注', exact: true });
+    await expect(dialog.getByRole('note', { name: 'Jimmy', exact: true })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await testInfo.attach(`model-basics-mobile-note-${id}`, { body: await page.screenshot({ animations: 'disabled' }), contentType: 'image/png' });
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
+  }
+});
+
 test('three modules expose ordered lessons through the catalog, sidebar, and search', async ({ page }, testInfo) => {
   await page.goto(course);
   const catalog = page.locator('section[aria-labelledby="course-catalog"]');
   await expect(catalog.locator('h3')).toHaveText(['01大语言模型的工作原理', '02模型的训练与能力', '03AI 应用的工作原理']);
   const groups = catalog.locator('ol');
-  for (const [index, count] of [4, 4, 1].entries()) await expect(groups.nth(index).getByRole('listitem')).toHaveCount(count);
-  await expect(catalog.locator('li a > span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '3.1']);
+  for (const [index, count] of [4, 5, 2].entries()) await expect(groups.nth(index).getByRole('listitem')).toHaveCount(count);
+  await expect(catalog.locator('li a > span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2']);
   await expect(groups.nth(1).getByRole('link').nth(1)).toHaveAttribute('href', `${course}/how-model-thinking-works`);
   await expect(groups.nth(1).getByRole('link').nth(2)).toHaveAttribute('href', `${course}/how-models-see-and-hear`);
+  await expect(groups.nth(1).getByRole('link').nth(3)).toHaveAttribute('href', modelBasics);
+  await expect(groups.nth(1).getByRole('link').nth(3)).toContainText('2.4');
   await expect(groups.nth(1).getByRole('link').last()).toHaveAttribute('href', lesson);
+  await expect(groups.nth(1).getByRole('link').last()).toContainText('2.5');
   await expect(catalog.getByRole('link', { name: /如何选择适合自己的大语言模型/ })).toHaveAttribute('href', lesson);
   const urls = await catalog.getByRole('link').evaluateAll((links) => links.map((link) => link.getAttribute('href')!));
   for (const url of urls) {
@@ -75,7 +118,7 @@ test('three modules expose ordered lessons through the catalog, sidebar, and sea
   await expect(sidebar.locator('[data-sidebar="menu-button"]')).toHaveText(['01 大语言模型的工作原理', '02 模型的训练与能力', '03 AI 应用的工作原理']);
   await expect(sidebar.getByRole('button', { name: '02 模型的训练与能力', exact: true })).toHaveAttribute('aria-expanded', 'true');
   await expect(sidebar.locator('a[aria-current="page"]')).toHaveAttribute('href', lesson);
-  await testInfo.attach('llm-101-module-routes', { body: JSON.stringify({ urls, parts: ['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '3.1'] }, null, 2), contentType: 'application/json' });
+  await testInfo.attach('llm-101-module-routes', { body: JSON.stringify({ urls, parts: ['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2'] }, null, 2), contentType: 'application/json' });
   await page.goto('/zh');
   await page.keyboard.press('Control+k');
   await page.getByRole('textbox', { name: '搜索课时' }).fill('选择');
@@ -85,10 +128,11 @@ test('three modules expose ordered lessons through the catalog, sidebar, and sea
   await expect(page).toHaveURL(lesson);
 });
 
-test('thinking and multimodal lessons are searchable', async ({ page }) => {
+test('thinking, multimodal, and model basics lessons are searchable', async ({ page }) => {
   for (const entry of [
     { slug: 'how-model-thinking-works', query: '深度思考' },
     { slug: 'how-models-see-and-hear', query: '看图' },
+    { slug: 'open-models-and-local-deployment', query: 'MoE' },
   ]) {
     await page.goto('/zh');
     await page.keyboard.press('Control+k');
@@ -122,24 +166,26 @@ test('the relocated first lesson keeps language switching and its public URLs', 
   await testInfo.attach('llm-101-translated-routes', { body: JSON.stringify(translations, null, 2), contentType: 'application/json' });
 });
 
-test('read all four questions on a narrow screen without JavaScript', async ({ browser, baseURL }, testInfo) => {
+test('read both split lessons on a narrow screen without JavaScript', async ({ browser, baseURL }, testInfo) => {
   const context = await browser.newContext({ baseURL, viewport: { width: 320, height: 844 }, javaScriptEnabled: false });
   try {
     const page = await context.newPage();
-    expect((await page.goto(lesson))?.status()).toBe(200);
-    await expect(page.locator('article h2').filter({ hasText: /^Q[1-4]：/ })).toHaveCount(4);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await testInfo.attach('model-selection-narrow-no-js', { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
-    for (const slug of ['how-model-thinking-works', 'how-models-see-and-hear']) {
-      expect((await page.goto(`${course}/${slug}`))?.status()).toBe(200);
-      await expect(page.locator('article h1')).toHaveCount(1);
-      await expect(page.locator('article h2')).toHaveCount(6);
-      await expect(page.locator('[data-achievement] legend')).toBeVisible();
-      await expect(page.locator('[data-achievement] input[type="radio"]').first()).toBeDisabled();
+    for (const entry of [
+      { url: modelBasics, name: 'model-basics', questions: 5 },
+      { url: lesson, name: 'model-selection', questions: 2 },
+    ]) {
+      expect((await page.goto(entry.url))?.status()).toBe(200);
+      await expect(page.locator('article h2').filter({ hasText: /^Q[1-4][:：]/ })).toHaveCount(entry.questions);
+      if (entry.url === modelBasics) {
+        await expect(page.locator('article .katex')).toHaveCount(1);
+        await expect(page.locator('article > .prose')).toContainText('1325 GB');
+        await expect(page.locator('[data-achievement]')).toHaveCount(0);
+      } else {
+        await expect(page.locator('[data-achievement] legend')).toBeVisible();
+        await expect(page.locator('[data-achievement] input[type="radio"]').first()).toBeDisabled();
+      }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      const screenshot = testInfo.outputPath(`${slug}-narrow-no-js.png`);
-      await page.screenshot({ path: screenshot, fullPage: true, animations: 'disabled' });
-      await testInfo.attach(`${slug}-narrow-no-js`, { path: screenshot, contentType: 'image/png' });
+      await testInfo.attach(`${entry.name}-narrow-no-js`, { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
     }
     await page.goto(course);
     await expect(page.locator('section[aria-labelledby="course-catalog"] h3')).toHaveCount(3);

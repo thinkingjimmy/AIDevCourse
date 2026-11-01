@@ -19,7 +19,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   const messages = await getMessages({ locale: lang });
   const ui = await getTranslations({ locale: lang, namespace: 'Ui' });
   const home = await getTranslations({ locale: lang, namespace: 'Home' });
-  const clientMessages = Object.fromEntries(['Ui', 'Language', 'Search', 'Course', 'Achievement'].map((namespace) => [namespace, messages[namespace]]));
+  const clientMessages = Object.fromEntries(['Ui', 'Language', 'Search', 'Course', 'Achievement', 'Author'].map((namespace) => [namespace, messages[namespace]]));
   const lessonPaths = getCourses(lang).flatMap((course) => course.lessons.map((lesson) => lesson.url));
   return <html lang={htmlLanguages[lang]} className="light"><body>
     <Providers locale={lang} messages={clientMessages} translations={fumadocsMessages(messages.Ui as Record<string, string>)}>
