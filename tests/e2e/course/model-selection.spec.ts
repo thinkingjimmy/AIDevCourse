@@ -95,8 +95,8 @@ test('three modules expose ordered lessons through the catalog, sidebar, and sea
   const catalog = page.locator('section[aria-labelledby="course-catalog"]');
   await expect(catalog.locator('h3')).toHaveText(['01大语言模型的工作原理', '02模型的训练与能力', '03AI 应用的工作原理']);
   const groups = catalog.locator('ol');
-  for (const [index, count] of [4, 5, 2].entries()) await expect(groups.nth(index).getByRole('listitem')).toHaveCount(count);
-  await expect(catalog.locator('li a > span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2']);
+  for (const [index, count] of [4, 5, 3].entries()) await expect(groups.nth(index).getByRole('listitem')).toHaveCount(count);
+  await expect(catalog.locator('li a > span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2', '3.3']);
   await expect(groups.nth(1).getByRole('link').nth(1)).toHaveAttribute('href', `${course}/how-model-thinking-works`);
   await expect(groups.nth(1).getByRole('link').nth(2)).toHaveAttribute('href', `${course}/how-models-see-and-hear`);
   await expect(groups.nth(1).getByRole('link').nth(3)).toHaveAttribute('href', modelBasics);
@@ -118,11 +118,11 @@ test('three modules expose ordered lessons through the catalog, sidebar, and sea
   await expect(sidebar.locator('[data-sidebar="menu-button"]')).toHaveText(['01 大语言模型的工作原理', '02 模型的训练与能力', '03 AI 应用的工作原理']);
   await expect(sidebar.getByRole('button', { name: '02 模型的训练与能力', exact: true })).toHaveAttribute('aria-expanded', 'true');
   await expect(sidebar.locator('a[aria-current="page"]')).toHaveAttribute('href', lesson);
-  await testInfo.attach('llm-101-module-routes', { body: JSON.stringify({ urls, parts: ['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2'] }, null, 2), contentType: 'application/json' });
+  await testInfo.attach('llm-101-module-routes', { body: JSON.stringify({ urls, parts: ['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2', '3.3'] }, null, 2), contentType: 'application/json' });
   await page.goto('/zh');
   await page.keyboard.press('Control+k');
-  await page.getByRole('textbox', { name: '搜索课时' }).fill('选择');
-  const result = page.locator(`.search-result[href="${lesson}"]`);
+  await page.getByRole('textbox', { name: '搜索课时' }).fill('如何选择适合自己的大语言模型');
+  const result = page.locator(`.search-result[href="${lesson}"]`).first();
   await expect(result).toBeVisible();
   await result.click();
   await expect(page).toHaveURL(lesson);

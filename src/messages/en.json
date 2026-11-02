@@ -1,7 +1,9 @@
 {
   "Ui": {
     "home": "Home",
+    "navigation": "Main navigation",
     "about": "About",
+    "aboutTab": "About",
     "skip": "Skip to content",
     "menu": "Course navigation",
     "collapseSidebar": "Collapse sidebar",
@@ -88,6 +90,8 @@
     "who": "Who it's for",
     "before": "Before you start",
     "contents": "Contents",
+    "contentsTab": "Index",
+    "achievementsTab": "Awards",
     "updating": "Content is being updated",
     "updatingBody": "New lessons are being prepared. They will appear here when published.",
     "achievementCount": "{count, plural, one {# achievement unlocked} other {# achievements unlocked}}",

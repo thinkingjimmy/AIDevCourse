@@ -1,7 +1,9 @@
 {
   "Ui": {
     "home": "首页",
+    "navigation": "主导航",
     "about": "关于",
+    "aboutTab": "关于",
     "skip": "跳到正文",
     "menu": "课程目录",
     "collapseSidebar": "收起侧栏",
@@ -88,6 +90,8 @@
     "who": "适合谁",
     "before": "开始前",
     "contents": "目录",
+    "contentsTab": "目录",
+    "achievementsTab": "成就",
     "updating": "内容更新中",
     "updatingBody": "新的课文正在准备中，发布后会显示在这里。",
     "achievementCount": "已解锁 {count} 项成就",

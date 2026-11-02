@@ -17,6 +17,7 @@ import { ChatToolCall } from './chat/tool-call';
 import { InlineCitation } from './chat/inline-citation';
 import { LLMGenerationDemo } from './llm-generation-demo';
 import { MenuComparisonDemo } from './menu-comparison-demo';
+import { NewtonSecondLawDemo } from './physics/newton-second-law-demo';
 import { TokenizationDiagram } from './tokenization-diagram';
 import { TokenProbabilityDiagram } from './token-probability-diagram';
 import { LLMSingleRoundTrainingDemo } from './llm-training/single-round';
@@ -41,7 +42,7 @@ function HighlightedText({ className, ...props }: ComponentProps<'mark'>) {
 }
 export function getMDXComponents(achievements: readonly AchievementDefinition[] = []): MDXComponents {
   return {
-    ...defaults, Steps, Step, Callout, JimmyNote, JimmyNoteAnchor, KeyTakeaway, Chat, ChatMessage, ChatThinking, ChatToolCall, InlineCitation, ChatMessageSequence, XEmbed, YouTube, LLMGenerationDemo, MenuComparisonDemo, TokenizationDiagram, TokenProbabilityDiagram, LLMPretrainingOverview, LLMSingleRoundTrainingDemo, LLMMultiRoundTrainingDemo, MermaidDiagram, ...getAchievementComponents(achievements), pre: LocalizedCodeBlock,
+    ...defaults, Steps, Step, Callout, JimmyNote, JimmyNoteAnchor, KeyTakeaway, Chat, ChatMessage, ChatThinking, ChatToolCall, InlineCitation, ChatMessageSequence, XEmbed, YouTube, LLMGenerationDemo, MenuComparisonDemo, NewtonSecondLawDemo, TokenizationDiagram, TokenProbabilityDiagram, LLMPretrainingOverview, LLMSingleRoundTrainingDemo, LLMMultiRoundTrainingDemo, MermaidDiagram, ...getAchievementComponents(achievements), pre: LocalizedCodeBlock,
     a: LinkPreview, mark: HighlightedText, table: MarkdownTable, thead: TableHeader, tbody: TableBody, tfoot: TableFooter,
     tr: TableRow, th: TableHead, td: TableCell, caption: TableCaption,
     h1: (props) => <Heading as="h1" {...props} />,

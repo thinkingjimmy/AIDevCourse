@@ -36,6 +36,7 @@
     "fumadocs-mdx": "15.4.3",
     "fumadocs-ui": "16.15.13",
     "github-slugger": "2.0.0",
+    "glisse": "0.5.0",
     "katex": "0.19.1",
     "mdast-util-to-string": "4.0.0",
     "next": "16.3.8",

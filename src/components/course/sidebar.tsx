@@ -71,8 +71,9 @@ export function Sidebar({ label, className, children, ...props }: ComponentProps
   const { isMobile, open, openMobile, mobileDialogId, setOpenMobile } = useSidebar();
   const mobileTrigger = useRef<HTMLElement | null>(null);
   if (isMobile) return <Sheet open={openMobile} onOpenChange={setOpenMobile}>
-    <SheetContent id={mobileDialogId} data-sidebar="sidebar" data-slot="sidebar" data-mobile="true" aria-describedby={undefined}
-      className={cn('h-dvh max-h-dvh w-[min(var(--sidebar-width),calc(100vw-1rem))] bg-sidebar p-0 text-foreground [--sidebar-width:20rem] sm:max-w-none', className)}
+    <SheetContent side="bottom" id={mobileDialogId} data-sidebar="sidebar" data-slot="sidebar" data-mobile="true" aria-describedby={undefined}
+      overlayClassName="bg-black/25 backdrop-blur-[3px]"
+      className={cn('h-[min(82dvh,52rem)] bg-sidebar p-0 text-foreground', className)}
       onOpenAutoFocus={() => {
         const active = document.activeElement;
         mobileTrigger.current = active instanceof HTMLElement && active !== document.body ? active : document.querySelector<HTMLElement>('[data-slot="mobile-sidebar-trigger"]');
@@ -85,6 +86,7 @@ export function Sidebar({ label, className, children, ...props }: ComponentProps
       }}
       onEscapeKeyDown={(event) => { if (event.target instanceof Element && event.target.closest('details[open]')) event.preventDefault(); }}>
       <SheetTitle className="sr-only">{label}</SheetTitle>
+      <div aria-hidden className="flex h-5 shrink-0 items-center justify-center"><span className="h-1 w-9 rounded-full bg-foreground/15" /></div>
       <div {...props} className="mobile-course-bar flex h-full min-h-0 w-full flex-col items-center" onClick={(event) => {
         const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
         if (link && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey && link.getAttribute('target') !== '_blank') setOpenMobile(false);

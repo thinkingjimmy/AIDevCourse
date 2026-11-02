@@ -4,7 +4,7 @@ A multilingual learning site for local Markdown and MDX courses.
 
 **English** · [简体中文](./docs/README.zh.md)
 
-Next.js 16.3.8 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-intl 4.14.6 + Tailwind CSS 4.3.3 + KaTeX 0.19.1
+Next.js 16.3.8 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-intl 4.14.6 + Tailwind CSS 4.3.3 + KaTeX 0.19.1 + Glisse 0.5.0
 
 Authors declare single-choice achievements directly in MDX; validation builds each course’s achievement inventory from its original articles.
 
@@ -14,7 +14,7 @@ Read courses in five languages, search the current language, and keep earned ach
 
 Hover or focus Markdown page links to preview their title, summary, domain, and available cover. Local previews use the course catalog; optional external previews read public metadata on demand and keep navigation available when metadata cannot load.
 
-**Content status:** LLM 101 has introductions in five languages. Its eleven Chinese lessons form three modules: 大语言模型的工作原理 (`model-fundamentals`, four lessons on generation, tokens, sampling, and probabilities), 模型的训练与能力 (`model-training`, five lessons on pretraining, thinking, multimodal inputs, open models and local deployment, and model selection), and AI 应用的工作原理 (`ai-applications`, two lessons on chat history as model input and tool calling). Other languages retain the first lesson's welcome placeholder in `model-fundamentals`. Lesson URLs and achievement identities stay unchanged when files move between modules. LLM 101 remains a beginner course without post-training lessons; Chat practice belongs beside the corresponding application concepts. The [authoring guide](./docs/authoring.md#llm-101-的课程范围) records future topics and the proposed intermediate Agent 101 boundary. The homepage learning action opens the first lesson. Coding 101 is available in Chinese, with two beginner lessons on JSON basics and calling an AI API, including optional curl practice and two achievements. Engineering fixtures remain separate from published courses.
+**Content status:** LLM 101 has introductions in five languages. Its twelve Chinese lessons form three modules: 大语言模型的工作原理 (`model-fundamentals`, four lessons on generation, tokens, sampling, and probabilities), 模型的训练与能力 (`model-training`, five lessons on pretraining, thinking, multimodal inputs, open models and local deployment, and model selection), and AI 应用的工作原理 (`ai-applications`, three lessons on chat history as model input, tool calling, and practical Chat uses). Other languages retain the first lesson's welcome placeholder in `model-fundamentals`. Lesson URLs and achievement identities stay unchanged when files move between modules. LLM 101 remains a beginner course without post-training lessons; Chat practice belongs beside the corresponding application concepts. The [authoring guide](./docs/authoring.md#llm-101-的课程范围) records future topics and the proposed intermediate Agent 101 boundary. The homepage learning action opens the first lesson. Coding 101 is available in Chinese, with two beginner lessons on JSON basics and calling an AI API, including optional curl practice and two achievements. Engineering fixtures remain separate from published courses.
 
 ## Quick start
 

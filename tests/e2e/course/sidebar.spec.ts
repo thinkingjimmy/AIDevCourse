@@ -27,7 +27,7 @@ for (const width of [1440, 320]) {
     await expect(sidebar.locator('a[aria-current="page"]')).toContainText('2.1 模型是如何预训练的？');
     await modules.nth(0).click();
     await modules.nth(2).click();
-    await expect(links.locator('> span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2']);
+    await expect(links.locator('> span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2', '3.3']);
     const numbers = await links.locator('> span:first-child').evaluateAll((elements) => elements.map((element) => ({
       text: element.textContent?.trim(), width: element.getBoundingClientRect().width, variant: getComputedStyle(element).fontVariantNumeric,
     })));
@@ -36,8 +36,8 @@ for (const width of [1440, 320]) {
     await capture(page, `sidebar-numbering-${width}`);
     await test.info().attach('Generated lesson numbers', { body: JSON.stringify(numbers, null, 2), contentType: 'application/json' });
     await modules.nth(1).click();
-    await expect(links.locator('> span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '3.1', '3.2']);
-    await links.last().click();
+    await expect(links.locator('> span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '3.1', '3.2', '3.3']);
+    await sidebar.getByRole('link', { name: '3.2 Tool 是什么？', exact: true }).click();
     await expect(page).toHaveURL('/zh/courses/llm-101/what-is-a-tool');
     await expect(page.locator('article h1')).toHaveText('Tool 是什么？');
     if (width < 961) await page.locator('[data-slot="mobile-sidebar-trigger"]').click();
@@ -51,19 +51,23 @@ for (const width of [1440, 320]) {
   });
 }
 
-test('responsive sidebar exposes one compact mobile header at its exact breakpoint', async ({ page }) => {
+test('responsive sidebar exposes four bottom navigation actions at its exact breakpoint', async ({ page }) => {
   const evidence = [];
   for (const width of [320, 390, 640, 903, 960, 961, 962, 1024]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto(lesson);
-    const header = page.locator('[data-slot="mobile-course-header"]');
+    const navigation = page.locator('[data-slot="mobile-course-navigation"]');
     const desktop = page.locator('[data-slot="sidebar-container"]');
     if (width < 961) {
-      await expect(header).toBeVisible();
+      await expect(navigation).toBeVisible();
       await expect(desktop).toBeHidden();
-      const trigger = header.getByRole('button', { name: copy.Ui.menu, exact: true });
+      const trigger = navigation.getByRole('button', { name: copy.Ui.menu, exact: true });
       await expect(trigger).toHaveAttribute('aria-expanded', 'false');
-      await expect(header.getByRole('link', { name: /^AIDevCourse/ })).toBeVisible();
+      await expect(navigation.getByRole('link', { name: copy.Ui.home, exact: true })).toBeVisible();
+      await expect(navigation.locator(':scope > a, :scope > button')).toHaveCount(4);
+      const bar = (await navigation.boundingBox())!;
+      expect(bar.y).toBeGreaterThan(844 - 100);
+      expect(bar.y + bar.height).toBeLessThanOrEqual(844);
       await expect(trigger.locator('svg')).toBeVisible();
       await trigger.focus();
       const bounds = (await trigger.boundingBox())!;
@@ -71,18 +75,18 @@ test('responsive sidebar exposes one compact mobile header at its exact breakpoi
       expect(bounds.width).toBeGreaterThanOrEqual(44);
       expect(bounds.width).toBeLessThan(160);
       evidence.push({ width, trigger: bounds });
-      if ([320, 903, 960].includes(width)) await capture(page, `mobile-course-header-${width}`);
+      if ([320, 903, 960].includes(width)) await capture(page, `mobile-course-navigation-${width}`);
     } else {
-      await expect(header).toBeHidden();
+      await expect(navigation).toBeHidden();
       await expect(desktop).toBeVisible();
       await expect(page.locator('[data-mobile="true"]')).toHaveCount(0);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
-  await test.info().attach('Header breakpoint geometry', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
+  await test.info().attach('Bottom navigation breakpoint geometry', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
 });
 
-test('responsive sidebar drawer fits narrow and short screens with a reachable footer', async ({ page }) => {
+test('responsive bottom sheet fits narrow and short screens with a reachable footer', async ({ page }) => {
   const evidence = [];
   for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 320 }, { width: 640, height: 450 }, { width: 960, height: 600 }]) {
     await page.setViewportSize(viewport);
@@ -91,10 +95,13 @@ test('responsive sidebar drawer fits narrow and short screens with a reachable f
     await trigger.click();
     const sheet = page.locator('[data-mobile="true"]');
     await expect(sheet).toBeVisible();
+    await expect(sheet).toHaveCSS('transform', 'none');
     await expect(trigger).toHaveAttribute('aria-expanded', 'true');
     expect(await trigger.getAttribute('aria-controls')).toBe(await sheet.getAttribute('id'));
     const bounds = (await sheet.boundingBox())!;
-    expect(bounds.width).toBeLessThanOrEqual(viewport.width - 16 + 0.1);
+    expect(bounds.width).toBeCloseTo(Math.min(640, viewport.width), 0);
+    expect(bounds.y).toBeGreaterThan(0);
+    expect(bounds.y + bounds.height).toBeCloseTo(viewport.height, 0);
     expect(bounds.y).toBeGreaterThanOrEqual(0);
     expect(bounds.y + bounds.height).toBeLessThanOrEqual(viewport.height + 1);
     const footer = sheet.locator('[data-sidebar="footer"]');
@@ -113,12 +120,12 @@ test('responsive sidebar drawer fits narrow and short screens with a reachable f
     await expect(sheet).toHaveCount(0);
     await expect(trigger).toBeFocused();
     await trigger.click();
-    await page.locator('[data-slot="sheet-overlay"]').click({ position: { x: viewport.width - 4, y: viewport.height / 2 } });
+    await page.locator('[data-slot="sheet-overlay"]').click({ position: { x: viewport.width / 2, y: 8 } });
     await expect(sheet).toHaveCount(0);
     await expect(trigger).toBeFocused();
     evidence.push({ viewport, drawer: bounds });
   }
-  await test.info().attach('Drawer viewport geometry', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
+  await test.info().attach('Bottom sheet viewport geometry', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
 });
 
 test('responsive sidebar resets mobile state on resize and navigation while preserving desktop collapse', async ({ page }) => {
@@ -164,19 +171,19 @@ test('responsive sidebar keeps native course navigation without JavaScript', asy
     for (const width of [320, 903]) {
       await page.setViewportSize({ width, height: 844 });
       await page.goto(lesson);
-      const header = page.locator('[data-slot="mobile-course-header"]');
+      const navigation = page.locator('[data-slot="mobile-course-navigation"]');
       const menu = page.locator('[data-slot="mobile-native-menu"]');
-      await expect(header).toBeVisible();
+      await expect(navigation).toBeVisible();
       await expect(page.locator('[data-slot="mobile-sidebar-trigger"]')).toBeHidden();
       const before = (await page.locator('article').boundingBox())!.y;
-      await header.getByRole('button', { name: copy.Ui.menu, exact: true }).click();
+      await navigation.getByRole('button', { name: copy.Ui.menu, exact: true }).click();
       await expect(menu).toHaveAttribute('open', '');
       await expect(menu.locator('.course-navigation')).toBeVisible();
       await expect(menu.getByRole('link', { name: 'LLM 101', exact: true })).toHaveAttribute('href', '/zh/courses/llm-101');
       await expect(menu.locator('.course-navigation p')).toHaveText(['01 大语言模型的工作原理', '02 模型的训练与能力', '03 AI 应用的工作原理']);
-      await expect(menu.locator('[data-sidebar="menu-sub-button"] > span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2']);
+      await expect(menu.locator('[data-sidebar="menu-sub-button"] > span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2', '3.3']);
       expect((await page.locator('article').boundingBox())!.y).toBeCloseTo(before, 0);
-      await expect(menu.getByRole('link', { name: copy.Author.website, exact: true })).toHaveAttribute('href', 'https://jimmywong.dev');
+      await expect(navigation.getByRole('link', { name: copy.Author.website, exact: true })).toHaveAttribute('href', 'https://jimmywong.dev');
       const links = menu.locator('.course-navigation a');
       const numberPositions = await menu.evaluate((element) => ({
         module: element.querySelector('.course-navigation p > span:first-child')!.getBoundingClientRect().left,
@@ -190,18 +197,18 @@ test('responsive sidebar keeps native course navigation without JavaScript', asy
       await expect(menu).not.toHaveAttribute('open', '');
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     }
-    await page.locator('[data-slot="mobile-course-header"]').getByRole('button', { name: copy.Ui.menu, exact: true }).click();
+    await page.locator('[data-slot="mobile-course-navigation"]').getByRole('button', { name: copy.Ui.menu, exact: true }).click();
     await page.locator('[data-slot="mobile-native-menu"]').getByRole('link', { name: 'LLM 101', exact: true }).click();
     await expect(page).toHaveURL('/zh/courses/llm-101');
   } finally { await context.close(); }
 });
 
-test('responsive sidebar header and drawer fit enlarged text', async ({ page }) => {
+test('responsive bottom navigation and sheet fit enlarged text', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 844 });
   await page.goto(lesson);
   await page.evaluate(() => { document.documentElement.style.fontSize = '20px'; });
-  const header = page.locator('[data-slot="mobile-course-header"]');
-  const geometry = await header.evaluate(element => {
+  const navigation = page.locator('[data-slot="mobile-course-navigation"]');
+  const geometry = await navigation.evaluate(element => {
     const box = element.getBoundingClientRect();
     return [...element.querySelectorAll('a, button')].filter(control => control.getClientRects().length).map(control => {
       const bounds = control.getBoundingClientRect();
@@ -212,7 +219,7 @@ test('responsive sidebar header and drawer fit enlarged text', async ({ page }) 
   await page.locator('[data-slot="mobile-sidebar-trigger"]').click();
   const sheet = page.locator('[data-mobile="true"]');
   const box = (await sheet.boundingBox())!;
-  expect(box.width).toBeLessThanOrEqual(300);
+  expect(box.width).toBeCloseTo(320, 0);
   await expect(sheet.getByRole('button', { name: copy.Ui.close, exact: true })).toBeInViewport();
   await expect(sheet.locator('[data-sidebar="footer"]')).toBeInViewport();
   const numberPositions = await sheet.evaluate((element) => ({

@@ -1,7 +1,9 @@
 {
   "Ui": {
     "home": "Accueil",
+    "navigation": "Navigation principale",
     "about": "À propos",
+    "aboutTab": "Infos",
     "skip": "Aller au contenu",
     "menu": "Navigation du cours",
     "collapseSidebar": "Réduire la barre latérale",
@@ -88,6 +90,8 @@
     "who": "Pour qui",
     "before": "Avant de commencer",
     "contents": "Plan",
+    "contentsTab": "Cours",
+    "achievementsTab": "Succès",
     "updating": "Contenu en cours de mise à jour",
     "updatingBody": "De nouvelles leçons sont en préparation. Elles apparaîtront ici une fois publiées.",
     "achievementCount": "{count, plural, one {# accomplissement débloqué} other {# accomplissements débloqués}}",

@@ -1,11 +1,13 @@
 @import 'tailwindcss' source(none);
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
+@import 'glisse/styles.css' layer(components);
 @import './fonts.css';
 @import './tokens.css';
 @import 'katex/dist/katex.min.css';
 @import './prose.css';
 @import './illustrations.css';
+@import './mobile-navigation.css';
 @source '../';
 @source '../../node_modules/fumadocs-ui/dist/**/*.js';
 

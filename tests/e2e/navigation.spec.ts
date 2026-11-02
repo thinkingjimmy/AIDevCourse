@@ -28,6 +28,7 @@ test('model selection follows training and precedes chat', async ({ page: overvi
   const tokens = '/zh/courses/llm-101/what-is-a-token';
   const chat = '/zh/courses/llm-101/how-ai-chat-works';
   const tools = '/zh/courses/llm-101/what-is-a-tool';
+  const chatUses = '/zh/courses/llm-101/what-can-you-do-with-ai-chat';
   const selection = '/zh/courses/llm-101/how-to-choose-a-language-model';
   const thinking = '/zh/courses/llm-101/how-model-thinking-works';
   const multimodal = '/zh/courses/llm-101/how-models-see-and-hear';
@@ -36,11 +37,11 @@ test('model selection follows training and precedes chat', async ({ page: overvi
   await overview.goto(coursePath('zh'));
   const links = overview.locator('section[aria-labelledby="course-catalog"] a');
   const order = await links.evaluateAll((elements) => elements.map((element) => element.getAttribute('href')));
-  expect(order).toEqual([generation, tokens, sampling, probability, training, thinking, multimodal, modelBasics, selection, chat, tools]);
+  expect(order).toEqual([generation, tokens, sampling, probability, training, thinking, multimodal, modelBasics, selection, chat, tools, chatUses]);
   const [page] = await Promise.all([overview.waitForEvent('popup'), links.filter({ hasText: title }).click()]);
   await expect(page).toHaveURL(new RegExp(`${training}$`));
   await expect(page.locator('article h1')).toHaveText(title);
-  await expect(page.locator('article')).toContainText('模型会反复尝试根据前面的 Token，预测下一个 Token');
+  await expect(page.locator('article')).toContainText('模型会先看一段文字，然后预测下一个 Token');
   await expect(page.locator('article')).toContainText('模型的训练数据是有时间限制的');
   await expect(page.locator('[data-achievement="generation-vs-verification"]')).toHaveCount(1);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${training}$`));
@@ -53,10 +54,10 @@ test('model selection follows training and precedes chat', async ({ page: overvi
   await navigation.locator('a').first().click();
   await expect(page).toHaveURL(new RegExp(`${probability}$`));
   await expect(page.locator('article h1')).toHaveText('模型是如何算出 Token 概率的？');
-  await expect(page.locator('article h2')).toHaveText(['用一个公式理解输入与参数', '把输入代入公式，算出候选分数', '把分数转换成概率', '从简单类比到真实模型']);
+  await expect(page.locator('article h2')).toHaveText(readCatalog().documents.find((document) => document.url === probability)!.headings.filter((heading) => heading.depth === 2).map((heading) => heading.title));
   await expect(page.locator('article .katex-display annotation')).toHaveText('y = ax + b');
   await expect(page.locator('article table')).toHaveCount(3);
-  await expect(page.locator('[data-achievement]')).toHaveCount(0);
+  await expect(page.locator('[data-achievement="token-probability-not-truth"]')).toHaveCount(1);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${probability}$`));
   await expect(navigation.locator('a').first()).toHaveAttribute('href', sampling);
   await expect(navigation.locator('a').last()).toHaveAttribute('href', training);
@@ -64,7 +65,7 @@ test('model selection follows training and precedes chat', async ({ page: overvi
   await navigation.locator('a').first().click();
   await expect(page).toHaveURL(new RegExp(`${sampling}$`));
   await expect(page.locator('article h1')).toHaveText('为什么同样的问题，模型的回答会不同？');
-  const headings = ['贪心与采样：如何选择下一个 Token', 'Temperature（温度）：调整候选的概率', 'Top-p：按累计概率筛选候选', 'Top-k：按数量筛选候选', '用抽签理解三个参数', '搞懂这些概念有什么用？'];
+  const headings = readCatalog().documents.find((document) => document.url === sampling)!.headings.filter((heading) => heading.depth === 2).map((heading) => heading.title);
   await expect(page.locator('article h2')).toContainText(headings);
   await expect(page.locator('article table')).toHaveCount(5);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${sampling}$`));
@@ -105,7 +106,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     const storageKey = 'lac:v1:llm-101:achievement:chat-history-as-input';
     await page.goto(coursePath('zh'));
     const links = page.locator('section[aria-labelledby="course-catalog"] a');
-    await expect(links).toHaveCount(11);
+    await expect(links).toHaveCount(12);
     await expect(links.nth(9)).toHaveAttribute('href', chat);
     await expect(links.nth(9)).toContainText('AI Chat 是如何工作的？');
     await page.goto(selection);
@@ -113,26 +114,24 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     await page.locator('article nav').last().locator('a').last().click();
     await expect(page).toHaveURL(new RegExp(`${chat}$`));
     await expect(page.locator('article h1')).toHaveText('AI Chat 是如何工作的？');
-    await expect(page.locator('article h2')).toContainText(['为什么它像是记住了你？', '模型实际收到的内容', '成就问题：']);
+    await expect(page.locator('article h2')).toContainText(['为什么模型能记住你？', '模型实际收到的内容', '成就挑战']);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${chat}$`));
     const chats = page.locator('article [data-component="chat"]');
     await expect(chats).toHaveCount(3);
     await expect(chats.nth(0).locator('[data-component="chat-message"]')).toHaveText([
-      'User：我叫 Jimmy。你后续的回答都要以 Jimmy 开头。',
-      'Assistant：Jimmy，好的，我记住了。后续每次回答我都会以“Jimmy”开头。请问你想聊什么？',
+      '我叫 Jimmy。你后续的回答都要以 Jimmy 开头。',
+      'Jimmy，好的，我记住了。后续每次回答我都会以“Jimmy”开头。请问你想聊什么？',
     ]);
     await expect(chats.nth(1).locator('[data-component="chat-message"]')).toHaveText([
-      'User：今天广州的天气如何？',
-      'Assistant：Jimmy，今天广州天气晴朗，温度在 28 摄氏度。',
+      '今天广州的天气如何？',
+      'Jimmy，今天广州天气晴朗，温度在 28 摄氏度。',
     ]);
-    await expect(chats.nth(2).locator('[data-component="chat-message"]')).toHaveCount(3);
-    await expect(chats.nth(2).locator('[data-component="chat-message"]').last()).toHaveAttribute('data-from', 'user');
-    await expect(page.locator('article')).toContainText('咦？第一次回到带 Jimmy 还比较好理解。');
-    await expect(page.locator('article')).toContainText('然后大语言模型会基于收到的这一坨内容，继续生成答案。');
-    await expect(page.locator('article [data-component="key-takeaway"]')).toHaveText(/这就是为什么后续的回答里，LLM 仍然会用 Jimmy 开头的原因。/);
+    await expect(chats.nth(2).locator('[data-component="chat-message"]')).toHaveCount(1);
+    await expect(chats.nth(2).locator('[data-component="chat-message"]')).toHaveAttribute('data-from', 'assistant');
+    await expect(page.locator('article')).toContainText('模型并不是记住了你，而是它每次都收到了你的所有的历史回复。');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     const card = page.locator('[data-achievement="chat-history-as-input"]');
-    await expect(card.locator('legend')).toHaveText('模型是真的记住了你的输入吗？');
+    await expect(card).toContainText('模型是真的记住了你的输入吗？');
     await test.info().attach(`chat-lesson-${viewport.name}`, { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
     await card.getByRole('radio').first().click();
     await expect(card).toHaveAttribute('data-state', 'incorrect');
@@ -143,7 +142,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     expect(await page.evaluate((key) => localStorage.getItem(key), storageKey)).not.toBeNull();
     const navigation = page.locator('article nav').last();
     await expect(navigation.locator('a').first()).toHaveAttribute('href', selection);
-    await expect(navigation.locator('a').last()).toHaveAttribute('href', coursePath('zh'));
+    await expect(navigation.locator('a').last()).toHaveAttribute('href', '/zh/courses/llm-101/what-is-a-tool');
     const accessibility = await new AxeBuilder({ page }).include('article').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(accessibility.violations).toEqual([]);
     expect(await (await request.get('/sitemap.xml')).text()).toContain(chat);

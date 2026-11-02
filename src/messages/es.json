@@ -1,7 +1,9 @@
 {
   "Ui": {
     "home": "Inicio",
+    "navigation": "Navegación principal",
     "about": "Acerca de",
+    "aboutTab": "Acerca",
     "skip": "Ir al contenido",
     "menu": "Índice del curso",
     "collapseSidebar": "Contraer barra lateral",
@@ -88,6 +90,8 @@
     "who": "Para quién",
     "before": "Antes de empezar",
     "contents": "Índice",
+    "contentsTab": "Índice",
+    "achievementsTab": "Logros",
     "updating": "Contenido en actualización",
     "updatingBody": "Se están preparando nuevas lecciones. Aparecerán aquí cuando se publiquen.",
     "achievementCount": "{count, plural, one {# logro desbloqueado} other {# logros desbloqueados}}",

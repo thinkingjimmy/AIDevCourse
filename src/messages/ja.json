@@ -1,7 +1,9 @@
 {
   "Ui": {
     "home": "ホーム",
+    "navigation": "メインナビゲーション",
     "about": "このサイトについて",
+    "aboutTab": "紹介",
     "skip": "本文へスキップ",
     "menu": "コースの目次",
     "collapseSidebar": "サイドバーを折りたたむ",
@@ -88,6 +90,8 @@
     "who": "対象",
     "before": "始める前に",
     "contents": "目次",
+    "contentsTab": "目次",
+    "achievementsTab": "実績",
     "updating": "コンテンツを更新中",
     "updatingBody": "新しいレッスンを準備しています。公開後、ここに表示されます。",
     "achievementCount": "{count} 件の実績を解除",
