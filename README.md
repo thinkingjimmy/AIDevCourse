@@ -8,6 +8,8 @@ Next.js 16.3.8 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-
 
 Authors declare single-choice achievements directly in MDX; validation builds each course’s achievement inventory from its original articles.
 
+Mermaid code fences render as SVG through Pele, with accessible titles and descriptions, keyboard scrolling for wide diagrams, and no browser diagram engine.
+
 Read courses in five languages, search the current language, and keep earned achievements and your last lesson in your browser. No account, database, model API key, or translation service is required.
 
 Hover or focus Markdown page links to preview their title, summary, domain, and available cover. Local previews use the course catalog; optional external previews read public metadata on demand and keep navigation available when metadata cannot load.

@@ -26,8 +26,8 @@ export default async function LessonPage({ params }: Props) {
   const toc = (article.data.toc ?? []).filter((item) => item.depth === 2);
   const hasToc = toc.length > 0;
   return <NoteScope key={doc.url} data-slot="lesson-reading-group" className={cn(
-    'mx-auto grid w-full max-w-[42.5rem] min-w-0 grid-cols-[minmax(0,1fr)] items-start',
-    doc.hasJimmyNotes && '@[64rem]/lesson:max-w-[65.5rem] @[64rem]/lesson:grid-cols-[minmax(0,1fr)_23rem]',
+    'mx-auto grid w-full max-w-[51rem] min-w-0 grid-cols-[minmax(0,1fr)] items-start',
+    doc.hasJimmyNotes && '@[64rem]/lesson:max-w-[74rem] @[64rem]/lesson:grid-cols-[minmax(0,1fr)_23rem]',
   )}>
     {hasToc && <LessonToc items={toc} label={t('onThisPage')} hasNotes={doc.hasJimmyNotes} />}
     <article id="main-content" className="block min-w-0 pt-9 pb-20 max-[961px]:pt-7 max-[961px]:pb-[72px]" tabIndex={-1}>

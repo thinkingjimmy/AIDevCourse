@@ -38,7 +38,7 @@ export function LessonToc({ items, label, hasNotes = false }: {
   return <aside data-slot="lesson-aside" className={cn(
     '@container/toc fixed top-[50svh] left-[calc(var(--lesson-sidebar-width)+0.5rem)] z-20 hidden w-16 -translate-y-1/2 min-[961px]:block',
     // Both layouts leave 1rem between the expanded outline and the centered article.
-    hasNotes ? '@[86.5rem]/lesson:w-56' : '@[63.5rem]/lesson:w-56',
+    hasNotes ? '@[95rem]/lesson:w-56' : '@[72rem]/lesson:w-56',
   )}>
     <Tooltip.Provider delayDuration={0} skipDelayDuration={0} disableHoverableContent>
       <nav ref={nav} data-slot="lesson-toc" aria-label={label}

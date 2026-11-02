@@ -71,7 +71,20 @@ X 接受 `x.com` 和 `twitter.com` 的帖子链接，包括移动端域名与 `/
 
 X 使用官方组件，在接近视口时加载，全页共用一次脚本。脚本加载最多等待 10 秒，单条帖子整体最多等待 15 秒；失败时显示本地化提示。YouTube 使用隐私增强播放器，延迟加载，不自动播放，支持全屏与移动端内联播放；窄屏保留至少 200px 高度。X 仅在加载失败或无 JavaScript 时显示原站链接；加载成功后使用帖子自带的查看入口。YouTube 始终保留原站链接。嵌入会直接连接相应平台，受平台隐私政策及可用性影响；隐私增强模式不表示完全没有网络请求或跟踪。构建不请求平台接口，也不需要 API 密钥。
 
-标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`JimmyNoteAnchor`、`KeyTakeaway`、`Chat`、`ChatMessage`、`ChatThinking`、`ChatMessageSequence`、`XEmbed`、`YouTube`、`Steps`、`Step`、`LLMGenerationDemo`、`MenuComparisonDemo`、`TokenizationDiagram`、`TokenProbabilityDiagram`、`LLMPretrainingOverview`、`LLMSingleRoundTrainingDemo`、`LLMMultiRoundTrainingDemo`、`Achievement`、`AchievementOption`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
+标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`JimmyNoteAnchor`、`KeyTakeaway`、`Chat`、`ChatMessage`、`ChatThinking`、`ChatToolCall`、`InlineCitation`、`ChatMessageSequence`、`XEmbed`、`YouTube`、`Steps`、`Step`、`LLMGenerationDemo`、`MenuComparisonDemo`、`TokenizationDiagram`、`TokenProbabilityDiagram`、`LLMPretrainingOverview`、`LLMSingleRoundTrainingDemo`、`LLMMultiRoundTrainingDemo`、`Achievement`、`AchievementOption`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
+
+使用 `mermaid` 代码围栏绘制流程图、时序图等图表，无需 import。图表使用 [Pele](https://pele.run/) 在服务端生成 SVG，不向浏览器加载图表引擎。图表沿用站点字体与颜色；宽图保持文字大小，在图表区域内横向滚动，支持键盘操作、放大文字和无 JavaScript 阅读。通过 `accTitle` 与 `accDescr` 提供图表标题和说明。可在 [组件预览](http://localhost:3000/design/components#mermaid) 检查效果。
+
+````mdx
+```mermaid
+flowchart LR
+  accTitle: Question and response
+  accDescr: A reader asks a question and checks the response.
+  A[Question] --> B[Response] --> C[Check]
+```
+````
+
+`pnpm content:check` 会校验 Mermaid 语法，并报告原文件与围栏行号。使用 `text` 围栏展示源代码。Pele 使用自己的布局，支持范围见 [兼容说明](https://pele.run/compatibility)；Mermaid 主题、HTML 标签和外部插件不适用。图内链接和图片不启用；请在正文中提供链接和图片。`MermaidDiagram` 是编译器内部组件，源文不接受该组件。
 
 ```mdx
 <Callout title="Check the result" type="info">
@@ -130,7 +143,7 @@ An LLM generates text from the context you provide.
 </Chat>
 ```
 
-`ChatMessage` 的 `state` 配置决定显示状态。默认 `state="complete"` 显示正常回复气泡；`from="assistant" state="thinking"` 参考 [shadcn Reasoning](https://ui.shadcn.com/docs/ai-elements/radix/reasoning) 的状态行，显示 LLM 头像、旋转指示和 Thinking 文字，不带消息气泡，也不接受正文。它只展示文章里的思考状态示意，不调用模型。系统开启减少动态效果时停止旋转；无 JavaScript 时仍可阅读。
+`ChatMessage` 的 `state` 配置决定显示状态。默认 `state="complete"` 显示正常回复气泡；`from="assistant" state="thinking"` 使用 [shadcn Radix Reasoning](https://ui.shadcn.com/docs/ai-elements/radix/reasoning) 的官方 `TraceLine`，以 running 状态显示旋转指示和 Thinking 文字，保留 LLM 头像。它不带消息气泡，也不接受正文，只展示文章里的思考状态示意，不调用模型。系统开启减少动态效果时停止旋转；无 JavaScript 时仍可阅读。
 
 ```mdx
 <Chat>
@@ -139,11 +152,11 @@ An LLM generates text from the context you provide.
 </Chat>
 ```
 
-要展示已完成的思考内容，在 assistant 的完整回复内添加一个独立块 `<ChatThinking>`。标签内写思考正文，标签外写最终回答。思考区默认展开，点击 Thinking 或使用键盘可折叠；它与最终回答共用一个头像，不显示持续转圈。正文支持多段 Markdown、强调、链接和行末 `\` 换行。展开与折叠使用原生 HTML，无 JavaScript 时也可操作。下方展示的是作者配置的教学示例，不调用模型。
+要展示已完成的思考内容，在 assistant 的完整回复内添加一个独立块 `<ChatThinking>`。标签内写思考正文，标签外写最终回答。它按官方 Reasoning 用 `TraceCollapsible` 展示完成图标和 Thought 文字；思考区默认收起，可用 `defaultOpen={true}` 或 `defaultOpen` 配置为展开，用 `defaultOpen={false}` 明确配置为收起；读者可点击标题或使用键盘切换，与最终回答共用一个头像。正文支持多段 Markdown、强调、链接和行末 `\` 换行。无 JavaScript 时使用遵循相同初始配置的原生 details，仍可折叠和阅读。下方展示的是作者配置的教学示例，不调用模型。
 
 ```mdx
 <ChatMessage from="assistant">
-<ChatThinking>
+<ChatThinking defaultOpen={true}>
 Break it down.\
 37 × 48 = 37 × (50 − 2) = 1776
 </ChatThinking>
@@ -152,7 +165,29 @@ The answer is **1776**.
 </ChatMessage>
 ```
 
-`ChatMessage` 接受必填的静态 `from="user"` 或 `from="assistant"`，以及可选的 `state="complete"` 或 `state="thinking"`；thinking 只用于 assistant。`ChatThinking` 不接受参数，只能直接放在 `state="complete"`（默认值）的 assistant 消息内，且每条消息最多一个，正文不能为空。`Chat` 不接受参数；`Achievement` 和 `AchievementOption` 的字段见下方「文章成就」；`XEmbed` 和 `YouTube` 仅接受上方说明的 `url` / `title`。其他组件只允许静态 `title` / `type` 字符串。禁止 import、JavaScript 表达式、原始 HTML、iframe、脚本和未知组件；代码围栏里的示例不会执行。注册入口为 `src/components/mdx/components.tsx`，不要为了单篇文章绕过校验器。
+`ChatToolCall` 用于已完成的工具调用示例，直接放在 assistant 消息内，与最终回答共用一个头像。必填的静态 `name` 表示工具名称，`title` 表示读者看到的操作名称。按 [shadcn Radix Tool](https://ui.shadcn.com/docs/ai-elements/radix/tool) 使用官方 `Trace` 和 `TraceCollapsible`，以工具图标、标题和折叠箭头组成紧凑的一行，默认收起工具名称和正文；`defaultOpen={true}` 或 `defaultOpen` 可配置为展开，`defaultOpen={false}` 可明确配置为收起，读者仍可自行切换。完成说明随可访问名称本地化。正文可用 Markdown 和代码围栏展示调用参数、返回结果；代码围栏转换为官方小尺寸 `CodeBlock`，支持长内容换行。无需 import，也不会执行搜索。Radix 折叠支持鼠标和键盘；无 JavaScript 时以遵循相同初始配置的原生 details 显示相同内容。收起时保留最终回答，可以与 `ChatThinking` 或其他工具调用块一起使用。可在 [工具调用预览](http://localhost:3000/design/components#chat-tools) 检查效果。
+
+```mdx
+<ChatMessage from="assistant">
+<ChatToolCall name="search_web" title="Search the web" defaultOpen={true}>
+Search query: Guangzhou weather forecast for tomorrow.
+
+Result: Light rain, 23–28 °C.
+</ChatToolCall>
+
+The forecast is light rain, 23–28 °C.
+</ChatMessage>
+```
+
+`InlineCitation` 在句子中插入来源标签，按 [shadcn Radix Inline Citation](https://ui.shadcn.com/docs/ai-elements/radix/inline-citation) 组合官方 `HoverCard` 和 `Button`。必填 `url` 是不含凭据的完整 HTTPS 地址；可选 `title` 和 `description` 提供来源标题和摘要，传入时不能为空。组件只接受静态字符串，不接受子内容或独立块。悬停或键盘聚焦显示作者填写的来源信息，点击标签直接在新标签页打开原站；触屏一次点击和无 JavaScript 时的原生链接仍可用。控件说明支持五种语言，不抓取远程元数据。可在 [行内引用预览](http://localhost:3000/design/components#inline-citations) 检查效果。
+
+```mdx
+<ChatMessage from="assistant">
+The forecast is available on the source page. <InlineCitation url="https://www.weather.com.cn/weather/101280101.shtml" title="Guangzhou forecast" description="Check the forecast date and weather conditions." />
+</ChatMessage>
+```
+
+`ChatMessage` 接受必填的静态 `from="user"` 或 `from="assistant"`，以及可选的 `state="complete"` 或 `state="thinking"`；thinking 只用于 assistant。`ChatThinking` 仅接受可选的布尔值 `defaultOpen`，只能直接放在 `state="complete"`（默认值）的 assistant 消息内，且每条消息最多一个，正文不能为空。`ChatToolCall` 也只能直接放在完整回复状态的 assistant 消息内；`name`、`title` 和正文均不能为空，可选 `defaultOpen` 配置初始展开状态，不接受其他属性或行内使用。`Chat` 不接受参数；`Achievement` 和 `AchievementOption` 的字段见下方「文章成就」；`XEmbed` 和 `YouTube` 仅接受上方说明的 `url` / `title`；`InlineCitation` 仅接受 `url` / `title` / `description`。其他组件只允许静态 `title` / `type` 字符串。仅 `ChatThinking` 和 `ChatToolCall` 的 `defaultOpen` 接受布尔字面量 `{true}` / `{false}` 或无值属性；禁止 import、其他 JavaScript 表达式、原始 HTML、iframe、脚本和未知组件；`mermaid` 围栏生成静态图表，其他代码围栏里的示例不会执行。注册入口为 `src/components/mdx/components.tsx`，不要为了单篇文章绕过校验器。
 
 本地图片放到 `public/images/`，正文使用有意义的本语言 alt。编译器从图片读取宽高。这里的素材任何人都能访问，不能存放密钥或未公开的敏感素材。
 

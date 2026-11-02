@@ -4,13 +4,14 @@ import remarkMdx from 'remark-mdx';
 import remarkGfm from 'remark-gfm';
 import { remarkMark } from 'remark-mark-highlight';
 import { remarkMath, validateMath } from './math';
+import { validateMermaid } from './mermaid/render';
 import { visit } from 'unist-util-visit';
 import { toString } from 'mdast-util-to-string';
 import GithubSlugger from 'github-slugger';
 import type { Root } from 'mdast';
 import type { AchievementDefinition, ContentDocument } from './model';
 import { parseXUrl, parseYouTubeUrl } from '../embeds/urls';
-export const supportedComponents = ['Callout', 'JimmyNote', 'JimmyNoteAnchor', 'KeyTakeaway', 'Chat', 'ChatMessage', 'ChatThinking', 'ChatMessageSequence', 'XEmbed', 'YouTube', 'Steps', 'Step', 'LLMGenerationDemo', 'MenuComparisonDemo', 'TokenizationDiagram', 'TokenProbabilityDiagram', 'LLMPretrainingOverview', 'LLMSingleRoundTrainingDemo', 'LLMMultiRoundTrainingDemo', 'Achievement', 'AchievementOption'] as const;
+export const supportedComponents = ['Callout', 'JimmyNote', 'JimmyNoteAnchor', 'KeyTakeaway', 'Chat', 'ChatMessage', 'ChatThinking', 'ChatToolCall', 'InlineCitation', 'ChatMessageSequence', 'XEmbed', 'YouTube', 'Steps', 'Step', 'LLMGenerationDemo', 'MenuComparisonDemo', 'TokenizationDiagram', 'TokenProbabilityDiagram', 'LLMPretrainingOverview', 'LLMSingleRoundTrainingDemo', 'LLMMultiRoundTrainingDemo', 'Achievement', 'AchievementOption'] as const;
 type Element = {
   name: string; attributes: { type: string; name: string; value: unknown }[];
   children: { type: string; value?: string; name?: string; children?: Element['children'] }[];
@@ -20,6 +21,7 @@ const stableId = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
   const tree = unified().use(remarkParse).use(remarkGfm).use(remarkMdx).use(remarkMark).use(remarkMath).parse(body) as Root;
   validateMath(tree, file, lineOffset);
+  validateMermaid(tree, file, lineOffset);
   const slugger = new GithubSlugger();
   const headings: ContentDocument['headings'] = [];
   const links: ContentDocument['links'] = [];
@@ -59,7 +61,7 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
         if (node.type !== 'mdxJsxFlowElement') fail(`${element.name} must be a standalone block`);
         if (element.children.some((child) => child.type !== 'text' || child.value?.trim())) fail(`${element.name} does not accept children`);
       }
-      if (['Chat', 'ChatThinking', 'KeyTakeaway'].includes(element.name) && element.attributes.length) fail(`${element.name} does not accept attributes`);
+      if (['Chat', 'KeyTakeaway'].includes(element.name) && element.attributes.length) fail(`${element.name} does not accept attributes`);
       if (element.name === 'KeyTakeaway') {
         if (node.type === 'mdxJsxTextElement') fail('KeyTakeaway must be a standalone block');
         if (!toString(node).trim()) fail('KeyTakeaway requires text to remember');
@@ -73,23 +75,41 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
         if (state?.value === 'thinking' && element.children.some((child) => child.type !== 'text' || child.value?.trim())) fail('Thinking state does not accept content; use ChatThinking inside a completed assistant message');
         if (element.children.filter((child) => child.name === 'ChatThinking').length > 1) fail('ChatMessage accepts at most one ChatThinking');
       }
-      if (element.name === 'ChatThinking') {
-        if (node.type !== 'mdxJsxFlowElement') fail('ChatThinking must be a standalone block');
+      const activity = element.name === 'ChatThinking' || element.name === 'ChatToolCall';
+      if (activity) {
+        if (node.type !== 'mdxJsxFlowElement') fail(`${element.name} must be a standalone block`);
         const owner = parent as unknown as Element | undefined;
         const sender = owner?.attributes?.find((attribute) => attribute.name === 'from');
         const state = owner?.attributes?.find((attribute) => attribute.name === 'state');
-        if (owner?.name !== 'ChatMessage' || sender?.value !== 'assistant' || state?.value === 'thinking') fail('ChatThinking must be a direct child of a completed assistant ChatMessage');
-        if (!toString(node).trim()) fail('ChatThinking requires reasoning content');
+        if (owner?.name !== 'ChatMessage' || sender?.value !== 'assistant' || state?.value === 'thinking') fail(`${element.name} must be a direct child of a completed assistant ChatMessage`);
+        if (!toString(node).trim()) fail(element.name === 'ChatThinking' ? 'ChatThinking requires reasoning content' : 'ChatToolCall requires content');
       }
       const embed = element.name === 'XEmbed' || element.name === 'YouTube';
-      const allowed: readonly string[] = embed ? ['url', 'title'] : element.name === 'JimmyNoteAnchor' ? ['id', 'variant'] : element.name === 'JimmyNote' ? ['anchor'] : element.name === 'Achievement' ? achievementFields : element.name === 'AchievementOption' ? ['value'] : element.name === 'ChatMessage' ? ['from', 'state'] : ['title', 'type'];
+      const allowed: readonly string[] = embed ? ['url', 'title'] : element.name === 'JimmyNoteAnchor' ? ['id', 'variant'] : element.name === 'JimmyNote' ? ['anchor'] : element.name === 'Achievement' ? achievementFields : element.name === 'AchievementOption' ? ['value'] : element.name === 'ChatMessage' ? ['from', 'state'] : element.name === 'ChatToolCall' ? ['name', 'title', 'defaultOpen'] : element.name === 'ChatThinking' ? ['defaultOpen'] : element.name === 'InlineCitation' ? ['url', 'title', 'description'] : ['title', 'type'];
       const attributes: Record<string, string> = {};
       for (const attribute of element.attributes) {
-        if (attribute.type !== 'mdxJsxAttribute' || !allowed.includes(attribute.name) || typeof attribute.value !== 'string') {
-          fail(`Unsupported attribute on ${element.name}; use static ${allowed.join('/')} strings`);
-        }
+        if (attribute.type !== 'mdxJsxAttribute' || !allowed.includes(attribute.name)) fail(`Unsupported attribute on ${element.name}; use static ${allowed.join('/')} values`);
         if (Object.hasOwn(attributes, attribute.name)) fail(`Duplicate attribute ${attribute.name} on ${element.name}`);
+        if (activity && attribute.name === 'defaultOpen') {
+          const value = attribute.value as { type?: string; value?: string } | null;
+          if (value !== null && (typeof value !== 'object' || value.type !== 'mdxJsxAttributeValueExpression' || !/^(true|false)$/.test(value.value?.trim() ?? ''))) fail(`${element.name} defaultOpen must be a static boolean`);
+          attributes.defaultOpen = value === null ? 'true' : value.value!.trim();
+          continue;
+        }
+        if (typeof attribute.value !== 'string') fail(`Unsupported attribute on ${element.name}; use static strings`);
         attributes[attribute.name] = attribute.value as string;
+      }
+      if (element.name === 'ChatToolCall') {
+        for (const field of ['name', 'title']) if (!attributes[field]?.trim()) fail(`ChatToolCall requires a nonempty ${field}`);
+      }
+      if (element.name === 'InlineCitation') {
+        if (node.type !== 'mdxJsxTextElement') fail('InlineCitation must be inline');
+        if (element.children.some((child) => child.type !== 'text' || child.value?.trim())) fail('InlineCitation does not accept children');
+        let source: URL | undefined;
+        try { source = new URL(attributes.url); } catch { /* Report the same URL contract below. */ }
+        if (!source || !/^https:\/\//i.test(attributes.url) || source.protocol !== 'https:' || source.username || source.password) fail('InlineCitation requires an absolute HTTPS URL without credentials');
+        for (const field of ['title', 'description']) if (attributes[field] !== undefined && !attributes[field].trim()) fail(`InlineCitation ${field} must not be empty`);
+        links.push({ url: attributes.url, image: false, label: attributes.title || source!.hostname });
       }
       if (embed) {
         if (node.type !== 'mdxJsxFlowElement') fail(`${element.name} must be a standalone block`);

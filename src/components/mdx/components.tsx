@@ -7,11 +7,14 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Table, TableHeader, TableBody, TableFooter, TableRow, TableHead, TableCell, TableCaption } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import { LocalizedCodeBlock } from './code-block';
+import { MermaidDiagram } from './mermaid-diagram';
 import { Heading } from './heading';
 import { JimmyNote } from './notes/jimmy-note';
 import { JimmyNoteAnchor } from './notes/note-anchor';
 import { KeyTakeaway } from './notes/key-takeaway';
 import { Chat, ChatMessage, ChatThinking } from './chat/chat-message';
+import { ChatToolCall } from './chat/tool-call';
+import { InlineCitation } from './chat/inline-citation';
 import { LLMGenerationDemo } from './llm-generation-demo';
 import { MenuComparisonDemo } from './menu-comparison-demo';
 import { TokenizationDiagram } from './tokenization-diagram';
@@ -38,7 +41,7 @@ function HighlightedText({ className, ...props }: ComponentProps<'mark'>) {
 }
 export function getMDXComponents(achievements: readonly AchievementDefinition[] = []): MDXComponents {
   return {
-    ...defaults, Steps, Step, Callout, JimmyNote, JimmyNoteAnchor, KeyTakeaway, Chat, ChatMessage, ChatThinking, ChatMessageSequence, XEmbed, YouTube, LLMGenerationDemo, MenuComparisonDemo, TokenizationDiagram, TokenProbabilityDiagram, LLMPretrainingOverview, LLMSingleRoundTrainingDemo, LLMMultiRoundTrainingDemo, ...getAchievementComponents(achievements), pre: LocalizedCodeBlock,
+    ...defaults, Steps, Step, Callout, JimmyNote, JimmyNoteAnchor, KeyTakeaway, Chat, ChatMessage, ChatThinking, ChatToolCall, InlineCitation, ChatMessageSequence, XEmbed, YouTube, LLMGenerationDemo, MenuComparisonDemo, TokenizationDiagram, TokenProbabilityDiagram, LLMPretrainingOverview, LLMSingleRoundTrainingDemo, LLMMultiRoundTrainingDemo, MermaidDiagram, ...getAchievementComponents(achievements), pre: LocalizedCodeBlock,
     a: LinkPreview, mark: HighlightedText, table: MarkdownTable, thead: TableHeader, tbody: TableBody, tfoot: TableFooter,
     tr: TableRow, th: TableHead, td: TableCell, caption: TableCaption,
     h1: (props) => <Heading as="h1" {...props} />,

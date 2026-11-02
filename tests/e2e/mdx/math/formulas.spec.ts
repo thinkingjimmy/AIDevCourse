@@ -17,7 +17,8 @@ for (const scenario of [
       const page = await context.newPage();
       const fonts: { url: string; status: number }[] = [];
       page.on('response', (response) => {
-        if (/\.(woff2?|ttf)(?:\?|$)/.test(response.url())) fonts.push({ url: response.url(), status: response.status() });
+        // Embedded platforms own their fonts; only the article's fonts must be local.
+        if (response.request().frame() === page.mainFrame() && /\.(woff2?|ttf)(?:\?|$)/.test(response.url())) fonts.push({ url: response.url(), status: response.status() });
       });
       expect((await page.goto('/design/components'))?.status()).toBe(200);
       if (scenario.javaScriptEnabled) await page.evaluate(() => document.fonts.ready);

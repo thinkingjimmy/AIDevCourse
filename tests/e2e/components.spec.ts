@@ -142,6 +142,8 @@ test.describe('ChatMessage', () => {
         await expect(thinking).toHaveAttribute('data-from', 'assistant');
         await expect(thinking.locator('[data-slot="message-avatar"]')).toBeVisible();
         await expect(thinking.getByRole('status')).toHaveText('Thinking');
+        await expect(thinking.locator('[data-slot="trace"]')).toBeVisible();
+        await expect(thinking.locator('[data-slot="trace-line"]')).toHaveAttribute('data-status', 'running');
         await expect(thinking.locator('[data-slot="message-content"]')).toHaveCSS('border-top-width', '0px');
         await expect(thinking.locator('[data-slot="message-content"]')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
         await expect(thinking.locator('[data-slot="spinner"]')).not.toHaveCSS('animation-name', 'none');

@@ -2,6 +2,20 @@
   @apply rounded-none border border-foreground bg-background shadow-[4px_4px_0_var(--color-border)];
 }
 
+.mermaid-diagram {
+  --pele-bg: var(--color-background);
+  --pele-fg: var(--color-foreground);
+  --pele-muted: var(--color-muted-foreground);
+  --pele-line: var(--color-strong);
+  --pele-surface: var(--color-secondary);
+  --pele-surface-alt: var(--color-surface);
+  --pele-border: var(--color-ring);
+  --pele-accent: var(--color-primary);
+  --pele-font: var(--font-site-sans);
+  --pele-font-mono: var(--font-site-mono);
+  & > svg { @apply block h-auto w-full max-w-none; }
+}
+
 @utility course-prose {
   &.prose {
     @apply mt-2 max-w-none min-w-0 text-base leading-reading text-reading;

@@ -580,10 +580,10 @@ async function lessonReadingGeometry(page: Page) {
 async function verifyLessonReading(page: Page) {
   const geometry = await lessonReadingGeometry(page);
   expect(geometry.centerError).toBeLessThan(1);
-  expect(geometry.articleWidth).toBeLessThanOrEqual(42.5 * geometry.fontSize + 1);
+  expect(geometry.articleWidth).toBeLessThanOrEqual(51 * geometry.fontSize + 1);
   expect(geometry.overflow).toBe(false);
   expect(geometry.tocVisible).toBe(geometry.tocCount > 0 && geometry.viewportWidth >= 961);
-  const maximum = 42.5 + (geometry.railVisible ? 23 : 0);
+  const maximum = 51 + (geometry.railVisible ? 23 : 0);
   expect(geometry.group.width).toBeCloseTo(Math.min(geometry.region.contentWidth, maximum * geometry.fontSize), 0);
   if (geometry.tocVisible) {
     expect(geometry.tocRight).toBeLessThanOrEqual(geometry.articleLeft);
@@ -612,6 +612,7 @@ for (const width of [961, 1024, 1100, 1280, 1440, 1920, 2560]) {
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
     await page.evaluate(() => document.fonts.ready);
     const expanded = await verifyLessonReading(page);
+    if (width >= 1920) expect(expanded.articleWidth).toBeCloseTo(680 * 1.2, 0);
     expect(expanded.sidebar).toEqual({ visible: true, left: 0, width: 320 });
     expect(expanded.region.left).toBe(320);
     await expect(page.locator('[data-sidebar="footer"]')).toBeVisible();

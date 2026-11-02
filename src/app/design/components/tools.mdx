@@ -1,0 +1,36 @@
+---
+title: Tool call examples
+---
+
+<Chat>
+<ChatMessage from="user">
+What will the weather be in Guangzhou tomorrow?
+</ChatMessage>
+
+<ChatMessage from="assistant">
+<ChatThinking defaultOpen={false}>
+Look up the forecast before answering.
+</ChatThinking>
+
+<ChatToolCall name="search_web" title="Search the web">
+**Input**
+
+```json
+{
+  "query": "Guangzhou weather forecast for tomorrow"
+}
+```
+
+**Output**
+
+```json
+{
+  "forecast": "Light rain",
+  "temperature_range": "23-28 C"
+}
+```
+</ChatToolCall>
+
+The forecast is light rain, 23–28 °C.
+</ChatMessage>
+</Chat>

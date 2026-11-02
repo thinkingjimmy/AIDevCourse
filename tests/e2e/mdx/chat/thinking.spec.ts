@@ -12,6 +12,9 @@ test('thinking authoring keeps reasoning inside a completed assistant message', 
   const message = (content: string, attributes = 'from="assistant"') => `\n<ChatMessage ${attributes}>\n${content}\n</ChatMessage>\n`;
   const examples = [
     { body: message(`${thought}\n\nThe answer is 1776.`), valid: true, error: '' },
+    ...['defaultOpen', 'defaultOpen={true}', 'defaultOpen={false}'].map((setting) => ({ body: message(thought.replace('<ChatThinking>', `<ChatThinking ${setting}>`)), valid: true, error: '' })),
+    ...['defaultOpen="false"', 'defaultOpen={Boolean(true)}', 'defaultOpen={1}'].map((setting) => ({ body: message(thought.replace('<ChatThinking>', `<ChatThinking ${setting}>`)), valid: false, error: 'defaultOpen must be a static boolean' })),
+    { body: message(thought.replace('<ChatThinking>', '<ChatThinking defaultOpen defaultOpen={false}>')), valid: false, error: 'Duplicate attribute defaultOpen' },
     { body: '\n<ChatMessage from="assistant" state="thinking" />\n', valid: true, error: '' },
     { body: `\n${thought}\n`, valid: false, error: 'direct child of a completed assistant ChatMessage' },
     { body: message(thought, 'from="user"'), valid: false, error: 'direct child of a completed assistant ChatMessage' },
@@ -20,7 +23,7 @@ test('thinking authoring keeps reasoning inside a completed assistant message', 
     { body: message(`${thought}\n\n${thought}`), valid: false, error: 'at most one ChatThinking' },
     { body: message('<ChatThinking>\n\n</ChatThinking>'), valid: false, error: 'ChatThinking requires reasoning content' },
     { body: message('Text <ChatThinking>Reasoning.</ChatThinking> inline.'), valid: false, error: 'ChatThinking must be a standalone block' },
-    { body: message('<ChatThinking title="Reasoning">\nCheck the result.\n</ChatThinking>'), valid: false, error: 'ChatThinking does not accept attributes' },
+    { body: message('<ChatThinking title="Reasoning">\nCheck the result.\n</ChatThinking>'), valid: false, error: 'Unsupported attribute on ChatThinking' },
   ];
   const root = mkdtempSync(join(tmpdir(), 'aidevcourse-chat-thinking-'));
   try {
@@ -59,11 +62,16 @@ for (const scenario of [
       if (scenario.name === 'enlarged') await page.evaluate(() => { document.documentElement.style.fontSize = '24px'; });
       const thought = page.locator('#chat [data-component="chat-thinking"]');
       const assistant = thought.locator('..').locator('..');
-      const body = thought.locator('[data-slot="thinking-content"]');
+      const body = thought.locator(scenario.javaScriptEnabled ? '[data-slot="thinking-content"]' : 'details [data-slot="thinking-content"]');
       const answer = assistant.locator('[data-slot="message-response"]');
-      const summary = thought.locator('summary');
-      await expect(thought).toHaveAttribute('open', '');
-      await expect(summary).toHaveText('Thinking');
+      const summary = thought.locator(scenario.javaScriptEnabled ? '[data-slot="trace-collapsible-trigger"]' : 'summary');
+      if (scenario.javaScriptEnabled) {
+        await expect(thought.locator('[data-slot="trace"]')).toBeVisible();
+        await expect(summary).toHaveAttribute('aria-expanded', 'true');
+        await expect(summary).toHaveCSS('border-top-width', '0px');
+      } else await expect(thought.locator('details')).toHaveAttribute('open', '');
+      await expect(summary).toHaveText('Thought');
+      await expect(body).toBeVisible();
       await expect(body.locator('strong')).toHaveText('Break it down.');
       await expect(body.locator('p')).toHaveCount(2);
       await expect(body.locator('br')).toHaveCount(1);
@@ -79,7 +87,8 @@ for (const scenario of [
       await test.info().attach(`thinking-expanded-${scenario.name}`, { body: await assistant.screenshot(), contentType: 'image/png' });
       await summary.focus();
       await summary.press('Enter');
-      await expect(thought).not.toHaveAttribute('open');
+      if (scenario.javaScriptEnabled) await expect(summary).toHaveAttribute('aria-expanded', 'false');
+      else await expect(thought.locator('details')).not.toHaveAttribute('open');
       await expect(body).toBeHidden();
       await expect(answer).toBeVisible();
       expect((await assistant.locator('[data-slot="message-content"]').boundingBox())!.width).toBeCloseTo(expandedWidth, 1);
@@ -94,14 +103,20 @@ for (const scenario of [
         await page.goto('/zh/courses/llm-101/how-model-thinking-works');
         if (scenario.name === 'enlarged') await page.evaluate(() => { document.documentElement.style.fontSize = '24px'; });
         const reasoning = page.locator('[data-component="chat-thinking"]');
+        const trigger = reasoning.locator(scenario.javaScriptEnabled ? '[data-slot="trace-collapsible-trigger"]' : 'summary');
+        const reasoningBody = reasoning.locator(scenario.javaScriptEnabled ? '[data-slot="thinking-content"]' : 'details [data-slot="thinking-content"]');
         const response = reasoning.locator('..').locator('[data-slot="message-response"]');
-        await expect(reasoning.locator('[data-slot="thinking-content"]')).toContainText('先拆解：');
-        await expect(reasoning.locator('[data-slot="thinking-content"]')).not.toContainText('最后回答：');
-        await expect(response).toHaveText('最后回答：1776');
-        await reasoning.locator('summary').click();
-        await expect(reasoning.locator('[data-slot="thinking-content"]')).toBeHidden();
+        await expect(reasoningBody).toBeHidden();
         await expect(response).toBeVisible();
-        await reasoning.locator('summary').click();
+        await trigger.click();
+        await expect(reasoningBody).toBeVisible();
+        await expect(reasoningBody).toContainText('先拆解：');
+        await expect(reasoningBody).not.toContainText('最后回答：');
+        await expect(response).toHaveText('最后回答：1776');
+        await trigger.click();
+        await expect(reasoningBody).toBeHidden();
+        await expect(response).toBeVisible();
+        await trigger.click();
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
         await test.info().attach(`thinking-lesson-${scenario.name}`, { body: await reasoning.locator('..').locator('..').screenshot(), contentType: 'image/png' });
       }

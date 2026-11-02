@@ -116,11 +116,11 @@ test('lesson outline supports keyboard previews and reduced motion', async ({ pa
 
 test('lesson outline omits the empty right rail on a lesson without notes', async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 960 });
-  await page.goto('/zh/courses/llm-101/how-ai-chat-works');
+  await page.goto('/zh/courses/coding-101/what-is-json');
   await expect(page.locator(tocSelector)).toBeVisible();
   await expect(page.locator('[data-slot="lesson-rail"]')).toHaveCount(0);
-  expect((await page.locator('article').boundingBox())!.width).toBeCloseTo(680, 0);
-  expect((await page.locator('[data-slot="lesson-reading-group"]').boundingBox())!.width).toBeCloseTo(680, 0);
+  expect((await page.locator('article').boundingBox())!.width).toBeCloseTo(816, 0);
+  expect((await page.locator('[data-slot="lesson-reading-group"]').boundingBox())!.width).toBeCloseTo(816, 0);
   await capture(page, 'lesson-outline-without-notes');
 });
 
@@ -178,7 +178,7 @@ test('lesson outline stays beside the sidebar in narrow desktop windows and foll
 });
 
 test('lesson outline shows complete titles by default when the left gutter is wide enough', async ({ page, browserName }) => {
-  await page.setViewportSize({ width: 1920, height: 960 });
+  await page.setViewportSize({ width: 2048, height: 960 });
   await page.goto(lesson);
   await page.evaluate(() => document.fonts.ready);
   const toc = page.locator(tocSelector);
@@ -203,7 +203,7 @@ test('lesson outline shows complete titles by default when the left gutter is wi
   expect(accessibility.violations).toEqual([]);
   await capture(page, 'lesson-outline-expanded-titles');
 
-  await page.setViewportSize({ width: 1920, height: 240 });
+  await page.setViewportSize({ width: 2048, height: 240 });
   await links.last().click();
   await expect(links.last()).toHaveAttribute('aria-current', 'location');
   await expect(links.last()).toBeInViewport();
@@ -212,7 +212,7 @@ test('lesson outline shows complete titles by default when the left gutter is wi
 });
 
 test('lesson outline changes between titles and markers without losing focus or retaining a floating title', async ({ page }) => {
-  await page.setViewportSize({ width: 1920, height: 960 });
+  await page.setViewportSize({ width: 2048, height: 960 });
   await page.goto(lesson);
   const toc = page.locator(tocSelector);
   const link = toc.locator('a').nth(3);
@@ -229,7 +229,7 @@ test('lesson outline changes between titles and markers without losing focus or 
   await link.hover();
   await expect(page.locator(titleSelector)).toBeVisible();
   await capture(page, 'lesson-outline-responsive-markers');
-  await page.setViewportSize({ width: 1920, height: 960 });
+  await page.setViewportSize({ width: 2048, height: 960 });
   await expect(label).toHaveCSS('position', 'static');
   await expect(link).toBeFocused();
   await expect(link.locator(markerSelector)).toBeHidden();
@@ -239,8 +239,8 @@ test('lesson outline changes between titles and markers without losing focus or 
 });
 
 for (const scenario of [
-  { name: 'with notes', path: lesson, threshold: 1816 },
-  { name: 'without notes', path: '/zh/courses/llm-101/how-ai-chat-works', threshold: 1448 },
+  { name: 'with notes', path: lesson, threshold: 1952 },
+  { name: 'without notes', path: '/zh/courses/coding-101/what-is-json', threshold: 1584 },
 ]) {
   test(`lesson outline uses the available gutter ${scenario.name} and follows sidebar resizing`, async ({ page }) => {
     await page.setViewportSize({ width: scenario.threshold - 1, height: 960 });
@@ -271,7 +271,7 @@ for (const scenario of [
 }
 
 test('lesson outline shows wide titles and native anchors without JavaScript', async ({ browser, baseURL }) => {
-  const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 1920, height: 960 } });
+  const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 2048, height: 960 } });
   try {
     const page = await context.newPage();
     await page.goto(lesson);
@@ -292,8 +292,8 @@ for (const locale of ['en', 'ja', 'fr', 'es'] as const) {
     const messages = JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
     await expect(page.getByRole('navigation', { name: messages.Course.onThisPage, exact: true })).toHaveCount(0);
     await expect(page.locator('[data-slot="lesson-aside"], [data-slot="lesson-rail"]')).toHaveCount(0);
-    expect((await page.locator('article').boundingBox())!.width).toBeCloseTo(680, 0);
-    expect((await page.locator('[data-slot="lesson-reading-group"]').boundingBox())!.width).toBeCloseTo(680, 0);
+    expect((await page.locator('article').boundingBox())!.width).toBeCloseTo(816, 0);
+    expect((await page.locator('[data-slot="lesson-reading-group"]').boundingBox())!.width).toBeCloseTo(816, 0);
     await capture(page, `lesson-outline-no-headings-${locale}`);
   });
 }
