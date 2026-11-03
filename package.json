@@ -13,7 +13,7 @@
     "content:check": "node --import tsx scripts/check-content.ts",
     "i18n:check": "node --import tsx scripts/check-i18n.ts",
     "lint": "eslint --config config/eslint.config.mjs src scripts tests config next.config.mjs",
-    "typecheck": "pnpm content:generate && tsc --noEmit",
+    "typecheck": "pnpm content:generate && next typegen && tsc --noEmit",
     "test": "vitest run --config tests/vitest.config.ts",
     "test:e2e": "playwright test --config tests/playwright.config.ts",
     "build": "pnpm content:check && pnpm i18n:check && next build",

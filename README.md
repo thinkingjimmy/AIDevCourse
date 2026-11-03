@@ -75,7 +75,7 @@ E2E starts its own server on port **3310**; set `E2E_PORT` if needed. Fixture bu
 - `pnpm-lock.yaml`: Reproducible dependency resolution.
 - `next.config.mjs`: Framework integrations, deployment guards, and response headers.
 - `tsconfig.json`: TypeScript configuration and source aliases.
-- `components.json`: Local shadcn component settings and Phosphor icon choice.
+- `config/components.json`: Local shadcn component settings and Phosphor icon choice.
 - `.gitignore`: Excludes secrets, dependencies, caches, and generated evidence.
 - `LICENSE`: MIT license.
 
