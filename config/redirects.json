@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "source": "/zh/courses/llm-101/what-can-you-do-with-ai-chat",
+    "destination": "/zh/courses/llm-101/ai-chat-advice"
+  },
+  {
+    "source": "/zh/courses/llm-101/how-to-use-ai-artifacts",
+    "destination": "/zh/courses/llm-101/ai-chat-tips"
+  }
+]

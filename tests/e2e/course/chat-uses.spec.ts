@@ -2,9 +2,11 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 const course = '/zh/courses/llm-101';
-const lesson = `${course}/what-can-you-do-with-ai-chat`;
+const lesson = `${course}/ai-chat-advice`;
 const previous = `${course}/what-is-a-tool`;
-const title = '你可以用 AI Chat 做什么？';
+const artifactLesson = `${course}/ai-chat-tips`;
+const title = '使用 AI Chat 的几个建议';
+const artifactTitle = 'AI Chat 实用技巧';
 const achievementId = 'use-chat-with-source-material';
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published chat uses lesson.');
@@ -17,15 +19,20 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     const entry = page.locator('section[aria-labelledby="course-catalog"]').getByRole('link', { name: title });
     await expect(entry).toHaveAttribute('href', lesson);
     await expect(entry.locator('> span:first-child')).toHaveText('3.3');
+    const artifactEntry = page.locator('section[aria-labelledby="course-catalog"]').getByRole('link', { name: artifactTitle });
+    await expect(artifactEntry).toHaveAttribute('href', artifactLesson);
+    await expect(artifactEntry.locator('> span:first-child')).toHaveText('3.4');
     await page.goto(previous);
     await page.locator('article nav').getByRole('link', { name: /下一课/ }).click();
     await expect(page).toHaveURL(lesson);
     await expect(page.locator('article h1')).toHaveText(title);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${lesson}$`));
     await expect(page.locator('article nav').getByRole('link', { name: /上一课/ })).toHaveAttribute('href', previous);
-    const examples = page.locator('article [data-component="chat"]');
-    await expect(examples).toHaveCount(5);
-    await expect(examples.nth(1).locator('[data-from="user"]')).toHaveCount(2);
+    await expect(page.locator('article nav').getByRole('link', { name: /下一课/ })).toHaveAttribute('href', artifactLesson);
+    await expect(page.locator('article').getByRole('heading', { name: '三、多引导 AI 进行提问和复述' })).toBeVisible();
+    await expect(page.locator('article').getByRole('heading', { name: '四、接受 AI 的能力边界' })).toBeVisible();
+    await expect(page.locator('article').getByRole('heading', { name: '五、成就挑战' })).toBeVisible();
+    await expect(page.locator('[data-newton-demo]')).toHaveCount(0);
     if (viewport.width < 961) await page.locator('[data-slot="mobile-sidebar-trigger"]').click();
     const sidebar = page.locator(viewport.width < 961 ? '[data-mobile="true"]' : '[data-slot="sidebar-inner"]');
     await expect(sidebar.locator('a[aria-current="page"]')).toContainText(`3.3 ${title}`);
@@ -42,32 +49,66 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     const accessibility = await new AxeBuilder({ page }).include('article').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(accessibility.violations).toEqual([]);
     await testInfo.attach(`chat-uses-${viewport.name}`, { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
-    await testInfo.attach(`chat-uses-example-${viewport.name}`, { body: await examples.nth(1).screenshot(), contentType: 'image/png' });
+    await page.locator('article nav').getByRole('link', { name: /下一课/ }).click();
+    await expect(page).toHaveURL(artifactLesson);
+    await expect(page.locator('article h1')).toHaveText(artifactTitle);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${artifactLesson}$`));
+    await expect(page.locator('article nav').getByRole('link', { name: /上一课/ })).toHaveAttribute('href', lesson);
+    await expect(page.locator('article').getByRole('link', { name: '使用 AI Chat 的几个建议', exact: true })).toHaveAttribute('href', lesson);
+    await expect(page.getByRole('figure', { name: '牛顿第二定律交互演示' })).toBeVisible();
+    await expect(page.locator('article').getByRole('heading', { name: '四、检查内容，也检查交互' })).toBeVisible();
+    if (viewport.width < 961) await page.locator('[data-slot="mobile-sidebar-trigger"]').click();
+    await expect(sidebar.locator('a[aria-current="page"]')).toContainText(`3.4 ${artifactTitle}`);
+    if (viewport.width < 961) await page.keyboard.press('Escape');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    const artifactAccessibility = await new AxeBuilder({ page }).include('article').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+    expect(artifactAccessibility.violations).toEqual([]);
+    await testInfo.attach(`artifact-lesson-${viewport.name}`, { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
   });
 }
 
-test('chat uses lesson is available through search', async ({ page }, testInfo) => {
-  await page.goto('/zh');
-  await page.keyboard.press('Control+k');
-  await page.getByRole('textbox', { name: '搜索课时' }).fill('AI Chat');
-  const result = page.locator(`.search-result[href="${lesson}"]`).first();
-  await expect(result).toBeVisible();
-  await result.click();
-  await expect(page).toHaveURL(lesson);
-  await expect(page.locator('article h1')).toHaveText(title);
-  await testInfo.attach('chat-uses-search', { body: await page.screenshot({ animations: 'disabled' }), contentType: 'image/png' });
-});
+for (const entry of [
+  { name: 'chat-uses', url: lesson, previousUrl: `${course}/what-can-you-do-with-ai-chat`, title },
+  { name: 'artifacts', url: artifactLesson, previousUrl: `${course}/how-to-use-ai-artifacts`, title: artifactTitle },
+]) {
+  test(`${entry.name} lesson is available through search and its previous URL`, async ({ page, request }, testInfo) => {
+    const redirect = await request.get(entry.previousUrl, { maxRedirects: 0 });
+    expect(redirect.status()).toBe(308);
+    expect(redirect.headers().location).toBe(entry.url);
+    const sitemap = await (await request.get('/sitemap.xml')).text();
+    expect(sitemap).toContain(entry.url);
+    expect(sitemap).not.toContain(entry.previousUrl);
+    await page.goto('/zh');
+    await page.keyboard.press('Control+k');
+    await page.getByRole('textbox', { name: '搜索课时' }).fill(entry.title);
+    const result = page.locator(`.search-result[href="${entry.url}"]`).first();
+    await expect(result).toBeVisible();
+    await result.click();
+    await expect(page).toHaveURL(entry.url);
+    await expect(page.locator('article h1')).toHaveText(entry.title);
+    await testInfo.attach(`${entry.name}-search`, { body: await page.screenshot({ animations: 'disabled' }), contentType: 'image/png' });
+    await page.goto(entry.previousUrl);
+    await expect(page).toHaveURL(entry.url);
+    await expect(page.locator('article h1')).toHaveText(entry.title);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${entry.url}$`));
+    await testInfo.attach(`${entry.name}-redirect`, { body: JSON.stringify({ source: entry.previousUrl, destination: page.url(), status: redirect.status(), title: entry.title }, null, 2), contentType: 'application/json' });
+  });
 
-test('chat uses lesson remains readable on a narrow screen without JavaScript', async ({ browser, baseURL }, testInfo) => {
-  const context = await browser.newContext({ baseURL, viewport: { width: 320, height: 844 }, javaScriptEnabled: false });
-  try {
-    const page = await context.newPage();
-    expect((await page.goto(lesson))?.status()).toBe(200);
-    await expect(page.locator('article h1')).toHaveText(title);
-    await expect(page.locator('article [data-component="chat"]')).toHaveCount(5);
-    await expect(page.locator('article table tbody tr')).toHaveCount(3);
-    await expect(page.locator(`[data-achievement="${achievementId}"] input[type="radio"]`).first()).toBeDisabled();
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await testInfo.attach('chat-uses-narrow-no-js', { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
-  } finally { await context.close(); }
-});
+  test(`${entry.name} lesson remains readable on a narrow screen without JavaScript`, async ({ browser, baseURL }, testInfo) => {
+    const context = await browser.newContext({ baseURL, viewport: { width: 320, height: 844 }, javaScriptEnabled: false });
+    try {
+      const page = await context.newPage();
+      expect((await page.goto(entry.url))?.status()).toBe(200);
+      await expect(page.locator('article h1')).toHaveText(entry.title);
+      if (entry.url === lesson) {
+        await expect(page.locator('article').getByRole('heading', { name: '四、接受 AI 的能力边界' })).toBeVisible();
+        await expect(page.locator(`[data-achievement="${achievementId}"] input[type="radio"]`).first()).toBeDisabled();
+      } else {
+        await expect(page.getByRole('figure', { name: '牛顿第二定律交互演示' })).toBeVisible();
+        await expect(page.locator('article').getByRole('heading', { name: '五、动手试一次' })).toBeVisible();
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await testInfo.attach(`${entry.name}-narrow-no-js`, { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
+    } finally { await context.close(); }
+  });
+}

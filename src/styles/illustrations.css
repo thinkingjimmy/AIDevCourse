@@ -16,6 +16,7 @@
   [data-anatomy] .iso-line[data-tone='mid'] { @apply stroke-anatomy-mid; }
   [data-anatomy] .iso-line[data-tone='lo'] { @apply stroke-anatomy-lo; }
   [data-anatomy] .iso-line[data-tone='faint'] { @apply stroke-anatomy-faint; }
+  [data-anatomy='rocket'] .iso-line[data-tone='hi'] { @apply stroke-anatomy-mid; }
   [data-anatomy] .iso-dots circle { @apply fill-anatomy-dot stroke-none opacity-32; }
   [data-anatomy] .iso-dots[data-tone='hi'] circle { @apply opacity-85; }
   [data-anatomy] .iso-dots[data-tone='mid'] circle { @apply opacity-45; }
@@ -25,6 +26,15 @@
   [data-anatomy] .pc-cord { @apply stroke-[1.1px]; }
   [data-anatomy] .pc-beam { @apply fill-none stroke-black stroke-[1.4px] [stroke-linecap:round] [vector-effect:non-scaling-stroke]; }
   [data-anatomy] .pc-dot { @apply fill-black; }
+  /* tube/pipe segments from anatomy kit (used by raptor engine) */
+  [data-anatomy] .tb-body  { @apply fill-anatomy-shade-2 stroke-none; }
+  [data-anatomy] .tb-shine { @apply fill-white stroke-none; }
+  [data-anatomy] .tb-shade { @apply fill-anatomy-shade-0 stroke-none; }
+  [data-anatomy] .tb-ring  { @apply fill-none stroke-anatomy-lo [stroke-width:.45px] [stroke-linecap:butt] [stroke-linejoin:round]; }
+  [data-anatomy] .tb-ring[data-tone='mid']   { @apply stroke-anatomy-mid; }
+  [data-anatomy] .tb-ring[data-tone='faint'] { @apply stroke-anatomy-faint; }
+  [data-anatomy] .tb-ring[data-tone='hi']    { @apply stroke-anatomy-hi; }
+
   [data-anatomy='chip'] .iso-svg { @apply overflow-hidden; }
   [data-anatomy] .co { @apply opacity-0 transition-opacity duration-450 ease-in-out; }
   [data-anatomy][data-settled='true'] .co { @apply opacity-100; }

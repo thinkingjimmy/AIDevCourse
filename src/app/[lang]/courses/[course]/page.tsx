@@ -8,6 +8,7 @@ import { getCatalog, getCourse, getArticle } from '@/lib/content/source';
 import { Button } from '@/components/ui/button';
 import { PageTitle, PageActions, HeroGrid, HeroCopy, HeroLead } from '@/components/layout/page-primitives';
 import { ChipExplode } from '@/components/illustrations/chip-explode';
+import { RocketExplode } from '@/components/illustrations/rocket-explode';
 import { pageMetadata } from '@/lib/metadata';
 type Props = { params: Promise<{ lang: string; course: string }> };
 export function generateStaticParams() { return getCatalog().courses.map((course) => ({ lang: course.locale, course: course.slug })); }
@@ -37,7 +38,7 @@ export default async function CoursePage({ params }: Props) {
             <Button asChild variant="action-raised" size="action"><Link href={first.url} target="_blank" rel="noopener">{t('startFirst')}<ArrowRightIcon size={16} aria-hidden /></Link></Button>
           </PageActions>}
         </HeroCopy>
-        <div className="relative aspect-[720/570] w-[min(100%,420px)] justify-self-center overflow-hidden bg-transparent max-[841px]:w-[min(100%,320px)]"><ChipExplode callouts /></div>
+        <div className="relative aspect-[720/570] w-[min(100%,420px)] justify-self-center overflow-hidden bg-transparent max-[841px]:w-[min(100%,320px)]">{course.slug === 'coding-101' ? <RocketExplode callouts /> : <ChipExplode callouts />}</div>
       </HeroGrid>
     </section>
     <hr className="relative left-1/2 m-0 -ml-[50vw] h-0 w-screen border-0 border-t border-border" />

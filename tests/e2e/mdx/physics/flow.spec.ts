@@ -1,7 +1,7 @@
 import { test, expect, type Locator } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-const lesson = '/zh/courses/llm-101/what-can-you-do-with-ai-chat';
+const lesson = '/zh/courses/llm-101/ai-chat-tips';
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published artifact example.');
 
@@ -35,7 +35,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       const headings = [...element.closest('article')!.querySelectorAll('h2')];
       return headings.filter((heading) => heading.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING).at(-1)?.textContent;
     });
-    expect(headingOrder).toContain('二、多用 Artifact 功能');
+    expect(headingOrder).toContain('一、多用 Artifact 功能');
 
     const samples = [];
     for (const sample of [
@@ -98,7 +98,8 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
 
     await clickControl(demo.getByRole('button', { name: '再比一次', exact: true }));
     await page.clock.runFor(200);
-    await page.locator('article h1').scrollIntoViewIfNeeded();
+    await page.locator('article nav').last().scrollIntoViewIfNeeded();
+    await expect(demo).not.toBeInViewport();
     await page.clock.runFor(100);
     await expect(demo).toHaveAttribute('data-state', 'paused');
     const offscreen = await demo.getAttribute('data-time');
