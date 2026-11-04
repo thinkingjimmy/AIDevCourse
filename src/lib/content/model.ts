@@ -19,10 +19,11 @@ export type LessonSummary = {
 export type CourseManifest = {
   id: string; locale: Locale; slug: string; title: string; description: string; url: string;
   sourceLocale: Locale; level: 'beginner' | 'intermediate' | 'advanced';
+  section?: 'introduction';
   goals: string[]; audience: string; prerequisites: string[];
   lessons: LessonSummary[]; achievements: CourseAchievement[];
 };
-export type AchievementCourse = Pick<CourseManifest, 'id' | 'title' | 'achievements'>;
+export type AchievementCourse = Pick<CourseManifest, 'id' | 'title' | 'achievements'> & { lessonIds: string[] };
 export type Translation = { locale: Locale; url: string; headings: string[] };
 export type Catalog = {
   documents: ContentDocument[]; courses: CourseManifest[];
@@ -36,7 +37,10 @@ export function globalAchievementCourses(catalog: Catalog, locale: Locale): Achi
       selected.set(course.id, course);
     }
   }
-  return [...selected.values()].map(({ id, title, achievements }) => ({ id, title, achievements }));
+  return [...selected.values()].map(({ id, title, achievements }) => ({
+    id, title, achievements,
+    lessonIds: [...new Set(catalog.courses.filter((course) => course.id === id).flatMap((course) => course.lessons.map((lesson) => lesson.id)))],
+  }));
 }
 export function identity(document: ContentDocument) {
   return document.data.kind === 'course' ? document.data.courseId : `${document.data.courseId}:${document.data.lessonId}`;

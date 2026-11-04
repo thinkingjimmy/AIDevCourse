@@ -12,7 +12,7 @@ export function FormulaTrainingModel({ candidates, title, updated = false, compa
 }) {
   const target = candidates.find((candidate) => candidate.token === trainingTarget);
   const coefficientClass = `inline-flex flex-wrap items-baseline justify-center gap-1 rounded-sm px-1.5 py-1 text-caption leading-copy font-medium tabular-nums ${updated ? 'bg-foreground text-background' : 'bg-muted'}`;
-  return <div data-training-model={updated ? 'after' : 'before'} className={`min-w-0 border p-3 ${updated ? 'border-foreground' : 'border-border'}`}>
+  return <div data-training-model={updated ? 'after' : 'before'} className={`min-w-0 rounded-sm border p-3 ${updated ? 'border-foreground' : 'border-border'}`}>
     <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
       <span className="text-sm font-medium">{title}</span>
       <span className="text-caption text-muted-foreground">y = ax + b</span>
@@ -35,9 +35,9 @@ export function FormulaTrainingModel({ candidates, title, updated = false, compa
         {showComparisonNote && target && <TrainingComparisonNote probability={target.probability} />}
         <div role="img" aria-label={probabilitySummary(candidates.map((candidate) => candidate.probability))} data-training-probabilities className="grid gap-3">
         {candidates.map((candidate) => <div key={candidate.token} data-answer={candidate.token === trainingTarget} data-comparing={comparing && candidate.token === trainingTarget}
-          className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)_2.75rem] items-center gap-2 border border-transparent px-1 py-1 data-[comparing=true]:border-foreground data-[comparing=true]:font-medium">
+          className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)_2.75rem] items-center gap-2 rounded-sm border border-transparent px-1 py-1 data-[comparing=true]:border-foreground data-[comparing=true]:font-medium">
           <span>{candidate.token}</span>
-          <div className="h-2 bg-muted"><div className={`h-full ${candidate.token === trainingTarget ? 'bg-foreground' : 'bg-faint'}`} style={{ width: `${candidate.probability}%` }} /></div>
+          <div className="h-2 rounded-sm bg-muted"><div className={`h-full rounded-sm ${candidate.token === trainingTarget ? 'bg-foreground' : 'bg-faint'}`} style={{ width: `${candidate.probability}%` }} /></div>
           <span data-training-probability className="text-right tabular-nums">{candidate.probability}%</span>
         </div>)}
         </div>

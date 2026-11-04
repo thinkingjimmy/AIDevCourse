@@ -6,13 +6,14 @@ import type { AchievementCourse } from '@/lib/content/model';
 type Context = {
   courses: AchievementCourse[]; learning: Record<string, LearningState>; ready: boolean;
   unlock: (courseId: string, achievementId: string) => boolean;
+  complete: (courseId: string, lessonId: string) => boolean;
   visit: (courseId: string, lessonId: string) => void;
 };
 const AchievementContext = createContext<Context | null>(null);
 
 export function AchievementProvider({ courses, children }: { courses: AchievementCourse[]; children: ReactNode }) {
   const stores = useMemo(() => new Map(courses.map((course) => [course.id,
-    new LearningStorage(() => window.localStorage, course.id, course.achievements.map((item) => item.id)),
+    new LearningStorage(() => window.localStorage, course.id, course.achievements.map((item) => item.id), course.lessonIds),
   ])), [courses]);
   const [learning, setLearning] = useState<Record<string, LearningState>>({});
   const [ready, setReady] = useState(false);
@@ -47,7 +48,15 @@ export function AchievementProvider({ courses, children }: { courses: Achievemen
     setLearning((current) => ({ ...current, [courseId]: next }));
   }, [ready, stores]);
 
-  const value = useMemo(() => ({ courses, learning, ready, unlock, visit }), [courses, learning, ready, unlock, visit]);
+  const complete = useCallback((courseId: string, lessonId: string) => {
+    const storage = stores.get(courseId);
+    if (!ready || !storage || !courses.some((course) => course.id === courseId && course.lessonIds.includes(lessonId))) return false;
+    const next = storage.complete(lessonId);
+    setLearning((current) => ({ ...current, [courseId]: next }));
+    return true;
+  }, [courses, ready, stores]);
+
+  const value = useMemo(() => ({ courses, learning, ready, unlock, visit, complete }), [courses, learning, ready, unlock, visit, complete]);
   return <AchievementContext value={value}>{children}</AchievementContext>;
 }
 

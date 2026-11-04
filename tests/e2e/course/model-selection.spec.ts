@@ -1,30 +1,41 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { readCatalog } from '../../../src/lib/content/manifest';
 
 const course = '/zh/courses/llm-101';
 const modelBasics = `${course}/open-models-and-local-deployment`;
 const lesson = `${course}/how-to-choose-a-language-model`;
+const contentDocument = (url: string) => readCatalog().documents.find((entry) => entry.url === url)!;
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published model selection lesson.');
 
-test('thinking and multimodal lessons retain achievements', async ({ page }, testInfo) => {
+async function checkAuthoredExercises(page: Page, url: string) {
+  const definitions = contentDocument(url).achievements;
+  await expect(page.locator('[data-achievement]')).toHaveCount(definitions.length);
+  for (const definition of definitions) {
+    const challenge = page.locator(`[data-achievement="${definition.id}"]`);
+    const incorrect = definition.options.find((option) => option.value !== definition.answer)!;
+    await challenge.locator(`input[value="${incorrect.value}"]`).click();
+    await expect(challenge).toHaveAttribute('data-state', 'incorrect');
+    await challenge.locator(`input[value="${definition.answer}"]`).click();
+    await expect(challenge).toHaveAttribute('data-state', 'unlocked');
+    await page.reload();
+    await expect(challenge).toHaveAttribute('data-state', 'unlocked');
+  }
+}
+
+test('thinking and multimodal lessons keep their reading and authored exercises', async ({ page }, testInfo) => {
   await page.goto(`${course}/how-language-models-are-trained`);
   for (const entry of [
-    { slug: 'how-model-thinking-works', title: '模型的「深度思考」是怎么回事？', achievement: 'thinking-is-not-verification', text: '980 元', headings: 6 },
-    { slug: 'how-models-see-and-hear', title: '模型是如何看图和听声音的？', achievement: 'distinguish-audio-inputs', text: '语音转文字、理解音频、生成语音', headings: 4 },
+    { slug: 'how-model-thinking-works', title: '模型的「深度思考」是怎么回事？', text: '980 元', headings: 6 },
+    { slug: 'how-models-see-and-hear', title: '模型是如何看图和听声音的？', text: '语音转文字、理解音频、生成语音', headings: 4 },
   ]) {
-    await page.locator('article nav').getByRole('link', { name: /下一课/ }).click();
+    await page.getByRole('button', { name: '标记为已完成', exact: true }).click();
     await expect(page).toHaveURL(`${course}/${entry.slug}`);
     await expect(page.locator('article h1')).toHaveText(entry.title);
     await expect(page.locator('article > .prose')).toContainText(entry.text);
     await expect(page.locator('article h2')).toHaveCount(entry.headings);
-    const challenge = page.locator(`[data-achievement="${entry.achievement}"]`);
-    await challenge.getByRole('radio').first().click();
-    await expect(challenge).toHaveAttribute('data-state', 'incorrect');
-    await challenge.getByRole('radio').nth(1).click();
-    await expect(challenge).toHaveAttribute('data-state', 'unlocked');
-    await page.reload();
-    await expect(challenge).toHaveAttribute('data-state', 'unlocked');
+    await checkAuthoredExercises(page, `${course}/${entry.slug}`);
     const result = await new AxeBuilder({ page }).include('article').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(result.violations).toEqual([]);
     const screenshot = testInfo.outputPath(`${entry.slug}.png`);
@@ -33,39 +44,28 @@ test('thinking and multimodal lessons retain achievements', async ({ page }, tes
   }
 });
 
-test('follow model basics into selection and retain its achievement', async ({ page }, testInfo) => {
+test('follow model basics into selection and preserve authored exercises', async ({ page }, testInfo) => {
   await page.goto(`${course}/how-models-see-and-hear`);
-  await page.locator('article nav').getByRole('link', { name: /下一课/ }).click();
+  await page.getByRole('button', { name: '标记为已完成', exact: true }).click();
   await expect(page).toHaveURL(modelBasics);
   await expect(page.locator('article h1')).toHaveText('开源模型、参数量与本地运行');
-  await expect(page.locator('article h2')).toHaveText([
-    'Q1：开源和闭源模型是什么？', 'Q2: 开源和闭源有何区别？', 'Q2：模型里的 B 代表什么？',
-    'Q3：什么是混合专家（MoE）模型？', 'Q4：我的电脑能运行 DeepSeek-V4.1-Flash 模型吗？',
-  ]);
+  await expect(page.locator('article h2')).toHaveText(contentDocument(modelBasics).headings.filter((heading) => heading.depth === 2).map((heading) => heading.title));
   await expect(page.locator('article > .prose')).toContainText('5520 亿个参数');
   await expect(page.locator('[data-jimmy-note-anchor]')).toHaveCount(2);
   await expect(page.locator('article .katex')).toHaveCount(1);
   await expect(page.locator('[data-achievement]')).toHaveCount(0);
-  await expect(page.locator('article nav').getByRole('link', { name: /上一课/ })).toHaveAttribute('href', `${course}/how-models-see-and-hear`);
   const basicsAccessibility = await new AxeBuilder({ page }).include('article').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
   expect(basicsAccessibility.violations).toEqual([]);
   await testInfo.attach('model-basics-independent-lesson', { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
-  await page.locator('article nav').getByRole('link', { name: /下一课/ }).click();
+  await page.getByRole('button', { name: '标记为已完成', exact: true }).click();
   await expect(page).toHaveURL(lesson);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('如何选择适合自己的大语言模型？');
-  await expect(page.locator('article h2').filter({ hasText: /^Q[1-4]：/ })).toHaveText(['Q3：如何评判哪个模型更强？', 'Q4：我应该使用何种模型？']);
-  await expect(page.locator('article nav').getByRole('link', { name: /上一课/ })).toHaveAttribute('href', modelBasics);
-  const achievement = page.locator('[data-achievement="choose-model-for-task"]');
-  await achievement.getByRole('radio').first().click();
-  await expect(achievement).toHaveAttribute('data-state', 'incorrect');
-  await achievement.getByRole('radio').nth(1).click();
-  await expect(achievement).toHaveAttribute('data-state', 'unlocked');
-  await page.reload();
-  await expect(achievement).toHaveAttribute('data-state', 'unlocked');
+  await expect(page.locator('article h2')).toHaveText(contentDocument(lesson).headings.filter((heading) => heading.depth === 2).map((heading) => heading.title));
+  await checkAuthoredExercises(page, lesson);
   const accessibility = await new AxeBuilder({ page }).include('article').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
   expect(accessibility.violations).toEqual([]);
   await testInfo.attach('model-selection-completed', { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
-  await page.locator('article nav').getByRole('link', { name: /下一课/ }).click();
+  await page.getByRole('button', { name: '标记为已完成', exact: true }).click();
   await expect(page).toHaveURL(`${course}/how-ai-chat-works`);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('AI Chat 是如何工作的？');
 });
@@ -95,8 +95,9 @@ test('three modules expose ordered lessons through the catalog, sidebar, and sea
   const catalog = page.locator('section[aria-labelledby="course-catalog"]');
   await expect(catalog.locator('h3')).toHaveText(['01大语言模型的工作原理', '02模型的训练与能力', '03AI 应用的工作原理']);
   const groups = catalog.locator('ol');
-  for (const [index, count] of [4, 5, 3].entries()) await expect(groups.nth(index).getByRole('listitem')).toHaveCount(count);
-  await expect(catalog.locator('li a > span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2', '3.3']);
+  for (const [index, count] of [4, 5, 5].entries()) await expect(groups.nth(index).getByRole('listitem')).toHaveCount(count);
+  const parts = ['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2', '3.3', '3.4', '3.5'];
+  await expect(catalog.locator('li a > span:first-child')).toHaveText(parts);
   await expect(groups.nth(1).getByRole('link').nth(1)).toHaveAttribute('href', `${course}/how-model-thinking-works`);
   await expect(groups.nth(1).getByRole('link').nth(2)).toHaveAttribute('href', `${course}/how-models-see-and-hear`);
   await expect(groups.nth(1).getByRole('link').nth(3)).toHaveAttribute('href', modelBasics);
@@ -118,7 +119,7 @@ test('three modules expose ordered lessons through the catalog, sidebar, and sea
   await expect(sidebar.locator('[data-sidebar="menu-button"]')).toHaveText(['01 大语言模型的工作原理', '02 模型的训练与能力', '03 AI 应用的工作原理']);
   await expect(sidebar.getByRole('button', { name: '02 模型的训练与能力', exact: true })).toHaveAttribute('aria-expanded', 'true');
   await expect(sidebar.locator('a[aria-current="page"]')).toHaveAttribute('href', lesson);
-  await testInfo.attach('llm-101-module-routes', { body: JSON.stringify({ urls, parts: ['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2', '3.3'] }, null, 2), contentType: 'application/json' });
+  await testInfo.attach('llm-101-module-routes', { body: JSON.stringify({ urls, parts }, null, 2), contentType: 'application/json' });
   await page.goto('/zh');
   await page.keyboard.press('Control+k');
   await page.getByRole('textbox', { name: '搜索课时' }).fill('如何选择适合自己的大语言模型');

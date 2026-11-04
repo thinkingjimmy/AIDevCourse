@@ -30,6 +30,7 @@ test('model selection follows training and precedes chat', async ({ page: overvi
   const tools = '/zh/courses/llm-101/what-is-a-tool';
   const chatUses = '/zh/courses/llm-101/ai-chat-advice';
   const artifacts = '/zh/courses/llm-101/ai-chat-tips';
+  const agents = '/zh/courses/llm-101/what-is-an-agent';
   const selection = '/zh/courses/llm-101/how-to-choose-a-language-model';
   const thinking = '/zh/courses/llm-101/how-model-thinking-works';
   const multimodal = '/zh/courses/llm-101/how-models-see-and-hear';
@@ -38,21 +39,22 @@ test('model selection follows training and precedes chat', async ({ page: overvi
   await overview.goto(coursePath('zh'));
   const links = overview.locator('section[aria-labelledby="course-catalog"] a');
   const order = await links.evaluateAll((elements) => elements.map((element) => element.getAttribute('href')));
-  expect(order).toEqual([generation, tokens, sampling, probability, training, thinking, multimodal, modelBasics, selection, chat, tools, chatUses, artifacts]);
-  const [page] = await Promise.all([overview.waitForEvent('popup'), links.filter({ hasText: title }).click()]);
+  expect(order).toEqual([generation, tokens, sampling, probability, training, thinking, multimodal, modelBasics, selection, chat, tools, chatUses, artifacts, agents]);
+  await links.filter({ hasText: title }).click();
+  const page = overview;
   await expect(page).toHaveURL(new RegExp(`${training}$`));
   await expect(page.locator('article h1')).toHaveText(title);
   await expect(page.locator('article')).toContainText('模型会先看一段文字，然后预测下一个 Token');
   await expect(page.locator('article')).toContainText('模型的训练数据是有时间限制的');
   await expect(page.locator('[data-achievement="generation-vs-verification"]')).toHaveCount(1);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${training}$`));
-  const navigation = page.locator('article nav').last();
-  await expect(navigation.locator('a')).toHaveCount(2);
-  await expect(navigation.locator('a').first()).toHaveAttribute('href', probability);
-  await expect(navigation.locator('a').last()).toHaveAttribute('href', thinking);
+  const completion = page.getByRole('button', { name: '标记为已完成', exact: true });
+  await expect(page.locator('article > nav')).toHaveCount(0);
+  await expect(completion).toBeEnabled();
   await expect(page.locator('article .katex-display')).toHaveCount(0);
   await capture(page, 'model-training-independent-lesson');
-  await navigation.locator('a').first().click();
+  await page.getByRole('button', { name: '01 大语言模型的工作原理', exact: true }).click();
+  await page.locator(`.course-navigation a[href="${probability}"]`).click();
   await expect(page).toHaveURL(new RegExp(`${probability}$`));
   await expect(page.locator('article h1')).toHaveText('模型是如何算出 Token 概率的？');
   await expect(page.locator('article h2')).toHaveText(readCatalog().documents.find((document) => document.url === probability)!.headings.filter((heading) => heading.depth === 2).map((heading) => heading.title));
@@ -60,10 +62,9 @@ test('model selection follows training and precedes chat', async ({ page: overvi
   await expect(page.locator('article table')).toHaveCount(3);
   await expect(page.locator('[data-achievement="token-probability-not-truth"]')).toHaveCount(1);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${probability}$`));
-  await expect(navigation.locator('a').first()).toHaveAttribute('href', sampling);
-  await expect(navigation.locator('a').last()).toHaveAttribute('href', training);
+  await expect(completion).toBeEnabled();
   await capture(page, 'token-probabilities-independent-lesson');
-  await navigation.locator('a').first().click();
+  await page.locator(`.course-navigation a[href="${sampling}"]`).click();
   await expect(page).toHaveURL(new RegExp(`${sampling}$`));
   await expect(page.locator('article h1')).toHaveText('为什么同样的问题，模型的回答会不同？');
   const headings = readCatalog().documents.find((document) => document.url === sampling)!.headings.filter((heading) => heading.depth === 2).map((heading) => heading.title);
@@ -76,23 +77,23 @@ test('model selection follows training and precedes chat', async ({ page: overvi
   await expect(page.locator('article h2').last()).toBeInViewport();
   await capture(page, 'sampling-independent-lesson');
   await test.info().attach('sampling-lesson-sections', { body: JSON.stringify({ headings, anchors: await toc.evaluateAll((links) => links.map((link) => link.getAttribute('href'))) }, null, 2), contentType: 'application/json' });
-  await page.locator('article nav').last().locator('a').first().click();
+  await page.locator(`.course-navigation a[href="${tokens}"]`).click();
   await expect(page).toHaveURL(new RegExp(`${tokens}$`));
   await expect(page.locator('article')).toContainText('第一讲，我们提到');
-  await page.locator('article nav').last().locator('a').first().click();
+  await page.locator(`.course-navigation a[href="${generation}"]`).click();
   await expect(page).toHaveURL(new RegExp(`${generation}$`));
   await expect(page.locator('article')).not.toContainText('如何进行预训练？');
   await expect(page.locator('article h2').filter({ hasText: '模型是如何训练的？' })).toHaveCount(0);
   await expect(page.locator('article')).not.toContainText('Temperature');
   await expect(page.locator('[data-achievement="generation-vs-verification"]')).toHaveCount(0);
   await expect(page.locator('article h2').filter({ hasText: '搞懂这个概念有什么用？' })).toBeVisible();
-  await page.locator('article nav').last().locator('a').last().click();
+  await completion.click();
   await expect(page).toHaveURL(new RegExp(`${tokens}$`));
-  await page.locator('article nav').last().locator('a').last().click();
+  await completion.click();
   await expect(page).toHaveURL(new RegExp(`${sampling}$`));
-  await page.locator('article nav').last().locator('a').last().click();
+  await completion.click();
   await expect(page).toHaveURL(new RegExp(`${probability}$`));
-  await page.locator('article nav').last().locator('a').last().click();
+  await completion.click();
   await expect(page).toHaveURL(new RegExp(`${training}$`));
   await test.info().attach('model-training-lesson-order', { body: JSON.stringify({ title, order }, null, 2), contentType: 'application/json' });
 });
@@ -107,12 +108,11 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     const storageKey = 'lac:v1:llm-101:achievement:chat-history-as-input';
     await page.goto(coursePath('zh'));
     const links = page.locator('section[aria-labelledby="course-catalog"] a');
-    await expect(links).toHaveCount(13);
+    await expect(links).toHaveCount(14);
     await expect(links.nth(9)).toHaveAttribute('href', chat);
     await expect(links.nth(9)).toContainText('AI Chat 是如何工作的？');
     await page.goto(selection);
-    await expect(page.locator('article nav').last().locator('a').last()).toHaveAttribute('href', chat);
-    await page.locator('article nav').last().locator('a').last().click();
+    await page.getByRole('button', { name: '标记为已完成', exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`${chat}$`));
     await expect(page.locator('article h1')).toHaveText('AI Chat 是如何工作的？');
     await expect(page.locator('article h2')).toContainText(['为什么模型能记住你？', '模型实际收到的内容', '成就挑战']);
@@ -141,9 +141,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     await page.reload();
     await expect(card).toHaveAttribute('data-state', 'unlocked');
     expect(await page.evaluate((key) => localStorage.getItem(key), storageKey)).not.toBeNull();
-    const navigation = page.locator('article nav').last();
-    await expect(navigation.locator('a').first()).toHaveAttribute('href', selection);
-    await expect(navigation.locator('a').last()).toHaveAttribute('href', '/zh/courses/llm-101/what-is-a-tool');
+    await expect(page.getByRole('button', { name: '标记为已完成', exact: true })).toBeEnabled();
     const accessibility = await new AxeBuilder({ page }).include('article').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(accessibility.violations).toEqual([]);
     expect(await (await request.get('/sitemap.xml')).text()).toContain(chat);
@@ -151,17 +149,21 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
   });
 }
 
-for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'mobile', width: 390, height: 844 }]) {
+for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'mobile', width: 390, height: 844 }, { name: 'narrow', width: 320, height: 844 }]) {
   test(`brand identity stays consistent on ${viewport.name}`, async ({ page, request }) => {
     await page.setViewportSize(viewport);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     const checkBrand = async () => {
       const logo = page.getByRole('link', { name: /^AIDevCourse(?: · |$)/ }).first();
       await expect(logo).toBeVisible();
-      const mark = logo.locator('img');
-      await expect(mark).toHaveAttribute('src', '/images/brand/wordmark.svg');
+      const mark = logo.locator('[data-slot="brand-mark"]');
+      await expect(mark).toHaveAttribute('src', '/images/brand/logo.svg');
       await expect(mark).toHaveAttribute('alt', 'AIDevCourse');
-      await expect.poll(() => mark.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth === 973)).toBe(true);
+      await expect.poll(() => mark.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth === 256 && image.naturalHeight === 256)).toBe(true);
+      const bounds = (await mark.boundingBox())!;
+      expect(bounds.width).toBeCloseTo(bounds.height, 1);
+      expect(bounds.height).toBeGreaterThanOrEqual(35);
+      expect((await logo.boundingBox())!.height).toBeGreaterThanOrEqual(44);
       await expect(page).toHaveTitle(/AIDevCourse/);
       await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href', '/favicon.svg');
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -186,7 +188,10 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     }
     const favicon = await request.get('/favicon.svg');
     expect(favicon.ok()).toBe(true);
-    expect(await favicon.text()).toContain('data:image/png;base64,');
+    const faviconSource = await favicon.text();
+    expect(faviconSource).toContain('id="scanline-a"');
+    expect(faviconSource).not.toContain('<image');
+    expect(faviconSource).not.toContain('invert(');
     expect(await page.evaluate(async () => {
       const image = new Image();
       image.src = '/favicon.svg';
@@ -198,9 +203,12 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     expect(touchIcon.headers()['content-type']).toContain('image/png');
     const course = readCatalog().courses.find((item) => item.locale === 'zh' && item.slug === courseSlug)!;
     await page.goto(course.lessons[0].url);
-    if (viewport.name === 'mobile') await page.getByRole('button', { name: dictionary('zh').Ui.menu, exact: true }).click();
-    await checkBrand();
-    await capture(page, `brand-sidebar-${viewport.name}`);
+    if (viewport.width < 961) {
+      await page.locator('[data-slot="mobile-course-navigation"]').getByRole('link', { name: dictionary('zh').Ui.home, exact: true }).click();
+      await expect(page).toHaveURL(/\/zh$/);
+      await checkBrand();
+    } else await checkBrand();
+    await capture(page, `${viewport.width < 961 ? 'brand-return-home' : 'brand-sidebar'}-${viewport.name}`);
   });
 }
 
@@ -231,14 +239,14 @@ for (const width of [1440, 320, 390]) {
       return { moduleLeft: moduleBounds.left, lessonLeft: lesson.left, titleLeft: title.left, moduleNumberLeft: moduleNumber.left, lessonNumberLeft: lessonNumber.left, footerHeight: footer.getBoundingClientRect().height, paddingTop: style.paddingTop, paddingBottom: style.paddingBottom, paddingLeft: style.paddingLeft, paddingRight: style.paddingRight, buttons };
     });
     expect(layout.lessonLeft).toBeCloseTo(layout.moduleLeft, 1);
-    expect(layout.titleLeft - layout.lessonLeft).toBe(66);
+    expect(layout.titleLeft - layout.lessonLeft).toBe(width < 961 ? 44 : 56);
     expect(layout.lessonNumberLeft).toBeCloseTo(layout.moduleNumberLeft, 1);
-    expect(layout.buttons).toEqual([44, 44, 44]);
+    expect(layout.buttons).toEqual([44]);
     expect(layout.paddingTop).toBe('8px');
-    expect(layout.paddingBottom).toBe('8px');
-    expect(layout.paddingLeft).toBe('8px');
-    expect(layout.paddingRight).toBe('8px');
-    expect(layout.footerHeight).toBe(61);
+    expect(layout.paddingBottom).toBe(width < 961 ? '12px' : '8px');
+    expect(layout.paddingLeft).toBe(width < 961 ? '16px' : '8px');
+    expect(layout.paddingRight).toBe(width < 961 ? '16px' : '8px');
+    expect(layout.footerHeight).toBe(width < 961 ? 65 : 61);
     const navigationSpacing = await sidebar.evaluate((element) => {
       const header = element.querySelector('[data-sidebar="header"]')!;
       const group = element.querySelector('[data-sidebar="group"]')!;
@@ -252,7 +260,7 @@ for (const width of [1440, 320, 390]) {
       const triggerBox = trigger.getBoundingClientRect();
       const iconBox = trigger.querySelector('svg')!.getBoundingClientRect();
       return {
-        header: padding(header), navigation: padding(group), logo: padding(header.querySelector('a')!),
+        header: padding(header), navigation: padding(group), courseTitle: padding(element.querySelector('a')!),
         rows: rows.map((row) => {
           const box = row.getBoundingClientRect();
           return { lesson: row.matches('[data-sidebar="menu-sub-button"]'), padding: padding(row), outside: [box.left - groupBox.left, groupBox.right - box.right] };
@@ -260,13 +268,13 @@ for (const width of [1440, 320, 390]) {
         toggle: [iconBox.left - triggerBox.left, iconBox.top - triggerBox.top, triggerBox.right - iconBox.right, triggerBox.bottom - iconBox.bottom],
       };
     });
-    expect(navigationSpacing.header).toEqual(['8px', '8px', '8px', '8px']);
-    expect(navigationSpacing.navigation).toEqual(['8px', '8px', '8px', '8px']);
-    expect(navigationSpacing.logo).toEqual(['8px', '8px', '8px', '8px']);
-    expect(navigationSpacing.toggle).toEqual([8, 8, 8, 8]);
+    expect(navigationSpacing.header).toEqual(width < 961 ? ['4px', '20px', '8px', '20px'] : ['8px', '8px', '8px', '8px']);
+    expect(navigationSpacing.navigation).toEqual(width < 961 ? ['8px', '16px', '16px', '16px'] : ['8px', '8px', '8px', '8px']);
+    expect(navigationSpacing.courseTitle).toEqual(['8px', '8px', '8px', width < 961 ? '8px' : '20px']);
+    for (const inset of navigationSpacing.toggle) expect(inset).toBeCloseTo(width < 961 ? 12 : 8, 1);
     for (const row of navigationSpacing.rows) {
-      expect(row.padding).toEqual(['8px', '8px', '8px', row.lesson ? '30px' : '8px']);
-      expect(row.outside).toEqual([8, 8]);
+      expect(row.padding).toEqual(['8px', '8px', '8px', width < 961 ? '8px' : '20px']);
+      expect(row.outside).toEqual(width < 961 ? [16, 16] : [8, 8]);
     }
     await moduleToggle.hover();
     await lessons.nth(1).hover();
@@ -281,9 +289,7 @@ for (const width of [1440, 320, 390]) {
     await expect(lessons).toHaveCount(0);
     await moduleToggle.press('Enter');
     await expect(lessons.first()).toBeVisible();
-    await sidebar.getByRole('button', { name: copy.Language.label, exact: true }).click();
-    await expect(page.locator('.language-options a[hreflang="en"]')).toBeVisible();
-    await page.keyboard.press('Escape');
+    await expect(sidebar.getByRole('button', { name: copy.Language.label, exact: true })).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     const achievements = sidebar.getByRole('button', { name: copy.Course.achievementsTitle, exact: true });
     await sidebar.locator('[data-sidebar="footer"]').click({ position: { x: 4, y: 4 } });
@@ -294,21 +300,18 @@ for (const width of [1440, 320, 390]) {
       const buttonBox = element.getBoundingClientRect();
       const ringBox = element.querySelector('[role="progressbar"]')!.getBoundingClientRect();
       const textBox = element.querySelector('[data-achievement-count]')!.parentElement!.getBoundingClientRect();
-      const languageButton = footer.querySelector('button[aria-haspopup="menu"]')!;
-      const authorButton = footer.querySelector('[data-slot="author-dialog-trigger"]')!;
-      const authorBox = authorButton.getBoundingClientRect();
       return {
-        radii: [getComputedStyle(element).borderRadius, getComputedStyle(languageButton).borderRadius],
-        outside: [buttonBox.left - footerBox.left, buttonBox.top - footerBox.top - parseFloat(getComputedStyle(footer).borderTopWidth), footerBox.bottom - buttonBox.bottom, footerBox.right - authorBox.right],
+        radius: getComputedStyle(element).borderRadius,
+        outside: [buttonBox.left - footerBox.left, buttonBox.top - footerBox.top - parseFloat(getComputedStyle(footer).borderTopWidth), footerBox.bottom - buttonBox.bottom, footerBox.right - buttonBox.right],
         ringInsets: [ringBox.left - buttonBox.left, ringBox.top - buttonBox.top, buttonBox.bottom - ringBox.bottom],
         textInsets: [textBox.top - buttonBox.top, buttonBox.bottom - textBox.bottom, buttonBox.right - textBox.right],
       };
     });
-    expect(hoverSpacing.outside).toEqual([8, 8, 8, 8]);
+    expect(hoverSpacing.outside).toEqual(width < 961 ? [16, 8, 12, 16] : [8, 8, 8, 8]);
     expect(hoverSpacing.ringInsets).toEqual([8, 8, 8]);
     expect(hoverSpacing.textInsets).toEqual([8, 8, 8]);
-    expect(hoverSpacing.radii[0]).toBe(hoverSpacing.radii[1]);
-    expect(hoverSpacing.radii[0]).not.toBe('0px');
+    expect(hoverSpacing.radius).not.toBe('0px');
+    await expect(sidebar.locator('[data-slot="author-dialog-trigger"]')).toHaveCount(0);
     const footerCapture = test.info().outputPath(`footer-hover-${width}.png`);
     await sidebar.locator('[data-sidebar="footer"]').screenshot({ path: footerCapture });
     await test.info().attach('footer-hover', { path: footerCapture, contentType: 'image/png' });
@@ -342,13 +345,13 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       const title = page.locator('main h1');
       const hero = title.locator('..');
       const action = page.getByRole('link', { name: copy.Course.startFirst, exact: true });
-      await expect(action).toHaveCSS('height', '44px');
-      await expect(action).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+      expect((await action.boundingBox())!.height).toBeGreaterThanOrEqual(viewport.width < 721 ? 48 : 44);
+      await expect(action.locator('[data-slot="hero-primary-face"]')).toHaveCSS('background-color', 'rgb(9, 9, 11)');
       await expect(action.locator('..').locator('p')).toHaveCount(0);
-      await expect(action).toHaveAttribute('target', '_blank');
-      const logo = (await page.locator('header a').first().boundingBox())!;
+      await expect(action).not.toHaveAttribute('target', '_blank');
+      const contentLeft = (await title.boundingBox())!.x;
       for (const element of [title, hero.locator(':scope > p').first(), hero.locator(':scope > p').last(), action, page.locator('#course-catalog')]) {
-        expect((await element.boundingBox())!.x).toBeCloseTo(logo.x, 1);
+        expect((await element.boundingBox())!.x).toBeCloseTo(contentLeft, 1);
       }
       if (locale === 'en' || locale === 'zh') await capture(page, `${locale}-course-hero-${viewport.name}`);
       const footer = page.getByRole('contentinfo');
@@ -363,10 +366,9 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     if (!fixture) return;
     await page.goto(lessonPath());
     await expect(page.getByRole('contentinfo')).toHaveCount(0);
-    if (viewport.name === 'mobile') await page.getByRole('button', { name: dictionary('zh').Ui.menu, exact: true }).click();
-    const sidebarHeader = page.locator('[data-slot="sidebar-header"]');
-    await expect(sidebarHeader.getByRole('link')).toHaveCount(1);
-    await sidebarHeader.getByRole('link').click();
+    const homeLink = page.getByRole('banner').getByRole('link', { name: /^AIDevCourse · / });
+    await expect(homeLink).toHaveCount(1);
+    await homeLink.click();
     await page.locator(`[data-slot="course-grid"] a[href="${coursePath('zh')}"]`).click();
     await expect(page.getByRole('contentinfo')).toContainText(dictionary('zh').Home.footerLead);
   });
@@ -396,19 +398,18 @@ test('search uses shortcuts without header or sidebar buttons', async ({ page })
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(lessonPath());
   await page.getByRole('button', { name: copy.Ui.menu, exact: true }).click();
-  const language = page.getByRole('button', { name: copy.Language.label, exact: true }).or(page.locator('.language-picker summary'));
-  await language.focus();
+  const close = page.locator('[data-mobile="true"] [data-sidebar="trigger"]');
+  await close.focus();
   await page.keyboard.press('Control+k');
   await expect(page.getByRole('textbox', { name: copy.Search.open })).toBeFocused();
   await page.keyboard.press('Escape');
-  await expect(language).toBeFocused();
+  await expect(close).toBeFocused();
   await expect(page.locator('[data-mobile="true"]')).toBeVisible();
   await capture(page, 'mobile-sidebar-without-search-entry');
 });
 
 async function openLanguages(page: Page, locale: string) {
-  const menuTrigger = page.locator('[data-slot="language-menu-trigger"]');
-  const trigger = await menuTrigger.isVisible() ? menuTrigger : page.locator('.language-picker summary');
+  const trigger = page.getByRole('banner').locator('.language-picker summary');
   await expect(trigger).toHaveAccessibleName(dictionary(locale).Language.label);
   await expect(trigger).toHaveText('🌐');
   await expect(trigger.locator('svg')).toHaveCount(0);
@@ -461,9 +462,9 @@ test('sidebar collapse preserves focus, reading space, and navigation state', as
   const modules = page.locator('[data-sidebar="menu-button"]');
   if (await modules.first().getAttribute('aria-expanded') !== 'true') await modules.first().click();
   await expect(toggle).toHaveAccessibleName(dictionary('zh').Ui.collapseSidebar);
-  const logo = await page.locator('[data-slot="sidebar-header"] a').first().boundingBox();
+  const courseTitle = await page.locator('[data-slot="sidebar-header"] a').first().boundingBox();
   const button = await toggle.boundingBox();
-  expect(button!.x).toBeGreaterThan(logo!.x + logo!.width);
+  expect(button!.x).toBeGreaterThan(courseTitle!.x + courseTitle!.width);
   await toggle.click();
   await expect(sidebar).toHaveAttribute('data-state', 'collapsed');
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
@@ -483,7 +484,7 @@ test('sidebar collapse preserves focus, reading space, and navigation state', as
   await expect(modules.first()).toHaveAttribute('aria-expanded', 'true');
   await capture(page, 'sidebar-expanded');
   await toggle.click();
-  await page.locator('article nav').last().locator('a').last().click();
+  await page.getByRole('button', { name: dictionary('zh').Ui.markComplete, exact: true }).click();
   await expect(page).not.toHaveURL(/\/first-change$/);
   await expect(sidebar).toHaveAttribute('data-state', 'collapsed');
   await page.reload();
@@ -517,7 +518,7 @@ test('heading links use Phosphor icons and report successful copying', async ({ 
   await capture(page, 'phosphor-heading-link');
 });
 
-test('mobile sidebar closes from the logo row and keeps language choices in the viewport', async ({ page }) => {
+test('mobile sidebar closes from its title row and header language choices fit the viewport', async ({ page }) => {
   test.skip(!fixture, 'Lesson controls use the isolated fixture build.');
   const copy = dictionary('zh');
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -529,13 +530,14 @@ test('mobile sidebar closes from the logo row and keeps language choices in the 
     const sheet = page.locator('[data-mobile="true"]');
     await expect(sheet).toBeVisible();
     await expect(sheet).toHaveAccessibleName(copy.Ui.menu);
-    await openLanguages(page, 'zh');
-    await capture(page, `mobile-languages-${width}`);
-    await page.keyboard.press('Escape');
-    await expect(sheet).toBeVisible();
+    await expect(sheet.locator('img, .language-picker')).toHaveCount(0);
     await sheet.getByRole('button', { name: copy.Ui.close, exact: true }).click();
     await expect(sheet).toHaveCount(0);
     await expect(menuButton).toBeFocused();
+    await openLanguages(page, 'zh');
+    await capture(page, `mobile-languages-${width}`);
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('banner').locator('.language-picker summary')).toBeFocused();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
   await page.getByRole('button', { name: copy.Ui.menu, exact: true }).click();
@@ -563,12 +565,12 @@ test('navigation remains usable when session storage and clipboard access fail',
   const toggle = page.locator('[data-slot="sidebar-trigger"]');
   await toggle.click();
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-  await page.locator('article nav').last().locator('a').last().click();
+  await page.getByRole('button', { name: dictionary('zh').Ui.markComplete, exact: true }).click();
   await expect(page).not.toHaveURL(/\/first-change$/);
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   await toggle.click();
   await expect(page.locator('.course-navigation')).toBeVisible();
-  await page.locator('article nav').last().locator('a').first().click();
+  await page.locator(`.course-navigation a[href="${lessonPath()}"]`).click();
   await expect(page).toHaveURL(/\/first-change$/);
   await page.getByRole('button', { name: dictionary('zh').Ui.copyAnchor, exact: true }).first().click();
   await expect(page.getByRole('status').filter({ hasText: dictionary('zh').Ui.copyAnchorFailed })).toBeAttached();

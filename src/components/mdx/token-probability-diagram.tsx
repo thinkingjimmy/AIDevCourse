@@ -7,14 +7,14 @@ const layers = [
   { y: 108, xs: [50, 150, 250, 350] },
 ] as const;
 const arrowClass = 'my-2 size-4 shrink-0 text-muted-foreground';
-const scoreClass = 'mx-0.5 flex items-center justify-center px-0.5 py-2 text-sm @min-[360px]/probability:mx-1.5 @min-[360px]/probability:text-ui';
+const scoreClass = 'mx-0.5 flex items-center justify-center rounded-sm px-0.5 py-2 text-sm @min-[360px]/probability:mx-1.5 @min-[360px]/probability:text-ui';
 
 export function TokenProbabilityDiagram() {
   return <figure aria-label="从输入内容到采样选择下一个 Token 的过程" lang="zh-CN" data-token-probability-diagram
     className="quote-frame not-prose @container/probability mx-auto my-8 w-full max-w-150 px-4 py-7 text-base leading-body text-foreground sm:px-9 sm:py-8">
     <ol aria-label="输入、计算、候选分数和采样" className="flex flex-col items-center">
       <li data-probability-stage="input" className="flex max-w-full flex-col items-center">
-        <div data-probability-input className="max-w-full bg-muted px-6 py-3 text-center">
+        <div data-probability-input className="max-w-full rounded-sm bg-muted px-6 py-3 text-center">
           <div className="text-sm text-reading">输入内容</div>
           <div className="mt-1.5 text-base [overflow-wrap:anywhere]">今天下雨，出门记得带…</div>
         </div>
@@ -57,7 +57,7 @@ export function TokenProbabilityDiagram() {
         </div>
       </li>
       <li data-probability-stage="sampling" className="max-w-full">
-        <div data-probability-sampling className="max-w-full bg-muted px-4 py-3 text-center text-ui font-medium text-balance sm:px-6">
+        <div data-probability-sampling className="max-w-full rounded-sm bg-muted px-4 py-3 text-center text-ui font-medium text-balance sm:px-6">
           按采样策略选择一个 <span className="whitespace-nowrap">Token ID</span>
           <div data-probability-output className="mt-1.5 text-sm font-normal text-reading">伞</div>
         </div>

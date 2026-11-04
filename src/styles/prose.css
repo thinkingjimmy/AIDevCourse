@@ -1,5 +1,5 @@
 @utility quote-frame {
-  @apply rounded-none border border-foreground bg-background shadow-[4px_4px_0_var(--color-border)];
+  @apply rounded-sm border border-foreground bg-background shadow-[4px_4px_0_var(--color-border)];
 }
 
 .mermaid-diagram {
@@ -27,15 +27,15 @@
     & :where(h2, h3, h4) button { @apply [font:inherit] text-inherit; }
     & :where(a):not(:where(.not-prose, .not-prose *)) { @apply text-foreground underline underline-offset-4; }
     & :where(h2, h3, h4) :where(a) { @apply text-inherit no-underline; }
-    & :where(img):not(:where(.not-prose, .not-prose *)) { @apply h-auto w-full rounded-xs border border-border bg-background; }
-    & :where(pre):not(:where(.not-prose, .not-prose *)) { @apply overflow-x-auto rounded-lg border border-border bg-[var(--shiki-light-bg,var(--color-background))] text-sm leading-reading; }
-    & :where(:not(pre) > code):not(:where(.not-prose, .not-prose *)) { @apply rounded-xs border-0 bg-surface px-1.5 py-px text-sm; }
-    & :where(figure):not(:where(.not-prose, .not-prose *)) { @apply max-w-full min-w-0 rounded-none; }
+    & :where(img):not(:where(.not-prose, .not-prose *)) { @apply h-auto w-full rounded-sm border border-border bg-background; }
+    & :where(pre):not(:where(.not-prose, .not-prose *)) { @apply overflow-x-auto rounded-sm border border-border bg-[var(--shiki-light-bg,var(--color-background))] text-sm leading-reading; }
+    & :where(:not(pre) > code):not(:where(.not-prose, .not-prose *)) { @apply rounded-sm border-0 bg-surface px-1.5 py-px text-sm; }
+    & :where(figure):not(:where(.not-prose, .not-prose *)) { @apply max-w-full min-w-0 rounded-sm; }
     & :where(blockquote):not(:where(.not-prose, .not-prose *)) { @apply quote-frame mx-0 px-5 py-4 font-mono text-sm leading-reading text-foreground not-italic; }
     & :where(blockquote p):not(:where(.not-prose, .not-prose *)) { @apply m-0 before:content-none after:content-none; }
     & :where(.katex-display) { @apply my-6 max-w-full overflow-x-auto overflow-y-hidden py-2; }
     & :where(.katex-display > .katex) { @apply w-max min-w-full; }
-    & :where(.contains-task-list) { @apply list-none border border-border p-0; }
+    & :where(.contains-task-list) { @apply list-none rounded-sm border border-border p-0; }
     & :where(.task-list-item) { @apply m-0 flex items-start gap-3 px-4 py-3 text-ui; }
     & :where(.task-list-item + .task-list-item) { @apply border-t border-line-soft; }
     & :where(.task-list-item input) { @apply mt-0.5 size-4.5 accent-done; }

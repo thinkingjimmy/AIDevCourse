@@ -455,7 +455,8 @@ test.describe('Learning achievements', () => {
       expect(secondChoice!.y).toBeGreaterThan(firstChoice!.y + firstChoice!.height);
       await expectCount(page, 0);
       await expect(page.locator('.completion-box')).toHaveCount(0);
-      await expect(page.getByRole('button', { name: /标记为已完成|取消完成标记/ })).toHaveCount(0);
+      await expect(page.locator('[data-slot="lesson-completed"]')).toHaveCount(0);
+      await expect(page.getByRole('button', { name: '标记为已完成', exact: true })).toBeEnabled();
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
       await expect(challenge).toHaveAttribute('data-state', 'locked');
       await challenge.scrollIntoViewIfNeeded();

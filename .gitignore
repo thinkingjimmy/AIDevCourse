@@ -12,6 +12,7 @@ playwright-report/
 .cache/
 coverage/
 .artifacts/
+assets/
 
 # Local agent and preview configuration.
 .claude/

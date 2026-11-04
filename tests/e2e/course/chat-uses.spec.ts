@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { readCatalog } from '../../../src/lib/content/manifest';
 
 const course = '/zh/courses/llm-101';
 const lesson = `${course}/ai-chat-advice`;
@@ -7,6 +8,7 @@ const previous = `${course}/what-is-a-tool`;
 const artifactLesson = `${course}/ai-chat-tips`;
 const title = '使用 AI Chat 的几个建议';
 const artifactTitle = 'AI Chat 实用技巧';
+const artifactHeadings = readCatalog().documents.find((entry) => entry.url === artifactLesson)?.headings.filter((heading) => heading.depth === 2).map((heading) => heading.title) ?? [];
 const achievementId = 'use-chat-with-source-material';
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published chat uses lesson.');
@@ -23,12 +25,11 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     await expect(artifactEntry).toHaveAttribute('href', artifactLesson);
     await expect(artifactEntry.locator('> span:first-child')).toHaveText('3.4');
     await page.goto(previous);
-    await page.locator('article nav').getByRole('link', { name: /下一课/ }).click();
+    await page.getByRole('button', { name: '标记为已完成', exact: true }).click();
     await expect(page).toHaveURL(lesson);
     await expect(page.locator('article h1')).toHaveText(title);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${lesson}$`));
-    await expect(page.locator('article nav').getByRole('link', { name: /上一课/ })).toHaveAttribute('href', previous);
-    await expect(page.locator('article nav').getByRole('link', { name: /下一课/ })).toHaveAttribute('href', artifactLesson);
+    await expect(page.getByRole('button', { name: '标记为已完成', exact: true })).toBeEnabled();
     await expect(page.locator('article').getByRole('heading', { name: '三、多引导 AI 进行提问和复述' })).toBeVisible();
     await expect(page.locator('article').getByRole('heading', { name: '四、接受 AI 的能力边界' })).toBeVisible();
     await expect(page.locator('article').getByRole('heading', { name: '五、成就挑战' })).toBeVisible();
@@ -49,14 +50,13 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     const accessibility = await new AxeBuilder({ page }).include('article').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(accessibility.violations).toEqual([]);
     await testInfo.attach(`chat-uses-${viewport.name}`, { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
-    await page.locator('article nav').getByRole('link', { name: /下一课/ }).click();
+    await page.getByRole('button', { name: '标记为已完成', exact: true }).click();
     await expect(page).toHaveURL(artifactLesson);
     await expect(page.locator('article h1')).toHaveText(artifactTitle);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${artifactLesson}$`));
-    await expect(page.locator('article nav').getByRole('link', { name: /上一课/ })).toHaveAttribute('href', lesson);
     await expect(page.locator('article').getByRole('link', { name: '使用 AI Chat 的几个建议', exact: true })).toHaveAttribute('href', lesson);
     await expect(page.getByRole('figure', { name: '牛顿第二定律交互演示' })).toBeVisible();
-    await expect(page.locator('article').getByRole('heading', { name: '四、检查内容，也检查交互' })).toBeVisible();
+    await expect(page.locator('article h2')).toHaveText(artifactHeadings);
     if (viewport.width < 961) await page.locator('[data-slot="mobile-sidebar-trigger"]').click();
     await expect(sidebar.locator('a[aria-current="page"]')).toContainText(`3.4 ${artifactTitle}`);
     if (viewport.width < 961) await page.keyboard.press('Escape');
@@ -105,7 +105,7 @@ for (const entry of [
         await expect(page.locator(`[data-achievement="${achievementId}"] input[type="radio"]`).first()).toBeDisabled();
       } else {
         await expect(page.getByRole('figure', { name: '牛顿第二定律交互演示' })).toBeVisible();
-        await expect(page.locator('article').getByRole('heading', { name: '五、动手试一次' })).toBeVisible();
+        await expect(page.locator('article h2')).toHaveText(artifactHeadings);
       }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await testInfo.attach(`${entry.name}-narrow-no-js`, { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });

@@ -9,7 +9,7 @@ export function MessageBubble({ event, className, style, children, ...props }: C
   const border = event.format === 'invalid' ? 'var(--color-red-200)' : event.format === 'valid' ? 'var(--color-green-200)' : 'var(--color-border)';
   const Icon = event.format === 'invalid' ? XCircleIcon : CheckCircleIcon;
   return <div {...props} data-format={event.format} style={{ '--bubble-fill': fill, '--bubble-border': border, ...style } as CSSProperties}
-    className={cn('flex flex-col justify-center gap-1 border border-(--bubble-border) bg-(--bubble-fill) px-3 py-2.5 text-caption text-foreground shadow-md', className)}>
+    className={cn('flex flex-col justify-center gap-1 rounded-sm border border-(--bubble-border) bg-(--bubble-fill) px-3 py-2.5 text-caption text-foreground shadow-md', className)}>
     {event.format && <div className={`flex items-center gap-1.5 font-medium ${event.format === 'invalid' ? 'text-red-800' : 'text-green-800'}`}><Icon size={18} aria-hidden className="shrink-0" /><span>{event.format === 'invalid' ? '格式错误' : '格式正确'}</span></div>}
     <div className="text-xs text-reading">{event.caption}</div>
     {event.response || event.format === 'valid'

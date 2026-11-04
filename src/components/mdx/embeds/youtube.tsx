@@ -10,7 +10,7 @@ export async function YouTube({ url, title }: EmbedProps) {
   const parameters = new URLSearchParams({ playsinline: '1', hl: locale });
   if (video.start) parameters.set('start', String(video.start));
   return <figure data-embed="youtube" aria-label={label} className="not-prose my-8 min-w-0">
-    <div className="relative aspect-video min-h-[202px] w-full overflow-hidden rounded-xs border border-border bg-muted">
+    <div className="relative aspect-video min-h-[202px] w-full overflow-hidden rounded-sm border border-border bg-muted">
       <iframe src={`https://www.youtube-nocookie.com/embed/${video.id}?${parameters}`} title={label}
         width={560} height={315} loading="lazy" allow="encrypted-media; fullscreen; picture-in-picture; web-share"
         allowFullScreen referrerPolicy="strict-origin-when-cross-origin" className="absolute inset-0 size-full border-0" />

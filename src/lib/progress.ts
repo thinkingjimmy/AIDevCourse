@@ -1,4 +1,4 @@
-export type LearningState = { unlocked: Record<string, string>; last?: string; failed: boolean };
+export type LearningState = { unlocked: Record<string, string>; completed: Record<string, string>; last?: string; failed: boolean };
 type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 const validId = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const validDate = (value: unknown): value is string => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value) && Number.isFinite(Date.parse(value));
@@ -13,10 +13,13 @@ export class LearningStorage {
   private failed = false;
   private prefix: string;
   private achievementIds: Set<string>;
-  constructor(private access: () => StorageLike, courseId: string, achievementIds: readonly string[]) {
+  private lessonIds: Set<string>;
+  constructor(private access: () => StorageLike, courseId: string, achievementIds: readonly string[], lessonIds: readonly string[]) {
     this.prefix = coursePrefix(courseId);
     if (achievementIds.some((id) => !validId.test(id))) throw new Error('Invalid achievement identity');
     this.achievementIds = new Set(achievementIds);
+    if (lessonIds.some((id) => !validId.test(id))) throw new Error('Invalid lesson identity');
+    this.lessonIds = new Set(lessonIds);
   }
 
   private read(key: string): Record<string, unknown> | undefined {
@@ -39,6 +42,7 @@ export class LearningStorage {
   load(): LearningState {
     const prefix = this.prefix;
     const unlocked: Record<string, string> = {};
+    const completed: Record<string, string> = {};
     const lastKey = `${prefix}last`;
     const visit = this.read(lastKey);
     let last: string | undefined;
@@ -54,7 +58,15 @@ export class LearningStorage {
         else this.protect(key);
       }
     }
-    return { unlocked, last, failed: this.failed };
+    for (const id of this.lessonIds) {
+      const key = `${prefix}completion:${id}`;
+      const record = this.read(key);
+      if (record) {
+        if (validDate(record.completedAt) && Object.keys(record).length === 1) completed[id] = record.completedAt;
+        else this.protect(key);
+      }
+    }
+    return { unlocked, completed, last, failed: this.failed };
   }
 
   private write(key: string, value: object) {
@@ -69,6 +81,13 @@ export class LearningStorage {
     if (!this.achievementIds.has(achievementId)) throw new Error('Unknown achievement');
     const state = this.load();
     if (!Object.hasOwn(state.unlocked, achievementId)) this.write(`${this.prefix}achievement:${achievementId}`, { unlockedAt: new Date().toISOString() });
+    return this.load();
+  }
+
+  complete(lessonId: string) {
+    if (!this.lessonIds.has(lessonId)) throw new Error('Unknown lesson');
+    const state = this.load();
+    if (!Object.hasOwn(state.completed, lessonId)) this.write(`${this.prefix}completion:${lessonId}`, { completedAt: new Date().toISOString() });
     return this.load();
   }
 

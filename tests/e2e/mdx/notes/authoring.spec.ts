@@ -6,17 +6,29 @@ import { spawnSync } from 'node:child_process';
 
 test('JimmyNote authoring rejects broken, empty, and ambiguous pairs', async ({ browserName }) => {
   test.skip(browserName !== 'chromium', 'The authoring CLI is independent of the browser.');
+  test.setTimeout(60000);
   const root = mkdtempSync(join(tmpdir(), 'aidevcourse-notes-'));
   try {
-    cpSync('tests/fixtures', join(root, 'content'), { recursive: true });
+    cpSync('content', join(root, 'content'), { recursive: true });
     cpSync('public', join(root, 'public'), { recursive: true });
-    const file = join(root, 'content/en/ai-coding/foundations/first-change.mdx');
-    const original = readFileSync(file, 'utf8');
+    const file = join(root, 'content/en/llm-101/model-fundamentals/what-a-language-model-does.mdx');
+    const original = readFileSync(file, 'utf8') + '\n## First change\n';
     const pair = '\nRead <JimmyNoteAnchor id="context">this text</JimmyNoteAnchor>.\n\n<JimmyNote anchor="context">\n**Context** and [a link](#first-change).\n</JimmyNote>\n';
     const image = '![An illustration.](/images/brand/wordmark.svg)';
     const imagePair = `\n<JimmyNoteAnchor id="illustration" variant="image">\n\n${image}\n\n</JimmyNoteAnchor>\n\n<JimmyNote anchor="illustration">\nAn illustration credit.\n</JimmyNote>\n`;
+    const embedPair = pair.replace('**Context** and [a link](#first-change).', '<XEmbed url="https://x.com/API/status/133640144317198338" />');
     const cases = [
       { name: 'paired rich note', body: pair.replace('[a link](#first-change)', '`code`'), valid: true },
+      { name: 'X-only note', body: embedPair, valid: true },
+      { name: 'YouTube-only note', body: embedPair.replace('<XEmbed url="https://x.com/API/status/133640144317198338" />', '<YouTube url="https://youtu.be/M7lc1UVf-VE" />'), valid: true },
+      { name: 'multiple embeds without text', body: embedPair.replace('</JimmyNote>', '\n<YouTube url="https://youtu.be/M7lc1UVf-VE" />\n</JimmyNote>'), valid: true },
+      { name: 'text and embed note', body: embedPair.replace('<XEmbed', 'Original post.\n\n<XEmbed'), valid: true },
+      { name: 'invalid embedded post', body: embedPair.replace('/status/133640144317198338', ''), valid: false, error: 'XEmbed requires a valid HTTPS X post URL' },
+      { name: 'embed with content', body: embedPair.replace(' />', '>\nUnexpected text\n</XEmbed>'), valid: false, error: 'XEmbed does not accept children' },
+      { name: 'embed without its anchor', body: embedPair.slice(embedPair.indexOf('<JimmyNote anchor=')), valid: false, error: 'Missing JimmyNoteAnchor' },
+      { name: 'manual embed-only flag', body: embedPair.replace('anchor="context"', 'anchor="context" embedOnly="true"'), valid: false, error: 'Unsupported attribute on JimmyNote' },
+      { name: 'whitespace-only note', body: embedPair.replace(/<XEmbed[^>]+\/>/, '  \n'), valid: false, error: 'JimmyNote requires text or an embed' },
+      { name: 'empty wrapper', body: embedPair.replace(/<XEmbed[^>]+\/>/, '<Callout />'), valid: false, error: 'JimmyNote requires text or an embed' },
       { name: 'paired image credit', body: imagePair, valid: true },
       { name: 'referenced image credit', body: imagePair.replace(image, '![An illustration.][figure]') + '\n[figure]: /images/brand/wordmark.svg\n', valid: true },
       { name: 'missing image note', body: imagePair.split('<JimmyNote anchor=')[0], valid: false, error: 'Missing JimmyNote' },

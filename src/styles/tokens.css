@@ -13,8 +13,9 @@
 }
 
 @theme {
-  --color-background: #fff;
+  --color-background: #fdfdfc;
   --color-foreground: #09090b;
+  --color-brand: #31564b;
   --color-primary: #09090b;
   --color-primary-foreground: #fafafa;
   --color-secondary: #f4f4f5;
@@ -39,17 +40,19 @@
   --color-note-ink: oklch(0.42 0.1 57.254);
   --note-line-width: 1.5px;
   --color-reading: #3f3f46;
-  --color-anatomy-paper: #fbfbfa;
-  --color-anatomy-shade-0: #dcdcd9;
-  --color-anatomy-shade-1: #e5e5e2;
-  --color-anatomy-shade-2: #ededea;
-  --color-anatomy-shade-3: #f4f4f1;
-  --color-anatomy-hi: #26262a;
-  --color-anatomy-mid: #8a8a8f;
-  --color-anatomy-lo: #b4b4b8;
-  --color-anatomy-faint: #d4d4d6;
-  --color-anatomy-halo: #8a8a80;
-  --color-anatomy-dot: #3a3a3e;
+  --color-anatomy-paper: oklch(0.982 0.006 173);
+  --color-anatomy-top: oklch(0.995 0.002 173);
+  --color-anatomy-surface: oklch(0.966 0.01 173);
+  --color-anatomy-shade-0: oklch(0.84 0.035 173);
+  --color-anatomy-shade-1: oklch(0.89 0.025 173);
+  --color-anatomy-shade-2: oklch(0.935 0.015 173);
+  --color-anatomy-shade-3: oklch(0.96 0.009 173);
+  --color-anatomy-hi: var(--color-brand);
+  --color-anatomy-mid: oklch(0.55 0.04 173);
+  --color-anatomy-lo: oklch(0.72 0.03 173);
+  --color-anatomy-faint: oklch(0.86 0.018 173);
+  --color-anatomy-halo: var(--color-anatomy-mid);
+  --color-anatomy-dot: var(--color-brand);
   --color-sidebar: #fafafa;
   --color-sidebar-foreground: #3f3f46;
   --color-sidebar-primary: #09090b;

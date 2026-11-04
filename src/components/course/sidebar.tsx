@@ -63,7 +63,7 @@ export function SidebarProvider({ open, onOpenChange, className, style, children
 
   const value = useMemo(() => ({ open, isMobile, openMobile, mobileDialogId, setOpenMobile, toggleSidebar }), [open, isMobile, openMobile, mobileDialogId, setOpenMobile, toggleSidebar]);
   return <SidebarContext.Provider value={value}>
-    <div {...props} data-slot="sidebar-wrapper" style={style} className={cn('group/sidebar-wrapper flex min-h-svh w-full [--sidebar-width:20rem] [--sidebar-width-icon:3rem]', className)}>{children}</div>
+    <div {...props} data-slot="sidebar-wrapper" style={style} className={cn('group/sidebar-wrapper flex min-h-[calc(100svh-var(--zinc-header,0px))] w-full [--sidebar-width:20rem] [--sidebar-width-icon:3rem]', className)}>{children}</div>
   </SidebarContext.Provider>;
 }
 
@@ -73,7 +73,7 @@ export function Sidebar({ label, className, children, ...props }: ComponentProps
   if (isMobile) return <Sheet open={openMobile} onOpenChange={setOpenMobile}>
     <SheetContent side="bottom" id={mobileDialogId} data-sidebar="sidebar" data-slot="sidebar" data-mobile="true" aria-describedby={undefined}
       overlayClassName="bg-black/25 backdrop-blur-[3px]"
-      className={cn('h-[min(82dvh,52rem)] bg-sidebar p-0 text-foreground', className)}
+      className={cn('h-[min(82dvh,52rem)] bg-background p-0 text-foreground', className)}
       onOpenAutoFocus={() => {
         const active = document.activeElement;
         mobileTrigger.current = active instanceof HTMLElement && active !== document.body ? active : document.querySelector<HTMLElement>('[data-slot="mobile-sidebar-trigger"]');
@@ -95,8 +95,8 @@ export function Sidebar({ label, className, children, ...props }: ComponentProps
   </Sheet>;
   return <div className="group peer hidden text-sidebar-foreground min-[961px]:block" data-state={open ? 'expanded' : 'collapsed'} data-collapsible={open ? '' : 'icon'} data-slot="sidebar">
     <div data-slot="sidebar-gap" className="relative w-(--sidebar-width) bg-transparent group-data-[collapsible=icon]:w-(--sidebar-width-icon)" />
-    <div {...props} data-slot="sidebar-container" className={cn('fixed inset-y-0 left-0 z-10 hidden h-svh w-(--sidebar-width) border-r border-sidebar-border bg-sidebar min-[961px]:flex group-data-[collapsible=icon]:w-(--sidebar-width-icon)', className)}>
-      <div data-sidebar="sidebar" data-slot="sidebar-inner" className="flex h-full w-full flex-col bg-sidebar text-foreground">{children}</div>
+    <div {...props} data-slot="sidebar-container" className={cn('fixed top-[var(--lesson-header-offset,0px)] bottom-0 left-0 z-10 hidden w-(--sidebar-width) border-r border-sidebar-border bg-background min-[961px]:flex group-data-[collapsible=icon]:w-(--sidebar-width-icon)', className)}>
+      <div data-sidebar="sidebar" data-slot="sidebar-inner" className="flex h-full w-full flex-col bg-background text-foreground">{children}</div>
     </div>
   </div>;
 }
@@ -134,7 +134,7 @@ export function SidebarMenuItem({ className, ...props }: ComponentProps<'li'>) {
 }
 export function SidebarMenuButton({ className, type = 'button', ...props }: ComponentProps<'button'>) {
   return <button {...props} type={type} data-slot="sidebar-menu-button" data-sidebar="menu-button" className={cn(
-    'flex h-8 w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring disabled:pointer-events-none disabled:opacity-50 [&>span:last-child]:truncate', className,
+    'flex h-8 w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-hidden hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring disabled:pointer-events-none disabled:opacity-50', className,
   )} />;
 }
 export function SidebarMenuSub({ className, ...props }: ComponentProps<'ul'>) {
@@ -146,6 +146,6 @@ export function SidebarMenuSubItem({ className, ...props }: ComponentProps<'li'>
 export function SidebarMenuSubButton({ asChild = false, isActive = false, className, ...props }: ComponentProps<'a'> & { asChild?: boolean; isActive?: boolean }) {
   const Component = asChild ? Slot.Root : 'a';
   return <Component {...props} data-slot="sidebar-menu-sub-button" data-sidebar="menu-sub-button" data-active={isActive} className={cn(
-    'flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sm text-sidebar-foreground outline-hidden hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground group-data-[collapsible=icon]:hidden [&>span:last-child]:truncate', className,
+    'flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sm text-sidebar-foreground outline-hidden hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground group-data-[collapsible=icon]:hidden', className,
   )} />;
 }

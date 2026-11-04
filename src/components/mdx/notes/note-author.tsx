@@ -9,7 +9,7 @@ import { AuthorWechat } from '@/components/course/author-card';
 import { Button } from '@/components/ui/button';
 import { author } from '@/lib/site-config';
 
-const actionClass = 'size-8 shrink-0 rounded-(--radius) p-0 text-muted-foreground before:inset-0 hover:text-foreground [@media(any-pointer:coarse)]:size-11';
+const actionClass = 'size-8 shrink-0 rounded-sm p-0 text-muted-foreground before:inset-0 hover:text-foreground [@media(any-pointer:coarse)]:size-11';
 
 function WechatPopover() {
   const t = useTranslations('Author');
@@ -72,8 +72,8 @@ function WechatPopover() {
           onOpenAutoFocus={event => { if (!returnFocus.current) event.preventDefault(); }}
           onCloseAutoFocus={event => { if (!returnFocus.current) event.preventDefault(); }}
           onEscapeKeyDown={() => { returnFocus.current = true; }}
-          className="not-prose z-50 max-h-[min(calc(100svh-2rem),var(--radix-popover-content-available-height))] w-84 max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain rounded-(--radius) border border-border bg-background p-3 text-foreground shadow-sm outline-none">
-          <AuthorWechat />
+          className="not-prose z-50 max-h-[min(calc(100svh-2rem),var(--radix-popover-content-available-height))] w-84 max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain rounded-sm border border-border bg-background p-3 text-foreground shadow-sm outline-none">
+          <AuthorWechat className="rounded-sm [&>img]:rounded-sm [&>[role=img]]:rounded-sm" />
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
@@ -81,14 +81,13 @@ function WechatPopover() {
       <Button asChild variant="ghost" size="icon-touch" className={`${actionClass} ml-auto list-none [&::-webkit-details-marker]:hidden`}>
         <summary aria-label={t('openWechatQr')} title={t('openWechatQr')}><AuthorActionIcon name="wechat" /></summary>
       </Button>
-      <AuthorWechat className="mt-2" />
+      <AuthorWechat className="mt-2 rounded-sm [&>img]:rounded-sm [&>[role=img]]:rounded-sm" />
     </details>
   </>;
 }
 
-export function NoteAuthor({ anchor, noteNumber }: { anchor: string; noteNumber: string }) {
+export function NoteAuthor() {
   const t = useTranslations('Author');
-  const ui = useTranslations('Ui');
 
   const links: { name: AuthorAction; href: string; label: string }[] = [
     { name: 'star', href: author.projectUrl, label: t('starProjectLabel') },
@@ -99,10 +98,9 @@ export function NoteAuthor({ anchor, noteNumber }: { anchor: string; noteNumber:
 
   return <header data-slot="note-signature" className="sticky top-0 z-10 mb-3 flex flex-wrap items-center justify-between gap-x-2 gap-y-2 bg-background [[data-slot=jimmy-note-popover]_&]:static">
     <div className="flex shrink-0 items-center gap-1.5 [[data-slot=jimmy-note-popover]_&]:pr-9">
-      <Image src={author.avatar} alt="" width={24} height={24} sizes="1.5rem" className="size-6 shrink-0 rounded-full object-cover" />
+      <Image src={author.avatar} alt="" width={24} height={24} sizes="1.5rem" className="size-6 shrink-0 rounded-sm object-cover" />
       <div className="min-w-0">
         <span className="block text-sm leading-copy font-medium text-foreground" lang="en">{author.name}</span>
-        <span id={`jimmy-note-number-${anchor}`} data-slot="note-description" className="sr-only">{ui('noteNumber', { number: noteNumber })}</span>
         <span className="block text-xs leading-copy text-muted-foreground">{t('articleRole')}</span>
       </div>
     </div>

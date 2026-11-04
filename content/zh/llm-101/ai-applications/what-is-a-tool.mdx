@@ -295,19 +295,19 @@ sequenceDiagram
 
 <Achievement
   id="tool-request-vs-execution"
-  title="看懂工具调用"
-  question="你问明天广州的天气，模型返回了一条搜索工具的调用请求。到这一步，可以确认什么？"
-  answer="request-needs-execution"
-  explanation="工具调用请求只说明模型提出了使用哪个工具、传入什么参数。程序还需要实际执行搜索，再将结果交回模型。生成请求不代表搜索已经完成，也不会因此更新模型的训练参数。"
-  takeaway="模型生成调用请求，程序执行工具，再把结果交给模型。要确认任务完成，需要检查实际执行结果。"
+  title="理解 AI 的时间来源"
+  question="当你问 AI「明天广州的天气如何？」时，它通常如何知道「明天」是哪一天？"
+  answer="current-date-from-input-or-tool"
+  explanation="模型知道「明天」表示今天的后一天，但仅凭训练数据，并不知道你提问时是哪一天。产品可以在发给模型的消息中附上当前日期和时区，也可以通过工具获取当前时间。有了这些信息，就能确定「明天」对应的日期。"
+  takeaway="「明天」需要当前日期和时区作为参照。这些信息可以来自产品提供的上下文，也可以来自工具查询。"
 >
-  <AchievementOption value="search-already-complete">
-    模型已经完成搜索，可以直接把这条请求当成天气查询结果。
+  <AchievementOption value="date-updated-in-training">
+    模型在训练时记住了日期，之后会每天自动更新，所以一直知道今天是哪天。
   </AchievementOption>
-  <AchievementOption value="request-needs-execution">
-    模型提出了搜索请求，程序还需要执行工具，并把查询结果交回模型。
+  <AchievementOption value="current-date-from-input-or-tool">
+    产品在消息中提供当前日期和时区，或通过工具获取当前时间，再据此确定「明天」的日期。
   </AchievementOption>
-  <AchievementOption value="training-updated">
-    模型已经将最新天气写入训练参数，后续不需要再查询。
+  <AchievementOption value="word-meaning-is-enough">
+    只要模型理解「明天」这个词的含义，就能直接知道它对应的具体日期。
   </AchievementOption>
 </Achievement>

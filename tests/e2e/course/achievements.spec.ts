@@ -169,13 +169,13 @@ test('collapsed sidebar keeps an icon-only achievement button in the footer', as
   await page.locator('[data-slot="mobile-sidebar-trigger"]').click();
   const mobileFooter = page.locator('[data-mobile="true"] [data-sidebar="footer"]');
   await expect(mobileFooter.locator('[data-achievement-count]')).toBeVisible();
-  await expect(mobileFooter.locator('[data-slot="language-menu-trigger"]')).toBeVisible();
+  await expect(mobileFooter.locator('[data-slot="language-menu-trigger"]')).toHaveCount(0);
   await expect(mobileFooter.locator('[data-slot="author-dialog-trigger"]')).toBeVisible();
   await page.setViewportSize({ width: 1440, height: 960 });
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   await toggle.click();
   await expect(trigger.locator('[data-achievement-count]')).toBeVisible();
-  await expect(footer.locator('[data-slot="language-menu-trigger"]')).toBeVisible();
+  await expect(footer.locator('[data-slot="language-menu-trigger"]')).toHaveCount(0);
   await expect(footer.locator('[data-slot="author-dialog-trigger"]')).toBeVisible();
 });
 

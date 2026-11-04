@@ -1,0 +1,156 @@
+---
+courseId: coding-101
+lessonId: animation-prompts
+title: 02 让 AI 做出动效，先把名字报对
+description: 认识 Stagger、Spring、Skeleton、Count Up、Typewriter 和 Marquee，通过可重播的案例，学会写清动效名称、时长和实现限制的 Prompt。
+---
+
+让 AI 给页面加动画，别只说「加点动效」。它容易给你整页一起淡入。
+
+更有效的办法是：**直接报名字，再说清哪里动、怎么动、动多久。** 不用先学会写动画代码，先认得下面六种效果，就能把需求说得具体。
+
+这一课的案例都能直接播放。看中哪种效果，就复制下面的 Prompt，把里面的对象换成自己的按钮、列表或页面。
+
+## 一、Stagger：列表一个接一个进场
+
+Stagger 的意思是「错开」。同一组元素依次出现，每个元素比前一个晚一点开始。任务列表、卡片列表和菜单都可以用。
+
+注意看：下面不是整块列表一起淡入，而是三项任务按顺序进场。
+
+<AnimationDemo type="stagger" />
+
+这里要说清两个时间：**每项动多久，以及相邻两项隔多久。** 比如每项 0.3 秒，相邻项间隔 0.08 秒。
+
+```text title="Prompt · Stagger"
+Add a Stagger entrance to the task list.
+Reveal items one by one, in their existing order.
+Each item fades in and moves up 12px over 0.3 seconds.
+Start each item 0.08 seconds after the previous one. Use ease-out.
+Play once when the list first enters the viewport.
+Use pure CSS animation with animation-delay. Add no dependencies.
+With reduced motion enabled, show all items immediately.
+```
+
+## 二、Spring：弹一下，再停住
+
+Spring 是弹簧效果。元素到达目标后，轻轻越过一点，再回到原位。按钮和卡片常用这种反馈，但弹一下就够了。
+
+下面用一个按钮演示轻微回弹。点击「播放动效」，观察按钮先缩小，再弹回原来的大小。
+
+<AnimationDemo type="spring" />
+
+**CSS 没有内置的 `spring()` 弹簧函数，但能做出弹簧的视觉效果。** 可以用关键帧，或用 `linear()` 缓动函数描述回弹曲线。这个案例用的是 CSS 关键帧，并不是物理弹簧模拟。[CSS `linear()` 的说明](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/easing-function/linear)介绍了这种曲线的写法。
+
+只说「加 Spring」，AI 可能顺手安装 Framer Motion（现在的 Motion）。不想加依赖，就明确写「纯 CSS，不安装动画库」。如果项目已经用了 Motion，或需要拖拽后延续速度的弹簧交互，也可以用它的[原生 Spring 配置](https://motion.dev/docs/react-transitions#spring)。
+
+```text title="Prompt · Spring"
+Add a subtle Spring-style response to the save button after a click.
+Scale from 0.96 to 1.05, then 0.99, and settle at 1.
+Complete the animation in 0.45 seconds. Do not loop.
+Use pure CSS keyframes to approximate the spring effect.
+Do not install Motion, Framer Motion, or any other dependency.
+Keep the button's layout space unchanged.
+With reduced motion enabled, keep the button still.
+```
+
+## 三、Skeleton：加载时的灰块，带一道闪光
+
+Skeleton 是「骨架屏」。内容还没回来时，先用灰块占住头像、标题和正文的位置。灰块上滑过的一道光，通常叫 **Shimmer**。
+
+Skeleton 说明「内容还在加载」，Shimmer 让等待状态更容易被看见。下面只演示加载中的样子，不会真的请求数据。
+
+<AnimationDemo type="skeleton" />
+
+```text title="Prompt · Skeleton"
+Add a Skeleton loading state to the profile card.
+Use gray placeholders for the avatar, title, and two lines of text.
+Add a subtle Shimmer that moves from left to right every 1.4 seconds.
+Use a transformed gradient overlay, not an animated background position.
+Match the final content's dimensions to avoid layout shifts.
+Replace the skeleton when data arrives; show an error if loading fails.
+Use pure CSS animation. Add no dependencies.
+With reduced motion enabled, keep the placeholders static.
+```
+
+## 四、Count Up：数字从 0 滚到目标值
+
+Count Up 常见于数据看板和统计数字。与其让数字突然出现，不如让它从 0 逐步增长到目标值。
+
+下面从 0 增长到 1,280，持续 1.2 秒。数字越接近目标，变化越慢。
+
+<AnimationDemo type="count-up" />
+
+```text title="Prompt · Count Up"
+Add a Count Up animation to the learner count.
+Count from 0 to 1,280 over 1.2 seconds with ease-out.
+Display whole numbers with thousands separators and tabular numerals.
+Play once when the number first enters the viewport.
+Use a small requestAnimationFrame loop. Add no animation library.
+Finish at exactly 1,280 and cancel the loop when the component unmounts.
+Expose the final number to screen readers without announcing every frame.
+With reduced motion enabled, show 1,280 immediately.
+```
+
+这里需要随时间更新文字，少量 JavaScript 更直接。**「不加依赖」不等于「不能用 JavaScript」。** 这和要求按钮用纯 CSS 回弹，是两种不同的限制。
+
+## 五、Typewriter：字一个个打出来
+
+Typewriter 是打字机效果。文字按顺序出现，像有人正在输入。适合短标题或一句演示文案，不适合让读者等着看完一整篇文章。
+
+下面每隔 0.08 秒显示一个字，打完就停。文字会换行，位置已经留好，不会把后面的内容往下挤。
+
+<AnimationDemo type="typewriter" />
+
+```text title="Prompt · Typewriter"
+Add a Typewriter effect to one short headline.
+Reveal one character every 0.08 seconds, then stop.
+Keep the full text's space reserved so nearby content does not move.
+Allow wrapping on narrow screens. Do not loop or delete the text.
+Use native JavaScript. Add no dependencies.
+Expose the complete sentence to screen readers as a single text.
+With reduced motion enabled, show the complete sentence immediately.
+```
+
+这个案例是一段预先写好的文字。**逐字出现是显示效果，不代表 AI 正在生成。** 真正的流式回答还涉及接收模型返回的数据。
+
+## 六、Marquee：一排 logo 横着循环滚
+
+Marquee 是连续滚动，常用于合作伙伴或客户 logo。要点是**匀速、无缝、能暂停**，不要滚到末尾突然跳回开头。
+
+下面使用虚构品牌。点击播放后，它们会从右往左循环移动；可以暂停，也可以继续。
+
+<AnimationDemo type="marquee" />
+
+```text title="Prompt · Marquee"
+Add a Marquee to the partner logo row.
+Move from right to left at a constant speed, with a 12-second cycle.
+Repeat seamlessly with no gap or jump at the loop boundary.
+Keep duplicate logo groups hidden from screen readers.
+Provide a keyboard-accessible pause/resume button.
+Pause on hover and while keyboard focus is inside the logo track.
+Use pure CSS transform animation with linear easing. Add no dependencies.
+With reduced motion enabled, show a static, wrapping logo list.
+```
+
+## 七、把 Prompt 写成一句明确的需求
+
+可以记住这个顺序：**对象 + 动效名字 + 触发时机 + 时长或间隔 + 实现限制。**
+
+比如：「给任务列表加 Stagger，首次进入视口时播放，每项 0.3 秒，间隔 0.08 秒，纯 CSS，不加依赖。」比「加点动效，让它高级一点」更容易得到想要的结果。
+
+| 你想要的效果 | 报这个名字 | 时间怎么说 |
+| --- | --- | --- |
+| 列表依次进场 | Stagger | 每项 0.3 秒，间隔 0.08 秒 |
+| 按钮轻轻回弹 | Spring | 0.45 秒内停住 |
+| 加载占位块上扫过一道光 | Skeleton + Shimmer | 每 1.4 秒扫过一次 |
+| 数字增长到目标值 | Count Up | 1.2 秒从 0 到 1,280 |
+| 文字逐个出现 | Typewriter | 每个字间隔 0.08 秒 |
+| 一排 logo 循环移动 | Marquee | 匀速，一轮 12 秒 |
+
+0.3 秒是短促进场效果的常见起点，不是所有动画的统一时长。循环滚动需要更慢，打字机需要说清每个字的间隔。
+
+<KeyTakeaway>
+我的经验是：名字报对，再补一句时长，基本一次成。不想让 AI 安装动画库，就再写清「纯 CSS」或「原生 JavaScript，不加依赖」。生成后，亲手点一次，再看效果是否符合预期。
+</KeyTakeaway>
+
+选一个你正在做的界面，复制对应 Prompt 试一次。检查三个地方：是不是只有指定对象在动，时间是不是合适，以及系统开启「减少动态效果」后，内容还能不能直接读到。

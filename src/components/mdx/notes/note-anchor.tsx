@@ -18,7 +18,7 @@ export function JimmyNoteAnchor({ id, noteNumber, variant = 'text', children, cl
   const trigger = <Popover.Trigger asChild>
     <Button variant="ghost" size="icon-touch" data-note-trigger-for={id} disabled={!body}
       aria-label={t('openJimmyNote', { number: noteNumber })} aria-describedby={`jimmy-note-anchor-${id}`}
-      className={cn('not-prose relative inline-block size-6 touch-manipulation rounded-none bg-transparent p-0 text-note-ink before:-inset-2.5 hover:bg-transparent hover:text-note-ink @[64rem]/lesson:hidden [@media(scripting:none)]:hidden',
+      className={cn('not-prose relative inline-block size-6 touch-manipulation rounded-sm bg-transparent p-0 text-note-ink before:-inset-2.5 hover:bg-transparent hover:text-note-ink @[64rem]/lesson:hidden [@media(scripting:none)]:hidden',
         variant === 'image' ? 'absolute top-3 right-3 bg-background/95 hover:bg-background' : 'ml-0.5 align-middle')}>
       <span data-slot="note-marker" aria-hidden className={cn('pointer-events-none absolute inset-0 flex items-center justify-center text-xs leading-none font-medium tabular-nums', variant === 'text' && '-translate-y-2')}>{noteNumber}</span>
     </Button>
@@ -39,9 +39,9 @@ export function JimmyNoteAnchor({ id, noteNumber, variant = 'text', children, cl
           const qr = document.querySelector('[data-slot="note-wechat-popover"]');
           if (event.target instanceof Node && qr?.contains(event.target)) event.preventDefault();
         }}
-        className="not-prose z-40 w-84 max-w-[calc(100vw-2rem)] outline-none [--note-max-height:var(--radix-popover-content-available-height)]">
+        className="not-prose z-40 w-84 max-w-[calc(100vw-2rem)] rounded-sm outline-none [--note-max-height:var(--radix-popover-content-available-height)] has-[[data-note-variant=embed]]:bg-background has-[[data-note-variant=embed]]:pt-12 has-[[data-note-variant=embed]]:[--note-max-height:calc(var(--radix-popover-content-available-height)-3rem)]">
         <Popover.Close asChild>
-          <Button variant="ghost" size="icon-touch" aria-label={t('close')} className="absolute top-3 right-3 z-20 size-6 text-muted-foreground before:-inset-2.5">
+          <Button variant="ghost" size="icon-touch" aria-label={t('close')} className="absolute top-3 right-3 z-20 size-6 rounded-sm text-muted-foreground before:-inset-2.5">
             <XIcon size={16} aria-hidden />
           </Button>
         </Popover.Close>

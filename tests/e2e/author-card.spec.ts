@@ -16,12 +16,7 @@ async function capture(page: Page, name: string) {
 }
 
 async function openAuthor(page: Page, locale = 'zh') {
-  const trigger = page.getByRole('button', { name: dictionary(locale).label, exact: true });
-  if (!await trigger.isVisible()) {
-    const mobile = page.locator('[data-slot="mobile-sidebar-trigger"]');
-    if (await mobile.isVisible()) await mobile.click();
-    else await page.locator('[data-slot="sidebar-trigger"]').click();
-  }
+  const trigger = page.getByRole('banner').getByRole('button', { name: dictionary(locale).label, exact: true });
   await trigger.click();
   await expect(page.getByRole('dialog', { name: dictionary(locale).label })).toBeVisible();
   return trigger;
@@ -128,7 +123,7 @@ async function verifyCard(page: Page, locale = 'zh') {
   return { card, geometry };
 }
 
-test('author dialog opens beside the language menu and preserves working links', async ({ page }) => {
+test('author dialog opens from the header and preserves working links', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto(lesson);
   await page.evaluate(() => document.fonts.ready);
@@ -137,16 +132,16 @@ test('author dialog opens beside the language menu and preserves working links',
   await expect(toc).toBeVisible();
   await expect(page.locator('[data-slot="author-card"]')).toHaveCount(0);
   const footer = page.locator('[data-slot="sidebar-footer"]');
-  const trigger = footer.getByRole('button', { name: dictionary('zh').label, exact: true });
+  const trigger = page.getByRole('banner').getByRole('button', { name: dictionary('zh').label, exact: true });
   await expect(trigger).toHaveText('👋');
   const hand = (await trigger.boundingBox())!;
-  const language = (await footer.locator('[data-slot="language-menu-trigger"]').boundingBox())!;
-  expect(hand.x + hand.width).toBeLessThanOrEqual(language.x);
   expect(await footer.getByRole('button').evaluateAll(buttons => buttons.map(button => button.getAttribute('aria-label'))))
-    .toEqual([messages('zh').Course.achievementsTitle, dictionary('zh').label, messages('zh').Language.label]);
-  await expect(footer.locator('[data-slot="language-menu-trigger"]')).toHaveText('🌐');
+    .toEqual([messages('zh').Course.achievementsTitle]);
+  await expect(footer.locator('[data-slot="author-dialog-trigger"]')).toHaveCount(0);
+  await expect(page.getByRole('banner').getByRole('link', { name: messages('zh').Ui.about, exact: true })).toHaveCount(0);
+  await expect(footer.locator('[data-slot="language-menu-trigger"], .language-picker')).toHaveCount(0);
   expect(hand.width).toBeGreaterThanOrEqual(44);
-  await capture(page, 'sidebar-footer-button-order');
+  await capture(page, 'header-author-and-sidebar-achievements');
   await openAuthor(page);
   const { geometry } = await verifyCard(page);
   const dialog = page.getByRole('dialog', { name: dictionary('zh').label });
@@ -190,7 +185,7 @@ test('author dialog remains reachable on narrow and short screens', async ({ pag
     await page.keyboard.press('Escape');
     await expect(dialog).toHaveCount(0);
     await expect(trigger).toBeFocused();
-    if (viewport.width <= 960) await expect(page.locator('[data-mobile="true"]')).toBeVisible();
+    await expect(page.locator('[data-mobile="true"]')).toHaveCount(0);
   }
 });
 
@@ -208,9 +203,10 @@ test('author dialog follows the selected language and enlarged text', async ({ p
     await verifyCard(page, locale);
     await capture(page, `author-dialog-enlarged-${locale}`);
     await page.keyboard.press('Escape');
-    await page.locator('[data-slot="language-menu-trigger"]').click();
-    const menu = page.getByRole('menu', { name: messages(locale).Language.label });
-    await expect(menu.getByRole('menuitem')).toHaveCount(5);
+    await page.keyboard.press('Escape');
+    await page.getByRole('banner').locator('.language-picker summary').click();
+    const menu = page.getByRole('banner').locator('.language-options');
+    await expect(menu.getByRole('link')).toHaveCount(5);
     await expect(menu.locator('a[aria-current="true"]')).toHaveAttribute('hreflang', locale === 'zh' ? 'zh-Hans' : locale);
     await expect(menu.locator('[data-slot="dropdown-menu-sub-trigger"]')).toHaveCount(0);
     await page.keyboard.press('Escape');
@@ -219,27 +215,26 @@ test('author dialog follows the selected language and enlarged text', async ({ p
 });
 
 for (const width of [1440, 390]) {
-  test(`footer opens language choices directly at ${width}px`, async ({ page }) => {
+  test(`lesson header opens language choices at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/zh/courses/llm-101/what-a-language-model-does');
-    if (width < 961) await page.locator('[data-slot="mobile-sidebar-trigger"]').click();
     const footer = page.locator('[data-slot="sidebar-footer"]');
     await expect(footer.getByRole('button', { name: messages('zh').Ui.more, exact: true })).toHaveCount(0);
     await expect(footer.getByRole('link', { name: messages('zh').Ui.about, exact: true })).toHaveCount(0);
-    const trigger = footer.getByRole('button', { name: messages('zh').Language.label, exact: true });
+    await expect(footer.locator('[data-slot="language-menu-trigger"], .language-picker')).toHaveCount(0);
+    const trigger = page.getByRole('banner').locator('.language-picker summary');
     await trigger.focus();
     await page.keyboard.press('Enter');
-    const menu = page.getByRole('menu', { name: messages('zh').Language.label });
+    const menu = page.getByRole('banner').locator('.language-options');
     await expect(menu).toBeVisible();
-    await expect(menu.getByRole('menuitem')).toHaveCount(5);
+    await expect(menu.getByRole('link')).toHaveCount(5);
     await expect(menu.locator('[data-slot="dropdown-menu-sub-trigger"]')).toHaveCount(0);
-    await expect(menu.getByRole('menuitem', { name: messages('zh').Ui.about, exact: true })).toHaveCount(0);
-    await page.keyboard.press('ArrowDown');
+    await expect(menu.getByRole('link', { name: messages('zh').Ui.about, exact: true })).toHaveCount(0);
+    await page.keyboard.press('Tab');
     expect(await menu.evaluate(element => element.contains(document.activeElement))).toBe(true);
-    await capture(page, `footer-language-menu-${width}`);
+    await capture(page, `lesson-header-language-menu-${width}`);
     await page.keyboard.press('Escape');
     await expect(trigger).toBeFocused();
-    if (width < 961) await expect(page.locator('[data-mobile="true"]')).toBeVisible();
     await trigger.click();
     await menu.locator('a[hreflang="en"]').click();
     await expect(page).toHaveURL(/\/courses\/llm-101\/what-a-language-model-does$/);
@@ -254,15 +249,14 @@ test('author website and language choices remain available without JavaScript', 
     for (const width of [1440, 390]) {
       await page.setViewportSize({ width, height: 844 });
       await page.goto(lesson);
-      if (width < 961) await page.locator('[data-slot="mobile-native-menu"] > summary').click();
-      await expect(page.getByRole('link', { name: dictionary('zh').website, exact: true })).toHaveAttribute('href', 'https://jimmywong.dev');
+      await expect(page.getByRole('banner').getByRole('link', { name: dictionary('zh').website, exact: true })).toHaveAttribute('href', 'https://jimmywong.dev');
       await expect(page.locator('[data-slot="author-dialog-trigger"]')).toBeHidden();
       await expect(page.locator('[data-author-dialog]')).toHaveCount(0);
       await expect(page.locator('[data-slot="author-card"]')).toHaveCount(0);
       const language = page.locator('.language-picker summary').filter({ visible: true });
       await language.click();
       await expect(page.locator('.language-options:visible a')).toHaveCount(5);
-      await capture(page, `author-footer-no-js-${width}`);
+      await capture(page, `author-header-no-js-${width}`);
     }
   } finally { await context.close(); }
 });

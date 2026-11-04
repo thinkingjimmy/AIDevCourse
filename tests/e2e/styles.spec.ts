@@ -2,6 +2,7 @@ import type { Locale } from '../../src/lib/i18n/config';
 import { localePath } from '../../src/lib/i18n/routing';
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { expectAssembled, expectStill } from './illustrations/poses';
 
 const fixture = process.env.CONTENT_TEST === '1';
 const courseSlug = fixture ? 'ai-coding' : 'llm-101';
@@ -11,102 +12,107 @@ const languages = ['zh', 'en', 'ja', 'fr', 'es'] as const;
 const viewports = [{ name: 'desktop', width: 1440, height: 960 }, { name: 'mobile', width: 390, height: 844 }];
 const dictionary = (locale: string) => JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
 
-test.describe('Homepage primary action', () => {
-  async function captureAction(page: Page, name: string) {
-    const path = test.info().outputPath(`${name}.png`);
-    await page.screenshot({ path, animations: 'disabled' });
-    await test.info().attach(name, { path, contentType: 'image/png' });
-  }
-
-  test('homepage primary action moves only the arrow on hover and keeps a stable hit area', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 960 });
-    await page.emulateMedia({ reducedMotion: 'no-preference' });
-    await page.goto('/zh');
-    await page.evaluate(() => document.fonts.ready);
-    const action = page.locator('[data-slot="home-primary-action"]');
-    const face = action.locator('[data-slot="home-primary-face"]');
-    const arrow = action.locator('[data-slot="home-primary-arrow"]');
-    const destination = (await action.getAttribute('href'))!;
-    await expect(action).toHaveAccessibleName(dictionary('zh').Home.start);
-    await expect(face).toHaveCSS('background-color', 'rgb(9, 9, 11)');
-    await expect(face).toHaveCSS('color', 'rgb(255, 255, 255)');
-    await expect(face).toHaveCSS('border-radius', '3px');
-    const hitArea = (await action.boundingBox())!;
-    const restingFace = (await face.boundingBox())!;
-    const restingArrow = (await arrow.boundingBox())!;
-    expect(hitArea.height).toBeGreaterThanOrEqual(44);
-    await action.focus();
-    await expect(action).toBeFocused();
-    await expect(action).toHaveCSS('outline-style', 'solid');
-    await expect(face).toHaveCSS('translate', 'none');
-    await captureAction(page, 'home-action-focus');
-    await action.blur();
-    await action.hover();
-    await expect.poll(async () => (await arrow.boundingBox())!.x - restingArrow.x).toBeCloseTo(4, 1);
-    expect(await face.boundingBox()).toEqual(restingFace);
-    expect(await action.boundingBox()).toEqual(hitArea);
-    await captureAction(page, 'home-action-hover');
-    await page.mouse.down();
-    try {
-      await expect.poll(() => face.evaluate(element => parseFloat(getComputedStyle(element).scale))).toBeCloseTo(0.96, 2);
-      expect(await action.boundingBox()).toEqual(hitArea);
-      await captureAction(page, 'home-action-pressed');
-    } finally {
-      await page.mouse.move(0, 0);
-      await page.mouse.up();
+for (const surface of [
+  { name: 'homepage', path: '/zh', label: dictionary('zh').Home.start },
+  { name: 'course overview', path: `/zh/courses/${courseSlug}`, label: dictionary('zh').Course.startFirst },
+]) {
+  test.describe(`${surface.name} primary action`, () => {
+    async function captureAction(page: Page, name: string) {
+      const path = test.info().outputPath(`${name}.png`);
+      await page.screenshot({ path, animations: 'disabled' });
+      await test.info().attach(name, { path, contentType: 'image/png' });
     }
-    await expect.poll(async () => (await face.boundingBox())!.y).toBeCloseTo(restingFace.y, 1);
-    await captureAction(page, 'home-action-resting');
-    await test.info().attach('Stable action geometry', { body: JSON.stringify({ hitArea, restingFace, restingArrow }, null, 2), contentType: 'application/json' });
-    await action.focus();
-    await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(new URL(destination, page.url()).href);
-  });
 
-  test('homepage primary action respects touch and reduced motion', async ({ browser, baseURL }) => {
-    const context = await browser.newContext({ baseURL, viewport: { width: 390, height: 844 }, hasTouch: true });
-    try {
-      const page = await context.newPage();
-      await page.goto('/zh');
-      const action = page.locator('[data-slot="home-primary-action"]');
-      const face = action.locator('[data-slot="home-primary-face"]');
-      const arrow = action.locator('[data-slot="home-primary-arrow"]');
-      expect(await page.evaluate(() => matchMedia('(hover: hover) and (pointer: fine)').matches)).toBe(false);
-      await action.hover();
+    test(`${surface.name} primary action moves only the arrow on hover and keeps a stable hit area`, async ({ page }) => {
+      await page.setViewportSize({ width: 1440, height: 960 });
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await page.goto(surface.path);
+      await page.evaluate(() => document.fonts.ready);
+      const action = page.locator('[data-slot="hero-primary-action"]');
+      const face = action.locator('[data-slot="hero-primary-face"]');
+      const arrow = action.locator('[data-slot="hero-primary-arrow"]');
+      const destination = (await action.getAttribute('href'))!;
+      await expect(action).toHaveAccessibleName(surface.label);
+      await expect(face).toHaveCSS('background-color', 'rgb(49, 86, 75)');
+      await expect(face).toHaveCSS('color', 'rgb(255, 255, 255)');
+      await expect(face).toHaveCSS('border-radius', '3px');
+      const hitArea = (await action.boundingBox())!;
+      const restingFace = (await face.boundingBox())!;
+      const restingArrow = (await arrow.boundingBox())!;
+      expect(hitArea.height).toBeGreaterThanOrEqual(44);
+      await action.focus();
+      await expect(action).toBeFocused();
+      await expect(action).toHaveCSS('outline-style', 'solid');
       await expect(face).toHaveCSS('translate', 'none');
-      await expect(arrow).toHaveCSS('translate', 'none');
-      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await captureAction(page, 'primary-action-focus');
+      await action.blur();
+      await action.hover();
+      await expect.poll(async () => (await arrow.boundingBox())!.x - restingArrow.x).toBeCloseTo(4, 1);
+      expect(await face.boundingBox()).toEqual(restingFace);
+      expect(await action.boundingBox()).toEqual(hitArea);
+      await captureAction(page, 'primary-action-hover');
       await page.mouse.down();
       try {
-        await expect(face).toHaveCSS('scale', 'none');
-        await expect(face).toHaveCSS('translate', 'none');
-        await expect(arrow).toHaveCSS('translate', 'none');
-        expect(parseFloat(await face.evaluate(element => getComputedStyle(element).transitionDuration))).toBeLessThanOrEqual(0.00001);
+        await expect.poll(() => face.evaluate(element => parseFloat(getComputedStyle(element).scale))).toBeCloseTo(0.96, 2);
+        expect(await action.boundingBox()).toEqual(hitArea);
+        await captureAction(page, 'primary-action-pressed');
       } finally {
         await page.mouse.move(0, 0);
         await page.mouse.up();
       }
-      await page.evaluate(() => { document.documentElement.style.fontSize = '20px'; });
-      expect((await action.boundingBox())!.height).toBeGreaterThanOrEqual(44);
-      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      await captureAction(page, 'home-action-touch-enlarged');
-    } finally { await context.close(); }
-  });
-
-  test('homepage primary action keeps native navigation without JavaScript', async ({ browser, baseURL }) => {
-    const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
-    try {
-      const page = await context.newPage();
-      await page.goto('/zh');
-      const action = page.getByRole('link', { name: dictionary('zh').Home.start, exact: true });
-      const destination = (await action.getAttribute('href'))!;
-      await expect(action).toBeVisible();
-      await captureAction(page, 'home-action-no-js');
-      await action.click();
+      await expect.poll(async () => (await face.boundingBox())!.y).toBeCloseTo(restingFace.y, 1);
+      await captureAction(page, 'primary-action-resting');
+      await test.info().attach('Stable action geometry', { body: JSON.stringify({ hitArea, restingFace, restingArrow }, null, 2), contentType: 'application/json' });
+      await action.focus();
+      await page.keyboard.press('Enter');
       await expect(page).toHaveURL(new URL(destination, page.url()).href);
-    } finally { await context.close(); }
+    });
+
+    test(`${surface.name} primary action respects touch and reduced motion`, async ({ browser, baseURL }) => {
+      const context = await browser.newContext({ baseURL, viewport: { width: 390, height: 844 }, hasTouch: true });
+      try {
+        const page = await context.newPage();
+        await page.goto(surface.path);
+        const action = page.locator('[data-slot="hero-primary-action"]');
+        const face = action.locator('[data-slot="hero-primary-face"]');
+        const arrow = action.locator('[data-slot="hero-primary-arrow"]');
+        expect(await page.evaluate(() => matchMedia('(hover: hover) and (pointer: fine)').matches)).toBe(false);
+        await action.hover();
+        await expect(face).toHaveCSS('translate', 'none');
+        await expect(arrow).toHaveCSS('translate', 'none');
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await page.mouse.down();
+        try {
+          await expect(face).toHaveCSS('scale', 'none');
+          await expect(face).toHaveCSS('translate', 'none');
+          await expect(arrow).toHaveCSS('translate', 'none');
+          expect(parseFloat(await face.evaluate(element => getComputedStyle(element).transitionDuration))).toBeLessThanOrEqual(0.00001);
+        } finally {
+          await page.mouse.move(0, 0);
+          await page.mouse.up();
+        }
+        await page.evaluate(() => { document.documentElement.style.fontSize = '20px'; });
+        expect((await action.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+        await captureAction(page, 'primary-action-touch-enlarged');
+      } finally { await context.close(); }
+    });
+
+    test(`${surface.name} primary action keeps native navigation without JavaScript`, async ({ browser, baseURL }) => {
+      const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
+      try {
+        const page = await context.newPage();
+        await page.goto(surface.path);
+        const action = page.getByRole('link', { name: surface.label, exact: true });
+        const destination = (await action.getAttribute('href'))!;
+        await expect(action).toBeVisible();
+        await captureAction(page, 'primary-action-no-js');
+        await action.click();
+        await expect(page).toHaveURL(new URL(destination, page.url()).href);
+      } finally { await context.close(); }
+    });
   });
-});
+}
 
 test.setTimeout(90000);
 test.beforeEach(({ browserName }, testInfo) => {
@@ -247,9 +253,10 @@ test('storage and clipboard failures keep reading and feedback usable', async ({
 });
 
 test('hero illustrations preserve their opening, hover, and callout behavior', async ({ page }) => {
+  test.skip(fixture, 'Uses the published course illustrations.');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/zh');
-  const mac = page.locator('[data-anatomy="mac"]');
+  const mac = page.locator('[data-slot="home-hero-art"] [data-anatomy="mac"]');
   const keyboard = mac.locator('[data-asm="kb"]');
   await expect.poll(() => keyboard.getAttribute('transform')).not.toBeNull();
   await mac.hover();
@@ -269,7 +276,7 @@ test('hero illustrations preserve their opening, hover, and callout behavior', a
   await test.info().attach('Opened chip with callouts', { path, contentType: 'image/png' });
 });
 
-test('the entire course card controls chip hover motion', async ({ browser, baseURL }) => {
+test('the entire course card expands the chip once and reverses on leave', async ({ browser, baseURL }) => {
   test.skip(fixture, 'The public LLM 101 card owns this interaction.');
   test.setTimeout(30000);
   const context = await browser.newContext({ baseURL, viewport: viewports[0], reducedMotion: 'no-preference', recordVideo: { dir: test.info().outputPath('video') } });
@@ -281,38 +288,44 @@ test('the entire course card controls chip hover motion', async ({ browser, base
     const fan = chip.locator('[data-asm="fan"]');
     await card.scrollIntoViewIfNeeded();
     await page.mouse.move(0, 0);
-    await expect(chip).toHaveAttribute('data-settled', 'true');
-    await expect(fan).toHaveAttribute('transform', /translate/);
-    await card.getByRole('heading').hover();
-    await expect.poll(() => fan.getAttribute('transform')).toBeNull();
+    await expectAssembled(chip);
+    await expectStill(chip);
     const closed = test.info().outputPath('card-hover-assembled.png');
     await page.screenshot({ path: closed });
-    await test.info().attach('Card hover assembles the chip', { path: closed, contentType: 'image/png' });
-    await chip.hover();
-    await card.locator('p').last().hover();
-    for (let cycle = 0; cycle < 2; cycle++) {
-      await expect.poll(() => fan.getAttribute('transform')).toBeNull();
-      await expect(chip).toHaveAttribute('data-settled', 'true');
-      await expect(fan).toHaveAttribute('transform', /translate/);
-      expect(await card.evaluate((element) => element.matches(':hover'))).toBe(true);
-    }
-    await expect(chip).toHaveAttribute('data-settled', 'false');
-    await page.mouse.move(0, 0);
+    await test.info().attach('Card starts assembled', { path: closed, contentType: 'image/png' });
+    await card.getByRole('heading').hover();
     await expect(chip).toHaveAttribute('data-settled', 'true');
     await expect(fan).toHaveAttribute('transform', /translate/);
-    await card.getByRole('heading').hover();
-    await expect.poll(() => fan.getAttribute('transform')).toBeNull();
-    await page.mouse.move(0, 0);
-    await expect(chip).toHaveAttribute('data-settled', 'true');
+    const expanded = await fan.getAttribute('transform');
+    await expectStill(chip);
+    await chip.hover();
+    await card.locator('p').last().hover();
+    await expectStill(chip);
+    await expect(fan).toHaveAttribute('transform', expanded!);
+    expect(await card.evaluate((element) => element.matches(':hover'))).toBe(true);
     const opened = test.info().outputPath('card-hover-exploded.png');
     await page.screenshot({ path: opened });
-    await test.info().attach('Leaving the card reopens the chip', { path: opened, contentType: 'image/png' });
-    await expect(chip.locator('.co')).toHaveCount(0);
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    const still = await fan.getAttribute('transform');
+    await test.info().attach('Hovered card stays expanded', { path: opened, contentType: 'image/png' });
+    await page.mouse.move(0, 0);
+    await expect.poll(() => fan.getAttribute('transform'), { intervals: [50] }).not.toBe(expanded);
     await card.getByRole('heading').hover();
-    await expect(fan).toHaveAttribute('transform', still!);
     await expect(chip).toHaveAttribute('data-settled', 'true');
+    await expect(fan).toHaveAttribute('transform', expanded!);
+    await page.mouse.move(0, 0);
+    await expectAssembled(chip);
+    await card.getByRole('heading').hover();
+    await expect.poll(() => fan.getAttribute('transform'), { intervals: [50] }).not.toBeNull();
+    await page.mouse.move(0, 0);
+    await expectAssembled(chip);
+    await expectStill(chip);
+    await expect(chip.locator('.co')).toHaveCount(0);
+    await card.getByRole('heading').hover();
+    await expect(chip).toHaveAttribute('data-settled', 'true');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expectAssembled(chip);
+    await page.mouse.move(0, 0);
+    await card.getByRole('heading').hover();
+    await expectStill(chip);
     await card.click();
     await expect(page).toHaveURL(/\/courses\/llm-101$/);
   } finally {
@@ -371,7 +384,7 @@ test('home Mac hover repeats closing and opening until the pointer leaves', asyn
   const page = await context.newPage();
   try {
     await page.goto('/');
-    const mac = page.locator('[data-anatomy="mac"]');
+    const mac = page.locator('[data-slot="home-hero-art"] [data-anatomy="mac"]');
     const keyboard = mac.locator('[data-asm="kb"]');
     await expect(mac).toHaveAttribute('data-settled', 'true');
     await mac.hover();

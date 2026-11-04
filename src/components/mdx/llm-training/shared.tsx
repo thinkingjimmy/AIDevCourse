@@ -34,7 +34,7 @@ export function TrainingHistory({ round }: { round: number }) {
     <div className="mb-3 text-caption text-muted-foreground">每轮结束后，「{trainingTarget}」的预测概率</div>
     <ol aria-label={`每轮训练后的${trainingTarget}的预测概率`} data-training-history className="grid grid-cols-4">
       {trainingProbabilities.map((probabilities, index) => <li key={index} data-reached={index <= round} data-completed={index < round} aria-current={index === round ? 'step' : undefined}
-        className="relative min-w-0 border-t-2 border-border pt-2.5 pr-1 data-[completed=true]:border-foreground aria-[current=step]:before:absolute aria-[current=step]:before:-top-1 aria-[current=step]:before:left-0 aria-[current=step]:before:size-1.5 aria-[current=step]:before:rounded-full aria-[current=step]:before:bg-foreground">
+        className="relative min-w-0 border-t-2 border-border pt-2.5 pr-1 data-[completed=true]:border-foreground aria-[current=step]:before:absolute aria-[current=step]:before:-top-1 aria-[current=step]:before:left-0 aria-[current=step]:before:size-1.5 aria-[current=step]:before:rounded-sm aria-[current=step]:before:bg-foreground">
         <span className="text-caption text-muted-foreground">{index ? `第 ${index} 轮后` : '训练前'}</span>
         <span className="mt-1 block text-2xl leading-copy tabular-nums data-[reached=false]:text-muted-foreground" data-reached={index <= round}>
           {index <= round ? `${probabilities[trainingTargetIndex]}%` : '—'}
@@ -45,5 +45,5 @@ export function TrainingHistory({ round }: { round: number }) {
 }
 
 export function TrainingStatus({ children }: { children: ReactNode }) {
-  return <div role="status" aria-live="polite" aria-atomic="true" className="mt-5 bg-muted px-3 py-2.5 text-caption leading-body">{children}</div>;
+  return <div role="status" aria-live="polite" aria-atomic="true" className="mt-5 rounded-sm bg-muted px-3 py-2.5 text-caption leading-body">{children}</div>;
 }

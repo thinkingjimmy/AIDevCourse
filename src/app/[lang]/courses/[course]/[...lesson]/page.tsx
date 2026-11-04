@@ -6,7 +6,7 @@ import { getCatalog, getCourse, getLesson, getArticle } from '@/lib/content/sour
 import { identity } from '@/lib/content/model';
 import { getMDXComponents } from '@/components/mdx/components';
 import { LessonVisit } from '@/components/progress/lesson-visit';
-import { LessonNavigation } from '@/components/course/lesson-navigation';
+import { LessonCompletion } from '@/components/course/lesson-completion';
 import { LessonToc } from '@/components/course/outline/lesson-toc';
 import { NoteRail, NoteScope } from '@/components/mdx/notes/note-scope';
 import { pageMetadata } from '@/lib/metadata';
@@ -35,7 +35,7 @@ export default async function LessonPage({ params }: Props) {
       {doc.data.description ? <p className="m-0 mb-5 max-w-none text-base leading-body text-muted-foreground">{doc.data.description}</p> : null}
       <div className="prose course-prose"><Body components={getMDXComponents(doc.achievements)} /></div>
       <LessonVisit lessonId={doc.data.lessonId} />
-      <LessonNavigation course={course} lessonId={doc.data.lessonId} />
+      <LessonCompletion lessonId={doc.data.lessonId} />
     </article>
     {doc.hasJimmyNotes && <NoteRail className="ml-8" />}
   </NoteScope>;

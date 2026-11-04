@@ -36,7 +36,7 @@ export function readCatalog(options: { root?: string; publicRoot?: string } = {}
           url: `${localAchievement ? translated!.url : doc.url}#achievement-${achievement.id}` };
       }));
     courses.push({ id: course.courseId, locale: document.locale, slug: document.courseSlug, title: course.title,
-      description: course.description, url: document.url, sourceLocale: course.sourceLocale, level: course.level,
+      description: course.description, url: document.url, sourceLocale: course.sourceLocale, level: course.level, section: course.section,
       goals: course.goals, audience: course.audience, prerequisites: course.prerequisites,
       lessons, achievements });
   }

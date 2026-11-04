@@ -98,7 +98,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
 
     await clickControl(demo.getByRole('button', { name: '再比一次', exact: true }));
     await page.clock.runFor(200);
-    await page.locator('article nav').last().scrollIntoViewIfNeeded();
+    await page.locator('[data-slot="lesson-completion"]').scrollIntoViewIfNeeded();
     await expect(demo).not.toBeInViewport();
     await page.clock.runFor(100);
     await expect(demo).toHaveAttribute('data-state', 'paused');

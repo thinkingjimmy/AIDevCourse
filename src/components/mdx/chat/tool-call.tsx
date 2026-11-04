@@ -23,7 +23,7 @@ function toolContent(children: ReactNode): ReactNode {
     // Fumadocs wraps compiled code fences in fragments.
     if (child.type === Fragment) return <Fragment key={child.key ?? index}>{toolContent(child.props.children)}</Fragment>;
     if (!child.props['data-language']) return child;
-    return <CodeBlock key={child.key ?? index} size="sm">
+    return <CodeBlock key={child.key ?? index} size="sm" className="rounded-sm">
       <CodeBlockContent wrap className="max-h-64" aria-label={child.props['data-language']}>{codeText(child.props.children)}</CodeBlockContent>
     </CodeBlock>;
   });

@@ -1,4 +1,5 @@
 import { test, expect, type Locator } from '@playwright/test';
+import { expectAssembled, expectStill } from './poses';
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published Coding 101 card.');
 
@@ -36,7 +37,7 @@ function expectExploded(pose: Awaited<ReturnType<typeof readPose>>) {
   }
 }
 
-test('rocket opens and loops with its nozzle fixed in place', async ({ browser, baseURL }, testInfo) => {
+test('rocket expands once on hover with its nozzle fixed in place', async ({ browser, baseURL }, testInfo) => {
   const context = await browser.newContext({
     baseURL,
     viewport: { width: 1440, height: 1000 },
@@ -51,10 +52,9 @@ test('rocket opens and loops with its nozzle fixed in place', async ({ browser, 
     const rocket = card.locator('[data-anatomy="rocket"]');
     await card.scrollIntoViewIfNeeded();
     await page.mouse.move(0, 0);
-    await expect(rocket).toHaveAttribute('data-settled', 'true');
-    const opened = await readPose(rocket);
-    expectExploded(opened);
-    await testInfo.attach('rocket-exploded', { body: await card.screenshot(), contentType: 'image/png' });
+    await expectAssembled(rocket);
+    await expectStill(rocket);
+    const assembled = await readPose(rocket);
 
     samples = page.evaluate(async () => {
       const svg = document.querySelector<SVGSVGElement>('[data-anatomy="rocket"] svg')!;
@@ -73,12 +73,6 @@ test('rocket opens and loops with its nozzle fixed in place', async ({ browser, 
       return positions;
     });
 
-    await card.getByRole('heading').hover();
-    let assembled: Awaited<ReturnType<typeof readPose>> = [];
-    await expect.poll(async () => {
-      assembled = await readPose(rocket);
-      return assembled.every((part) => Math.abs(part.dy) < 0.00001);
-    }, { intervals: [50] }).toBe(true);
     const joint = await rocket.evaluate((root) => {
       const svg = root.querySelector('svg')!;
       const nozzle = svg.querySelector<SVGGElement>('[data-asm="nozzle"]')!.getBBox();
@@ -102,14 +96,17 @@ test('rocket opens and loops with its nozzle fixed in place', async ({ browser, 
     for (const point of joint) expect(point.layers.indexOf('chamber')).toBeLessThan(point.layers.indexOf('nozzle'));
     await testInfo.attach('rocket-assembled-joint', { body: JSON.stringify(joint, null, 2), contentType: 'application/json' });
     await testInfo.attach('rocket-assembled', { body: await card.screenshot(), contentType: 'image/png' });
+    await card.getByRole('heading').hover();
     await expect(rocket).toHaveAttribute('data-settled', 'true');
-    expectExploded(await readPose(rocket));
+    const opened = await readPose(rocket);
+    expectExploded(opened);
     expect(await card.evaluate((element) => element.matches(':hover'))).toBe(true);
+    await expectStill(rocket);
+    await testInfo.attach('rocket-exploded', { body: await card.screenshot(), contentType: 'image/png' });
 
-    await expect(rocket).toHaveAttribute('data-settled', 'false');
     await page.mouse.move(0, 0);
-    await expect(rocket).toHaveAttribute('data-settled', 'true');
-    expectExploded(await readPose(rocket));
+    await expectAssembled(rocket);
+    expect(await readPose(rocket)).toEqual(assembled);
     const positions = await samples;
     expect(positions.length).toBeGreaterThan(10);
     for (const position of positions) {
@@ -120,8 +117,8 @@ test('rocket opens and loops with its nozzle fixed in place', async ({ browser, 
       body: JSON.stringify({ opened, assembled, nozzleFrames: positions }, null, 2),
       contentType: 'application/json',
     });
-    await testInfo.attach('course-cards-exploded', {
-      body: await page.locator('[data-slot="course-grid"]').screenshot(),
+    await testInfo.attach('course-cards-assembled', {
+      body: await page.locator('#catalog').screenshot(),
       contentType: 'image/png',
     });
   } finally {
@@ -140,11 +137,15 @@ for (const width of [1440, 390, 320]) {
     const card = page.getByRole('link', { name: 'Coding 101', exact: true });
     const rocket = card.locator('[data-anatomy="rocket"]');
     await card.scrollIntoViewIfNeeded();
-    await expect(rocket).toHaveAttribute('data-settled', 'true');
+    await expectAssembled(rocket);
     const pose = await readPose(rocket);
-    expectExploded(pose);
+    for (const part of pose) {
+      expect(part.dx).toBeCloseTo(0, 5);
+      expect(part.dy).toBeCloseTo(0, 5);
+      expect(Math.min(part.left, part.top, part.right, part.bottom)).toBeGreaterThanOrEqual(-0.5);
+    }
     await card.getByRole('heading').hover();
-    await expect(rocket).toHaveAttribute('data-settled', 'true');
+    await expectAssembled(rocket);
     expect(await readPose(rocket)).toEqual(pose);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await testInfo.attach(`rocket-reduced-motion-${width}`, { body: await card.screenshot(), contentType: 'image/png' });

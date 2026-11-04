@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/overlays/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { locales, languageNames, htmlLanguages, localeCookie, defaultLocale, type Locale } from '@/lib/i18n/config';
 import { canonicalPath, localePath, stripLocale } from '@/lib/i18n/routing';
@@ -38,19 +37,7 @@ export function LanguageSwitcher({ locale, translations, side = 'bottom' }: Lang
   </details>;
 }
 
-export function LanguageMenu({ locale, translations, container }: LanguageProps & { container?: HTMLElement | null }) {
-  const t = useTranslations('Language');
-  return <DropdownMenu modal={false}>
-    <DropdownMenuTrigger asChild>
-      <Button data-slot="language-menu-trigger" variant="ghost" size="icon" aria-label={t('label')} title={t('label')} className="size-11 shrink-0 text-lg [@media(scripting:none)]:hidden"><span aria-hidden>🌐</span></Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent container={container} side="top" align="end" collisionPadding={12} className="language-options w-max min-w-0 max-w-[min(calc(100vw-24px),var(--radix-dropdown-menu-content-available-width))]" aria-label={t('label')}>
-      <LanguageLinks locale={locale} translations={translations} menu />
-    </DropdownMenuContent>
-  </DropdownMenu>;
-}
-
-function LanguageLinks({ locale, translations, menu = false }: LanguageProps & { menu?: boolean }) {
+function LanguageLinks({ locale, translations }: LanguageProps) {
   const t = useTranslations('Language');
   const pathname = canonicalPath(usePathname());
   const current = Object.entries(translations).find(([, versions]) => versions.some((version) => version.url === pathname));
@@ -64,9 +51,7 @@ function LanguageLinks({ locale, translations, menu = false }: LanguageProps & {
         const fallback = current && !samePage ? t(coursePage ? 'courseFallback' : 'listFallback') : undefined;
         // The root otherwise negotiates again, so native English-home links carry the explicit choice.
         const href = lang === defaultLocale && url === '/' ? '/?lang=en' : url;
-        const link = <a className={menu
-          ? 'flex min-h-11 touch-manipulation items-center justify-between gap-2 px-2 py-2 text-sm leading-copy no-underline aria-current:bg-surface'
-          : 'flex min-h-11 touch-manipulation items-center justify-between gap-5 border-b border-line-soft px-3 py-2.5 text-ui font-[550] whitespace-nowrap no-underline last:border-0 hover:bg-surface aria-current:bg-surface'} key={lang} href={href} hrefLang={htmlLanguages[lang]} aria-current={lang === locale ? 'true' : undefined} onClick={(event) => {
+        return <a className="flex min-h-11 touch-manipulation items-center justify-between gap-5 border-b border-line-soft px-3 py-2.5 text-ui font-[550] whitespace-nowrap no-underline last:border-0 hover:bg-surface aria-current:bg-surface" key={lang} href={href} hrefLang={htmlLanguages[lang]} aria-current={lang === locale ? 'true' : undefined} onClick={(event) => {
           let saved = false;
           try {
             document.cookie = `${localeCookie}=${lang}; Path=/; Max-Age=31536000; SameSite=Lax`;
@@ -78,8 +63,7 @@ function LanguageLinks({ locale, translations, menu = false }: LanguageProps & {
             try { if (samePage?.headings.includes(decodeURIComponent(hash.slice(1)))) event.currentTarget.href = `${url}${hash}`; }
             catch { /* An invalid hash is safely discarded. */ }
           }
-        }}><span className="min-w-0"><span lang={htmlLanguages[lang]}>{!menu && <span aria-hidden="true">{languageFlags[lang]} </span>}{languageNames[lang]}</span>{fallback && <small className="mt-1 block max-w-40 text-xs leading-relaxed font-normal whitespace-normal">{fallback}</small>}</span><span className="size-4 shrink-0" aria-hidden>{lang === locale && <CheckIcon size={16} />}</span></a>;
-        return menu ? <DropdownMenuItem key={lang} asChild>{link}</DropdownMenuItem> : link;
+        }}><span className="min-w-0"><span lang={htmlLanguages[lang]}><span aria-hidden="true">{languageFlags[lang]} </span>{languageNames[lang]}</span>{fallback && <small className="mt-1 block max-w-40 text-xs leading-relaxed font-normal whitespace-normal">{fallback}</small>}</span><span className="size-4 shrink-0" aria-hidden>{lang === locale && <CheckIcon size={16} />}</span></a>;
       })}
   </>;
 }

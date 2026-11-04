@@ -5,7 +5,7 @@ const durations = answer.map((_, index) => index < 2 ? 3.2 : 1.6);
 export const totalDuration = durations.reduce((sum, value) => sum + value, 0);
 export const wordClass = 'whitespace-pre';
 export const pendingClass = `${wordClass} inline-flex items-center align-baseline leading-none`;
-export const placeholderClass = 'ml-1.5 inline-flex size-6 shrink-0 basis-6 -translate-y-[0.5px] items-center justify-center rounded-[3px] border border-border bg-background text-base leading-none font-normal text-muted-foreground before:content-["?"]';
+export const placeholderClass = 'ml-1.5 inline-flex size-6 shrink-0 basis-6 -translate-y-[0.5px] items-center justify-center rounded-sm border border-border bg-background text-base leading-none font-normal text-muted-foreground before:content-["?"]';
 export const symbol = (character: string) => character === ' ' ? '空格' : character;
 
 type Candidate = { letter: string; probability: number };

@@ -13,7 +13,7 @@ export function ChatThinking({ defaultOpen, children, className, ...props }: Com
 }
 
 export function ChatThinkingStatus() {
-  return <Trace>
+  return <Trace className="*:has-[>[data-slot=trace-line]]:rounded-sm">
     <TraceLine status="running" role="status" lang="en">
       <TraceIcon><Spinner aria-hidden="true" role="presentation" /></TraceIcon>
       <TraceTitle>Thinking</TraceTitle>

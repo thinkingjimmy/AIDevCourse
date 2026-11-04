@@ -1,5 +1,6 @@
 import { localePath } from '../src/lib/i18n/routing';
 import { defineConfig, defineDocs } from 'fumadocs-mdx/config';
+import { rehypeToc } from 'fumadocs-core/mdx-plugins';
 import { readCatalog } from '../src/lib/content/manifest';
 import { contentRoot } from '../src/lib/content/scan';
 import { documentSchema } from '../src/lib/content/schema';
@@ -28,9 +29,12 @@ export const courses = defineDocs({
 });
 export default defineConfig({
   mdxOptions: {
-    remarkPlugins: [remarkMark, remarkMath, remarkValidateMath, remarkNumberJimmyNotes, remarkMermaid],
+    // Keep interactive heading components in the article, not module-level TOC exports.
+    remarkHeadingOptions: { generateToc: true },
+    valueToExport: ['toc'],
+    remarkPlugins: (plugins) => [remarkMark, remarkMath, remarkValidateMath, remarkNumberJimmyNotes, remarkMermaid, ...plugins],
     // Render math before Shiki can treat its generated code nodes as a programming language.
-    rehypePlugins: (plugins) => [[rehypeMath, mathOptions], ...plugins],
+    rehypePlugins: (plugins) => [[rehypeMath, mathOptions], ...plugins.filter((plugin) => plugin !== rehypeToc)],
     rehypeCodeOptions: {
       themes: { light: 'github-light', dark: 'github-light' },
       transformers: [{ pre(node) { node.properties['data-language'] = this.options.lang; } }],

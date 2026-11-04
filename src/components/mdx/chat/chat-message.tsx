@@ -29,7 +29,7 @@ export function ChatMessage({ from, state = 'complete', className, children, ...
   const content = Children.toArray(children).filter((child) => typeof child !== 'string' || child.trim());
   const activities = from === 'assistant' ? content.filter((child) => isValidElement(child) && (child.type === ChatThinking || child.type === ChatToolCall)) : [];
   const answer = content.filter((child) => !activities.includes(child));
-  const bubble = cn('rounded-lg px-4 py-3', from === 'user' ? 'bg-muted' : 'border border-border bg-surface');
+  const bubble = cn('rounded-sm px-4 py-3', from === 'user' ? 'bg-muted' : 'border border-border bg-surface');
   return <div {...props} data-component="chat-message" data-slot="message" data-from={from} data-state={thinking ? 'thinking' : undefined} className={cn(
     'quote-frame not-prose my-6 flex min-w-0 items-start gap-3 p-4 text-base leading-reading text-foreground sm:p-5',
     from === 'user' ? 'justify-end' : 'justify-start',
@@ -43,7 +43,7 @@ export function ChatMessage({ from, state = 'complete', className, children, ...
       {answer.length > 0 && <div data-slot="message-response" className={cn('w-fit max-w-full', bubble, markdownContent)}>{answer}</div>}
     </> : children}</div>
     <span data-slot="message-avatar" aria-hidden="true" className={cn(
-      'mt-1.5 flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-secondary text-muted-foreground',
+      'mt-1.5 flex size-8 shrink-0 items-center justify-center rounded-sm border border-border bg-secondary text-muted-foreground',
       from === 'assistant' && 'order-first',
     )}>
       <AvatarIcon size={18} />

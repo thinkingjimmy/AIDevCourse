@@ -6,7 +6,7 @@ import { animateGeneration } from './llm-generation/animation';
 import { answer, pendingClass, placeholderClass, question } from './llm-generation/model';
 
 const rowClass = 'flex h-(--row-height) shrink-0 items-center';
-const panelClass = 'grid w-full grid-cols-[minmax(0,1fr)_calc(var(--candidate-size)*3+var(--candidate-gap)*2)] items-center gap-3 p-3 @max-[600px]/generation:grid-cols-1 @max-[600px]/generation:gap-2';
+const panelClass = 'grid w-full grid-cols-[minmax(0,1fr)_calc(var(--candidate-size)*3+var(--candidate-gap)*2)] items-center gap-3 rounded-sm p-3 @max-[600px]/generation:grid-cols-1 @max-[600px]/generation:gap-2';
 const inputClass = 'grid min-w-0 grid-cols-[2.75rem_minmax(0,1fr)] items-baseline gap-3 @max-[600px]/generation:grid-cols-[1.625rem_minmax(0,1fr)] @max-[600px]/generation:gap-2.5';
 const labelClass = 'text-caption whitespace-nowrap text-muted-foreground tabular-nums';
 const fullClass = 'min-w-0 whitespace-pre-wrap wrap-break-word text-reading';

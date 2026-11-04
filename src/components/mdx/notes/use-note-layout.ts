@@ -82,8 +82,10 @@ export function useNoteLayout(root: RefObject<HTMLDivElement | null>, close: () 
         const top = Math.max(0, requestedTop, bottom ? bottom + 16 : 0);
         const bounds = card.getBoundingClientRect();
         const height = bounds.height;
-        const strokeWidth = parseFloat(getComputedStyle(card.querySelector('[data-component="jimmy-note"]')!).borderTopWidth);
-        const endX = strokeWidth / 2;
+        const noteStyle = getComputedStyle(card.querySelector('[data-component="jimmy-note"]')!);
+        const borderWidth = parseFloat(noteStyle.borderTopWidth);
+        const strokeWidth = borderWidth || parseFloat(noteStyle.getPropertyValue('--note-line-width'));
+        const endX = borderWidth / 2;
         const endY = inset;
         const startX = source.x - railBounds.left;
         const startY = source.y - origin - top;
@@ -104,7 +106,7 @@ export function useNoteLayout(root: RefObject<HTMLDivElement | null>, close: () 
         card.style.visibility = 'visible';
         const connector = card.querySelector('[data-note-connector]')!;
         connector.setAttribute('d', path);
-        // Match the border's used width, including device-pixel rounding.
+        // Match framed notes' used border width; borderless embeds keep the shared line width.
         connector.setAttribute('stroke-width', String(strokeWidth));
         const point = card.querySelector('[data-note-connector-start]')!;
         point.setAttribute('cx', String(startX));

@@ -12,7 +12,7 @@ import { useMessagePlayback } from './use-playback';
 import { useSequenceLayout } from './use-sequence-layout';
 
 const actors = [{ Icon: UserCircleIcon, label: '用户' }, { Icon: ChatsIcon, label: 'Chat 产品' }, { Icon: HardDrivesIcon, label: '厂商服务器' }, { Icon: CpuIcon, label: '模型程序' }];
-const controlClass = 'min-h-11 cursor-pointer touch-manipulation rounded-none px-3.5 py-2 text-caption whitespace-normal';
+const controlClass = 'min-h-11 cursor-pointer touch-manipulation rounded-sm px-3.5 py-2 text-caption whitespace-normal';
 
 export function ChatMessageSequence() {
   const frameRef = useRef<HTMLElement>(null);

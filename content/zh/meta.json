@@ -1,7 +1,10 @@
 {
   "title": "课程",
   "pages": [
+    "ai-coding",
     "llm-101",
-    "coding-101"
+    "coding-101",
+    "design-101",
+    "agent-101"
   ]
 }

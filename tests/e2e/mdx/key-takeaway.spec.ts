@@ -31,7 +31,7 @@ for (const scenario of [
         const style = getComputedStyle(element);
         return { border: style.border, radius: style.borderRadius, shadow: style.boxShadow, background: style.backgroundColor, color: style.color };
       };
-      const reference = { border: '1px solid rgb(9, 9, 11)', radius: '0px', background: 'rgb(255, 255, 255)', color: 'rgb(63, 63, 70)' };
+      const reference = { border: '1px solid rgb(9, 9, 11)', radius: scenario.name === 'enlarged' ? '6px' : '4px', background: 'rgb(255, 255, 255)', color: 'rgb(63, 63, 70)' };
       const evidence = [];
       for (const note of await notes.all()) {
         const frame = await note.evaluate(frameStyle);

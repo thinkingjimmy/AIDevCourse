@@ -25,6 +25,8 @@
 }
 ```
 
+导读课程可在 frontmatter 中设置 `section: introduction`，首页会将其放入难度分组之前的「开始之前」。`level` 仍表示课程难度；未设置 `section` 的课程继续按难度分组。当前中文导读课程「从想法到作品」位于 `content/zh/ai-coding/`，卡片和总览复用首页电脑拆解动图；第一篇「关于这门课」位于 `about-this-course.mdx`。
+
 课程介绍不计入课时数量。课程可以先发布介绍，再逐步添加课时。没有课时的课程保留首页卡片和总览，显示「内容更新中」，不显示开始第一课或课时统计。完全没有课程的语言会显示本地化空状态。
 
 ## 编写与检查
@@ -71,7 +73,7 @@ X 接受 `x.com` 和 `twitter.com` 的帖子链接，包括移动端域名与 `/
 
 X 使用官方组件，在接近视口时加载，全页共用一次脚本。脚本加载最多等待 10 秒，单条帖子整体最多等待 15 秒；失败时显示本地化提示。YouTube 使用隐私增强播放器，延迟加载，不自动播放，支持全屏与移动端内联播放；窄屏保留至少 200px 高度。X 仅在加载失败或无 JavaScript 时显示原站链接；加载成功后使用帖子自带的查看入口。YouTube 始终保留原站链接。嵌入会直接连接相应平台，受平台隐私政策及可用性影响；隐私增强模式不表示完全没有网络请求或跟踪。构建不请求平台接口，也不需要 API 密钥。
 
-标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`JimmyNoteAnchor`、`KeyTakeaway`、`Chat`、`ChatMessage`、`ChatThinking`、`ChatToolCall`、`InlineCitation`、`ChatMessageSequence`、`XEmbed`、`YouTube`、`Steps`、`Step`、`LLMGenerationDemo`、`MenuComparisonDemo`、`TokenizationDiagram`、`TokenProbabilityDiagram`、`LLMPretrainingOverview`、`LLMSingleRoundTrainingDemo`、`LLMMultiRoundTrainingDemo`、`Achievement`、`AchievementOption`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
+标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`JimmyNoteAnchor`、`KeyTakeaway`、`Chat`、`ChatMessage`、`ChatThinking`、`ChatToolCall`、`InlineCitation`、`ChatMessageSequence`、`XEmbed`、`YouTube`、`Steps`、`Step`、`LLMGenerationDemo`、`MenuComparisonDemo`、`AnimationDemo`、`TokenizationDiagram`、`TokenProbabilityDiagram`、`LLMPretrainingOverview`、`LLMSingleRoundTrainingDemo`、`LLMMultiRoundTrainingDemo`、`Achievement`、`AchievementOption`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
 
 使用 `mermaid` 代码围栏绘制流程图、时序图等图表，无需 import。图表使用 [Pele](https://pele.run/) 在服务端生成 SVG，不向浏览器加载图表引擎。图表沿用站点字体与颜色；宽图保持文字大小，在图表区域内横向滚动，支持键盘操作、放大文字和无 JavaScript 阅读。通过 `accTitle` 与 `accDescr` 提供图表标题和说明。可在 [组件预览](http://localhost:3000/design/components#mermaid) 检查效果。
 
@@ -92,7 +94,7 @@ Read the diff and verify the actual behavior.
 </Callout>
 ```
 
-`JimmyNote` 用于与原文关联的个人观察或补充说明。用行内 `JimmyNoteAnchor` 包住原有文字，再用独立的 `JimmyNote` 提供批注；两者通过相同的 `id` 和 `anchor` 配对。标识使用小写英文字母、数字和连字符，同一篇文章内必须唯一且一一对应；文字锚点和批注都必须有文字；图片锚点必须包含一张带有有效替代文本的 Markdown 图片。文字锚点显示浅橙色高亮，不加下划线。可用文章容器达到 64rem 时，批注显示在 21rem 右栏。高亮末行右下角的橙色圆点，经约 12px 短斜线后水平接入卡片左边缘的设定偏移位置。卡片使用直角、白底、同色边框及浅橙色偏移阴影；边框和连线共用 1.5px 线宽，并按浏览器实际边框像素对齐。卡片按原文顺序至少间隔 16px；密集批注的连线先从行间进入栏间空隙，再连接卡片，避免穿过文字。右侧批注与独立左侧目录互不占位，正文和右栏布局保持稳定。空间不足时，高亮末尾显示无底色的数字上标，点击打开浮层。编译时按正文锚点的出现顺序自动生成 1、2、3 等编号，图片锚点也参与排序；每篇文章从 1 开始，即使批注块写在锚点前面，编号仍按锚点顺序排列。数字只显示在批注入口；展开后的卡片和无 JavaScript 备注不在 Jimmy 署名旁重复显示编号，但为屏幕阅读器保留对应编号的说明。可见编号在各语言中统一使用数字，按钮和批注的无障碍说明由 UI 字典本地化。上标保留至少 44px 的点击区域，支持键盘打开、Escape 关闭和焦点返回。无需手写编号；`noteNumber` 是编译器内部属性，源文不接受该属性。头像、Jimmy 署名和「本文作者」说明自动提供，右侧依次显示 Star、小红书、X、哔哩哔哩和公众号二维码五个无边框图标。前四个链接复用站点作者配置；二维码支持悬停或点击查看，暂时复用作者弹窗中的占位内容。桌面图标保持紧凑并与作者信息同排居中；浮层中图标换行后与头像左边缘对齐。触屏点击区域至少为 44px。按 Escape 关闭二维码浮层后仍保留原批注，并返回二维码按钮；点击两层浮层外部时一并关闭。内容支持多段 Markdown、强调、高亮、公式和链接。禁用 JavaScript 时，批注完整显示在原位置。无需 import，可在 [组件预览](http://localhost:3000/design/components#jimmy-notes) 检查效果；通过 `?lang=en`、`?lang=ja`、`?lang=fr` 或 `?lang=es` 可切换交互控件的语言，示例正文保持原文。
+`JimmyNote` 用于与原文关联的个人观察或补充说明。用行内 `JimmyNoteAnchor` 包住原有文字，再用独立的 `JimmyNote` 提供批注；两者通过相同的 `id` 和 `anchor` 配对。标识使用小写英文字母、数字和连字符，同一篇文章内必须唯一且一一对应；文字锚点必须有文字；批注必须含有文字，或仅包含独立成块的 `XEmbed`、`YouTube`；图片锚点必须包含一张带有有效替代文本的 Markdown 图片。文字锚点显示浅橙色高亮，不加下划线。可用文章容器达到 64rem 时，批注显示在 21rem 右栏。高亮末行右下角的橙色圆点，经约 12px 短斜线后水平接入卡片左边缘的设定偏移位置。卡片使用直角、白底、同色边框及浅橙色偏移阴影；边框和连线共用 1.5px 线宽，并按浏览器实际边框像素对齐。卡片按原文顺序至少间隔 16px；密集批注的连线先从行间进入栏间空隙，再连接卡片，避免穿过文字。右侧批注与独立左侧目录互不占位，正文和右栏布局保持稳定。空间不足时，高亮末尾显示无底色的数字上标，点击打开浮层。编译时按正文锚点的出现顺序自动生成 1、2、3 等编号，图片锚点也参与排序；每篇文章从 1 开始，即使批注块写在锚点前面，编号仍按锚点顺序排列。数字只显示在批注入口；展开后的卡片和无 JavaScript 备注不在 Jimmy 署名旁重复显示编号，但为屏幕阅读器保留对应编号的说明。可见编号在各语言中统一使用数字，按钮和批注的无障碍说明由 UI 字典本地化。上标保留至少 44px 的点击区域，支持键盘打开、Escape 关闭和焦点返回。无需手写编号；`noteNumber` 和 `embedOnly` 是编译器内部属性，源文不接受这些属性。头像、Jimmy 署名和「本文作者」说明自动提供，右侧依次显示 Star、小红书、X、哔哩哔哩和公众号二维码五个无边框图标。前四个链接复用站点作者配置；二维码支持悬停或点击查看，暂时复用作者弹窗中的占位内容。桌面图标保持紧凑并与作者信息同排居中；浮层中图标换行后与头像左边缘对齐。触屏点击区域至少为 44px。按 Escape 关闭二维码浮层后仍保留原批注，并返回二维码按钮；点击两层浮层外部时一并关闭。内容支持多段 Markdown、强调、高亮、公式、链接和嵌入。仅包含 `XEmbed` 或 `YouTube` 时，自动隐藏 Jimmy 的头像、署名与社交链接，移除批注外框、阴影和内边距，保留正文连线与嵌入自身的边界。X 官方组件额外添加的上下间距也会移除。桌面嵌入按内容高度完整展开；窄屏浮层在滚动内容上方单独留出关闭按钮的位置，点击区域不会覆盖嵌入。加入说明文字后保留完整作者栏。禁用 JavaScript 时，批注完整显示在原位置。无需 import，可在 [组件预览](http://localhost:3000/design/components#jimmy-notes) 检查效果；通过 `?lang=en`、`?lang=ja`、`?lang=fr` 或 `?lang=es` 可切换交互控件的语言，示例正文保持原文。
 
 ```mdx
 Read <JimmyNoteAnchor id="context">this text</JimmyNoteAnchor>.
@@ -104,6 +106,25 @@ Use **emphasis** and [links](https://example.com) when useful.
 </JimmyNote>
 ```
 
+Embed-only notes need no caption or manual display flag. Use `XEmbed`, `YouTube`, or several embeds as direct children. Empty notes and invalid embed URLs remain errors.
+
+```mdx
+Read <JimmyNoteAnchor id="post-source">the original post</JimmyNoteAnchor>.
+
+<JimmyNote anchor="post-source">
+  <XEmbed url="https://x.com/API/status/133640144317198338" />
+</JimmyNote>
+```
+
+To annotate a heading, put the Markdown heading marker before `JimmyNoteAnchor`. Wrap only the heading text; `##` inside the component is plain text and does not create a heading.
+
+```mdx
+## <JimmyNoteAnchor id="section-context">What is an agent?</JimmyNoteAnchor>
+
+<JimmyNote anchor="section-context">
+This section covers the core concepts.
+</JimmyNote>
+```
 
 Use `variant="image"` on a standalone `JimmyNoteAnchor` to attach a note to an image. Keep exactly one Markdown image or image reference inside the anchor. The image retains its original alt text and appearance. Wide layouts connect the midpoint of its right edge to the note’s left border at the configured inset; narrow layouts show a numbered marker inset 12px from the image’s top and right edges, with a light backplate for contrast and a 44px minimum target. Without JavaScript, the note stays readable after the image.
 
@@ -285,13 +306,13 @@ pnpm build
 
 ## LLM 101 的课程范围
 
-LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程介绍、十三节中文正文与其他语言的第一课欢迎占位文档。课程介绍位于 `content/<lang>/llm-101/index.mdx`，已有课时按下面三个模块组织。
+LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程介绍、十四节中文正文与其他语言的第一课欢迎占位文档。课程介绍位于 `content/<lang>/llm-101/index.mdx`，已有课时按下面三个模块组织。
 
 | 模块目录 | 模块名称 | 已发布课时 |
 | --- | --- | --- |
 | `model-fundamentals` | 大语言模型的工作原理 | 1.1 生成回答；1.2 Token；1.3 采样与回答的随机性；1.4 从参数与候选分数理解 Token 概率 |
 | `model-training` | 模型的训练与能力 | 2.1 模型是如何预训练的；2.2 模型的「深度思考」是怎么回事；2.3 模型是如何看图和听声音的；2.4 开源模型、参数量与本地运行；2.5 如何选择适合自己的大语言模型 |
-| `ai-applications` | AI 应用的工作原理 | 3.1 AI Chat 是如何工作的；3.2 Tool 是什么；3.3 使用 AI Chat 的几个建议；3.4 AI Chat 实用技巧 |
+| `ai-applications` | AI 应用的工作原理 | 3.1 AI Chat 是如何工作的；3.2 Tool 是什么；3.3 使用 AI Chat 的几个建议；3.4 AI Chat 实用技巧；3.5 什么是 Agent |
 
 02 用五篇文章连接预训练、深度思考、多模态输入、开源模型与本地运行和模型选择，不安排后训练、强化学习或训练算法的深入教程。2.2 通过预算题的教学草稿解释推理、展示摘要和计算成本，并声明草稿不是实际模型的 Thinking 记录；补充固定网络层数与中间 Token 带来的计算轮次，介绍 test-time scaling 的串行推导、候选筛选与过度思考限制。2.3 通过编码器类比解释图像特征、语音转写与音频理解，区分输入和输出能力。两篇都保留实际用途与独立成就，稳定 ID 分别为 thinking-is-not-verification、distinguish-audio-inputs。2.4 将原选型课中关于开源与闭源、参数量、MoE 和本地运行的问题独立成课，保留原文、公式与批注；2.5 保留模型评测、选型与练习，原 slug 与成就 ID 不变。
 
@@ -299,7 +320,7 @@ LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程
 
 ### 03 的后续写作方向
 
-下表是写作规划，3.1 至 3.4 已发布，其余尚未发布。只有完成正文后才加入 `meta.json`；不创建空课时或指向未发布内容的链接。
+下表记录已发布课时和后续写作方向。3.1 至 3.4 与末课「什么是 Agent？」已发布，其余尚未发布。Agent 入门当前编号为 3.5，后续课时加入时仍放在 LLM 101 最后；未发布方向暂不编号。只有完成正文后才加入 `meta.json`；不创建空课时或指向未发布内容的链接。
 
 每篇采用「实际问题 → 简单原理 → Chat 操作练习 → 检查结果」的顺序。使用方法放在对应教程中，避免单独重复一套产品使用手册。具体产品的按钮、配额或界面操作以写作时的实际产品为准。
 
@@ -309,17 +330,25 @@ LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程
 | 3.2 | Tool 是什么 | 查询天气并检查调用记录、预报日期、来源和返回结果；成就 ID 为 `tool-request-vs-execution` |
 | 3.3 | 使用 AI Chat 的几个建议 | 通过尝试、补充上下文、引导提问和复述来改进回答，认识能力边界；保留成就 ID `use-chat-with-source-material` |
 | 3.4 | AI Chat 实用技巧 | 生成交互教程或数据看板，描述交互要求、逐步修改并核对结果；保留牛顿第二定律演示 |
-| 3.5 | 提示词如何影响回答 | 写清目标、对象、限制和示例，比较输出并修改要求 |
-| 3.6 | 上下文与记忆 | 判断何时继续对话、何时新建对话，以及如何保存必要背景 |
-| 3.7 | 文件、知识库与 RAG | 上传资料并要求引用原文，核对回答是否有依据 |
-| 3.8 | MCP | 理解应用如何连接外部工具与资料，在支持的产品中检查连接与授权 |
-| 3.9 | Skills | 理解可复用的任务指令、资料和脚本，尝试安装或使用一个适合任务的 Skill |
-| 3.10 | 从 AI Chat 到 Agent | 区分一次回答与连续执行，认识 Agent 的目标、工具、检查与停止条件，为 Agent 101 建立前置概念 |
+| 待定 | 提示词如何影响回答 | 写清目标、对象、限制和示例，比较输出并修改要求 |
+| 待定 | 上下文与记忆 | 判断何时继续对话、何时新建对话，以及如何保存必要背景 |
+| 待定 | 文件、知识库与 RAG | 上传资料并要求引用原文，核对回答是否有依据 |
+| 待定 | MCP | 理解应用如何连接外部工具与资料，在支持的产品中检查连接与授权 |
+| 待定 | Skills | 理解可复用的任务指令、资料和脚本，尝试安装或使用一个适合任务的 Skill |
+| 末课（当前 3.5） | 什么是 Agent？ | 区分一次回答与连续执行，认识 Agent 的目标、工具、检查与停止条件，为 Agent 101 建立前置概念 |
 
 权限、敏感资料、来源核对和结果验证随练习一起讲解。MCP、Skills 和工具调用分别解释职责，不画成必须依次安装的层级。
 
 ### Agent 101 的课程边界
 
-Agent 101 规划为独立中级课程，目前未创建或发布。前置能力是理解模型生成、上下文、工具调用，以及 LLM 101 的 3.10；不要求学习后训练。
+Agent 101 是独立中级课程，已在 `content/zh/agent-101/` 发布课程介绍与首页卡片，`level` 为 `intermediate`，中文显示「中级」。课程暂未添加课时，总览使用现有「内容更新中」状态。前置能力是理解模型生成、上下文、工具调用，以及 LLM 101 的最后一课「什么是 Agent？」；不要求学习后训练。建议先完成 Coding 101。
 
 建议围绕 ReAct loop、运行状态与停止条件、Coding Agent 的代码阅读与修改、终端工具与 E2E 验证、上下文管理、失败恢复和权限边界展开，以完成可验证的任务为目标。ReAct loop 是推理与行动交替的模式，不是 React 前端框架。MCP 与 Skills 的基础概念留在 LLM 101，在 Agent 101 中讲如何把它们用于持续执行的工作流。
+
+## Coding 101 的动效案例
+
+`animation-prompts` 是 Coding 101 的第三课。使用独立的 `<AnimationDemo type="stagger" />`，无需 import。`type` 必填，只接受 `stagger`、`spring`、`skeleton`、`count-up`、`typewriter`、`marquee` 六个静态字符串；不接受其他属性、子内容或行内声明。每种案例的说明与可复制 Prompt 保留在 MDX 正文中。
+
+案例默认静止，点击后播放；有限动画可重播，Skeleton 与 Marquee 可暂停和继续。离屏或进入后台时暂停，返回后由读者继续。系统开启减少动态效果时展示静态结果，并隐藏播放控件；播放途中切换该设置也会停止。无 JavaScript 时仍展示静态案例与 Prompt。Spring 使用 CSS 关键帧模拟回弹；数字与文字使用原生 JavaScript 更新，不增加动画依赖。重复 logo 不进入辅助技术的阅读顺序。
+
+完成构建后，用 `pnpm test:e2e tests/e2e/course/coding-101.spec.ts tests/e2e/course/motion` 检查受影响课程。测试报告包含截图与动画中间状态的 JSON 记录。

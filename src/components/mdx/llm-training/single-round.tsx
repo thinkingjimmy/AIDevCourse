@@ -35,7 +35,7 @@ export function LLMSingleRoundTrainingDemo() {
           <TrainingInput label="固定输入" compact={comparing} />
           {comparing && <div className="w-40 shrink-0 border-l border-border pl-5 @max-[400px]/training:w-18 @max-[400px]/training:pl-3">
             <div className="mb-2 text-caption text-muted-foreground">原文答案</div>
-            <div data-training-target className="flex min-h-13 w-fit min-w-13 items-center justify-center bg-foreground text-3xl leading-copy font-medium text-background @max-[400px]/training:min-h-11 @max-[400px]/training:min-w-11 @max-[400px]/training:text-2xl">{trainingTarget}</div>
+            <div data-training-target className="flex min-h-13 w-fit min-w-13 items-center justify-center rounded-sm bg-foreground text-3xl leading-copy font-medium text-background @max-[400px]/training:min-h-11 @max-[400px]/training:min-w-11 @max-[400px]/training:text-2xl">{trainingTarget}</div>
           </div>}
         </div>}
         <div data-training-models className={`grid items-start gap-4 ${step > 0 ? 'mt-5' : ''} ${step === lastStep ? 'grid-cols-2 @max-[580px]/training:grid-cols-1' : 'grid-cols-1'}`}>

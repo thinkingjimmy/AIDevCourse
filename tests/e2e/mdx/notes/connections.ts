@@ -50,7 +50,7 @@ async function measureConnection(card: Locator) {
       dotError: Math.hypot(start.x - point.x, start.y - point.y),
       tailRise: Math.abs(end.y - tail.y), length, textIntersections, pointIntersections,
       borderWidth, strokeWidth: parseFloat(stroke.strokeWidth), border: style.borderLeftColor,
-      stroke: stroke.stroke, radius: style.borderRadius, shadow: style.boxShadow, rgb,
+      stroke: stroke.stroke, radius: style.borderRadius, rootFontSize: parseFloat(getComputedStyle(document.documentElement).fontSize), shadow: style.boxShadow, rgb,
     };
   });
 }
@@ -77,7 +77,7 @@ export async function verifyConnection(card: Locator) {
       expect(geometry.pointIntersections, `${geometry.id}: dot overlaps text`).toBe(0);
       expect(geometry.strokeWidth).toBe(geometry.borderWidth);
       expect(geometry.stroke).toBe(geometry.border);
-      expect(geometry.radius).toBe('0px');
+      expect(geometry.radius).toBe(`${geometry.rootFontSize / 4}px`);
       expect(geometry.shadow).not.toBe('none');
       for (const [index, channel] of [243, 134, 24].entries()) expect(Math.abs(geometry.rgb[index] - channel)).toBeLessThanOrEqual(2);
     }).toPass({ timeout: 5000 });

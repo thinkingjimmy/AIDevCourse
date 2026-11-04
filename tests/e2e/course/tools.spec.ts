@@ -17,11 +17,10 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     await expect(entry).toHaveAttribute('href', lesson);
     await expect(entry.locator('> span:first-child')).toHaveText('3.2');
     await page.goto(previous);
-    await page.locator('article nav').getByRole('link', { name: /下一课/ }).click();
+    await page.getByRole('button', { name: '标记为已完成', exact: true }).click();
     await expect(page).toHaveURL(lesson);
     await expect(page.locator('article h1')).toHaveText('Tool 是什么？');
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${lesson}$`));
-    await expect(page.locator('article nav').getByRole('link', { name: /上一课/ })).toHaveAttribute('href', previous);
     const call = page.locator('article [data-component="chat-tool-call"]').first();
     await expect(call).toHaveAttribute('data-tool', 'search_web');
     const trigger = call.locator('[data-slot="trace-collapsible-trigger"]');
@@ -43,10 +42,14 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     await expect(sidebar.locator('a[aria-current="page"]')).toContainText('3.2 Tool 是什么？');
     if (viewport.width < 961) await page.keyboard.press('Escape');
     const challenge = page.locator(`[data-achievement="${achievementId}"]`);
+    await expect(challenge).toContainText('当你问 AI「明天广州的天气如何？」时，它通常如何知道「明天」是哪一天？');
+    await testInfo.attach(`tool-time-challenge-${viewport.name}`, { body: await challenge.screenshot({ animations: 'disabled' }), contentType: 'image/png' });
     await challenge.getByRole('radio').first().click();
     await expect(challenge).toHaveAttribute('data-state', 'incorrect');
-    await challenge.getByRole('radio').nth(1).click();
+    await expect(challenge).toContainText('产品可以在发给模型的消息中附上当前日期和时区，也可以通过工具获取当前时间。');
+    await challenge.getByRole('radio', { name: /产品在消息中提供当前日期和时区/ }).click();
     await expect(challenge).toHaveAttribute('data-state', 'unlocked');
+    await expect(challenge).toContainText('理解 AI 的时间来源');
     await page.reload();
     await expect(challenge).toHaveAttribute('data-state', 'unlocked');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

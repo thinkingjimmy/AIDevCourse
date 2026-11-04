@@ -8,19 +8,21 @@ export function translatePart(element: Element, vector: readonly [number, number
 
 export function animateIllustration(root: HTMLElement, definitions: AnimationChannel[], options: { intro: number; ease: (amount: number) => number; loopOnHover?: boolean }) {
   const hoverRoot = root.closest<HTMLElement>('[data-illustration-hover]') ?? root;
+  const expandOnHover = hoverRoot.dataset.illustrationHover === 'expand';
   const channels = definitions.map((channel) => ({ ...channel, position: 0, delayLeft: 0 }));
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const hover = window.matchMedia('(hover: hover) and (pointer: fine)');
   let frame = 0;
   let last = 0;
   let visible = false;
-  let target: 0 | 1 = 1;
-  let intro = options.intro;
+  let target: 0 | 1 = expandOnHover ? 0 : 1;
+  let intro = expandOnHover ? 0 : options.intro;
   let hovered = false;
   let holdLeft = HOVER_PAUSE;
 
   const paint = () => channels.forEach((channel) => channel.paint(options.ease(channel.position)));
   const settled = () => intro <= 0 && channels.every((channel) => channel.delayLeft <= 0 && channel.position === target);
-  const looping = () => options.loopOnHover === true && hovered;
+  const looping = () => !expandOnHover && options.loopOnHover === true && hovered;
   const stop = () => {
     cancelAnimationFrame(frame);
     frame = 0;
@@ -73,39 +75,42 @@ export function animateIllustration(root: HTMLElement, definitions: AnimationCha
     intro = 0;
     holdLeft = HOVER_PAUSE;
     root.dataset.settled = 'false';
-    channels.forEach((channel) => { channel.delayLeft = channel.delay; });
+    channels.forEach((channel) => {
+      channel.delayLeft = expandOnHover && channel.position > 0 && channel.position < 1 ? 0 : channel.delay;
+    });
     start();
   };
   const sync = () => {
     if (reduce.matches) {
       stop();
       intro = 0;
-      target = 1;
+      target = expandOnHover ? 0 : 1;
       holdLeft = HOVER_PAUSE;
-      channels.forEach((channel) => { channel.position = 1; channel.delayLeft = 0; });
+      channels.forEach((channel) => { channel.position = target; channel.delayLeft = 0; });
       paint();
-      root.dataset.settled = 'true';
+      root.dataset.settled = String(target === 1);
     } else if (!visible) stop();
     else start();
   };
   const onEnter = (event: PointerEvent) => {
-    if (event.pointerType === 'touch') return;
+    if (event.pointerType === 'touch' || !hover.matches) return;
     hovered = true;
-    retarget(0);
+    retarget(expandOnHover ? 1 : 0);
   };
   const onLeave = (event: PointerEvent) => {
     if (event.pointerType === 'touch') return;
     hovered = false;
-    retarget(1);
+    retarget(expandOnHover ? 0 : 1);
   };
   root.dataset.settled = 'false';
   paint();
-  hovered = window.matchMedia('(hover: hover) and (pointer: fine)').matches && hoverRoot.matches(':hover');
-  if (hovered) retarget(0);
+  hovered = hover.matches && hoverRoot.matches(':hover');
+  if (hovered) retarget(expandOnHover ? 1 : 0);
   sync();
   hoverRoot.addEventListener('pointerenter', onEnter);
   hoverRoot.addEventListener('pointerleave', onLeave);
-  const observer = new IntersectionObserver(([entry]) => {
+  const observer = new IntersectionObserver((entries) => {
+    const entry = entries[entries.length - 1];
     visible = Boolean(entry?.isIntersecting);
     sync();
   });

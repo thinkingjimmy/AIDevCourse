@@ -33,7 +33,7 @@ for (const locale of locales) {
         });
       }
       if (path) {
-        await page.locator(`header a[href="${localePath(locale, '/about')}"]`).click();
+        await page.goto(localePath(locale, '/about'));
         await expect(page).toHaveURL(new RegExp(localePath(locale as Locale, `/about$`)));
       }
       await expect(page.locator('html')).toHaveAttribute('lang', htmlLanguages[locale]);
@@ -122,7 +122,7 @@ test('production publishes course entries and removes withdrawn lessons from dis
       expect(search).not.toContain(path);
     }
   }
-  for (const path of ['/zh/courses/ai-coding', '/zh/courses/ai-coding/workflow/verify-results', '/zh/courses/llm-101/models/strengths', '/zh/courses/llm-101/models']) {
+  for (const path of ['/zh/courses/ai-coding/workflow/verify-results', '/zh/courses/llm-101/models/strengths', '/zh/courses/llm-101/models']) {
     const missing = await request.get(path, { maxRedirects: 0 });
     expect(missing.status(), path).toBe(404);
   }
@@ -167,8 +167,9 @@ test.describe('English URL policy', () => {
     await page.getByRole('link', { name: 'English', exact: true }).click();
     expect(new URL(page.url()).pathname).toBe('/');
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-    await expect(page.locator('header a[href="/about"]')).toBeVisible();
-    await page.locator('header a[href="/about"]').click();
+    await expect(page.getByRole('banner').locator('[data-slot="author-dialog-trigger"]')).toHaveText('👋');
+    await expect(page.locator('header a[href="/about"]')).toHaveCount(0);
+    await page.goto('/about');
     await expect(page).toHaveURL(/\/about$/);
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/about$/);
@@ -242,7 +243,9 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       page.on('pageerror', (error) => errors.push(error.message));
       await page.goto(localePath(locale as Locale, `/`));
       await page.evaluate(() => document.fonts.ready);
-      const grid = page.locator('[data-slot="course-grid"]');
+      const sections = ['introduction', 'beginner', 'intermediate', 'advanced'].filter((section) => catalog.courses.some((item) => item.locale === locale && (item.section ?? item.level) === section));
+      await expect(page.locator('#catalog h2')).toHaveText(sections.map((section) => messages.Ui[section]));
+      const grid = page.getByRole('region', { name: messages.Ui[course.level], exact: true }).locator('[data-slot="course-grid"]');
       const card = grid.getByRole('link', { name: 'LLM 101', exact: true });
       await expect(card).toHaveCount(1);
       await expect(card.getByRole('heading')).toHaveText('LLM 101');
@@ -256,16 +259,22 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       const expectedColumns = viewport.width > 721 ? 2 : 1;
       expect(columns).toBe(expectedColumns);
       if (expectedColumns > 1) expect((await card.boundingBox())!.width).toBeLessThan((await grid.boundingBox())!.width / expectedColumns);
-      const copyBox = (await card.locator('[data-slot="card-content"]').boundingBox())!;
-      const illustrationBox = (await card.locator('[data-anatomy="chip"]').boundingBox())!;
-      expect(copyBox.x + copyBox.width).toBeLessThanOrEqual(illustrationBox.x);
+      const headingBox = (await card.locator('[data-slot="course-card-heading"]').boundingBox())!;
+      const descriptionBox = (await card.locator('[data-slot="course-card-description"]').boundingBox())!;
       const cardBox = (await card.boundingBox())!;
       const image = card.locator('[data-slot="course-card-image"]');
       const imageBox = (await image.boundingBox())!;
       await expect(image).toHaveCSS('background-color', 'rgb(244, 244, 245)');
+      expect(headingBox.x + headingBox.width).toBeLessThanOrEqual(imageBox.x);
+      expect(descriptionBox.x + descriptionBox.width).toBeLessThanOrEqual(imageBox.x);
       expect(imageBox.y).toBeCloseTo(cardBox.y + 1, 1);
       expect(imageBox.y + imageBox.height).toBeCloseTo(cardBox.y + cardBox.height - 1, 1);
-      expect(imageBox.x + imageBox.width).toBeCloseTo(cardBox.x + cardBox.width - 1, 1);
+      expect(imageBox.x + imageBox.width).toBeCloseTo(cardBox.x + cardBox.width - (viewport.width < 721 ? 0 : 1), 1);
+      if (viewport.width < 721) {
+        expect(cardBox.width).toBeCloseTo(viewport.width, 1);
+        expect(imageBox.width).toBeGreaterThanOrEqual(112);
+        expect(imageBox.width).toBeLessThanOrEqual(128);
+      }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       if (locale === 'zh') {
         const report = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
@@ -280,6 +289,10 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       await expect(page.locator('h1')).toHaveText('LLM 101');
       await expect(page.locator('[data-anatomy="chip"]')).toHaveAttribute('data-callouts', 'true');
       await expect(page.locator('[data-anatomy="chip"] .co')).toHaveCount(6);
+      if (viewport.width < 841) {
+        await expect(page.locator('[data-anatomy="chip"]')).toBeHidden();
+        await expect(page.locator('#course-catalog')).toBeInViewport();
+      } else await expect(page.locator('[data-anatomy="chip"]')).toBeVisible();
       if (!course.lessons.length) {
         await expect(page.locator('[data-slot="course-empty"]')).toContainText(messages.Course.updatingBody);
         await expect(page.getByRole('link', { name: messages.Course.startFirst, exact: true })).toHaveCount(0);
@@ -292,8 +305,8 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
   }
 }
 
-for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'mobile', width: 390, height: 844 }]) {
-  test(`home hero aligns with navigation and preserves menu depth on ${viewport.name}`, async ({ page }) => {
+for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'tablet', width: 840, height: 960 }, { name: 'mobile', width: 390, height: 844 }, { name: 'narrow', width: 320, height: 844 }]) {
+  test(`home hero keeps content aligned and preserves menu depth on ${viewport.name}`, async ({ page }) => {
     test.skip(process.env.CONTENT_TEST === '1', 'Public homepage learning actions.');
     await page.setViewportSize(viewport);
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -316,19 +329,36 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       await expect(intro).toHaveCount(1);
       await expect(intro).toHaveText(messages.Home.intro);
       await expect(page.getByText(messages.Home.eyebrow, { exact: true })).toHaveCount(0);
-      const catalogHeading = page.getByRole('heading', { name: messages.Home.courseTitle, exact: true });
+      const catalogHeading = page.getByRole('heading', { name: messages.Ui.beginner, level: 2, exact: true });
       await expect(catalogHeading.locator('..').locator(':scope > p')).toHaveCount(0);
       if (locale === 'zh') {
-        await expect(catalogHeading).toHaveText('基础');
-        const path = test.info().outputPath(`basics-catalog-${viewport.name}.png`);
+        await expect(catalogHeading).toHaveText('入门');
+        const path = test.info().outputPath(`course-catalog-${viewport.name}.png`);
         await page.locator('#catalog').screenshot({ path });
-        await test.info().attach('Fundamentals catalog', { path, contentType: 'image/png' });
+        await test.info().attach('Course catalog', { path, contentType: 'image/png' });
         await page.evaluate(() => window.scrollTo(0, 0));
       }
-      const logo = await page.locator('header a').first().boundingBox();
-      for (const element of [title, intro, action, page.getByRole('heading', { name: messages.Home.courseTitle, exact: true })]) {
-        expect((await element.boundingBox())!.x).toBeCloseTo(logo!.x, 1);
+      const contentLeft = (await title.boundingBox())!.x;
+      for (const element of [title, intro, action, catalogHeading]) {
+        expect((await element.boundingBox())!.x).toBeCloseTo(contentLeft, 1);
       }
+      const art = (await page.locator('[data-slot="home-hero-art"]').boundingBox())!;
+      const copy = (await title.boundingBox())!;
+      const introduction = (await intro.boundingBox())!;
+      const actionArea = (await action.boundingBox())!;
+      const hero = (await page.locator('[data-slot="home-hero"]').boundingBox())!;
+      expect(art.x + art.width).toBeLessThanOrEqual(hero.x + hero.width);
+      expect(art.y + art.height).toBeLessThanOrEqual(hero.y + hero.height);
+      expect(actionArea.height).toBeGreaterThanOrEqual(44);
+      if (viewport.width < 721) {
+        expect(art.x).toBeGreaterThan(copy.x + copy.width);
+        expect(introduction.y).toBeGreaterThanOrEqual(Math.max(copy.y + copy.height, art.y + art.height));
+        expect(actionArea.y).toBeGreaterThan(introduction.y + introduction.height);
+        expect(actionArea.width).toBeCloseTo(introduction.width, 1);
+        expect(actionArea.height).toBeGreaterThanOrEqual(48);
+      } else expect(art.x).toBeGreaterThan(copy.x + copy.width);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await test.info().attach(`${locale}-home-hero-${viewport.name}`, { body: await page.locator('[data-slot="home-hero"]').screenshot(), contentType: 'image/png' });
       const course = catalog.courses.find((item) => item.locale === locale && item.slug === 'llm-101')!;
       await expect(action).toHaveAttribute('href', course.lessons[0].url);
       await page.locator('.language-picker summary').click();
@@ -340,14 +370,11 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       });
       expect(surface.shadow).not.toBe('none');
       await page.keyboard.press('Escape');
-      await expect(action).toHaveCSS('border', surface.border);
-      await expect(action).toHaveCSS('border-radius', '0px');
-      await expect(action).toHaveCSS('color', surface.color);
-      await expect(action).toHaveCSS('background-color', surface.background);
-      await expect(action).toHaveCSS('box-shadow', surface.shadow);
+      const face = action.locator('[data-slot="hero-primary-face"]');
+      await expect(face).toHaveCSS('color', 'rgb(255, 255, 255)');
+      await expect(face).toHaveCSS('background-color', 'rgb(9, 9, 11)');
       const actionBox = await action.boundingBox();
       await action.hover();
-      await expect(action).toHaveCSS('box-shadow', surface.shadow);
       expect(await action.boundingBox()).toEqual(actionBox);
       if (locale === 'en') {
         const path = test.info().outputPath(`home-action-hover-${viewport.name}.png`);

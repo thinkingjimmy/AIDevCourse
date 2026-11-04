@@ -4,7 +4,13 @@ import { visit } from 'unist-util-visit';
 type NoteElement = {
   name: string;
   attributes: { type: string; name?: string; value?: unknown }[];
+  children: { type: string; name?: string; value?: string }[];
 };
+
+export function isEmbedOnlyNote(element: Pick<NoteElement, 'children'>) {
+  const content = element.children.filter(child => child.type !== 'text' || child.value?.trim());
+  return content.length > 0 && content.every(child => child.type === 'mdxJsxFlowElement' && (child.name === 'XEmbed' || child.name === 'YouTube'));
+}
 
 export function remarkNumberJimmyNotes() {
   return (tree: Root) => {
@@ -24,6 +30,9 @@ export function remarkNumberJimmyNotes() {
       const existing = element.attributes.find(attribute => attribute.name === 'noteNumber');
       if (existing) existing.value = number;
       else element.attributes.push({ type: 'mdxJsxAttribute', name: 'noteNumber', value: number });
+      if (element.name === 'JimmyNote' && isEmbedOnlyNote(element) && !element.attributes.some(attribute => attribute.name === 'embedOnly')) {
+        element.attributes.push({ type: 'mdxJsxAttribute', name: 'embedOnly', value: null });
+      }
     });
   };
 }

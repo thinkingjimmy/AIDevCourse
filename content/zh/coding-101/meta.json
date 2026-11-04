@@ -3,6 +3,7 @@
   "pages": [
     "index",
     "what-is-json",
-    "call-ai-with-json"
+    "call-ai-with-json",
+    "animation-prompts"
   ]
 }

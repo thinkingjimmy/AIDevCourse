@@ -13,7 +13,8 @@ test('recent visits stay separate from achievements and legacy completion', asyn
   });
   await page.goto(path('zh'));
   await expect(page.locator('[data-achievement-count]')).toContainText('已解锁 0 项成就');
-  await expect(page.getByRole('button', { name: /标记为已完成|取消完成标记/ })).toHaveCount(0);
+  await expect(page.locator('[data-slot="lesson-completed"]')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '标记为已完成', exact: true })).toBeEnabled();
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('lac:v1:ai-coding:last') ?? 'null')?.lessonId)).toBe('first-change');
   await page.goto(path('en', 'useful-context'));
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('lac:v1:ai-coding:last') ?? 'null')?.lessonId)).toBe('useful-context');
@@ -104,7 +105,7 @@ test('blocked storage and failed clipboard do not prevent reading', async ({ pag
   });
   await page.goto(path('zh'));
   await expect(page.locator('article > .prose')).toContainText('上下文');
-  await expect(page.getByRole('button', { name: '标记为已完成', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '标记为已完成', exact: true })).toBeEnabled();
   await page.getByRole('button', { name: '复制代码', exact: true }).click();
   await expect(page.locator('.copy-error')).toContainText('复制失败');
 });

@@ -14,7 +14,7 @@ export function MenuComparisonDemo() {
     <figcaption className="absolute start-2.5 top-0 -translate-y-1/2 bg-background px-1.5 text-sm leading-copy font-medium text-foreground sm:start-3.5"><span aria-hidden>🧪 </span>试一试</figcaption>
     <div className="flex justify-center">
       <div className="relative w-24">
-        <Button asChild variant="outline" size="action" className="block w-full cursor-pointer appearance-none text-base text-transparent hover:text-transparent">
+        <Button asChild variant="outline" size="action" className="block w-full cursor-pointer appearance-none rounded-sm text-base text-transparent hover:text-transparent">
           <select aria-label={`请点击，浏览器原生菜单${nativeChoice ? `，已选择 ${nativeChoice}` : ''}`} value={nativeChoice} onChange={(event) => setNativeChoice(event.target.value)}>
             <option value="" disabled className="text-foreground">请点击</option>
             {choices.map((choice) => <option key={choice} className="text-foreground">{choice}</option>)}
@@ -26,12 +26,12 @@ export function MenuComparisonDemo() {
     <div className="flex justify-center">
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="action" className="w-24 text-base" aria-label={`打开 shadcn 菜单，请点击${customChoice ? `，已选择 ${customChoice}` : ''}`}>
+          <Button variant="outline" size="action" className="w-24 rounded-sm text-base" aria-label={`打开 shadcn 菜单，请点击${customChoice ? `，已选择 ${customChoice}` : ''}`}>
             请点击
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)]" aria-label="shadcn 菜单选项" lang="zh-CN">
-          {choices.map((choice) => <DropdownMenuItem key={choice} onSelect={() => setCustomChoice(choice)}>{choice}</DropdownMenuItem>)}
+        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] rounded-sm" aria-label="shadcn 菜单选项" lang="zh-CN">
+          {choices.map((choice) => <DropdownMenuItem key={choice} className="rounded-sm" onSelect={() => setCustomChoice(choice)}>{choice}</DropdownMenuItem>)}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

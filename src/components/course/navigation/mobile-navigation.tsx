@@ -5,10 +5,8 @@ import { Glass } from 'glisse';
 import { HouseIcon } from '@phosphor-icons/react/dist/ssr/House';
 import { ListIcon } from '@phosphor-icons/react/dist/ssr/List';
 import { MedalIcon } from '@phosphor-icons/react/dist/ssr/Medal';
-import { LanguageSwitcher } from '@/components/layout/language-switcher';
 import { AchievementGallery } from '@/components/progress/achievement-gallery';
 import { useAchievements } from '@/components/progress/achievement-provider';
-import type { Catalog } from '@/lib/content/model';
 import type { Locale } from '@/lib/i18n/config';
 import { localePath } from '@/lib/i18n/routing';
 import { author } from '@/lib/site-config';
@@ -16,7 +14,7 @@ import { AuthorDialog } from '../author-card';
 import { useSidebar } from '../sidebar';
 import { ModuleTree } from './module-tree';
 
-export function CourseMobileNavigation({ locale, translations }: { locale: Locale; translations: Catalog['translations'] }) {
+export function CourseMobileNavigation({ locale }: { locale: Locale }) {
   const ui = useTranslations('Ui');
   const course = useTranslations('Course');
   const authorText = useTranslations('Author');
@@ -37,10 +35,9 @@ export function CourseMobileNavigation({ locale, translations }: { locale: Local
       <summary role="button" aria-label={ui('menu')} className="mobile-navigation-item list-none [&::-webkit-details-marker]:hidden">
         <ListIcon size={24} aria-hidden /><span>{course('contentsTab')}</span>
       </summary>
-      <div data-slot="mobile-native-panel" className="fixed inset-x-3 bottom-[calc(6rem+env(safe-area-inset-bottom))] mx-auto max-h-[70dvh] max-w-160 overflow-y-auto overscroll-contain rounded-3xl bg-sidebar py-3 shadow-xl">
+      <div data-slot="mobile-native-panel" className="fixed inset-x-3 bottom-[calc(6rem+env(safe-area-inset-bottom))] mx-auto max-h-[70dvh] max-w-160 overflow-y-auto overscroll-contain rounded-3xl bg-background py-3 shadow-xl">
         <p className="m-0 px-6 pt-2 pb-3 text-lg font-semibold">{ui('menu')}</p>
         <ModuleTree staticMode />
-        <div className="flex justify-end border-t border-border px-4 pt-2"><LanguageSwitcher locale={locale} translations={translations} side="top" /></div>
       </div>
     </details></noscript>
     <AchievementGallery>

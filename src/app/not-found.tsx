@@ -8,10 +8,11 @@ import en from '@/messages/en.json';
 import '@/styles/globals.css';
 export default function GlobalNotFound() {
   const catalog = getCatalog();
-  return <html lang="en" className="light"><body>
+  // Translation extensions can add root attributes before React hydrates.
+  return <html lang="en" className="light" suppressHydrationWarning><body>
     <a href="#main-content" className="fixed -top-[100px] left-4 z-[100] bg-foreground px-[18px] py-3 text-white focus:top-3">{en.Ui.skip}</a>
     <SiteShell>
-      <SiteBar locale="en" about={en.Ui.about} homeLabel={en.Ui.home} navLabel={en.Home.navLabel}>
+      <SiteBar locale="en" homeLabel={en.Ui.home} navLabel={en.Home.navLabel}>
         <EnglishTools version={catalog.version} translations={catalog.translations} lessons={lessonIndex(catalog, 'en')} />
       </SiteBar>
       <MissingPage locale="en" />

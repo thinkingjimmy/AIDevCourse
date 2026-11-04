@@ -3,8 +3,8 @@ import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import { tokenizationText, tokenizationTokens as tokens } from './tokenization/model';
 import { TokenPairs } from './tokenization/token-pairs';
 
-const textPanelClass = 'w-full bg-muted px-3 py-4 text-lg font-medium';
-const tokenizerPanelClass = 'flex flex-col gap-4 border border-border p-3 @min-[500px]/tokenization:p-4';
+const textPanelClass = 'w-full rounded-sm bg-muted px-3 py-4 text-lg font-medium';
+const tokenizerPanelClass = 'flex flex-col gap-4 rounded-sm border border-border p-3 @min-[500px]/tokenization:p-4';
 const tokenizerHeadingClass = 'flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1';
 
 const outputToken = tokens[0];

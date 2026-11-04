@@ -58,7 +58,7 @@ function PreviewLink({ href, children, ref, ...props }: LinkProps & { href: stri
     <HoverCard.Portal>
       <HoverCard.Content id={id} role="tooltip" side="top" align="start" sideOffset={10} collisionPadding={12}
         onEscapeKeyDown={() => { dismissed.current = true; }}
-        data-slot="link-preview" className="not-prose z-[70] max-h-[var(--radix-hover-card-content-available-height)] w-85 max-w-[calc(100vw-24px)] overflow-hidden rounded-lg border border-border bg-background font-sans text-foreground shadow-lg outline-none">
+        data-slot="link-preview" className="not-prose z-[70] max-h-[var(--radix-hover-card-content-available-height)] w-85 max-w-[calc(100vw-24px)] overflow-hidden rounded-sm border border-border bg-background font-sans text-foreground shadow-lg outline-none">
         <span className="sr-only">{t('linkPreview')}</span>
         {preview?.image && !imageFailed &&
           // Metadata images have arbitrary remote hosts; the browser loads them only while the card is visible.
@@ -67,9 +67,9 @@ function PreviewLink({ href, children, ref, ...props }: LinkProps & { href: stri
         <div className="p-4">
           {preview === undefined ? <div role="status" className="space-y-3 py-1">
             <span className="sr-only">{t('linkPreviewLoading')}</span>
-            <div aria-hidden className="h-4 w-4/5 rounded bg-muted motion-safe:animate-pulse" />
-            <div aria-hidden className="h-3 w-full rounded bg-muted motion-safe:animate-pulse" />
-            <div aria-hidden className="h-3 w-2/3 rounded bg-muted motion-safe:animate-pulse" />
+            <div aria-hidden className="h-4 w-4/5 rounded-sm bg-muted motion-safe:animate-pulse" />
+            <div aria-hidden className="h-3 w-full rounded-sm bg-muted motion-safe:animate-pulse" />
+            <div aria-hidden className="h-3 w-2/3 rounded-sm bg-muted motion-safe:animate-pulse" />
           </div> : <>
             <p className="m-0 line-clamp-2 text-base leading-snug font-semibold [overflow-wrap:anywhere]">{preview?.title || host}</p>
             {(preview?.description || preview === null) && <p className="m-0 mt-2 line-clamp-3 text-sm leading-body text-muted-foreground [overflow-wrap:anywhere]">{preview?.description || t('linkPreviewUnavailable')}</p>}

@@ -16,15 +16,15 @@ export function ChatActivity({ title, label, icon, defaultOpen = false, children
     <TraceTitle className="overflow-visible text-clip whitespace-normal [overflow-wrap:anywhere]">{title}</TraceTitle>
   </TraceLine>;
   return <div {...props} className={cn('min-w-0', className)}>
-    <Trace className="[@media(scripting:none)]:hidden">
+    <Trace className="*:has-[>[data-slot=trace-line]]:rounded-sm [@media(scripting:none)]:hidden">
       <TraceCollapsible defaultOpen={defaultOpen}>
-        <TraceCollapsibleTrigger className="min-h-11 border-0 bg-transparent p-0 shadow-none" aria-label={label}>{line}</TraceCollapsibleTrigger>
+        <TraceCollapsibleTrigger className="min-h-11 rounded-sm border-0 bg-transparent p-0 shadow-none" aria-label={label}>{line}</TraceCollapsibleTrigger>
         <TraceCollapsibleContent>{children}</TraceCollapsibleContent>
       </TraceCollapsible>
     </Trace>
     <noscript>
       <details open={defaultOpen} className="group/activity-fallback min-w-0">
-        <summary aria-label={label} className="flex min-h-11 w-fit max-w-full cursor-pointer list-none items-center gap-1 rounded-md text-muted-foreground [&::-webkit-details-marker]:hidden">
+        <summary aria-label={label} className="flex min-h-11 w-fit max-w-full cursor-pointer list-none items-center gap-1 rounded-sm text-muted-foreground [&::-webkit-details-marker]:hidden">
           {line}
           <TraceIcon className="group-open/activity-fallback:rotate-90"><CaretRightIcon /></TraceIcon>
         </summary>

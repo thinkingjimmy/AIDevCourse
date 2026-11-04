@@ -1,0 +1,6 @@
+- insert:
+    - id: tutorial-review
+      name: '@local/dsh-tutorial-review'
+      config:
+        root: /Users/jimmywong/Documents/aidevcourse
+        locale: zh

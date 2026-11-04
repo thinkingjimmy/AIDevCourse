@@ -6,13 +6,13 @@ import { useAchievements } from './achievement-provider';
 
 type Context = {
   course: CourseManifest; learning: LearningState; ready: boolean;
-  unlock: (id: string) => boolean; visit: (id: string) => void;
+  unlock: (id: string) => boolean; visit: (id: string) => void; complete: (id: string) => boolean;
 };
 const LearningContext = createContext<Context | null>(null);
-const emptyLearning: LearningState = { unlocked: {}, failed: false };
+const emptyLearning: LearningState = { unlocked: {}, completed: {}, failed: false };
 
 export function LearningProvider({ course, children }: { course: CourseManifest; children: ReactNode }) {
-  const { learning: allLearning, ready, unlock: unlockAchievement, visit: visitLesson } = useAchievements();
+  const { learning: allLearning, ready, unlock: unlockAchievement, visit: visitLesson, complete: completeLesson } = useAchievements();
   const learning = Object.hasOwn(allLearning, course.id) ? allLearning[course.id] : emptyLearning;
   const unlock = useCallback((id: string) => {
     if (!ready || !course.achievements.some((achievement) => achievement.id === id)) return false;
@@ -21,7 +21,11 @@ export function LearningProvider({ course, children }: { course: CourseManifest;
   const visit = useCallback((id: string) => {
     if (ready && course.lessons.some((lesson) => lesson.id === id)) visitLesson(course.id, id);
   }, [ready, course, visitLesson]);
-  const value = useMemo(() => ({ course, learning, ready, unlock, visit }), [course, learning, ready, unlock, visit]);
+  const complete = useCallback((id: string) => {
+    if (!ready || !course.lessons.some((lesson) => lesson.id === id)) return false;
+    return completeLesson(course.id, id);
+  }, [ready, course, completeLesson]);
+  const value = useMemo(() => ({ course, learning, ready, unlock, visit, complete }), [course, learning, ready, unlock, visit, complete]);
   return <LearningContext.Provider value={value}>{children}</LearningContext.Provider>;
 }
 

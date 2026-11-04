@@ -1,4 +1,149 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
-<style>@media (prefers-color-scheme: dark) { image { filter: invert(1); } }</style>
-<image width="64" height="64" href="data:image/png;base64,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"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="64 84 1126 1126" role="img" aria-labelledby="logo-title logo-description">
+  <title id="logo-title">AIDevCourse retro Macintosh logo</title>
+  <desc id="logo-description">A cream vintage CRT computer with a luminous cyan scanline lowercase a and an outlined AIDevCourse wordmark.</desc>
+  <defs>
+    <path id="case-shape" d="M278 98H987C1089 98 1149 164 1149 281V1007C1149 1123 1111 1181 1016 1181H235C132 1181 96 1132 96 1008V290C96 177 159 98 278 98Z"/>
+    <path id="face-shape" d="M279 101H986C1081 101 1143 166 1143 283L1140 1007C1140 1084 1115 1123 1030 1125H235C153 1124 107 1100 107 1009V291C107 179 167 101 279 101Z"/>
+    <path id="recess-shape" d="M299 190C479 181 801 181 976 193C1048 198 1083 233 1091 348C1103 525 1099 733 1080 854C1067 946 1045 973 974 986C790 1010 441 1008 266 986C195 976 175 945 164 866C147 749 145 495 155 368C161 278 164 224 205 204C228 192 266 192 299 190Z"/>
+    <path id="screen-shape" d="M625 220C482 220 360 230 284 249C223 263 208 294 200 371C186 526 189 731 204 835C213 900 226 918 278 929C474 954 784 948 973 922C1014 915 1027 893 1035 837C1051 669 1048 474 1039 354C1033 285 1016 258 966 244C869 222 750 219 625 220Z"/>
+    <path id="scanline-a" d="M618 355H758 M542 379H813 M499 402H835 M463 426H850 M444 449H549 M724 449H858 M427 472H521 M734 472H857 M731 496H853 M721 519H847 M557 542.5H842 M469 566H836 M427 589H831 M398 612.5H545 M707 612.5H826 M377 635.5H501 M702 635.5H820 M362 659H479 M693 659H814 M352 682H469 M679 682H809 M348 705H467 M663 705H804 M346 728.5H482 M632 728.5H800 M354 751.5H853 M365 774.5H675 M699 774.5H846 M390 797.5H641 M698 797.5H838 M432 820.5H597 M714 820.5H832"/>
+    <path id="brand-wordmark" fill-rule="evenodd" d="M411 1020L419 1020L418 1023L419 1023L419 1024L422 1024L422 1028L426 1028L426 1032L430 1032L430 1056L424 1056L424 1044L404 1044L404 1056L398 1056L398 1055L399 1055L399 1044L398 1044L398 1043L399 1043L399 1032L402 1032L402 1029L403 1029L403 1028L406 1028L406 1025L407 1025L407 1024L410 1024L410 1021L411 1021L411 1020ZM446 1020L470 1020L470 1025L461 1025L461 1035L460 1035L460 1036L461 1036L461 1041L460 1041L460 1042L461 1042L461 1051L470 1051L470 1054L471 1054L470 1056L446 1056L446 1051L455 1051L455 1025L446 1025L446 1020ZM485 1020L511 1020L511 1023L516 1025L516 1027L515 1027L515 1028L516 1028L516 1033L515 1033L515 1034L516 1034L516 1051L512 1052L512 1053L511 1053L511 1056L485 1056L485 1042L486 1042L486 1041L485 1041L485 1040L486 1040L486 1039L485 1039L485 1020ZM617 1020L639 1020L639 1024L643 1024L643 1030L637 1030L637 1025L620 1025L620 1026L618 1027L618 1049L620 1049L620 1051L634 1051L634 1050L637 1050L637 1046L643 1046L643 1051L642 1051L642 1052L639 1052L638 1056L617 1056L617 1053L612 1051L612 1050L613 1050L613 1024L616 1024L616 1023L617 1023L617 1020ZM414 1025L412 1026L412 1029L409 1029L409 1030L408 1030L409 1033L405 1033L405 1034L404 1034L404 1039L424 1039L424 1033L420 1033L420 1029L416 1029L416 1025L414 1025ZM492 1025L491 1025L491 1051L507 1051L508 1049L510 1049L510 1027L507 1026L507 1025L492 1025ZM573 1027L575 1028L575 1032L576 1032L576 1033L579 1033L579 1035L578 1035L578 1039L582 1040L582 1041L581 1041L581 1044L584 1045L584 1048L587 1048L587 1045L589 1044L589 1040L592 1039L592 1032L596 1032L596 1029L595 1029L595 1028L601 1028L601 1035L598 1035L598 1040L595 1040L595 1046L592 1046L592 1051L591 1051L591 1052L588 1052L588 1056L582 1056L582 1052L579 1052L579 1046L576 1046L576 1045L575 1045L575 1044L576 1044L576 1041L573 1040L573 1036L570 1036L570 1028L573 1028L573 1027ZM533 1028L554 1028L554 1031L556 1031L556 1032L559 1033L559 1044L534 1044L534 1049L535 1049L536 1051L543 1051L543 1052L544 1052L544 1051L553 1051L553 1048L559 1048L559 1050L558 1050L559 1052L556 1053L554 1056L534 1056L533 1053L529 1052L529 1051L528 1051L528 1050L529 1050L529 1039L528 1039L528 1036L529 1036L529 1035L528 1035L528 1033L531 1032L531 1030L533 1030L533 1028ZM660 1028L681 1028L681 1032L685 1032L685 1052L682 1052L682 1053L681 1053L681 1056L660 1056L659 1052L655 1052L655 1032L659 1032L660 1028ZM697 1028L703 1028L703 1049L705 1049L706 1051L718 1051L718 1048L721 1048L721 1047L722 1047L722 1028L728 1028L728 1033L727 1033L727 1034L728 1034L728 1035L727 1035L727 1036L728 1036L728 1041L727 1041L727 1042L728 1042L728 1045L727 1045L727 1048L728 1048L728 1049L727 1049L727 1050L728 1050L728 1051L727 1051L728 1053L727 1053L727 1054L728 1054L728 1056L723 1056L723 1053L720 1053L719 1056L702 1056L702 1053L700 1053L700 1052L698 1051L698 1029L697 1029L697 1028ZM742 1028L748 1028L748 1029L747 1029L748 1032L750 1032L750 1031L752 1030L752 1028L768 1028L768 1031L769 1031L769 1032L772 1032L772 1038L766 1038L766 1034L765 1034L765 1033L760 1033L760 1032L758 1032L758 1033L752 1033L752 1036L750 1036L750 1038L747 1040L747 1044L748 1044L748 1045L747 1045L747 1046L748 1046L748 1052L752 1052L752 1056L742 1056L742 1028ZM788 1028L810 1028L810 1031L813 1031L813 1032L814 1032L814 1036L811 1036L811 1035L809 1036L808 1033L791 1033L791 1034L789 1035L789 1037L790 1037L791 1039L809 1039L809 1043L814 1043L814 1052L812 1052L811 1054L809 1054L810 1056L796 1056L796 1057L795 1057L795 1056L794 1056L794 1057L793 1057L793 1056L790 1056L790 1057L789 1057L787 1053L784 1053L784 1048L789 1048L789 1049L790 1049L789 1051L796 1051L796 1052L797 1052L797 1051L802 1051L802 1052L804 1051L804 1052L805 1052L807 1049L809 1049L809 1048L807 1047L807 1045L805 1045L805 1044L789 1044L788 1041L785 1041L785 1040L784 1040L784 1034L783 1034L783 1033L784 1033L785 1031L788 1032L788 1030L787 1030L788 1028ZM831 1028L853 1028L853 1031L858 1033L858 1034L857 1034L857 1036L858 1036L858 1044L833 1044L833 1045L832 1045L832 1049L834 1050L834 1052L835 1052L835 1051L836 1051L836 1052L843 1052L843 1051L844 1051L844 1052L851 1052L851 1051L852 1051L852 1048L857 1048L857 1053L854 1053L854 1055L853 1055L852 1057L833 1057L832 1054L831 1054L831 1052L827 1052L827 1032L830 1032L830 1031L831 1031L831 1028ZM548 1032L547 1032L547 1033L536 1033L536 1034L534 1034L534 1039L553 1039L553 1034L550 1034L550 1033L548 1033L548 1032ZM666 1032L665 1032L664 1034L661 1034L661 1049L662 1049L662 1051L677 1051L678 1049L680 1049L680 1035L677 1034L676 1032L671 1032L671 1033L670 1033L670 1032L667 1033L667 1032L666 1032ZM837 1033L836 1033L836 1034L832 1034L832 1039L852 1039L852 1034L849 1034L849 1033L837 1033Z"/>
+    <clipPath id="case-clip"><use href="#case-shape"/></clipPath>
+    <clipPath id="screen-clip"><use href="#screen-shape"/></clipPath>
+
+    <linearGradient id="case-base" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#f7ecd5"/>
+      <stop offset=".29" stop-color="#ecd9b3"/>
+      <stop offset=".72" stop-color="#efdfba"/>
+      <stop offset=".93" stop-color="#c6ae7e"/>
+      <stop offset="1" stop-color="#ad9565"/>
+    </linearGradient>
+    <linearGradient id="case-front" x1=".15" y1="0" x2=".8" y2="1">
+      <stop stop-color="#f8ecd2"/>
+      <stop offset=".34" stop-color="#e8d2aa"/>
+      <stop offset=".7" stop-color="#f2e1bd"/>
+      <stop offset="1" stop-color="#e5cfa4"/>
+    </linearGradient>
+    <linearGradient id="edge-light" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#9e8559" stop-opacity=".36"/>
+      <stop offset=".035" stop-color="#fff6de" stop-opacity=".12"/>
+      <stop offset=".095" stop-color="#fff8e6" stop-opacity=".5"/>
+      <stop offset=".2" stop-color="#fff5df" stop-opacity="0"/>
+      <stop offset=".84" stop-color="#967e50" stop-opacity="0"/>
+      <stop offset=".95" stop-color="#9a8050" stop-opacity=".08"/>
+      <stop offset="1" stop-color="#806c49" stop-opacity=".4"/>
+    </linearGradient>
+    <linearGradient id="bottom-bevel" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#c2a774" stop-opacity="0"/>
+      <stop offset=".28" stop-color="#c2a774" stop-opacity=".1"/>
+      <stop offset=".52" stop-color="#a68b58" stop-opacity=".56"/>
+      <stop offset="1" stop-color="#8a744b" stop-opacity=".33"/>
+    </linearGradient>
+    <linearGradient id="top-light" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#fffbec" stop-opacity=".75"/>
+      <stop offset="1" stop-color="#fffbec" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="recess-bevel" x1=".35" y1="0" x2=".55" y2="1">
+      <stop stop-color="#af9870"/>
+      <stop offset=".08" stop-color="#827550"/>
+      <stop offset=".27" stop-color="#9b885d"/>
+      <stop offset=".57" stop-color="#dac49a"/>
+      <stop offset=".87" stop-color="#f2e3c1"/>
+      <stop offset="1" stop-color="#f8ebcd"/>
+    </linearGradient>
+    <linearGradient id="recess-side-light" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#756a49" stop-opacity=".48"/>
+      <stop offset=".12" stop-color="#756a49" stop-opacity="0"/>
+      <stop offset=".83" stop-color="#ffffe6" stop-opacity="0"/>
+      <stop offset="1" stop-color="#ffffe6" stop-opacity=".35"/>
+    </linearGradient>
+    <radialGradient id="glass" cx=".47" cy=".47" r=".73">
+      <stop stop-color="#0a2922"/>
+      <stop offset=".43" stop-color="#10251e"/>
+      <stop offset=".8" stop-color="#222c1d"/>
+      <stop offset="1" stop-color="#383a27"/>
+    </radialGradient>
+    <radialGradient id="glass-vignette" cx=".5" cy=".51" r=".67">
+      <stop offset=".57" stop-color="#000a06" stop-opacity="0"/>
+      <stop offset=".86" stop-color="#000804" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#000603" stop-opacity=".72"/>
+    </radialGradient>
+    <linearGradient id="glass-top-shadow" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#000500" stop-opacity=".77"/>
+      <stop offset=".16" stop-color="#000500" stop-opacity=".14"/>
+      <stop offset=".48" stop-color="#000500" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="phosphor-spill">
+      <stop stop-color="#00cbb9" stop-opacity=".12"/>
+      <stop offset="1" stop-color="#00b9a8" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="crt-scanlines" width="8" height="5.8" patternUnits="userSpaceOnUse">
+      <path d="M0 .8H8" stroke="#b5c9a3" stroke-opacity=".055" stroke-width="1"/>
+      <path d="M0 4.1H8" stroke="#000702" stroke-opacity=".19" stroke-width="1.6"/>
+    </pattern>
+
+    <filter id="plastic-texture" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".68" numOctaves="3" seed="17" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0" result="grain"/>
+      <feComponentTransfer in="grain" result="faint-grain"><feFuncA type="linear" slope=".24"/></feComponentTransfer>
+      <feComposite in="faint-grain" in2="SourceGraphic" operator="in" result="clipped-grain"/>
+      <feBlend in="SourceGraphic" in2="clipped-grain" mode="soft-light"/>
+    </filter>
+    <filter id="glass-texture" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".46" numOctaves="2" seed="31" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0" result="grain"/>
+      <feComponentTransfer in="grain" result="faint-grain"><feFuncA type="linear" slope=".12"/></feComponentTransfer>
+      <feComposite in="faint-grain" in2="SourceGraphic" operator="in" result="clipped-grain"/>
+      <feBlend in="SourceGraphic" in2="clipped-grain" mode="soft-light"/>
+    </filter>
+    <filter id="soft-3" x="-15%" y="-30%" width="130%" height="160%"><feGaussianBlur stdDeviation="3"/></filter>
+    <filter id="soft-8" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="8"/></filter>
+    <filter id="reflection-blur" x="-40%" y="-50%" width="180%" height="200%"><feGaussianBlur stdDeviation="12"/></filter>
+    <filter id="ground-shadow" x="-20%" y="-180%" width="140%" height="460%"><feGaussianBlur stdDeviation="15"/></filter>
+    <filter id="cyan-halo" filterUnits="userSpaceOnUse" x="295" y="310" width="615" height="565"><feGaussianBlur stdDeviation="11"/></filter>
+    <filter id="cyan-bloom" filterUnits="userSpaceOnUse" x="315" y="325" width="585" height="535"><feGaussianBlur stdDeviation="3.5"/></filter>
+  </defs>
+
+  <g id="computer">
+    <ellipse cx="626" cy="1176" rx="417" ry="13" fill="#5d4a2a" opacity=".17" filter="url(#ground-shadow)"/>
+    <g id="case" filter="url(#plastic-texture)">
+      <use href="#case-shape" fill="url(#case-base)"/>
+      <g clip-path="url(#case-clip)">
+        <use href="#face-shape" fill="url(#case-front)" filter="url(#soft-8)"/>
+        <path d="M110 286C120 169 172 104 288 104H984C1062 104 1115 149 1132 221L1099 250C1004 198 276 195 140 280Z" fill="url(#top-light)" filter="url(#soft-8)"/>
+        <path d="M90 1048C143 1101 179 1119 266 1117H1004C1085 1116 1125 1086 1163 1047V1201H90Z" fill="url(#bottom-bevel)" filter="url(#soft-3)"/>
+        <use href="#case-shape" fill="url(#edge-light)"/>
+        <path d="M145 1017C146 1066 162 1089 213 1107" fill="none" stroke="#fff7df" stroke-width="17" stroke-linecap="round" opacity=".2" filter="url(#soft-8)"/>
+        <use href="#recess-shape" fill="#96815a" opacity=".34" filter="url(#soft-8)"/>
+        <use href="#recess-shape" fill="url(#recess-bevel)" filter="url(#soft-8)"/>
+        <use href="#recess-shape" fill="url(#recess-side-light)" filter="url(#soft-8)"/>
+        <path d="M180 848C187 931 202 960 273 974C458 1001 792 998 973 973C1038 961 1058 930 1071 860" fill="none" stroke="#fff5dc" stroke-opacity=".62" stroke-width="11" filter="url(#soft-8)"/>
+        <path d="M211 197C290 183 927 183 990 199" fill="none" stroke="#fff4d8" stroke-opacity=".54" stroke-width="6" filter="url(#soft-3)"/>
+      </g>
+    </g>
+
+    <g id="crt-screen">
+      <use href="#screen-shape" fill="#0b1008" stroke="#504d32" stroke-width="3"/>
+      <g clip-path="url(#screen-clip)">
+        <use href="#screen-shape" fill="url(#glass)" filter="url(#glass-texture)"/>
+        <use href="#screen-shape" fill="url(#glass-vignette)"/>
+        <use href="#screen-shape" fill="url(#glass-top-shadow)"/>
+        <ellipse cx="606" cy="600" rx="370" ry="340" fill="url(#phosphor-spill)"/>
+        <use href="#screen-shape" fill="url(#crt-scanlines)"/>
+        <path d="M232 342C240 287 290 263 346 260L316 285C276 305 259 328 249 361Z" fill="#e0e2c3" opacity=".27" filter="url(#reflection-blur)"/>
+        <path d="M225 341C228 295 256 274 293 266" fill="none" stroke="#dce7c5" stroke-width="3" opacity=".16" filter="url(#soft-3)"/>
+        <g id="ascii-monogram" fill="none" stroke-linecap="round">
+          <use href="#scanline-a" stroke="#00dfc9" stroke-width="12" opacity=".8" filter="url(#cyan-halo)"/>
+          <use href="#scanline-a" stroke="#00ffeb" stroke-width="9" opacity=".88" filter="url(#cyan-bloom)"/>
+          <use href="#scanline-a" stroke="#12f4e3" stroke-width="6.5"/>
+          <use href="#scanline-a" stroke="#a2fff0" stroke-width="1.4" opacity=".56"/>
+        </g>
+      </g>
+    </g>
+
+    <g id="wordmark" aria-label="AIDevCourse">
+      <use href="#brand-wordmark" transform="translate(0 1.2)" fill="#fff1cf" opacity=".5"/>
+      <use href="#brand-wordmark" fill="#555641" opacity=".94"/>
+    </g>
+  </g>
 </svg>

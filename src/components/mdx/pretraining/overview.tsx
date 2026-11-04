@@ -11,7 +11,7 @@ export function LLMPretrainingOverview() {
       <Tabs.Root defaultValue="cleaning">
         <Tabs.List aria-label="选择预训练步骤" className="grid grid-cols-3 gap-3">
           {pretrainingSteps.map((step, index) => <Tabs.Trigger key={step.value} value={step.value} asChild>
-            <Button variant="plain" size="reset" className="min-h-11 cursor-pointer touch-manipulation items-center justify-start gap-1.5 border-b-2 border-border pb-2 text-caption font-medium text-muted-foreground hover:text-foreground active:translate-y-px data-[state=active]:border-foreground data-[state=active]:text-foreground @max-[480px]/training:flex-col @max-[480px]/training:items-start @max-[480px]/training:gap-1">
+            <Button variant="plain" size="reset" className="min-h-11 cursor-pointer touch-manipulation items-center justify-start gap-1.5 rounded-sm border-b-2 border-border pb-2 text-caption font-medium text-muted-foreground hover:text-foreground active:translate-y-px data-[state=active]:border-foreground data-[state=active]:text-foreground @max-[480px]/training:flex-col @max-[480px]/training:items-start @max-[480px]/training:gap-1">
               <span className="tabular-nums">0{index + 1}</span><span>{step.label}</span>
             </Button>
           </Tabs.Trigger>)}

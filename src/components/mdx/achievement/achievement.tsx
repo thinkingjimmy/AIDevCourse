@@ -76,11 +76,11 @@ export function Achievement({ definition }: { definition: AchievementDefinition 
       {showReward ? <>
         <p>{takeaway}</p>
         <footer className="flex flex-wrap items-center gap-3">
-          <Button variant="action-outline" className="h-auto min-h-11 max-w-full touch-manipulation rounded-none px-4 whitespace-normal" onClick={retry}>
+          <Button variant="action-outline" className="h-auto min-h-11 max-w-full touch-manipulation rounded-sm px-4 whitespace-normal" onClick={retry}>
             <ArrowCounterClockwiseIcon size={20} aria-hidden /><span>{t('retry')}</span>
           </Button>
           <AchievementGallery>
-            <Button variant="action-outline" className="h-auto min-h-11 max-w-full touch-manipulation rounded-none px-4 whitespace-normal">
+            <Button variant="action-outline" className="h-auto min-h-11 max-w-full touch-manipulation rounded-sm px-4 whitespace-normal">
               <MedalIcon size={20} aria-hidden /><span>{t('viewAll')}</span>
             </Button>
           </AchievementGallery>
@@ -90,7 +90,7 @@ export function Achievement({ definition }: { definition: AchievementDefinition 
           <fieldset disabled={!ready} className="m-0 min-w-0 border-0 p-0">
             <legend id={titleId} className="w-full p-0 text-base leading-reading">{question}</legend>
             <div className="mt-4 grid gap-3 [@media(scripting:none)]:hidden">
-              {options.map((choice, index) => <label key={choice.value} className="flex min-h-12 cursor-pointer items-start gap-3 border border-border bg-background px-4 py-3 text-sm leading-copy text-foreground hover:bg-surface has-checked:border-foreground has-checked:bg-surface has-disabled:cursor-not-allowed">
+              {options.map((choice, index) => <label key={choice.value} className="flex min-h-12 cursor-pointer items-start gap-3 rounded-sm border border-border bg-background px-4 py-3 text-sm leading-copy text-foreground hover:bg-surface has-checked:border-foreground has-checked:bg-surface has-disabled:cursor-not-allowed">
                 <input ref={index === 0 ? firstOption : undefined} type="radio" name={titleId} value={choice.value} checked={selected === choice.value}
                   aria-invalid={incorrect && selected === choice.value || undefined}
                   aria-describedby={selected === choice.value && incorrect ? feedbackId : undefined}
@@ -114,12 +114,12 @@ export function Achievement({ definition }: { definition: AchievementDefinition 
         <noscript>
           <p>{t('noJs')}</p>
           <details className="mt-3">
-            <summary className="cursor-pointer">{t('explanation')}</summary>
+            <summary className="cursor-pointer rounded-sm">{t('explanation')}</summary>
             <p className="mt-2">{explanation}</p>
           </details>
         </noscript>
       </>}
-      <div data-answer-feedback={incorrect ? 'incorrect' : undefined} className={incorrect ? 'border border-destructive bg-destructive/5 p-4' : 'sr-only'}>
+      <div data-answer-feedback={incorrect ? 'incorrect' : undefined} className={incorrect ? 'rounded-sm border border-destructive bg-destructive/5 p-4' : 'sr-only'}>
         <div id={feedbackId} role="status" aria-atomic="true" className={incorrect ? 'flex flex-col gap-2' : undefined}>
           {incorrect ? <>
             <p className="flex items-center gap-2 font-semibold text-destructive"><XCircleIcon size={20} aria-hidden />{t('incorrect')}</p>

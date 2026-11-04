@@ -7,15 +7,14 @@ const apiUrl = `${courseUrl}/call-ai-with-json`;
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published Coding 101 course.');
 
-test('discover the course, complete both lessons, and retain achievements', async ({ page }, testInfo) => {
+test('discover the course, complete the JSON exercises, and retain achievements', async ({ page }, testInfo) => {
   await page.goto('/zh');
   await page.getByRole('link', { name: 'Coding 101', exact: true }).click();
   await expect(page).toHaveURL(courseUrl);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Coding 101');
-  await expect(page.locator('#course-catalog').locator('..').getByRole('listitem')).toHaveCount(2);
-  const popup = page.waitForEvent('popup');
+  await expect(page.locator('#course-catalog').locator('..').getByRole('listitem')).toHaveCount(3);
   await page.getByRole('link', { name: '开始第一课', exact: true }).click();
-  const lesson = await popup;
+  const lesson = page;
   await expect(lesson).toHaveURL(basicsUrl);
   const bag = JSON.parse((await lesson.locator('pre').filter({ hasText: '"bag"' }).textContent())!);
   expect(bag).toMatchObject({ books: 2, items: ['book', 'pencil'], hasWater: true, snack: null, owner: { name: 'Alex' } });
@@ -24,7 +23,7 @@ test('discover the course, complete both lessons, and retain achievements', asyn
   await expect(first).toHaveAttribute('data-state', 'incorrect');
   await first.getByRole('radio').nth(1).click();
   await expect(first).toHaveAttribute('data-state', 'unlocked');
-  await lesson.locator('article nav').getByRole('link', { name: /下一课/ }).click();
+  await lesson.getByRole('button', { name: '标记为已完成', exact: true }).click();
   await expect(lesson).toHaveURL(apiUrl);
   const second = lesson.locator('[data-achievement="understand-ai-api-request"]');
   await second.getByRole('radio').nth(1).click();
@@ -34,7 +33,9 @@ test('discover the course, complete both lessons, and retain achievements', asyn
   await lesson.getByRole('button', { name: '我的成就', exact: true }).click();
   const gallery = lesson.getByRole('dialog', { name: '我的成就' });
   await expect(gallery.locator('[data-earned="true"]')).toHaveCount(2);
-  await expect(gallery.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100');
+  await expect(gallery.locator('[data-medal-course="coding-101"][data-earned="true"]')).toHaveCount(2);
+  const totalAchievements = await gallery.locator('[data-medal]').count();
+  expect(Number(await gallery.getByRole('progressbar').getAttribute('aria-valuenow'))).toBeCloseTo(200 / totalAchievements);
   await testInfo.attach('coding-101-completed', { body: await gallery.screenshot(), contentType: 'image/png' });
   await lesson.close();
 });

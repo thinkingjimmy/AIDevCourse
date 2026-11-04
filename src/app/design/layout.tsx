@@ -9,5 +9,6 @@ export const metadata: Metadata = {
 };
 
 export default function DesignLayout({ children }: { children: ReactNode }) {
-  return <html lang="zh-Hans" className="design"><body>{children}</body></html>;
+  // Translation extensions can add root attributes before React hydrates.
+  return <html lang="zh-Hans" className="design" suppressHydrationWarning><body>{children}</body></html>;
 }

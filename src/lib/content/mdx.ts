@@ -11,7 +11,8 @@ import GithubSlugger from 'github-slugger';
 import type { Root } from 'mdast';
 import type { AchievementDefinition, ContentDocument } from './model';
 import { parseXUrl, parseYouTubeUrl } from '../embeds/urls';
-export const supportedComponents = ['Callout', 'JimmyNote', 'JimmyNoteAnchor', 'KeyTakeaway', 'Chat', 'ChatMessage', 'ChatThinking', 'ChatToolCall', 'InlineCitation', 'ChatMessageSequence', 'XEmbed', 'YouTube', 'Steps', 'Step', 'LLMGenerationDemo', 'MenuComparisonDemo', 'NewtonSecondLawDemo', 'TokenizationDiagram', 'TokenProbabilityDiagram', 'LLMPretrainingOverview', 'LLMSingleRoundTrainingDemo', 'LLMMultiRoundTrainingDemo', 'Achievement', 'AchievementOption'] as const;
+import { isEmbedOnlyNote } from './note-numbers';
+export const supportedComponents = ['Callout', 'JimmyNote', 'JimmyNoteAnchor', 'KeyTakeaway', 'Chat', 'ChatMessage', 'ChatThinking', 'ChatToolCall', 'InlineCitation', 'ChatMessageSequence', 'XEmbed', 'YouTube', 'Steps', 'Step', 'LLMGenerationDemo', 'MenuComparisonDemo', 'NewtonSecondLawDemo', 'AnimationDemo', 'TokenizationDiagram', 'TokenProbabilityDiagram', 'LLMPretrainingOverview', 'LLMSingleRoundTrainingDemo', 'LLMMultiRoundTrainingDemo', 'Achievement', 'AchievementOption'] as const;
 type Element = {
   name: string; attributes: { type: string; name: string; value: unknown }[];
   children: { type: string; value?: string; name?: string; children?: Element['children'] }[];
@@ -56,6 +57,11 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
     if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
       const element = node as unknown as Element;
       if (!supportedComponents.includes(element.name as typeof supportedComponents[number])) fail(`Unknown component: ${element.name}`);
+      if (element.name === 'AnimationDemo') {
+        if (node.type !== 'mdxJsxFlowElement') fail('AnimationDemo must be a standalone block');
+        if (element.children.some((child) => child.type !== 'text' || child.value?.trim())) fail('AnimationDemo does not accept children');
+        if (element.attributes.length !== 1 || element.attributes[0].name !== 'type' || !['stagger', 'spring', 'skeleton', 'count-up', 'typewriter', 'marquee'].includes(element.attributes[0].value as string)) fail('AnimationDemo requires one static type: stagger, spring, skeleton, count-up, typewriter, or marquee');
+      }
       if (['ChatMessageSequence', 'LLMPretrainingOverview', 'LLMSingleRoundTrainingDemo', 'LLMMultiRoundTrainingDemo', 'TokenProbabilityDiagram', 'NewtonSecondLawDemo'].includes(element.name)) {
         if (element.attributes.length) fail(`${element.name} does not accept attributes`);
         if (node.type !== 'mdxJsxFlowElement') fail(`${element.name} must be a standalone block`);
@@ -130,7 +136,9 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
           if (children.length !== 1 || !['image', 'imageReference'].includes(children[0].type)) fail('Image JimmyNoteAnchor requires exactly one image');
         } else if (isAnchor && node.type !== 'mdxJsxTextElement') fail('JimmyNoteAnchor must be inline');
         if (!isAnchor && node.type !== 'mdxJsxFlowElement') fail('JimmyNote must be a standalone block');
-        if (!image && !toString(node).trim()) fail(`${element.name} requires text`);
+        if (!image && !toString(node).trim() && (isAnchor || !isEmbedOnlyNote(element))) {
+          fail(isAnchor ? 'JimmyNoteAnchor requires text' : 'JimmyNote requires text or an embed');
+        }
         const id = attributes[isAnchor ? 'id' : 'anchor'];
         if (!stableId.test(id ?? '')) fail(`${element.name} requires a stable ASCII identifier`);
         const ids = isAnchor ? noteAnchors : notes;

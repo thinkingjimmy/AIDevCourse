@@ -5,7 +5,7 @@ import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-test('development CSS and achievement edits stay aligned without restarting', async ({ page, browserName }) => {
+test('development hydration tolerates extension attributes and preserves hot reload', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium' || process.env.CONTENT_TEST === '1', 'The development bundler check runs once against published content.');
   test.setTimeout(180000);
   const root = process.cwd();
@@ -42,12 +42,24 @@ test('development CSS and achievement edits stay aligned without restarting', as
   server.stdout.on('data', (chunk) => { output = (output + chunk).slice(-64000); });
   server.stderr.on('data', (chunk) => { output = (output + chunk).slice(-64000); });
   const origin = `http://127.0.0.1:${port}`;
+  await page.addInitScript(() => {
+    const inject = () => {
+      if (!document.documentElement) return false;
+      document.documentElement.setAttribute('data-immersive-translate-page-theme', 'light');
+      return true;
+    };
+    if (!inject()) {
+      const observer = new MutationObserver(() => { if (inject()) observer.disconnect(); });
+      observer.observe(document, { childList: true });
+    }
+  });
   try {
     await expect.poll(async () => {
       if (server.exitCode !== null) throw new Error(output);
       return fetch(`${origin}/zh`).then((response) => response.status).catch(() => 0);
     }, { timeout: 60000, message: 'The isolated Webpack development server starts' }).toBe(200);
     await page.goto(`${origin}/zh`);
+    await expect(page.locator('html')).toHaveAttribute('data-immersive-translate-page-theme', 'light');
     await page.getByRole('link', { name: '马上学习', exact: true }).click();
     await expect(page).toHaveURL(/\/zh\/courses\/llm-101\/what-a-language-model-does$/);
     await page.locator('a[href="/zh/courses/llm-101/what-is-a-token"]').first().click();
@@ -62,6 +74,7 @@ test('development CSS and achievement edits stay aligned without restarting', as
     for (const href of stylesheets) expect((await page.request.get(href)).status()).toBe(200);
     await page.reload();
     await expect(page.getByRole('heading', { level: 1 })).toContainText('什么是 Token');
+    await expect(page.locator('html')).toHaveAttribute('data-immersive-translate-page-theme', 'light');
     expect(errors).toEqual([]);
     const screenshot = test.info().outputPath('development-css-hmr.png');
     await page.screenshot({ path: screenshot, animations: 'disabled' });
@@ -124,9 +137,11 @@ test('development CSS and achievement edits stay aligned without restarting', as
       { path: '/zh/courses/llm-101/how-language-models-are-trained', status: 200, family: 'Noto Sans SC Variable' },
       { path: '/design/components', status: 200, family: 'Geist Variable' },
       { path: '/zh/unknown-page', status: 404, family: 'Noto Sans SC Variable' },
+      { path: '/xx/unknown-page', status: 404, family: 'Geist Variable' },
     ]) {
       expectedMissingURL = route.status === 404 ? `${origin}${route.path}` : undefined;
       expect((await page.goto(`${origin}${route.path}`))?.status()).toBe(route.status);
+      await expect(page.locator('html')).toHaveAttribute('data-immersive-translate-page-theme', 'light');
       await page.evaluate(() => document.fonts.ready);
       const loaded = await page.evaluate(() => Array.from(document.fonts).filter((font) => font.status === 'loaded').map((font) => font.family.replaceAll('"', '')));
       expect(loaded, route.path).toContain(route.family);
@@ -140,9 +155,11 @@ test('development CSS and achievement edits stay aligned without restarting', as
     }
     expect(output).not.toMatch(/Client network socket disconnected|Retrying \d|webpack\.cache\.PackFileCacheStrategy/);
     expect(errors).toEqual([]);
+    await test.info().attach('Extension hydration evidence', { body: JSON.stringify({ attribute: 'data-immersive-translate-page-theme', value: 'light', injectedBeforeHydration: true, routes: fonts.map(({ path }) => path), errors }, null, 2), contentType: 'application/json' });
     await test.info().attach('Local development fonts', { body: JSON.stringify({ node: process.version, fonts, fontResponses }, null, 2), contentType: 'application/json' });
     await test.info().attach('Local-font 404', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
   } finally {
+    await test.info().attach('Browser errors', { body: JSON.stringify(errors, null, 2), contentType: 'application/json' });
     await test.info().attach('Development server log', { body: output, contentType: 'text/plain' });
     if (server.exitCode === null) {
       server.kill('SIGTERM');

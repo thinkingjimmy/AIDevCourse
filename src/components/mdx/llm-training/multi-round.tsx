@@ -17,7 +17,7 @@ export function LLMMultiRoundTrainingDemo() {
   return <TrainingFrame aria-label="多轮预测训练" data-training-demo="multiple" data-round={round}>
     <div className="[@media(scripting:none)]:hidden">
       <div id={contentId}>
-        <div className="mb-5 flex flex-wrap items-center justify-between gap-5 bg-muted p-4">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-5 rounded-sm bg-muted p-4">
           <TrainingInput label="同一个输入" surface />
           <div className="ml-auto"><TrainingCandidates round={round} /></div>
         </div>

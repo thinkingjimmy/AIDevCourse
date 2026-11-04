@@ -148,7 +148,7 @@ export function NewtonSecondLawDemo() {
       <span className="inline-flex items-baseline gap-2">{rounded ? '≈' : '='}<strong data-newton-acceleration className="text-2xl font-medium tabular-nums">{format(acceleration)} m/s²</strong></span>
     </p>
 
-    <div className="mt-5 bg-surface px-3 pt-3 pb-2 sm:px-4">
+    <div className="mt-5 rounded-sm bg-surface px-3 pt-3 pb-2 sm:px-4">
       <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-caption leading-body text-muted-foreground">
         <span>同时从静止开始，持续受力 2 秒</span>
         <span aria-hidden className="tabular-nums">t = {time.toFixed(1)} s</span>
@@ -171,10 +171,10 @@ export function NewtonSecondLawDemo() {
         </div>
       </div>
       <div className="mt-1 flex flex-wrap items-center gap-2">
-        <Button variant="action" size="action" className="min-w-31 rounded-none" onClick={toggle} disabled={!ready}>
+        <Button variant="action" size="action" className="min-w-31 rounded-sm" onClick={toggle} disabled={!ready}>
           {playing ? <PauseIcon aria-hidden size={16} /> : <PlayIcon aria-hidden size={16} />}{action}
         </Button>
-        <Button variant="plain" size="action" onClick={reset} disabled={!ready} className="text-muted-foreground"><ArrowCounterClockwiseIcon aria-hidden size={16} />重置</Button>
+        <Button variant="plain" size="action" onClick={reset} disabled={!ready} className="rounded-sm text-muted-foreground"><ArrowCounterClockwiseIcon aria-hidden size={16} />重置</Button>
       </div>
     </div>
 

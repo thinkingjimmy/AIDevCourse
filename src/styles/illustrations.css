@@ -9,7 +9,7 @@
   [data-anatomy] .iso-shade[data-shade='1'] { @apply fill-anatomy-shade-1; }
   [data-anatomy] .iso-shade[data-shade='2'] { @apply fill-anatomy-shade-2; }
   [data-anatomy] .iso-shade[data-shade='3'] { @apply fill-anatomy-shade-3; }
-  [data-anatomy] .iso-top { @apply fill-white; }
+  [data-anatomy] .iso-top { @apply fill-anatomy-top; }
   [data-anatomy] .iso-halo { @apply translate-y-[3px] fill-anatomy-halo stroke-none opacity-32 blur-[9px]; }
   [data-anatomy] .iso-line { @apply fill-none stroke-anatomy-lo stroke-[0.6px] [stroke-linecap:round] [stroke-linejoin:round]; }
   [data-anatomy] .iso-line[data-tone='hi'] { @apply stroke-anatomy-hi; }
@@ -17,18 +17,19 @@
   [data-anatomy] .iso-line[data-tone='lo'] { @apply stroke-anatomy-lo; }
   [data-anatomy] .iso-line[data-tone='faint'] { @apply stroke-anatomy-faint; }
   [data-anatomy='rocket'] .iso-line[data-tone='hi'] { @apply stroke-anatomy-mid; }
+  [data-anatomy='servo'] .iso-face-text { @apply fill-anatomy-hi font-mono; }
   [data-anatomy] .iso-dots circle { @apply fill-anatomy-dot stroke-none opacity-32; }
   [data-anatomy] .iso-dots[data-tone='hi'] circle { @apply opacity-85; }
   [data-anatomy] .iso-dots[data-tone='mid'] circle { @apply opacity-45; }
-  [data-anatomy] .pc-bezel { @apply fill-white; }
+  [data-anatomy] .pc-bezel { @apply fill-anatomy-top; }
   [data-anatomy] .pc-dark,
   [data-anatomy] .pc-glass { @apply fill-anatomy-shade-0; }
   [data-anatomy] .pc-cord { @apply stroke-[1.1px]; }
-  [data-anatomy] .pc-beam { @apply fill-none stroke-black stroke-[1.4px] [stroke-linecap:round] [vector-effect:non-scaling-stroke]; }
-  [data-anatomy] .pc-dot { @apply fill-black; }
+  [data-anatomy] .pc-beam { @apply fill-none stroke-anatomy-hi stroke-[1.4px] [stroke-linecap:round] [vector-effect:non-scaling-stroke]; }
+  [data-anatomy] .pc-dot { @apply fill-anatomy-dot; }
   /* tube/pipe segments from anatomy kit (used by raptor engine) */
   [data-anatomy] .tb-body  { @apply fill-anatomy-shade-2 stroke-none; }
-  [data-anatomy] .tb-shine { @apply fill-white stroke-none; }
+  [data-anatomy] .tb-shine { @apply fill-anatomy-top stroke-none; }
   [data-anatomy] .tb-shade { @apply fill-anatomy-shade-0 stroke-none; }
   [data-anatomy] .tb-ring  { @apply fill-none stroke-anatomy-lo [stroke-width:.45px] [stroke-linecap:butt] [stroke-linejoin:round]; }
   [data-anatomy] .tb-ring[data-tone='mid']   { @apply stroke-anatomy-mid; }
@@ -38,8 +39,8 @@
   [data-anatomy='chip'] .iso-svg { @apply overflow-hidden; }
   [data-anatomy] .co { @apply opacity-0 transition-opacity duration-450 ease-in-out; }
   [data-anatomy][data-settled='true'] .co { @apply opacity-100; }
-  [data-anatomy] .co-dot { @apply fill-foreground; }
-  [data-anatomy] .co-line { @apply fill-none stroke-faint stroke-[0.8px]; }
-  [data-anatomy] .co-title { @apply fill-foreground font-mono text-diagram-label font-semibold; }
-  [data-anatomy] .co-sub { @apply fill-muted-foreground font-mono text-diagram-caption; }
+  [data-anatomy] .co-dot { @apply fill-anatomy-hi; }
+  [data-anatomy] .co-line { @apply fill-none stroke-anatomy-lo stroke-[0.8px]; }
+  [data-anatomy] .co-title { @apply fill-anatomy-hi font-mono text-diagram-label font-semibold; }
+  [data-anatomy] .co-sub { @apply fill-anatomy-mid font-mono text-diagram-caption; }
 }

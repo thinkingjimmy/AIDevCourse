@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { animateIllustration, translatePart, type AnimationChannel } from './animation';
 import { MAC_EXPLODE_SVG } from './mac-explode-markup';
 
@@ -27,7 +27,9 @@ function ease(amount: number) {
 }
 
 export function MacExplode() {
+  const id = useId();
   const ref = useRef<HTMLDivElement>(null);
+  const markup = MAC_EXPLODE_SVG.replaceAll('pc-clip-', `${id}-pc-clip-`);
 
   useEffect(() => {
     const root = ref.current;
@@ -54,5 +56,5 @@ export function MacExplode() {
     return animateIllustration(root, channels, { intro: INTRO, ease, loopOnHover: true });
   }, []);
 
-  return <div ref={ref} data-anatomy="mac" className="pointer-events-auto absolute -top-[13.049%] -left-[28.583%] aspect-[720/620] w-[159.978%] bg-transparent" aria-hidden="true" dangerouslySetInnerHTML={{ __html: MAC_EXPLODE_SVG }} />;
+  return <div ref={ref} data-anatomy="mac" className="pointer-events-auto absolute -top-[13.049%] -left-[28.583%] aspect-[720/620] w-[159.978%] bg-transparent" aria-hidden="true" dangerouslySetInnerHTML={{ __html: markup }} />;
 }

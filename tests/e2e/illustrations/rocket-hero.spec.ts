@@ -50,7 +50,7 @@ test('rocket hero labels hide during assembly and return after opening', async (
 });
 
 for (const width of [1440, 390, 320]) {
-  test(`rocket labels stay readable and confined to the course hero at ${width}px`, async ({ page }, testInfo) => {
+  test(`rocket hero callouts follow the responsive layout at ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/zh');
@@ -61,6 +61,12 @@ for (const width of [1440, 390, 320]) {
     await expect(page).toHaveURL(courseUrl);
     const rocket = page.locator('[data-anatomy="rocket"]');
     const labels = rocket.locator('.co');
+    if (width < 841) {
+      await expect(rocket).toBeHidden();
+      await expect(page.locator('#course-catalog')).toBeInViewport();
+      await testInfo.attach(`rocket-mobile-overview-${width}`, { body: await page.screenshot(), contentType: 'image/png' });
+      return;
+    }
     await expect(rocket).toHaveAttribute('data-settled', 'true');
     await expect(labels).toHaveCount(4);
     await expect(rocket.locator('.co-title')).toHaveText(['Nozzle', 'Gimbal', 'Chamber', 'Turbopump']);

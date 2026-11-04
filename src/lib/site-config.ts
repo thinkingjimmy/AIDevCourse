@@ -1,6 +1,7 @@
 export const site = {
   name: 'AIDevCourse',
-  logo: '/images/brand/wordmark.svg',
+  logo: '/images/brand/logo.svg',
+  wordmark: '/images/brand/wordmark.svg',
   origin: process.env.SITE_URL ?? 'http://localhost:3000',
   indexable: process.env.VERCEL_ENV === 'production',
 };
