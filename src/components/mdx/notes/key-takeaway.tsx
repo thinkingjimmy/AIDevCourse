@@ -7,6 +7,6 @@ export async function KeyTakeaway(props: ComponentProps<'aside'>) {
   const t = await getTranslations('Ui');
   const label = t('keyTakeaway');
   return <FramedNote {...props} label={label} data-component="key-takeaway" signature={
-    <AlertTitle className="text-sm leading-copy font-medium"><span aria-hidden>💡 </span>{label}</AlertTitle>
+    <AlertTitle className="text-sm leading-copy font-medium text-brand"><span aria-hidden>💡 </span>{label}</AlertTitle>
   } />;
 }

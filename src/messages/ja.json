@@ -70,7 +70,14 @@
     "navHandbook": "ハンドブック",
     "footerLead": "aidevcourse.com · 無料、オープンソース、追跡なし",
     "footerMeta": "© 2026 Jimmy Wong",
-    "browseCourses": "コースを見る"
+    "browseCourses": "コースを見る",
+    "heroIntro": "コード、モデル、Agent。ひとつの部品を、ひとつのレッスンで。",
+    "openingCourse": "コースを開いています…",
+    "cancelOpening": "キャンセル",
+    "previousPage": "前のページ",
+    "nextPage": "次のページ",
+    "pagination": "コースのページ",
+    "gettingStarted": "はじめに"
   },
   "Course": {
     "emptyTitle": "この言語にはまだコースがありません",
@@ -137,6 +144,7 @@
     "viewAll": "すべての実績を見る"
   },
   "Author": {
+    "about": "著者について",
     "website": "個人サイト",
     "label": "著者とフォロー先",
     "role": "このコースの著者",

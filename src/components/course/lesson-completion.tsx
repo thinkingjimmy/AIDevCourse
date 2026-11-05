@@ -16,7 +16,7 @@ export function LessonCompletion({ lessonId }: { lessonId: string }) {
   const isComplete = Object.hasOwn(learning.completed, lessonId);
 
   return <div data-slot="lesson-completion" className="mt-8 flex justify-end">
-    <Button variant="action" size="action" className="h-auto min-h-11 rounded-sm py-3 leading-snug whitespace-normal max-sm:w-full" disabled={!ready || pending || index < 0} aria-busy={pending} title={ready ? undefined : t('noJs')} onClick={() => {
+    <Button variant="action" size="action" className="h-auto min-h-11 rounded-sm border-brand bg-brand py-3 leading-snug whitespace-normal hover:bg-brand/90 active:bg-brand focus-visible:outline-brand max-sm:w-full" disabled={!ready || pending || index < 0} aria-busy={pending} title={ready ? undefined : t('noJs')} onClick={() => {
       if (!isComplete && !complete(lessonId)) return;
       startTransition(() => router.push(next));
     }}>

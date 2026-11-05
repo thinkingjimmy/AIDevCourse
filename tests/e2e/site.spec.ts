@@ -232,180 +232,43 @@ test.describe('English URL policy', () => {
 
 for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'tablet', width: 840, height: 960 }, { name: 'mobile', width: 390, height: 844 }, { name: 'narrow', width: 320, height: 844 }]) {
   for (const locale of locales) {
-    test(`${locale}: course cards and updating state work on ${viewport.name}`, async ({ page }) => {
-      test.skip(process.env.CONTENT_TEST === '1', 'Public LLM 101 cards use the authoring catalog.');
+    test(`${locale}: course disks and directory work on ${viewport.name}`, async ({ page }, testInfo) => {
+      test.skip(process.env.CONTENT_TEST === '1', 'Uses the published catalog.');
       await page.setViewportSize(viewport);
       await page.emulateMedia({ reducedMotion: 'reduce' });
-      const catalog = readCatalog();
+      const courses = readCatalog().courses.filter(course => course.locale === locale);
       const messages = JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
-      const course = catalog.courses.find((item) => item.locale === locale && item.slug === 'llm-101')!;
-      const errors: string[] = [];
-      page.on('pageerror', (error) => errors.push(error.message));
-      await page.goto(localePath(locale as Locale, `/`));
+      await page.goto(localePath(locale));
       await page.evaluate(() => document.fonts.ready);
-      const sections = ['introduction', 'beginner', 'intermediate', 'advanced'].filter((section) => catalog.courses.some((item) => item.locale === locale && (item.section ?? item.level) === section));
-      await expect(page.locator('#catalog h2')).toHaveText(sections.map((section) => messages.Ui[section]));
-      const grid = page.getByRole('region', { name: messages.Ui[course.level], exact: true }).locator('[data-slot="course-grid"]');
-      const card = grid.getByRole('link', { name: 'LLM 101', exact: true });
-      await expect(card).toHaveCount(1);
-      await expect(card.getByRole('heading')).toHaveText('LLM 101');
-      await expect(card).toContainText(course.description);
-      await expect(card.locator('[data-slot="card-footer"]')).toHaveCount(0);
-      await expect(card.locator('svg')).toHaveCount(1);
-      await expect(card.locator('[data-anatomy="chip"] svg')).toHaveCount(1);
-      await expect(card.locator('[data-anatomy="chip"]')).toHaveAttribute('data-callouts', 'false');
-      await expect(card.locator('[data-anatomy="chip"] .co')).toHaveCount(0);
-      const columns = await grid.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(' ').length);
-      const expectedColumns = viewport.width > 721 ? 2 : 1;
-      expect(columns).toBe(expectedColumns);
-      if (expectedColumns > 1) expect((await card.boundingBox())!.width).toBeLessThan((await grid.boundingBox())!.width / expectedColumns);
-      const headingBox = (await card.locator('[data-slot="course-card-heading"]').boundingBox())!;
-      const descriptionBox = (await card.locator('[data-slot="course-card-description"]').boundingBox())!;
-      const cardBox = (await card.boundingBox())!;
-      const image = card.locator('[data-slot="course-card-image"]');
-      const imageBox = (await image.boundingBox())!;
-      await expect(image).toHaveCSS('background-color', 'rgb(244, 244, 245)');
-      expect(headingBox.x + headingBox.width).toBeLessThanOrEqual(imageBox.x);
-      expect(descriptionBox.x + descriptionBox.width).toBeLessThanOrEqual(imageBox.x);
-      expect(imageBox.y).toBeCloseTo(cardBox.y + 1, 1);
-      expect(imageBox.y + imageBox.height).toBeCloseTo(cardBox.y + cardBox.height - 1, 1);
-      expect(imageBox.x + imageBox.width).toBeCloseTo(cardBox.x + cardBox.width - (viewport.width < 721 ? 0 : 1), 1);
-      if (viewport.width < 721) {
-        expect(cardBox.width).toBeCloseTo(viewport.width, 1);
-        expect(imageBox.width).toBeGreaterThanOrEqual(112);
-        expect(imageBox.width).toBeLessThanOrEqual(128);
+      const groups = ['introduction', 'beginner', 'intermediate', 'advanced'].filter(section => courses.some(course => (course.section ?? course.level) === section));
+      await expect(page.locator('#catalog h2')).toHaveText(groups.map(section => section === 'introduction' ? messages.Home.gettingStarted : messages.Ui[section]));
+      await expect(page.locator('[data-course-disk]')).toHaveCount(Math.min(9, courses.length));
+      for (const course of courses.slice(0, 9)) {
+        const disk = page.getByRole('link', { name: course.title, exact: true });
+        await expect(disk).toHaveAttribute('href', course.url);
+        await expect(disk).toHaveAccessibleDescription(course.description);
+        await expect(disk.locator('.disk-title')).toHaveText(course.title);
       }
+      const action = page.locator('[data-slot="hero-primary-action"]');
+      const first = courses.find(course => course.section === 'introduction' && course.lessons.length) ?? courses.find(course => course.id === 'llm-101')!;
+      await expect(action).toHaveAttribute('href', first.url);
+      await expect(page.locator('.gallery-copy p')).toHaveText(messages.Home.heroIntro);
+      const title = (await page.locator('h1').boundingBox())!;
+      const art = (await page.locator('[data-slot="home-macintosh"]').boundingBox())!;
+      expect(art.x).toBeGreaterThan(title.x + title.width);
+      expect(art.x + art.width).toBeLessThanOrEqual(viewport.width);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      if (locale === 'zh') {
-        const report = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-        expect(report.violations).toEqual([]);
-        const path = test.info().outputPath(`course-card-${viewport.name}.png`);
-        await grid.screenshot({ path });
-        await test.info().attach('Course cards', { path, contentType: 'image/png' });
-      }
-      await card.focus();
-      await card.press('Enter');
-      await expect(page).toHaveURL(new RegExp(`${course.url}$`));
+      const disk = page.getByRole('link', { name: 'LLM 101', exact: true });
+      await disk.focus(); await disk.press('Enter');
+      await expect(page).toHaveURL(localePath(locale, '/courses/llm-101'));
       await expect(page.locator('h1')).toHaveText('LLM 101');
-      await expect(page.locator('[data-anatomy="chip"]')).toHaveAttribute('data-callouts', 'true');
-      await expect(page.locator('[data-anatomy="chip"] .co')).toHaveCount(6);
-      if (viewport.width < 841) {
-        await expect(page.locator('[data-anatomy="chip"]')).toBeHidden();
-        await expect(page.locator('#course-catalog')).toBeInViewport();
-      } else await expect(page.locator('[data-anatomy="chip"]')).toBeVisible();
-      if (!course.lessons.length) {
-        await expect(page.locator('[data-slot="course-empty"]')).toContainText(messages.Course.updatingBody);
-        await expect(page.getByRole('link', { name: messages.Course.startFirst, exact: true })).toHaveCount(0);
-        await expect(page.locator('main a[href^="' + course.url + '/"]')).toHaveCount(0);
+      await expect(page.locator('[aria-labelledby="course-catalog"] ol a')).toHaveCount(courses.find(course => course.id === 'llm-101')!.lessons.length);
+      if (locale === 'zh') {
+        expect((await new AxeBuilder({ page }).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations).toEqual([]);
+        await testInfo.attach('Course directory', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
       }
-      await expect(page.getByRole('contentinfo')).toHaveCount(1);
-      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      expect(errors).toEqual([]);
     });
   }
-}
-
-for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: 'tablet', width: 840, height: 960 }, { name: 'mobile', width: 390, height: 844 }, { name: 'narrow', width: 320, height: 844 }]) {
-  test(`home hero keeps content aligned and preserves menu depth on ${viewport.name}`, async ({ page }) => {
-    test.skip(process.env.CONTENT_TEST === '1', 'Public homepage learning actions.');
-    await page.setViewportSize(viewport);
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    const catalog = readCatalog();
-    for (const locale of locales) {
-      await page.goto(localePath(locale as Locale, `/`));
-      await page.evaluate(() => document.fonts.ready);
-      const messages = JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
-      const action = page.getByRole('link', { name: messages.Home.start, exact: true });
-      const title = page.locator('main h1');
-      const intro = title.locator('..').locator('p');
-      await expect(title).toHaveCSS('font-family', /Geist Pixel/);
-      await expect(title).toHaveCSS('font-weight', '400');
-      await expect(page.locator('body')).toHaveCSS('font-family', /^["']?Geist["']?(?:,|\s)/);
-      await expect(intro).toHaveCSS('font-family', /^["']?Geist["']?(?:,|\s)/);
-      const loadedFonts = await page.evaluate(() => Array.from(document.fonts)
-        .filter((font) => font.status === 'loaded').map((font) => font.family.replaceAll('"', '')));
-      expect(loadedFonts).toContain('Geist Variable');
-      expect(loadedFonts).toContain('Geist Pixel');
-      await expect(intro).toHaveCount(1);
-      await expect(intro).toHaveText(messages.Home.intro);
-      await expect(page.getByText(messages.Home.eyebrow, { exact: true })).toHaveCount(0);
-      const catalogHeading = page.getByRole('heading', { name: messages.Ui.beginner, level: 2, exact: true });
-      await expect(catalogHeading.locator('..').locator(':scope > p')).toHaveCount(0);
-      if (locale === 'zh') {
-        await expect(catalogHeading).toHaveText('入门');
-        const path = test.info().outputPath(`course-catalog-${viewport.name}.png`);
-        await page.locator('#catalog').screenshot({ path });
-        await test.info().attach('Course catalog', { path, contentType: 'image/png' });
-        await page.evaluate(() => window.scrollTo(0, 0));
-      }
-      const contentLeft = (await title.boundingBox())!.x;
-      for (const element of [title, intro, action, catalogHeading]) {
-        expect((await element.boundingBox())!.x).toBeCloseTo(contentLeft, 1);
-      }
-      const art = (await page.locator('[data-slot="home-hero-art"]').boundingBox())!;
-      const copy = (await title.boundingBox())!;
-      const introduction = (await intro.boundingBox())!;
-      const actionArea = (await action.boundingBox())!;
-      const hero = (await page.locator('[data-slot="home-hero"]').boundingBox())!;
-      expect(art.x + art.width).toBeLessThanOrEqual(hero.x + hero.width);
-      expect(art.y + art.height).toBeLessThanOrEqual(hero.y + hero.height);
-      expect(actionArea.height).toBeGreaterThanOrEqual(44);
-      if (viewport.width < 721) {
-        expect(art.x).toBeGreaterThan(copy.x + copy.width);
-        expect(introduction.y).toBeGreaterThanOrEqual(Math.max(copy.y + copy.height, art.y + art.height));
-        expect(actionArea.y).toBeGreaterThan(introduction.y + introduction.height);
-        expect(actionArea.width).toBeCloseTo(introduction.width, 1);
-        expect(actionArea.height).toBeGreaterThanOrEqual(48);
-      } else expect(art.x).toBeGreaterThan(copy.x + copy.width);
-      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      await test.info().attach(`${locale}-home-hero-${viewport.name}`, { body: await page.locator('[data-slot="home-hero"]').screenshot(), contentType: 'image/png' });
-      const course = catalog.courses.find((item) => item.locale === locale && item.slug === 'llm-101')!;
-      await expect(action).toHaveAttribute('href', course.lessons[0].url);
-      await page.locator('.language-picker summary').click();
-      const menu = page.locator('.language-options');
-      await expect(menu).toBeVisible();
-      const surface = await menu.evaluate((element) => {
-        const style = getComputedStyle(element);
-        return { border: style.border, shadow: style.boxShadow, color: style.color, background: style.backgroundColor };
-      });
-      expect(surface.shadow).not.toBe('none');
-      await page.keyboard.press('Escape');
-      const face = action.locator('[data-slot="hero-primary-face"]');
-      await expect(face).toHaveCSS('color', 'rgb(255, 255, 255)');
-      await expect(face).toHaveCSS('background-color', 'rgb(9, 9, 11)');
-      const actionBox = await action.boundingBox();
-      await action.hover();
-      expect(await action.boundingBox()).toEqual(actionBox);
-      if (locale === 'en') {
-        const path = test.info().outputPath(`home-action-hover-${viewport.name}.png`);
-        await page.screenshot({ path, fullPage: true });
-        await test.info().attach('Homepage action hover', { path, contentType: 'image/png' });
-      }
-      const card = page.locator('[data-slot="course-grid"]').getByRole('link', { name: 'LLM 101', exact: true });
-      const cardSurface = card.locator('[data-slot="card"]');
-      await expect(cardSurface).toHaveCSS('box-shadow', 'none');
-      await card.scrollIntoViewIfNeeded();
-      const cardBox = await card.boundingBox();
-      await card.hover();
-      await expect(cardSurface).toHaveCSS('box-shadow', surface.shadow);
-      expect(await card.boundingBox()).toEqual(cardBox);
-      if (locale === 'en') {
-        const path = test.info().outputPath(`course-card-hover-${viewport.name}.png`);
-        await page.screenshot({ path, fullPage: true });
-        await test.info().attach('Course card hover', { path, contentType: 'image/png' });
-      }
-      await page.mouse.move(0, 0);
-      await expect(cardSurface).toHaveCSS('box-shadow', 'none');
-      await page.keyboard.press('Tab');
-      await card.focus();
-      await expect(cardSurface).toHaveCSS('box-shadow', surface.shadow);
-      await action.focus();
-      await expect(action).toHaveCSS('outline-style', 'solid');
-      await action.press('Enter');
-      await expect(page).toHaveURL(new RegExp(`${course.lessons[0].url}$`));
-      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    }
-  });
 }
 
 test('course cards open the updating overview without JavaScript', async ({ browser, baseURL }) => {

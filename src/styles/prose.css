@@ -1,5 +1,5 @@
 @utility quote-frame {
-  @apply rounded-sm border border-foreground bg-background shadow-[4px_4px_0_var(--color-border)];
+  @apply rounded-sm border border-brand bg-background shadow-[4px_4px_0_var(--color-brand-soft)];
 }
 
 .mermaid-diagram {
@@ -21,12 +21,13 @@
     @apply mt-2 max-w-none min-w-0 text-base leading-reading text-reading;
     &:lang(zh-Hans), &:lang(ja) { @apply leading-cjk; }
     & :where(h2, h3, h4):not(:where(.not-prose, .not-prose *)) { @apply font-sans font-semibold tracking-tight text-balance text-foreground; }
-    & :where(h2):not(:where(.not-prose, .not-prose *)) { @apply mt-10 mb-4 border-b border-border pb-2 text-3xl leading-heading first:mt-0; }
+    & :where(h1, h2, h3):not(:where(.not-prose, .not-prose *)) { @apply text-brand; }
+    & :where(h2):not(:where(.not-prose, .not-prose *)) { @apply mt-10 mb-4 border-b border-brand/20 pb-2 text-3xl leading-heading first:mt-0; }
     & :where(h3):not(:where(.not-prose, .not-prose *)) { @apply mt-8 mb-3 text-2xl leading-tight; }
     & :where(h4):not(:where(.not-prose, .not-prose *)) { @apply mt-6 mb-2 text-xl; }
-    & :where(h2, h3, h4) button { @apply [font:inherit] text-inherit; }
+    & :where(h1, h2, h3, h4) button { @apply [font:inherit] text-inherit; }
     & :where(a):not(:where(.not-prose, .not-prose *)) { @apply text-foreground underline underline-offset-4; }
-    & :where(h2, h3, h4) :where(a) { @apply text-inherit no-underline; }
+    & :where(h1, h2, h3, h4) :where(a) { @apply text-inherit no-underline; }
     & :where(img):not(:where(.not-prose, .not-prose *)) { @apply h-auto w-full rounded-sm border border-border bg-background; }
     & :where(pre):not(:where(.not-prose, .not-prose *)) { @apply overflow-x-auto rounded-sm border border-border bg-[var(--shiki-light-bg,var(--color-background))] text-sm leading-reading; }
     & :where(:not(pre) > code):not(:where(.not-prose, .not-prose *)) { @apply rounded-sm border-0 bg-surface px-1.5 py-px text-sm; }

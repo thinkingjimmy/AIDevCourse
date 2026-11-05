@@ -11,31 +11,35 @@ export function useActiveHeading(urls: readonly string[]) {
     });
     if (!headings.length) return;
     const article = headings[0].element.closest('article');
+    const pane = article?.closest<HTMLElement>('[data-slot="lesson-region"]');
+    if (!article || !pane) return;
     let frame = 0;
     let disposed = false;
 
-    function update() {
+    const update = () => {
       frame = 0;
-      const readingLine = parseFloat(getComputedStyle(headings[0].element).scrollMarginTop) + 2;
+      const bounds = pane.getBoundingClientRect();
+      const readingLine = bounds.top + parseFloat(getComputedStyle(headings[0].element).scrollMarginTop) + 2;
       let current = headings[0].url;
       for (const heading of headings) {
         if (heading.element.getBoundingClientRect().top > readingLine) break;
         current = heading.url;
       }
       // The final heading cannot always reach the reading line on a short last section.
-      if (window.scrollY > 0 && article && article.getBoundingClientRect().bottom <= window.innerHeight + 1) {
+      if (pane.scrollTop > 0 && article.getBoundingClientRect().bottom <= bounds.bottom + 1) {
         current = headings[headings.length - 1].url;
       }
       setActiveUrl(current);
-    }
+    };
 
     function schedule() {
       if (!disposed && !frame) frame = window.requestAnimationFrame(update);
     }
 
     const observer = new ResizeObserver(schedule);
-    if (article) observer.observe(article);
-    window.addEventListener('scroll', schedule, { passive: true });
+    observer.observe(article);
+    observer.observe(pane);
+    pane.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', schedule);
     window.addEventListener('hashchange', schedule);
     window.addEventListener('pageshow', schedule);
@@ -47,7 +51,7 @@ export function useActiveHeading(urls: readonly string[]) {
       disposed = true;
       window.cancelAnimationFrame(frame);
       observer.disconnect();
-      window.removeEventListener('scroll', schedule);
+      pane.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', schedule);
       window.removeEventListener('hashchange', schedule);
       window.removeEventListener('pageshow', schedule);

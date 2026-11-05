@@ -4,3 +4,5 @@
       config:
         root: /Users/jimmywong/Documents/aidevcourse
         locale: zh
+        provider: deepseek-account
+        model: deepseek-flash

@@ -1,44 +1,36 @@
 import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { readFileSync } from 'node:fs';
 
 const lesson = '/zh/courses/llm-101/what-a-language-model-does';
-const channels = [
-  { name: 'star', label: '在 GitHub 为本项目加 Star', href: 'https://github.com/thinkingjimmy/aidevcourse' },
-  { name: 'xiaohongshu', label: '关注小红书', href: 'https://www.xiaohongshu.com/user/profile/6073d38d00000000010068a6' },
-  { name: 'x', label: '关注 X', href: 'https://x.com/thinkingjimmy' },
-  { name: 'bilibili', label: '关注哔哩哔哩', href: 'https://space.bilibili.com/1409205119' },
-];
+const label = '作者与关注方式';
+const authorDialog = (page: Page) => page.locator('[data-author-dialog]');
+const dictionary = (locale: string) => JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8')).Author;
 
 async function capture(page: Page, name: string) {
-  const path = test.info().outputPath(`${name}.png`);
-  await page.screenshot({ path, animations: 'disabled' });
-  await test.info().attach(name, { path, contentType: 'image/png' });
-  const geometry = await page.locator('[data-slot="note-author-actions"], [data-slot="note-wechat-popover"], [data-slot="jimmy-note-popover"]').evaluateAll(elements => elements.filter(element => element.getClientRects().length).map(element => ({
-    slot: element.getAttribute('data-slot'), bounds: element.getBoundingClientRect().toJSON(), scrollWidth: element.scrollWidth, clientWidth: element.clientWidth,
-  })));
-  await test.info().attach(`${name} geometry`, { body: JSON.stringify(geometry, null, 2), contentType: 'application/json' });
+  await test.info().attach(name, { body: await page.screenshot({ animations: 'disabled' }), contentType: 'image/png' });
 }
 
-async function verifyQr(page: Page) {
-  const popover = page.locator('[data-slot="note-wechat-popover"]');
-  await expect(popover).toBeVisible();
-  await expect(popover).toContainText('也可以在微信找到我');
-  await expect(popover.getByRole('img', { name: '公众号二维码占位，暂不可扫描' })).toBeVisible();
-  const bounds = (await popover.boundingBox())!;
-  const viewport = page.viewportSize()!;
-  expect(bounds.x).toBeGreaterThanOrEqual(0);
-  expect(bounds.y).toBeGreaterThanOrEqual(0);
-  expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width + 1);
-  expect(bounds.y + bounds.height).toBeLessThanOrEqual(viewport.height + 1);
-  const accessibility = await new AxeBuilder({ page }).include('[data-slot="note-wechat-popover"]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+async function verifyAuthor(page: Page) {
+  const dialog = authorDialog(page);
+  await expect(dialog).toBeVisible();
+  const links = [
+    ['个人网站', 'https://jimmywong.dev'],
+    ['在 GitHub 为本项目加 Star', 'https://github.com/thinkingjimmy/aidevcourse'],
+    ['关注小红书', 'https://www.xiaohongshu.com/user/profile/6073d38d00000000010068a6'],
+    ['关注 X', 'https://x.com/thinkingjimmy'],
+    ['关注哔哩哔哩', 'https://space.bilibili.com/1409205119'],
+  ];
+  for (const [name, href] of links) await expect(dialog.getByRole('link', { name, exact: true })).toHaveAttribute('href', href);
+  await expect(dialog.getByRole('img', { name: '公众号二维码占位，暂不可扫描' })).toBeVisible();
+  const accessibility = await new AxeBuilder({ page }).include('[data-author-dialog]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
   expect(accessibility.violations).toEqual([]);
-  return popover;
 }
 
-test.describe('JimmyNote author actions', () => {
-  test.skip(process.env.CONTENT_TEST === '1', 'Uses published lessons.');
+test.describe('JimmyNote author entry', () => {
+  test.skip(process.env.CONTENT_TEST === '1', 'Uses published notes.');
 
-  test('shows five compact borderless icons with the correct links and a keyboard QR popover', async ({ page }) => {
+  test('shows one waving-hand entry and opens the shared author dialog with keyboard focus return', async ({ page }) => {
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.setViewportSize({ width: 1536, height: 960 });
@@ -46,75 +38,27 @@ test.describe('JimmyNote author actions', () => {
     const note = page.locator('[data-jimmy-note-card="streaming-answer"]');
     await note.scrollIntoViewIfNeeded();
     const header = note.locator('[data-slot="note-signature"]');
-    await expect(header.getByText('本文作者', { exact: true })).toBeVisible();
-    const name = (await header.getByText('Jimmy', { exact: true }).boundingBox())!;
-    const role = (await header.getByText('本文作者', { exact: true }).boundingBox())!;
-    expect(role.y).toBeGreaterThan(name.y);
-    expect(role.x).toBeCloseTo(name.x, 0);
     const actions = header.locator('[data-slot="note-author-actions"]');
-    const avatar = (await header.locator('img').boundingBox())!;
-    const actionRow = (await actions.boundingBox())!;
-    expect(Math.abs(avatar.y + avatar.height / 2 - actionRow.y - actionRow.height / 2)).toBeLessThan(1);
-    await expect(actions.locator('[data-note-author-action]')).toHaveCount(5);
-    expect(await actions.locator('[data-note-author-action]').evaluateAll(elements => elements.map(element => element.getAttribute('data-note-author-action')))).toEqual([...channels.map(channel => channel.name), 'wechat']);
-    for (const channel of channels) {
-      const link = actions.getByRole('link', { name: channel.label, exact: true });
-      await expect(link).toHaveAttribute('href', channel.href);
-      await expect(link).toHaveAttribute('target', '_blank');
-      await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-    }
-    const controls = await actions.locator('[data-note-author-action]').evaluateAll(elements => elements.map(element => {
-      const content = element.cloneNode(true) as HTMLElement;
-      content.querySelectorAll('svg').forEach(icon => icon.remove());
-      return { text: content.textContent?.trim(), border: getComputedStyle(element).borderTopWidth, rect: element.getBoundingClientRect().toJSON() };
-    }));
-    for (const control of controls) {
-      expect(control.text).toBe('');
-      expect(control.border).toBe('0px');
-      expect(control.rect.width).toBeCloseTo(32, 2);
-      expect(control.rect.height).toBeCloseTo(32, 2);
-    }
-    await expect(actions.locator('[data-note-author-action="star"] svg')).toHaveAttribute('width', '16');
-    const icons = actions.locator('[data-note-author-action] svg[data-author-action-icon]');
-    await expect(icons).toHaveCount(5);
-    expect(await icons.evaluateAll(elements => elements.map(element => ({ stroke: element.getAttribute('stroke'), width: element.getAttribute('stroke-width'), cap: element.getAttribute('stroke-linecap') })))).toEqual(Array.from({ length: 5 }, () => ({ stroke: 'currentColor', width: '1.5', cap: 'round' })));
-    await expect(header.getByRole('button', { name: '关于本文作者' })).toHaveCount(0);
-    await capture(page, 'jimmy-note-social-header');
-    const detail = test.info().outputPath('jimmy-note-social-header-detail.png');
-    await note.screenshot({ path: detail });
-    await test.info().attach('Social header detail', { path: detail, contentType: 'image/png' });
-    const trigger = actions.getByRole('button', { name: '查看公众号二维码' });
+    const trigger = actions.getByRole('button', { name: label, exact: true });
+    await expect(actions.getByRole('button')).toHaveCount(1);
+    await expect(actions.getByRole('link')).toHaveCount(0);
+    await expect(trigger).toHaveText('👋');
+    await expect(trigger).toHaveCSS('width', '44px');
+    await expect(trigger).toHaveCSS('height', '44px');
+    await expect(header.getByText('Jimmy', { exact: true })).toHaveCSS('color', 'rgb(49, 86, 75)');
+    await expect(header.getByText('本文作者', { exact: true })).toBeVisible();
+    await trigger.hover();
+    await expect(authorDialog(page)).toHaveCount(0);
+    await capture(page, 'single-author-entry');
     await trigger.focus();
-    await page.keyboard.press('Enter');
-    await verifyQr(page);
-    await capture(page, 'jimmy-note-qr-keyboard');
+    await trigger.press('Enter');
+    await verifyAuthor(page);
+    await capture(page, 'note-author-dialog');
     await page.keyboard.press('Escape');
-    await expect(page.locator('[data-slot="note-wechat-popover"]')).toHaveCount(0);
+    await expect(authorDialog(page)).toHaveCount(0);
     await expect(trigger).toBeFocused();
+    await expect(note).toBeVisible();
     expect(errors).toEqual([]);
-  });
-
-  test('keeps a hover QR preview open while crossing the gap and pins it on click', async ({ page }) => {
-    await page.setViewportSize({ width: 1536, height: 960 });
-    await page.goto(lesson);
-    const note = page.locator('[data-jimmy-note-card="streaming-answer"]');
-    await note.scrollIntoViewIfNeeded();
-    const trigger = note.getByRole('button', { name: '查看公众号二维码' });
-    await trigger.hover();
-    const qr = await verifyQr(page);
-    await expect(trigger).not.toBeFocused();
-    await qr.hover();
-    await expect(qr).toBeVisible();
-    await page.mouse.move(1, 1);
-    await expect(qr).toHaveCount(0);
-    await trigger.hover();
-    await expect(qr).toBeVisible();
-    await trigger.click();
-    await page.mouse.move(1, 1);
-    await expect(qr).toBeVisible();
-    await page.keyboard.press('Escape');
-    await expect(qr).toHaveCount(0);
-    await expect(trigger).toBeFocused();
   });
 
   for (const scenario of [
@@ -123,73 +67,88 @@ test.describe('JimmyNote author actions', () => {
     { name: 'enlarged', width: 390, height: 844, fontSize: 24 },
     { name: 'short', width: 390, height: 360, fontSize: 16 },
   ]) {
-    test(`retains the floating note when opening and dismissing QR details on ${scenario.name}`, async ({ page }) => {
+    test(`keeps the floating note open beneath the author dialog on ${scenario.name}`, async ({ page }) => {
       await page.setViewportSize(scenario);
       await page.goto(lesson);
       await page.evaluate(size => { document.documentElement.style.fontSize = `${size}px`; }, scenario.fontSize);
-      const comment = page.locator('[data-note-trigger-for="streaming-answer"]');
-      await comment.click();
-      const popover = page.locator('[data-slot="jimmy-note-popover"]');
-      const trigger = popover.getByRole('button', { name: '查看公众号二维码' });
-      await expect(popover.getByText('本文作者', { exact: true })).toBeVisible();
-      await expect(trigger).toBeVisible();
-      const avatar = (await popover.locator('[data-slot="note-signature"] img').boundingBox())!;
-      const actions = (await popover.locator('[data-slot="note-author-actions"]').boundingBox())!;
-      expect(Math.abs(actions.x - avatar.x)).toBeLessThan(1);
-      expect(actions.y).toBeGreaterThan(avatar.y + avatar.height);
-      expect(await popover.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
-      await trigger.click();
-      await verifyQr(page);
-      await expect(popover).toHaveCount(1);
-      await capture(page, `jimmy-note-qr-${scenario.name}`);
+      const noteTrigger = page.locator('[data-note-trigger-for="streaming-answer"]');
+      await noteTrigger.click();
+      const note = page.locator('[data-slot="jimmy-note-popover"]');
+      const trigger = note.getByRole('button', { name: label, exact: true });
+      const close = note.getByRole('button', { name: '关闭', exact: true });
+      await expect(trigger).toHaveText('👋');
+      const handHitRight = await trigger.evaluate(element => element.getBoundingClientRect().right - parseFloat(getComputedStyle(element, '::before').right));
+      const closeHitLeft = await close.evaluate(element => element.getBoundingClientRect().left + parseFloat(getComputedStyle(element, '::before').left));
+      expect(handHitRight).toBeLessThanOrEqual(closeHitLeft);
+      expect(await note.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
+      for (const dismiss of ['escape', 'button', 'backdrop']) {
+        await trigger.click();
+        await verifyAuthor(page);
+        await expect(note).toBeVisible();
+        await capture(page, `nested-author-${scenario.name}-${dismiss}`);
+        if (dismiss === 'escape') await page.keyboard.press('Escape');
+        else if (dismiss === 'button') await authorDialog(page).getByRole('button', { name: '关闭', exact: true }).click();
+        else await page.mouse.click(1, 1);
+        await expect(authorDialog(page)).toHaveCount(0);
+        await expect(note).toBeVisible();
+        await expect(trigger).toBeFocused();
+      }
       await page.keyboard.press('Escape');
-      await expect(page.locator('[data-slot="note-wechat-popover"]')).toHaveCount(0);
-      await expect(trigger).toBeFocused();
-      await expect(popover).toBeVisible();
-      await trigger.click();
-      await expect(page.locator('[data-slot="note-wechat-popover"]')).toBeVisible();
-      await page.mouse.click(1, 1);
-      await expect(page.locator('[data-slot="note-wechat-popover"]')).toHaveCount(0);
-      await expect(popover).toHaveCount(0);
+      await expect(note).toHaveCount(0);
+      await expect(noteTrigger).toBeFocused();
     });
   }
 
-  test('keeps touch controls at 44px without overlap', async ({ browser, baseURL }) => {
+  test('provides a reachable 44px waving-hand target on touch devices', async ({ browser, baseURL }) => {
     const context = await browser.newContext({ baseURL, hasTouch: true, viewport: { width: 390, height: 844 } });
     try {
       const page = await context.newPage();
       await page.goto(lesson);
       await page.locator('[data-note-trigger-for="streaming-answer"]').tap();
-      const actions = page.locator('[data-slot="jimmy-note-popover"] [data-slot="note-author-actions"]');
-      const bounds = await actions.locator('[data-note-author-action]').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().toJSON()));
-      expect(bounds).toHaveLength(5);
-      for (const rect of bounds) {
-        expect(rect.width).toBeGreaterThanOrEqual(44);
-        expect(rect.height).toBeGreaterThanOrEqual(44);
-      }
-      for (let index = 1; index < bounds.length; index++) expect(bounds[index].left).toBeGreaterThanOrEqual(bounds[index - 1].right - 1);
-      await actions.getByRole('button', { name: '查看公众号二维码' }).tap();
-      await verifyQr(page);
-      await capture(page, 'jimmy-note-qr-touch');
+      const trigger = page.locator('[data-slot="jimmy-note-popover"]').getByRole('button', { name: label, exact: true });
+      const bounds = (await trigger.boundingBox())!;
+      expect(bounds.width).toBeGreaterThanOrEqual(44);
+      expect(bounds.height).toBeGreaterThanOrEqual(44);
+      await trigger.tap();
+      await verifyAuthor(page);
+      await authorDialog(page).getByRole('button', { name: '关闭', exact: true }).tap();
+      await expect(trigger).toBeFocused();
+      await capture(page, 'touch-author-entry');
     } finally { await context.close(); }
   });
 });
 
-test('previews and no-JavaScript notes expose social links and a native QR disclosure', async ({ page, browser, baseURL }) => {
-  await page.setViewportSize({ width: 1536, height: 960 });
-  await page.goto('/design/components');
-  await page.locator('#jimmy-notes').getByRole('button', { name: '查看公众号二维码' }).first().click();
-  await verifyQr(page);
-  await page.keyboard.press('Escape');
+for (const locale of ['zh', 'en', 'ja', 'fr', 'es']) {
+  test(`note author entry reuses the localized author dialog in ${locale}`, async ({ page }) => {
+    const t = dictionary(locale);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`/design/components?lang=${locale}`);
+    await page.locator('#jimmy-notes [data-note-trigger-for]').first().click();
+    const note = page.locator('[data-slot="jimmy-note-popover"]');
+    const trigger = note.getByRole('button', { name: t.label, exact: true });
+    await expect(trigger).toHaveText('👋');
+    await trigger.click();
+    await expect(authorDialog(page).getByRole('heading')).toHaveText(t.label);
+    await expect(authorDialog(page).getByRole('link', { name: t.website, exact: true })).toHaveAttribute('href', 'https://jimmywong.dev');
+    await page.keyboard.press('Escape');
+    await expect(note).toBeVisible();
+    await expect(trigger).toBeFocused();
+    await capture(page, `localized-author-${locale}`);
+  });
+}
+
+test('keeps a single native waving-hand website link without JavaScript', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
   try {
-    const native = await context.newPage();
-    await native.goto('/design/components');
-    const note = native.locator('#jimmy-notes').getByRole('note', { name: 'Jimmy', exact: true }).first();
-    await expect(note.getByText('本文作者', { exact: true })).toBeVisible();
-    for (const channel of channels) await expect(note.getByRole('link', { name: channel.label, exact: true })).toHaveAttribute('href', channel.href);
-    await note.locator('summary[aria-label="查看公众号二维码"]').click();
-    await expect(note.getByRole('img', { name: '公众号二维码占位，暂不可扫描' })).toBeVisible();
-    await capture(native, 'jimmy-note-social-no-js');
+    const page = await context.newPage();
+    await page.goto('/design/components');
+    const note = page.locator('#jimmy-notes').getByRole('note', { name: 'Jimmy', exact: true }).first();
+    const actions = note.locator('[data-slot="note-author-actions"]');
+    const website = actions.getByRole('link', { name: '个人网站', exact: true });
+    await expect(website).toBeVisible();
+    await expect(website).toHaveText('👋');
+    await expect(website).toHaveAttribute('href', 'https://jimmywong.dev');
+    await expect(actions.getByRole('button')).toHaveCount(0);
+    await capture(page, 'note-author-no-js');
   } finally { await context.close(); }
 });

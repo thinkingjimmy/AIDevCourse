@@ -1,14 +1,15 @@
 import { localePath } from '@/lib/i18n/routing';
 import type { ReactNode } from 'react';
-import { PageContainer, SiteLogo } from './page-primitives';
+import { PageContainer, SiteFooter, SiteLogo } from './page-primitives';
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/lib/i18n/config';
 import { getCatalog } from '@/lib/content/source';
 import { site } from '@/lib/site-config';
 import { lessonIndex } from '../search/lessons';
-import { LanguageSwitcher } from './language-switcher';
+import { HomeLanguageSwitcher, LanguageSwitcher } from './language-switcher';
 import { SearchShortcut } from '../search/search-shortcut';
 import { AuthorDialog } from '../course/author-card';
+import { SiteHeader } from './site-header';
 export function SiteBar({ locale, homeLabel, navLabel, children }: {
   locale: Locale; homeLabel: string; navLabel: string; children?: ReactNode;
 }) {
@@ -21,9 +22,17 @@ export async function HomeHeader({ locale }: { locale: Locale }) {
   const t = await getTranslations({ locale, namespace: 'Home' });
   const ui = await getTranslations({ locale, namespace: 'Ui' });
   const catalog = getCatalog();
-  return <SiteBar locale={locale} homeLabel={ui('home')} navLabel={t('navLabel')}>
+  return <SiteHeader locale={locale} courses={catalog.courses.filter(course => course.locale === locale).map(({ url, title }) => ({ url, title }))}
+    labels={{ home: ui('home'), navigation: t('navLabel') }}
+    shortcut={<SearchShortcut locale={locale} version={catalog.version} lessons={lessonIndex(catalog, locale)} />}>
     <AuthorDialog />
-    <SearchShortcut locale={locale} version={catalog.version} lessons={lessonIndex(catalog, locale)} />
     <LanguageSwitcher locale={locale} translations={catalog.translations} />
-  </SiteBar>;
+  </SiteHeader>;
+}
+
+export async function HomeFooter({ locale }: { locale: Locale }) {
+  const t = await getTranslations({ locale, namespace: 'Home' });
+  return <SiteFooter meta={t('footerMeta')} tools={<HomeLanguageSwitcher locale={locale} translations={getCatalog().translations} />}>
+    {t('footerLead')}
+  </SiteFooter>;
 }

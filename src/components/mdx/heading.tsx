@@ -24,7 +24,7 @@ export function Heading({ as: Tag = 'h1', id, className, children, ...props }: C
   if (!id) return <Tag {...props} className={className}>{children}</Tag>;
   return <Tag {...props} id={id} className={cn('group/heading flex scroll-m-28 flex-row items-center gap-1', className)}>
     {canLinkHeading(children) ? <a data-card="" href={`#${id}`}>{children}</a> : <span className="min-w-0">{children}</span>}
-    <Button variant="ghost" size="icon-touch" className="not-prose size-6 shrink-0 rounded-sm text-muted-foreground opacity-0 transition-opacity before:-inset-2.5 group-hover/heading:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100" aria-label={t('copyAnchor')} onClick={async () => {
+    <Button variant="ghost" size="icon-touch" className="not-prose size-6 shrink-0 rounded-sm text-brand/70 opacity-0 transition-opacity before:-inset-2.5 hover:bg-brand-soft hover:text-brand focus-visible:outline-brand group-hover/heading:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100" aria-label={t('copyAnchor')} onClick={async () => {
       clearTimeout(reset.current);
       try {
         const url = new URL(window.location.href);

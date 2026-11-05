@@ -96,11 +96,17 @@ test('completion follows module boundaries and returns from the final lesson to 
   await expect(page.locator(`[data-slot="sidebar-inner"] a[href="${last.url}"] [data-slot="lesson-completed"]`)).toBeVisible();
   await button(page, '下一章').click();
   await expect(page).toHaveURL(course.url);
-  await page.goto('/zh/courses/ai-coding/about-this-course');
+  await page.goto('/zh/courses/getting-started/what-to-learn-in-the-ai-era');
   await button(page).click();
-  await expect(page).toHaveURL('/zh/courses/ai-coding');
+  await expect(page).toHaveURL('/zh/courses/getting-started/what-to-do-when-anxious');
+  await expect(page.locator('article h1')).toHaveText('很焦虑怎么办？');
+  await button(page).click();
+  await expect(page).toHaveURL('/zh/courses/getting-started/about-this-course');
+  await expect(page.locator('article h1')).toHaveText('关于这门课');
+  await button(page).click();
+  await expect(page).toHaveURL('/zh/courses/getting-started');
   await expect(page.locator('main h1')).toHaveText('从想法到作品');
-  await capture(page, testInfo, 'single-lesson-completed');
+  await capture(page, testInfo, 'introduction-course-completed');
 });
 
 test('completion synchronizes tabs and uses the same stable ID across languages', async ({ page, context }, testInfo) => {

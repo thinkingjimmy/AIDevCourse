@@ -9,7 +9,7 @@ for (const scenario of [
   { name: 'narrow phone', width: 320, javaScriptEnabled: true },
   { name: 'without JavaScript', width: 320, javaScriptEnabled: false },
 ]) {
-  test(`design course opens without artwork on ${scenario.name}`, async ({ browser, baseURL }, testInfo) => {
+  test(`unpublished design course keeps its disk and empty directory on ${scenario.name}`, async ({ browser, baseURL }, testInfo) => {
     const context = await browser.newContext({ baseURL, viewport: { width: scenario.width, height: 960 },
       javaScriptEnabled: scenario.javaScriptEnabled, reducedMotion: 'reduce' });
     try {
@@ -21,9 +21,9 @@ for (const scenario of [
       await expect(beginner.getByRole('heading', { level: 3 })).toHaveText(['LLM 101', 'Coding 101', '设计 101']);
       const card = beginner.getByRole('link', { name: '设计 101', exact: true });
       await expect(card).toHaveAttribute('href', '/zh/courses/design-101');
-      await expect(card).toContainText('入门 · 免费');
+      await expect(card.locator('.disk-level')).toHaveText('入门');
       await expect(card.locator('[data-slot="course-card-image"], [data-anatomy], img')).toHaveCount(0);
-      await expect(card.locator('[data-slot="course-card-description"]')).toContainText('不需要设计基础');
+      await expect(card).toHaveAccessibleDescription(/不需要设计基础/);
       await testInfo.attach('Design course card', { body: await card.screenshot(), contentType: 'image/png' });
       await card.focus();
       await card.press('Enter');
@@ -32,8 +32,7 @@ for (const scenario of [
       await expect(page.locator('main [data-anatomy], main svg, main img')).toHaveCount(0);
       await expect(page.locator('[data-slot="course-empty"]')).toContainText('内容更新中');
       await expect(page.getByRole('link', { name: '开始第一课', exact: true })).toHaveCount(0);
-      const hero = page.locator('[data-slot="course-hero"] > div');
-      expect(await hero.evaluate(element => getComputedStyle(element).gridTemplateColumns.split(' ').length)).toBe(1);
+      await expect(page.locator('.course-disk-cover .disk-title')).toHaveText('设计 101');
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       if (scenario.javaScriptEnabled) {
         const accessibility = await new AxeBuilder({ page }).include('main').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();

@@ -1,9 +1,9 @@
 {
   "name": "@local/dsh-tutorial-review",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "private": true,
   "type": "module",
-  "description": "Read-only tutorial review surface with Notion-style margin annotations.",
+  "description": "Tutorial writing assistant with read-only review, margin annotations, AI polish/expansion, and link suggestions.",
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",
@@ -18,7 +18,8 @@
     "icon.svg",
     "annotations/**/*.json",
     "annotations/SCHEMA.md",
-    "README.md"
+    "README.md",
+    "external-sources.json"
   ],
   "dsh": {
     "bundle": {
@@ -28,5 +29,8 @@
       "platform": "web",
       "immediately": true
     }
+  },
+  "scripts": {
+    "build": "node scripts/build-css.mjs && ../../node_modules/.bin/esbuild src/loader.js --bundle --format=iife --platform=browser --target=es2022 --outfile=client.js --log-level=warning"
   }
 }

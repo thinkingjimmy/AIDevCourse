@@ -69,18 +69,18 @@ export function Achievement({ definition }: { definition: AchievementDefinition 
   return <FramedNote ref={card} id={`achievement-${id}`} role="region" aria-labelledby={titleId}
     label={showReward ? t('unlocked', { title }) : t('challenge')}
     data-achievement={id} data-state={showReward ? 'unlocked' : incorrect ? 'incorrect' : retrying ? 'retrying' : 'locked'}
-    signature={showReward ? <h3 ref={heading} id={titleId} tabIndex={-1} className="m-0 min-w-0 wrap-anywhere text-sm leading-copy font-medium text-foreground">
+    signature={showReward ? <h3 ref={heading} id={titleId} tabIndex={-1} className="m-0 min-w-0 wrap-anywhere text-sm leading-copy font-medium text-brand">
       <span aria-hidden>🥇 </span>{t('unlocked', { title })}
-    </h3> : <span className="text-sm leading-copy font-medium text-foreground"><span aria-hidden>🥇 </span><span>{t('challenge')}</span></span>}>
+    </h3> : <span className="text-sm leading-copy font-medium text-brand"><span aria-hidden>🥇 </span><span>{t('challenge')}</span></span>}>
     <div className="flex min-w-0 flex-col gap-4">
       {showReward ? <>
         <p>{takeaway}</p>
         <footer className="flex flex-wrap items-center gap-3">
-          <Button variant="action-outline" className="h-auto min-h-11 max-w-full touch-manipulation rounded-sm px-4 whitespace-normal" onClick={retry}>
+          <Button variant="brand-outline" className="h-auto min-h-11 max-w-full touch-manipulation rounded-sm px-4 whitespace-normal" onClick={retry}>
             <ArrowCounterClockwiseIcon size={20} aria-hidden /><span>{t('retry')}</span>
           </Button>
           <AchievementGallery>
-            <Button variant="action-outline" className="h-auto min-h-11 max-w-full touch-manipulation rounded-sm px-4 whitespace-normal">
+            <Button variant="brand-outline" className="h-auto min-h-11 max-w-full touch-manipulation rounded-sm px-4 whitespace-normal">
               <MedalIcon size={20} aria-hidden /><span>{t('viewAll')}</span>
             </Button>
           </AchievementGallery>
@@ -90,11 +90,11 @@ export function Achievement({ definition }: { definition: AchievementDefinition 
           <fieldset disabled={!ready} className="m-0 min-w-0 border-0 p-0">
             <legend id={titleId} className="w-full p-0 text-base leading-reading">{question}</legend>
             <div className="mt-4 grid gap-3 [@media(scripting:none)]:hidden">
-              {options.map((choice, index) => <label key={choice.value} className="flex min-h-12 cursor-pointer items-start gap-3 rounded-sm border border-border bg-background px-4 py-3 text-sm leading-copy text-foreground hover:bg-surface has-checked:border-foreground has-checked:bg-surface has-disabled:cursor-not-allowed">
+              {options.map((choice, index) => <label key={choice.value} className="flex min-h-12 cursor-pointer items-start gap-3 rounded-sm border border-brand/25 bg-background px-4 py-3 text-sm leading-copy text-foreground hover:border-brand/50 hover:bg-brand/5 has-checked:border-brand has-checked:bg-brand-soft has-[[aria-invalid=true]]:border-destructive has-[[aria-invalid=true]]:bg-destructive/5 has-disabled:cursor-not-allowed">
                 <input ref={index === 0 ? firstOption : undefined} type="radio" name={titleId} value={choice.value} checked={selected === choice.value}
                   aria-invalid={incorrect && selected === choice.value || undefined}
                   aria-describedby={selected === choice.value && incorrect ? feedbackId : undefined}
-                  className="mt-0.5 size-4 shrink-0 accent-foreground"
+                  className="mt-0.5 size-4 shrink-0 accent-brand focus-visible:outline-brand aria-invalid:accent-destructive"
                   onChange={() => {
                     setSelected(choice.value);
                     if (choice.value !== answer) { setResult('incorrect'); return; }

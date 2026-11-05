@@ -14,12 +14,12 @@ export function JimmyNote({ anchor, noteNumber, embedOnly = false, children, cla
       'not-prose text-sm leading-body text-reading [overflow-wrap:anywhere]',
       embedOnly
         ? 'p-0 [[data-slot=jimmy-note-popover]_&]:max-h-[var(--note-max-height)] [[data-slot=jimmy-note-popover]_&]:overflow-y-auto [[data-slot=jimmy-note-popover]_&]:overscroll-contain'
-        : 'max-h-[var(--note-max-height,calc(100svh-3.5rem))] overflow-y-auto overscroll-contain rounded-sm border-(length:--note-line-width) border-note-connector bg-background p-2 shadow-[3px_3px_0_var(--color-note-highlight)]',
+        : 'max-h-[var(--note-max-height,calc(100svh-3.5rem))] overflow-y-auto overscroll-contain rounded-sm border-(length:--note-line-width) border-note-connector bg-background p-3 shadow-[3px_3px_0_var(--color-note-highlight)] focus-visible:outline-brand',
       className,
     )}>
     <span id={`jimmy-note-number-${anchor}`} data-slot="note-description" className="sr-only">{description}</span>
     {!embedOnly && <NoteAuthor />}
-    <div data-slot="note-body" className={cn('[&>p]:m-0 [&>p+p]:mt-3 [&_a]:underline [&_a]:underline-offset-4 [&_code]:rounded-sm [&_code]:bg-muted [&_code]:px-1 [&_li+li]:mt-1 [&_ul]:list-disc [&_ul]:pl-5', embedOnly && '[&>[data-embed]]:my-0 [&>[data-embed]+[data-embed]]:mt-3')}>{children}</div>
+    <div data-slot="note-body" className={cn('[&>p]:m-0 [&>p+p]:mt-3 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_code]:rounded-sm [&_code]:bg-brand-soft [&_code]:px-1 [&_li+li]:mt-1 [&_ul]:list-disc [&_ul]:pl-5', embedOnly && '[&>[data-embed]]:my-0 [&>[data-embed]+[data-embed]]:mt-3')}>{children}</div>
   </aside>;
 
   return <>

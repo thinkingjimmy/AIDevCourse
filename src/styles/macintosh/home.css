@@ -1,0 +1,91 @@
+@layer components {
+  :root:has(.home-gallery) { scroll-padding-top: calc(var(--home-masthead-height, 28rem) + 12px); }
+  .home-gallery { --page-scroll-margin: 12px; position: relative; flex: 1; width: min(64rem, 100%); margin: 0 auto; padding: 0 28px 64px; }
+  .gallery-hero { position: sticky; top: 0; z-index: 40; isolation: isolate; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 24px; padding: 20px 0; }
+  .gallery-hero::before { content: ''; position: absolute; z-index: -1; inset: 0 calc((100% - 100vw) / 2); background: var(--color-background); }
+  .gallery-copy { grid-column: 1; grid-row: 1; min-width: 0; }
+  .gallery-heading > .site-header-logo { margin-bottom: 10px; }
+  .gallery-copy h1 { @apply text-hero leading-heading tracking-normal font-normal text-brand; font-family: 'Course Pixel', var(--font-site-pixel); font-synthesis: none; margin: 0; white-space: pre-line; text-wrap: balance; overflow-wrap: anywhere; text-shadow: 1px 1px var(--color-background), 2px 2px var(--color-brand), 3px 3px var(--color-background), 4px 4px var(--color-brand); }
+  .gallery-copy p { @apply text-base leading-body text-muted-foreground; max-width: 26rem; margin: 16px 0 22px; text-wrap: pretty; }
+  .gallery-copy h1:lang(ja) { font-family: 'Course Pixel JP', var(--font-site-pixel); }
+  .gallery-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .gallery-computer { grid-column: 2; grid-row: 1; justify-self: center; width: min(100%, clamp(210px, 36svh, 324px)); }
+  .home-courses { padding-top: 20px; }
+  .disk-catalog { display: grid; gap: 40px; }
+  .disk-group-title { @apply font-mono text-caption font-medium text-brand; display: flex; align-items: center; gap: 16px; margin: 0 0 28px; }
+  .disk-group-title::after { content: ''; flex: 1; height: 1px; background: color-mix(in srgb, var(--color-brand) 20%, transparent); }
+  .disk-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; justify-items: start; }
+  .course-disk-link, .course-disk-cover { position: relative; display: flex; width: 176px; min-height: 188px; color: #294735; text-decoration: none; }
+  .course-disk-link { border-radius: 2px; scroll-margin-block: 12px; }
+  /* Nine-slice artwork lets the paper grow with text while the shutter and corners retain their proportions. */
+  .course-disk { position: relative; display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: inherit; border: solid transparent; border-width: 76px 14px 20px; border-image-source: var(--disk-artwork); border-image-slice: 38 7 10 fill; border-image-repeat: stretch; image-rendering: pixelated; transform-origin: center top; transition: transform 180ms cubic-bezier(.2,.8,.2,1); }
+  .disk-label { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; padding: 4px 4px 3px; }
+  .disk-brand { @apply font-mono text-diagram-caption leading-copy; color: #4b5948; }
+  .disk-title { @apply font-pixel text-lg leading-heading font-normal; display: block; margin: 5px 0 8px; text-wrap: balance; overflow-wrap: anywhere; }
+  .disk-meta { @apply text-diagram-label leading-copy; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2px 6px; margin-top: auto; padding-top: 4px; border-top: 1px solid #a5ad99; color: #465442; }
+  .disk-level { display: inline-flex; align-items: center; gap: 4px; }
+  .disk-dots { display: inline-flex; gap: 2px; }
+  .disk-dots:empty { display: none; }
+  .disk-dots i { width: 3px; height: 3px; background: currentColor; }
+  .disk-level[data-level=intermediate] { color: #805e2f; }
+  .disk-pagination { @apply font-mono text-xs text-muted-foreground; display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: 4px; }
+  .disk-pagination > a, .disk-pagination > span[aria-hidden] { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid var(--color-border); border-radius: 3px; }
+  .disk-pagination > span[aria-hidden] { opacity: .35; }
+  .disk-pagination a:hover { border-color: var(--color-brand); color: var(--color-brand); }
+  .flying-course-disk { position: absolute; z-index: 60; min-height: 0; pointer-events: none; transition: none; }
+  .disk-insertion-pocket { position: absolute; z-index: 60; overflow: hidden; pointer-events: none; }
+  .course-disk-link[data-in-drive] .course-disk { opacity: 0; }
+  .disk-cancel { @apply text-caption text-brand; position: fixed; bottom: 24px; left: 50%; z-index: 110; min-height: 44px; padding: 10px 18px; border: 1px solid var(--color-brand); border-radius: 3px; background: var(--color-background); box-shadow: 2px 2px 0 #31564b30; transform: translateX(-50%); }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .course-disk-link:hover .course-disk { transform: translateY(-6px) rotate(-2deg); }
+  }
+  .course-disk-link:focus-visible .course-disk { transform: translateY(-4px); }
+  @media (max-width: 841px) {
+    .gallery-copy h1 { @apply text-display; }
+  }
+  @media (max-width: 721px) {
+    .home-gallery { padding: 0 20px 40px; }
+    .gallery-hero { grid-template-columns: minmax(0, 1fr) 128px; gap: 12px; padding: 12px 0 20px; }
+    .gallery-copy { display: contents; }
+    .gallery-heading { grid-column: 1; grid-row: 1; min-width: 0; }
+    .gallery-copy h1 { @apply text-2xl; text-shadow: 1px 1px var(--color-background), 2px 2px var(--color-brand); }
+    .gallery-copy p { @apply text-ui; grid-column: 1 / -1; grid-row: 2; margin: 0; max-width: 100%; }
+    .gallery-actions { grid-column: 1 / -1; grid-row: 3; flex-wrap: nowrap; }
+    .gallery-actions > [data-slot=hero-primary-action] { flex: 1; min-width: 0; }
+    .gallery-actions > [data-slot=author-dialog-trigger] { flex-shrink: 1; white-space: normal; height: auto; }
+    .gallery-computer { width: 100%; }
+    .home-courses { padding-top: 16px; }
+    .disk-catalog { gap: 32px; }
+    .disk-group-title { margin-bottom: 24px; }
+    .disk-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px 16px; }
+    .course-disk-link, .course-disk-cover { width: 148px; min-height: 164px; }
+    .course-disk { border-width: 64px 12px 17px; }
+    .disk-label { padding: 3px 3px 2px; }
+    .disk-title { @apply text-base leading-heading; margin: 4px 0 6px; }
+    .disk-meta { @apply text-diagram-caption leading-copy; }
+  }
+  @media (max-width: 359px) {
+    .home-gallery { padding-right: 16px; padding-left: 16px; }
+    .gallery-hero { grid-template-columns: minmax(0,1fr) 104px; }
+    .gallery-copy h1 { @apply text-2xl; }
+    .disk-grid { gap: 22px 12px; }
+    .course-disk-link, .course-disk-cover { width: 136px; min-height: 158px; }
+    .course-disk { border-width: 59px 11px 16px; }
+  }
+  @media (max-height: 600px) and (min-width: 722px) {
+    .gallery-hero { padding-top: 4px; padding-bottom: 12px; gap: 0 24px; }
+    .gallery-heading > .site-header-logo { margin-bottom: 4px; }
+    .gallery-copy h1 { @apply text-2xl; }
+    .gallery-copy p { display: none; }
+    .gallery-actions { margin-top: 12px; }
+    .gallery-computer { width: min(100%, 34svh); }
+  }
+  @media (max-height: 600px) and (max-width: 721px) {
+    .gallery-hero { grid-template-columns: minmax(0, 1fr) 96px; gap: 8px 12px; padding: 4px 0 12px; }
+    .gallery-copy h1 { @apply text-xl; }
+    .gallery-copy p { display: none; }
+    .gallery-actions { grid-row: 2; }
+  }
+  @media (prefers-reduced-motion: reduce) { .course-disk-link .course-disk { transform: none !important; transition: none; } }
+}
+

@@ -23,6 +23,7 @@ for (const scenario of [
       const notes = section.getByRole('note', { name: '划重点', exact: true });
       await expect(notes).toHaveCount(2);
       await expect(notes.first().locator('[data-slot="alert-description"] strong')).toHaveText('模型生成的是下一个 Token，而不是一次性生成整段回答。');
+      await expect(notes.first().locator('[data-slot="alert-description"] strong')).toHaveCSS('color', 'rgb(49, 86, 75)');
       await expect(notes.nth(1).locator('mark')).toHaveText('生成答案不等于核实事实');
       await expect(notes.nth(1).getByRole('listitem')).toHaveCount(2);
       await expect(notes.nth(1).locator('[data-slot="alert-description"] code')).toHaveText('Token');
@@ -31,13 +32,14 @@ for (const scenario of [
         const style = getComputedStyle(element);
         return { border: style.border, radius: style.borderRadius, shadow: style.boxShadow, background: style.backgroundColor, color: style.color };
       };
-      const reference = { border: '1px solid rgb(9, 9, 11)', radius: scenario.name === 'enlarged' ? '6px' : '4px', background: 'rgb(255, 255, 255)', color: 'rgb(63, 63, 70)' };
+      const reference = { border: '1px solid rgb(49, 86, 75)', radius: scenario.name === 'enlarged' ? '6px' : '4px', background: 'rgb(253, 253, 252)', color: 'rgb(63, 63, 70)' };
       const evidence = [];
       for (const note of await notes.all()) {
         const frame = await note.evaluate(frameStyle);
         expect(frame).toMatchObject(reference);
-        expect(frame.shadow).toContain('rgb(228, 228, 231) 4px 4px 0px 0px');
+        expect(frame.shadow).toContain('4px 4px 0px 0px');
         await expect(note.locator('[data-slot="alert-title"]')).toHaveText('💡 划重点');
+        await expect(note.locator('[data-slot="alert-title"]')).toHaveCSS('color', 'rgb(49, 86, 75)');
         await expect(note.locator('[data-slot="alert-title"] [aria-hidden="true"]')).toHaveText('💡 ');
         const layout = await note.evaluate((element) => {
           const frame = element.getBoundingClientRect();

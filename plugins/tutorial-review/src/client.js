@@ -1,16 +1,21 @@
 import { renderTutorial } from './render.js';
-import { cssEscape, highlightAnnotations, readLocatedAnnotations } from './highlight.js';
+import { cssEscape, highlightAnnotations, normalizeSpace, readAnnotationPositions, readLocatedAnnotations } from './highlight.js';
+import { createUi, cn } from './ui.js';
+import { TAILWIND_CSS } from './generated-css.js';
 import zh from '../locale/zh.json';
 import en from '../locale/en.json';
 
 const NS = 'tutorialReview';
 const PANEL_ID = 'tutorial-review';
 const STORAGE_KEY = 'dsh.tutorial-review.lesson';
+const ENHANCE_CACHE_PREFIX = 'dsh.tutorial-review.enhance.v2:';
 const DICTIONARIES = { zh, en };
 
 export function createPlugin(React) {
   const h = React.createElement;
   const { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } = React;
+  const ui = createUi(h);
+  const { Button, Badge, Input, Separator, Skeleton } = ui;
 
   function fallbackT(key, vars) {
     const lang = typeof navigator !== 'undefined' && String(navigator.language || '').toLowerCase().startsWith('zh') ? 'zh' : 'en';
@@ -52,12 +57,22 @@ export function createPlugin(React) {
     const [collapsed, setCollapsed] = useState(() => new Set());
     const [activeId, setActiveId] = useState('');
     const [located, setLocated] = useState([]);
+    const [positions, setPositions] = useState([]);
     const [focusAnn, setFocusAnn] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const [refreshedAt, setRefreshedAt] = useState(null);
     const [railOpen, setRailOpen] = useState(false);
     const [navOpen, setNavOpen] = useState(false);
+    const [assistByLesson, setAssistByLesson] = useState({});
+    const [enhanceByLesson, setEnhanceByLesson] = useState({});
+    const [enhanceNonce, setEnhanceNonce] = useState(0);
+    const [selectionMenu, setSelectionMenu] = useState(null);
+    const [copiedId, setCopiedId] = useState('');
+    const forceEnhance = useRef(false);
+    const enhanceRequests = useRef(new Map());
+    const enhanceSeq = useRef(new Map());
     const activeSource = useRef('mark');
+    const assistSeq = useRef(0);
     const docRequest = useRef(0);
     const cardRefs = useRef(new Map());
     const mounted = useRef(true);
@@ -101,6 +116,7 @@ export function createPlugin(React) {
             setFocusAnn(null);
           }
           setLocated([]);
+          setPositions([]);
           try {
             localStorage.setItem(STORAGE_KEY, lessonId);
           } catch {
@@ -150,6 +166,29 @@ export function createPlugin(React) {
     }, [fetchJson, loadDoc]);
 
     const lessons = useMemo(() => flattenLessons(manifest), [manifest]);
+    const cachedEnhanceCounts = useMemo(() => {
+      const counts = {};
+      if (!manifest) return counts;
+      for (const lesson of lessons) {
+        const cached = readEnhanceCache(`${ENHANCE_CACHE_PREFIX}${lesson.lessonId}`, lesson.mtime);
+        if (cached) counts[lesson.lessonId] = countEnhanceData(cached.data);
+      }
+      return counts;
+    }, [manifest, lessons]);
+    const autoCountFor = (lesson) => {
+      if (!lesson) return 0;
+      const entry = enhanceByLesson[lesson.lessonId];
+      if (entry?.data) return countEnhanceData(entry.data);
+      return cachedEnhanceCounts[lesson.lessonId] || 0;
+    };
+    const totalAutoCount = useMemo(
+      () =>
+        lessons.reduce((sum, lesson) => {
+          const entry = enhanceByLesson[lesson.lessonId];
+          return sum + (entry?.data ? countEnhanceData(entry.data) : cachedEnhanceCounts[lesson.lessonId] || 0);
+        }, 0),
+      [lessons, enhanceByLesson, cachedEnhanceCounts],
+    );
     const currentIndex = lessons.findIndex((lesson) => lesson.lessonId === selectedId);
     const currentLesson = currentIndex >= 0 ? lessons[currentIndex] : null;
     const course = useMemo(() => {
@@ -175,16 +214,83 @@ export function createPlugin(React) {
     }, [manifest, query]);
 
     const annotations = useMemo(() => normalizeAnnotations(doc?.annotations || []), [doc]);
-    const annotationById = useMemo(() => new Map(annotations.map((item) => [item.id, item])), [annotations]);
+    const assistAnnotations = useMemo(
+      () => (doc?.lessonId ? assistByLesson[doc.lessonId] || [] : []).map((item) => ({ ...item, kind: 'assist', key: item.id })),
+      [assistByLesson, doc?.lessonId],
+    );
+    const enhanceEntry = useMemo(
+      () => (doc?.lessonId ? enhanceByLesson[doc.lessonId] : undefined),
+      [enhanceByLesson, doc?.lessonId],
+    );
+    const enhanceData = enhanceEntry?.data;
+    const proofreadAnnotations = useMemo(() => {
+      if (!doc?.lessonId || !enhanceData?.issues?.length) return [];
+      return enhanceData.issues.map((issue, index) => ({
+        id: `enh-proof-${doc.lessonId}-${index}`,
+        kind: 'proofread',
+        issueType: issue.type === 'typo' ? 'typo' : 'grammar',
+        quote: issue.quote,
+        category: issue.type === 'typo' ? t('typo') : t('grammar'),
+        suggestion: issue.suggestion,
+        reason: issue.reason,
+        comment: issue.reason,
+        key: `enh-proof-${index}`,
+      }));
+    }, [doc?.lessonId, enhanceData, t]);
+    const internalLinkAnnotations = useMemo(() => {
+      if (!doc?.lessonId || !enhanceData?.internalLinks?.length) return [];
+      return enhanceData.internalLinks.map((link, index) => ({
+        id: `enh-in-${doc.lessonId}-${index}`,
+        kind: 'link',
+        linkType: 'internal',
+        quote: link.quote,
+        category: t('internalLinks'),
+        title: link.title,
+        lessonId: link.lessonId,
+        reason: link.reason,
+        comment: link.reason,
+        key: `enh-in-${index}`,
+      }));
+    }, [doc?.lessonId, enhanceData, t]);
+    const externalLinkAnnotations = useMemo(() => {
+      if (!doc?.lessonId || !enhanceData?.externalLinks?.length) return [];
+      return enhanceData.externalLinks.map((link, index) => ({
+        id: `enh-ex-${doc.lessonId}-${index}`,
+        kind: 'link',
+        linkType: 'external',
+        quote: link.quote,
+        category: t('externalLinks'),
+        title: link.title,
+        url: link.url,
+        domain: link.domain,
+        snippet: link.snippet,
+        reason: link.reason,
+        comment: link.reason,
+        key: `enh-ex-${index}`,
+      }));
+    }, [doc?.lessonId, enhanceData, t]);
+    const reviewEnhanceAnnotations = useMemo(
+      () => [...proofreadAnnotations, ...internalLinkAnnotations, ...externalLinkAnnotations],
+      [proofreadAnnotations, internalLinkAnnotations, externalLinkAnnotations],
+    );
+    const allAnnotations = useMemo(
+      () => [...annotations, ...assistAnnotations, ...reviewEnhanceAnnotations],
+      [annotations, assistAnnotations, reviewEnhanceAnnotations],
+    );
+    const annotationById = useMemo(() => new Map(allAnnotations.map((item) => [item.id, item])), [allAnnotations]);
+    const positionById = useMemo(() => new Map(positions.map((item) => [item.id, item.start])), [positions]);
+    const reviewCards = useMemo(() => {
+      const cards = [...annotations, ...reviewEnhanceAnnotations];
+      return cards.sort((a, b) => {
+        const left = positionById.get(a.id);
+        const right = positionById.get(b.id);
+        if (left == null && right == null) return 0;
+        if (left == null) return 1;
+        if (right == null) return -1;
+        return left - right;
+      });
+    }, [annotations, reviewEnhanceAnnotations, positionById]);
     const locatedOrder = useMemo(() => new Map(located.map((item) => [item.id, item.index])), [located]);
-    const sortedAnnotations = useMemo(() => {
-      const positioned = annotations
-        .filter((item) => locatedOrder.has(item.id))
-        .sort((a, b) => locatedOrder.get(a.id) - locatedOrder.get(b.id));
-      const missing = annotations.filter((item) => !locatedOrder.has(item.id));
-      return { positioned, missing };
-    }, [annotations, locatedOrder]);
-
     const rendered = useMemo(() => {
       if (!doc) return { html: '', error: false };
       return renderTutorial(doc.source, { lessonId: doc.lessonId });
@@ -192,6 +298,10 @@ export function createPlugin(React) {
 
     const handleLocated = useCallback((next) => {
       setLocated((previous) => (sameLocated(previous, next) ? previous : next));
+    }, []);
+
+    const handlePositions = useCallback((next) => {
+      setPositions((previous) => (samePositions(previous, next) ? previous : next));
     }, []);
 
     const handleMarkSelect = useCallback((id) => {
@@ -241,7 +351,11 @@ export function createPlugin(React) {
         const available = flattenLessons(nextManifest);
         const preferred = available.find((lesson) => lesson.annotationCount > 0)?.lessonId;
         const target = available.some((lesson) => lesson.lessonId === selectedId) ? selectedId : preferred || available[0]?.lessonId;
-        if (target) await loadDoc(target, { keepActive: true });
+        if (target) {
+          forceEnhance.current = true;
+          await loadDoc(target, { keepActive: true });
+        }
+        setEnhanceNonce((nonce) => nonce + 1);
         setLoadError('');
         setNotice('');
       } catch (error) {
@@ -270,39 +384,366 @@ export function createPlugin(React) {
       [currentIndex, lessons, loadDoc],
     );
 
-    const noteCount = annotations.length;
+    const addAssist = useCallback((lessonId, item) => {
+      setAssistByLesson((previous) => ({
+        ...previous,
+        [lessonId]: [...(previous[lessonId] || []), item],
+      }));
+    }, []);
+
+    const updateAssist = useCallback((lessonId, id, patch) => {
+      setAssistByLesson((previous) => {
+        const list = previous[lessonId] || [];
+        return {
+          ...previous,
+          [lessonId]: list.map((item) => (item.id === id ? { ...item, ...patch } : item)),
+        };
+      });
+    }, []);
+
+    const replaceAssist = useCallback((lessonId, id, items) => {
+      setAssistByLesson((previous) => {
+        const list = previous[lessonId] || [];
+        const index = list.findIndex((item) => item.id === id);
+        const next = list.filter((item) => item.id !== id);
+        const at = index < 0 ? next.length : index;
+        next.splice(at, 0, ...items);
+        return { ...previous, [lessonId]: next };
+      });
+    }, []);
+
+    const runAssist = useCallback(
+      async ({ task, selection, context = '', scope = 'selection' }, existingId) => {
+        const lessonId = doc?.lessonId;
+        if (!lessonId || !selection) return;
+        const id = existingId || `assist-${Date.now()}-${(assistSeq.current += 1)}`;
+        if (existingId) {
+          updateAssist(lessonId, existingId, { status: 'loading', error: '', comment: '' });
+        } else {
+          addAssist(lessonId, {
+            id,
+            kind: 'assist',
+            assistType: task,
+            quote: selection,
+            category: assistLabel(task, t),
+            comment: '',
+            status: 'loading',
+            createdAt: Date.now(),
+            context,
+            scope,
+          });
+        }
+        setActiveId(id);
+        setSelectionMenu(null);
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 120000);
+        try {
+          const response = await fetch('/api/tutorial-review/assist', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ task, lessonId, selection, context, scope }),
+            signal: controller.signal,
+          });
+          let payload = null;
+          try {
+            payload = await response.json();
+          } catch {
+            payload = null;
+          }
+          if (!response.ok) throw new Error(payload?.message || `HTTP ${response.status}`);
+          if (!payload || payload.kind !== task) throw new Error(t('assistFailed'));
+          const links = Array.isArray(payload.links) ? payload.links : [];
+          const linkTask = task === 'internal-links' || task === 'external-links';
+          if (linkTask && links.length > 0) {
+            const cards = links.map((link, index) => ({
+              id: `${id}-${index}`,
+              kind: 'assist',
+              assistType: task,
+              quote: link.quote || selection,
+              category: assistLabel(task, t),
+              comment: index === 0 ? payload.note || '' : '',
+              status: 'done',
+              result: { ...payload, links: [link], fallback: index === 0 ? payload.fallback : false },
+              note: index === 0 ? payload.note || '' : '',
+              createdAt: Date.now() + index,
+              context,
+              scope,
+            }));
+            replaceAssist(lessonId, id, cards);
+            setActiveId(cards[0].id);
+          } else {
+            updateAssist(lessonId, id, {
+              status: 'done',
+              result: payload,
+              note: payload.note || '',
+              comment: payload.note || '',
+            });
+          }
+        } catch (error) {
+          const message =
+            error?.name === 'AbortError'
+              ? t('assistTimeout')
+              : error instanceof Error
+                ? error.message
+                : String(error);
+          updateAssist(lessonId, id, { status: 'error', error: message, comment: '' });
+        } finally {
+          clearTimeout(timer);
+        }
+      },
+      [addAssist, doc?.lessonId, replaceAssist, t, updateAssist],
+    );
+
+    const retryAssist = useCallback(
+      (annotation) => {
+        if (!annotation || !doc) return;
+        runAssist(
+          {
+            task: annotation.assistType,
+            selection: annotation.quote,
+            context: annotation.context || '',
+            scope: annotation.scope || 'selection',
+          },
+          annotation.id,
+        );
+      },
+      [doc, runAssist],
+    );
+
+    const copyAssist = useCallback(async (annotation) => {
+      const text = assistCopyText(annotation, t);
+      try {
+        if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
+        else fallbackCopy(text);
+        setCopiedId(annotation.id);
+        setTimeout(() => {
+          if (mounted.current) setCopiedId('');
+        }, 1600);
+      } catch {
+        /* clipboard may be unavailable */
+      }
+    }, [t]);
+
+    const startSelectionAssist = useCallback(
+      (task) => {
+        const menu = selectionMenu;
+        if (!menu || !doc) return;
+        window.getSelection()?.removeAllRanges();
+        runAssist({ task, selection: menu.text, context: menu.context, scope: 'selection' });
+      },
+      [doc, runAssist, selectionMenu],
+    );
+
+    const runEnhance = useCallback(
+      async (target, force = false) => {
+        const lessonId = target?.lessonId;
+        if (!lessonId) return;
+        const mtime = target.mtime;
+        const key = `${ENHANCE_CACHE_PREFIX}${lessonId}`;
+        if (force) {
+          try {
+            localStorage.removeItem(key);
+          } catch {
+            /* storage may be unavailable */
+          }
+        } else {
+          const cached = readEnhanceCache(key, mtime);
+          if (cached) {
+            setEnhanceByLesson((previous) => ({
+              ...previous,
+              [lessonId]: { status: 'done', data: cached.data, generatedAt: cached.generatedAt, mtime },
+            }));
+            return;
+          }
+        }
+        if (!force && enhanceRequests.current.get(lessonId) === mtime) return;
+        const seq = (enhanceSeq.current.get(lessonId) || 0) + 1;
+        enhanceSeq.current.set(lessonId, seq);
+        enhanceRequests.current.set(lessonId, mtime);
+        setEnhanceByLesson((previous) => ({
+          ...previous,
+          [lessonId]: { ...(previous[lessonId] || {}), status: 'loading', mtime },
+        }));
+
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 180000);
+        try {
+          const response = await fetch('/api/tutorial-review/assist', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+              task: 'review-enhance',
+              lessonId,
+              selection: target.title,
+              context: '',
+              scope: 'lesson',
+            }),
+            signal: controller.signal,
+          });
+          let payload = null;
+          try {
+            payload = await response.json();
+          } catch {
+            payload = null;
+          }
+          if (!response.ok) throw new Error(payload?.message || `HTTP ${response.status}`);
+          if (!payload || payload.kind !== 'review-enhance') throw new Error(t('reviewEnhanceFailed'));
+          if (enhanceSeq.current.get(lessonId) !== seq) return;
+          const data = {
+            issues: Array.isArray(payload.issues) ? payload.issues : [],
+            internalLinks: Array.isArray(payload.internalLinks) ? payload.internalLinks : [],
+            externalLinks: Array.isArray(payload.externalLinks) ? payload.externalLinks : [],
+            note: payload.note || '',
+            sourcesNote: payload.sourcesNote || '',
+          };
+          const generatedAt = Date.now();
+          try {
+            localStorage.setItem(key, JSON.stringify({ mtime, generatedAt, data }));
+          } catch {
+            /* storage may be unavailable */
+          }
+          setEnhanceByLesson((previous) => ({
+            ...previous,
+            [lessonId]: { status: 'done', data, generatedAt, mtime },
+          }));
+        } catch (error) {
+          if (enhanceSeq.current.get(lessonId) !== seq) return;
+          const message =
+            error?.name === 'AbortError'
+              ? t('assistTimeout')
+              : error instanceof Error
+                ? error.message
+                : String(error);
+          setEnhanceByLesson((previous) => ({
+            ...previous,
+            [lessonId]: { ...(previous[lessonId] || {}), status: 'error', error: message, mtime },
+          }));
+        } finally {
+          clearTimeout(timer);
+          if (enhanceSeq.current.get(lessonId) === seq) enhanceRequests.current.delete(lessonId);
+        }
+      },
+      [t],
+    );
+
+    const regenerateEnhance = useCallback(() => {
+      if (doc) runEnhance(doc, true);
+    }, [doc, runEnhance]);
+
+    useEffect(() => {
+      if (!doc) return;
+      const force = forceEnhance.current;
+      forceEnhance.current = false;
+      runEnhance(doc, force);
+    }, [doc?.lessonId, doc?.mtime, enhanceNonce, runEnhance]);
+
+    useEffect(() => {
+      if (!doc) return undefined;
+      let frame = 0;
+      const clear = () => setSelectionMenu(null);
+      const measure = () => {
+        frame = 0;
+        const selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+          clear();
+          return;
+        }
+        const range = selection.getRangeAt(0);
+        const body = document.querySelector('.tr-doc-body');
+        if (!body || !body.contains(range.commonAncestorContainer)) {
+          clear();
+          return;
+        }
+        const startElement =
+          range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer;
+        if (!startElement || startElement.closest?.('pre, code, [data-no-annotate]')) {
+          clear();
+          return;
+        }
+        const text = normalizeSpace(selection.toString());
+        if (text.length < 4) {
+          clear();
+          return;
+        }
+        const rect =
+          typeof range.getBoundingClientRect === 'function'
+            ? range.getBoundingClientRect()
+            : startElement.getBoundingClientRect?.();
+        if (!rect || (rect.width === 0 && rect.height === 0)) {
+          clear();
+          return;
+        }
+        const half = Math.min(140, Math.max(70, window.innerWidth / 2 - 12));
+        const left = Math.min(
+          window.innerWidth - half - 8,
+          Math.max(half + 8, rect.left + rect.width / 2),
+        );
+        let top = rect.bottom + 10;
+        if (top + 82 > window.innerHeight) top = Math.max(16, rect.top - 72);
+        setSelectionMenu({ text, context: readSelectionContext(range), left, top });
+      };
+      const schedule = () => {
+        if (frame) return;
+        frame = requestAnimationFrame(measure);
+      };
+      const hide = () => setSelectionMenu(null);
+      document.addEventListener('selectionchange', schedule);
+      document.addEventListener('mouseup', schedule);
+      document.addEventListener('keyup', schedule);
+      window.addEventListener('scroll', hide, true);
+      window.addEventListener('resize', hide);
+      return () => {
+        if (frame) cancelAnimationFrame(frame);
+        document.removeEventListener('selectionchange', schedule);
+        document.removeEventListener('mouseup', schedule);
+        document.removeEventListener('keyup', schedule);
+        window.removeEventListener('scroll', hide, true);
+        window.removeEventListener('resize', hide);
+        setSelectionMenu(null);
+      };
+    }, [doc?.lessonId]);
+
+    const assistCount = assistAnnotations.length;
+    const enhanceCount = reviewEnhanceAnnotations.length;
+    const noteCount = annotations.length + enhanceCount;
+    const enhanceLoading = enhanceEntry?.status === 'loading';
     const searchActive = query.trim().length > 0;
 
     return h(
       'div',
-      { className: 'tr-root' },
-      h('style', null, STYLES),
+      { className: 'tr-root font-tr' },
+      h('style', null, `@layer components {${STYLES}}`),
+      h('style', null, TAILWIND_CSS),
       h(
         'aside',
-        { className: `tr-nav${navOpen ? ' is-open' : ''}`, 'aria-label': t('panel') },
+        { className: cn('tr-nav border-r border-tr-border bg-tr-muted/40', navOpen && 'is-open'), 'aria-label': t('panel') },
         h(
           'div',
-          { className: 'tr-nav-head' },
-          h('div', { className: 'tr-nav-kicker' }, t('title')),
-          h('p', { className: 'tr-nav-sub' }, t('subtitle')),
+          { className: 'flex flex-col gap-1 border-b border-tr-border px-4 pb-3 pt-5' },
+          h('div', { className: 'text-[15px] font-semibold tracking-tight text-tr-fg' }, t('title')),
+          h('p', { className: 'm-0 text-[11px] leading-relaxed text-tr-tertiary' }, t('subtitle')),
         ),
         h(
-          'label',
-          { className: 'tr-search' },
-          searchIcon(),
-          h('input', {
+          'div',
+          { className: 'relative m-3' },
+          h('span', { className: 'pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-tr-tertiary' }, searchIcon()),
+          h(Input, {
             type: 'search',
             value: query,
             onChange: (event) => setQuery(event.target.value),
             placeholder: t('search'),
             'aria-label': t('search'),
+            className: 'pl-8 pr-8',
           }),
           query
             ? h(
-                'button',
+                Button,
                 {
-                  type: 'button',
-                  className: 'tr-search-clear',
+                  variant: 'ghost',
+                  size: 'icon-xs',
+                  className: 'absolute right-1 top-1 text-tr-tertiary',
                   onClick: () => setQuery(''),
                   'aria-label': t('clearSearch'),
                 },
@@ -312,7 +753,7 @@ export function createPlugin(React) {
         ),
         h(
           'div',
-          { className: 'tr-nav-scroll' },
+          { className: 'tr-nav-scroll px-2 py-2' },
           loading && !manifest
             ? h(NavSkeleton, { rows: 7 })
             : filteredCourses.length === 0
@@ -326,7 +767,12 @@ export function createPlugin(React) {
                   const isCollapsed = !searchActive && collapsed.has(item.id);
                   const count = item.sections.reduce((sum, section) => sum + section.lessons.length, 0);
                   const notes = item.sections.reduce(
-                    (sum, section) => sum + section.lessons.reduce((n, lesson) => n + (lesson.annotationCount || 0), 0),
+                    (sum, section) =>
+                      sum +
+                      section.lessons.reduce(
+                        (n, lesson) => n + (lesson.annotationCount || 0) + autoCountFor(lesson),
+                        0,
+                      ),
                     0,
                   );
                   return h(
@@ -336,14 +782,15 @@ export function createPlugin(React) {
                       'button',
                       {
                         type: 'button',
-                        className: 'tr-course-head',
+                        className:
+                          'group flex w-full items-center gap-1.5 rounded-md px-1.5 py-1.5 text-left text-[11.5px] font-medium text-tr-fg transition-colors hover:bg-tr-muted',
                         onClick: () => toggleCourse(item.id),
                         'aria-expanded': !isCollapsed,
                       },
                       h('span', { className: 'tr-chevron', 'data-collapsed': isCollapsed ? '1' : '0' }, chevronIcon()),
                       h('span', { className: 'tr-course-title' }, item.title),
-                      h('span', { className: 'tr-course-count' }, `${count} ${t('lessons')}`),
-                      notes > 0 ? h('span', { className: 'tr-course-notes' }, notes) : null,
+                      h('span', { className: 'text-[10px] font-normal text-tr-tertiary' }, `${count} ${t('lessons')}`),
+                      notes > 0 ? h(Badge, { variant: 'warn', className: 'px-1.5 py-0 text-[9px]' }, notes) : null,
                     ),
                     isCollapsed
                       ? null
@@ -352,25 +799,29 @@ export function createPlugin(React) {
                             'div',
                             { className: 'tr-section', key: `${item.id}-${section.title || 'root'}-${sectionIndex}` },
                             section.title && (sectionIndex > 0 || item.sections.length > 1)
-                              ? h('div', { className: 'tr-section-title' }, section.title)
+                              ? h('div', { className: 'px-2 pb-1 pt-2 text-[9.5px] font-medium uppercase tracking-wide text-tr-tertiary' }, section.title)
                               : null,
-                            section.lessons.map((lesson) =>
-                              h(
+                            section.lessons.map((lesson) => {
+                              const notes = (lesson.annotationCount || 0) + autoCountFor(lesson);
+                              return h(
                                 'button',
                                 {
                                   type: 'button',
                                   key: lesson.lessonId,
-                                  className: `tr-lesson${lesson.lessonId === selectedId ? ' is-active' : ''}`,
+                                  className: cn(
+                                    'tr-lesson group flex w-full items-start gap-2 rounded-md px-2 py-1.5 text-left text-[11.5px] leading-snug text-tr-secondary transition-colors hover:bg-tr-muted hover:text-tr-fg',
+                                    lesson.lessonId === selectedId && 'is-active bg-tr-accent/10 font-medium text-tr-fg',
+                                  ),
                                   onClick: () => selectLesson(lesson.lessonId),
                                   'aria-current': lesson.lessonId === selectedId ? 'page' : undefined,
                                   title: lesson.title,
                                 },
                                 h('span', { className: 'tr-lesson-title' }, lesson.title),
-                                lesson.annotationCount > 0
-                                  ? h('span', { className: 'tr-lesson-notes', title: t('annotations') }, lesson.annotationCount)
+                                notes > 0
+                                  ? h(Badge, { variant: 'warn', className: 'tr-lesson-notes ml-auto mt-0.5 px-1.5 py-0 text-[9px]', title: t('annotations') }, notes)
                                   : null,
-                              ),
-                            ),
+                              );
+                            }),
                           ),
                         ),
                   );
@@ -378,11 +829,11 @@ export function createPlugin(React) {
         ),
         h(
           'div',
-          { className: 'tr-nav-foot' },
+          { className: 'flex flex-wrap gap-1 border-t border-tr-border px-4 py-2 text-[10px] text-tr-tertiary' },
           h(
             'span',
             null,
-            `${manifest?.totalLessons || 0} ${t('lessons')} · ${manifest?.totalAnnotations || 0} ${t('notes')}`,
+            `${manifest?.totalLessons || 0} ${t('lessons')} · ${(manifest?.totalAnnotations || 0) + totalAutoCount} ${t('notes')}`,
           ),
           refreshedAt ? h('span', { className: 'tr-foot-time' }, `· ${formatTime(refreshedAt)}`) : null,
         ),
@@ -392,15 +843,15 @@ export function createPlugin(React) {
         { className: 'tr-main' },
         h(
           'header',
-          { className: 'tr-toolbar' },
+          { className: 'tr-toolbar border-b border-tr-border bg-tr-bg/95' },
           h(
             'div',
-            { className: 'tr-crumbs' },
+            { className: 'flex min-w-0 items-center gap-1.5 text-[11px] text-tr-tertiary' },
             h(
               'button',
               {
                 type: 'button',
-                className: 'tr-crumb-root',
+                className: 'tr-crumb-root text-tr-tertiary transition-colors hover:text-tr-fg',
                 onClick: () => {
                   setQuery('');
                 },
@@ -408,7 +859,7 @@ export function createPlugin(React) {
               t('title'),
             ),
             course ? h('span', { className: 'tr-crumb-sep' }, '/') : null,
-            course ? h('span', { className: 'tr-crumb-course' }, course.title) : null,
+            course ? h('span', { className: 'truncate text-tr-secondary' }, course.title) : null,
           ),
           h(
             'div',
@@ -434,12 +885,13 @@ export function createPlugin(React) {
                 title: t('annotations'),
               },
               noteIcon(),
-              noteCount > 0 ? h('span', { className: 'tr-btn-count' }, noteCount) : null,
+              noteCount > 0 ? h(Badge, { variant: 'accent', className: 'absolute -right-1 -top-1 px-1 py-0 text-[8px]' }, noteCount) : null,
             ),
             h(
-              'button',
+              Button,
               {
-                type: 'button',
+                variant: 'outline',
+                size: 'sm',
                 className: 'tr-refresh',
                 onClick: refresh,
                 disabled: refreshing || loading,
@@ -472,11 +924,7 @@ export function createPlugin(React) {
                 { className: 'tr-state tr-state-error' },
                 h('h2', null, t('loadFailed')),
                 h('p', null, loadError),
-                h(
-                  'button',
-                  { type: 'button', className: 'tr-primary', onClick: refresh },
-                  t('retry'),
-                ),
+                h(Button, { variant: 'default', size: 'sm', onClick: refresh }, t('retry')),
               )
             : loading && !manifest
               ? h(DocSkeleton)
@@ -487,11 +935,7 @@ export function createPlugin(React) {
                       { className: 'tr-state tr-state-error' },
                       h('h2', null, t('loadFailed')),
                       h('p', null, docError),
-                      h(
-                        'button',
-                        { type: 'button', className: 'tr-primary', onClick: () => loadDoc(selectedId) },
-                        t('retry'),
-                      ),
+                      h(Button, { variant: 'default', size: 'sm', onClick: () => loadDoc(selectedId) }, t('retry')),
                     )
                   : h(
                       'div',
@@ -554,11 +998,7 @@ export function createPlugin(React) {
                                 'div',
                                 { className: 'tr-state tr-state-error tr-inline-state' },
                                 h('p', null, docError),
-                                h(
-                                  'button',
-                                  { type: 'button', className: 'tr-primary', onClick: () => loadDoc(selectedId) },
-                                  t('retry'),
-                                ),
+                                h(Button, { variant: 'default', size: 'sm', onClick: () => loadDoc(selectedId) }, t('retry')),
                               )
                             : null,
                           rendered.error ? h('div', { className: 'tr-parse-error', dangerouslySetInnerHTML: { __html: rendered.html } }) : null,
@@ -566,11 +1006,12 @@ export function createPlugin(React) {
                             ? null
                             : h(MemoDocumentBody, {
                                 html: rendered.html,
-                                annotations,
+                                annotations: allAnnotations,
                                 activeId,
                                 focusAnn,
                                 onSelect: handleMarkSelect,
                                 onLocated: handleLocated,
+                                onPositions: handlePositions,
                               }),
                           noteCount === 0 && !docError
                             ? h('div', { className: 'tr-no-notes' }, noteIcon(18), h('span', null, t('noAnnotations')))
@@ -622,12 +1063,12 @@ export function createPlugin(React) {
       ),
       h(
         'aside',
-        { className: `tr-rail${railOpen ? ' is-open' : ''}`, 'aria-label': t('annotations') },
+        { className: cn('tr-rail border-l border-tr-border bg-tr-muted/30', railOpen && 'is-open'), 'aria-label': t('annotations') },
         h(
           'div',
-          { className: 'tr-rail-head' },
-          h('h2', null, t('annotations')),
-          h('span', { className: 'tr-rail-count' }, noteCount),
+          { className: 'flex items-center gap-2 border-b border-tr-border px-4 pb-2 pt-4' },
+          h('h2', { className: 'm-0 min-w-0 flex-1 text-[12px] font-semibold tracking-tight' }, t('annotations')),
+          h(Badge, { variant: 'muted', className: 'px-1.5 py-0 text-[9px]' }, noteCount),
           h(
             'button',
             {
@@ -641,58 +1082,186 @@ export function createPlugin(React) {
         ),
         h(
           'div',
-          { className: 'tr-rail-scroll' },
-          noteCount === 0
-            ? h('div', { className: 'tr-rail-empty' }, h('p', null, t('noAnnotations')))
-            : h(
-                'ol',
-                { className: 'tr-notes' },
-                sortedAnnotations.positioned.map((annotation, index) =>
-                  h(NoteCard, {
-                    key: annotation.key,
-                    annotation,
-                    index: index + 1,
-                    active: annotation.id === activeId,
-                    onSelect: handleRailSelect,
-                    onRef: (node) => {
-                      if (node) cardRefs.current.set(annotation.id, node);
-                      else cardRefs.current.delete(annotation.id);
-                    },
-                    t,
-                  }),
-                ),
-              ),
-          sortedAnnotations.missing.length > 0
+          { className: 'flex items-center gap-2 border-b border-tr-border bg-tr-bg/60 px-3 py-2' },
+          h(
+            'span',
+            { className: 'min-w-0 flex-1 truncate text-[9.5px] text-tr-tertiary' },
+            enhanceEntry?.status === 'loading'
+              ? t('reviewEnhanceLoadingShort')
+              : enhanceEntry?.status === 'error'
+                ? t('reviewEnhanceFailedShort')
+                : enhanceEntry?.generatedAt
+                  ? `${t('reviewEnhanceUpdated')} · ${formatTime(new Date(enhanceEntry.generatedAt))}`
+                  : t('reviewEnhanceAuto'),
+          ),
+          h(
+            Button,
+            {
+              variant: 'outline',
+              size: 'xs',
+              className: 'tr-rail-rerun',
+              onClick: regenerateEnhance,
+              disabled: !doc || enhanceLoading,
+              title: t('reviewEnhanceAgain'),
+            },
+            h('span', { className: enhanceLoading ? 'tr-spin' : '' }, refreshIcon()),
+            h('span', null, enhanceLoading ? t('reviewEnhanceLoadingShort') : t('reviewEnhanceAgain')),
+          ),
+        ),
+        h(
+          'div',
+          { className: 'tr-rail-scroll p-2.5' },
+          noteCount === 0 && assistCount === 0 && !enhanceEntry
             ? h(
-                'section',
-                { className: 'tr-missing' },
-                h('h3', null, t('unlocated')),
-                h('p', null, t('unlocatedHint')),
-                sortedAnnotations.missing.map((annotation, index) =>
-                  h(NoteCard, {
-                    key: annotation.key,
-                    annotation,
-                    index: null,
-                    missing: true,
-                    active: annotation.id === activeId,
-                    onSelect: handleRailSelect,
-                    onRef: null,
-                    t,
-                    extraKey: index,
-                  }),
-                ),
+                'div',
+                { className: 'flex flex-col gap-2 px-3 py-8 text-[11px] leading-relaxed text-tr-tertiary' },
+                h('p', null, t('noAnnotations')),
+                h('p', { className: 'tr-assist-empty-hint' }, t('assistEmpty')),
               )
-            : null,
-          noteCount > 0 ? h('p', { className: 'tr-rail-foot' }, t('subtitle')) : null,
+            : h(
+                React.Fragment,
+                null,
+                enhanceEntry?.status === 'loading'
+                  ? h(
+                      'div',
+                      {
+                        className:
+                          'tr-proof-status is-loading flex items-center gap-2 rounded-md border border-tr-border bg-tr-bg px-3 py-2.5 text-[10.5px] text-tr-tertiary',
+                      },
+                      h('span', { className: 'tr-spin' }, refreshIcon()),
+                      h('span', null, t('reviewEnhanceLoading')),
+                    )
+                  : enhanceEntry?.status === 'error'
+                    ? h(
+                        'div',
+                        {
+                          className:
+                            'tr-proof-status is-error flex flex-col items-start gap-2 rounded-md border border-tr-danger/20 bg-tr-danger/5 px-3 py-2.5 text-[10.5px] text-tr-danger',
+                        },
+                        h('p', { className: 'm-0 leading-relaxed' }, enhanceEntry.error || t('reviewEnhanceFailed')),
+                        h(
+                          Button,
+                          { variant: 'outline', size: 'xs', onClick: regenerateEnhance },
+                          t('retry'),
+                        ),
+                      )
+                    : enhanceEntry?.status === 'done' && enhanceCount === 0
+                      ? h(
+                          'div',
+                          {
+                            className:
+                              'tr-proof-status is-clean flex items-center gap-2 rounded-md border border-tr-success/20 bg-tr-success/5 px-3 py-2.5 text-[10.5px] text-tr-success',
+                          },
+                          h('span', { className: 'flex h-4 w-4 items-center justify-center rounded-full bg-tr-success/15 text-[10px] font-semibold', 'aria-hidden': 'true' }, '✓'),
+                          h('span', null, enhanceData?.note || t('reviewEnhanceClean')),
+                        )
+                      : null,
+                reviewCards.length > 0
+                  ? h(
+                      'ol',
+                      { className: 'tr-notes tr-review-feed flex flex-col gap-2' },
+                      reviewCards.map((annotation) => {
+                        const isReview = annotation.kind === 'review';
+                        const index = isReview ? locatedOrder.get(annotation.id) : null;
+                        const missing = isReview && !locatedOrder.has(annotation.id);
+                        return h(NoteCard, {
+                          key: annotation.key,
+                          annotation,
+                          index: index ?? null,
+                          missing,
+                          active: annotation.id === activeId,
+                          onSelect: handleRailSelect,
+                          onRef: (node) => {
+                            if (node) cardRefs.current.set(annotation.id, node);
+                            else cardRefs.current.delete(annotation.id);
+                          },
+                          onNavigate: selectLesson,
+                          onRetryAssist: annotation.kind === 'assist' ? retryAssist : undefined,
+                          onCopy: copyAssist,
+                          copied: copiedId === annotation.id,
+                          t,
+                        });
+                      }),
+                    )
+                  : null,
+                enhanceData?.sourcesNote && enhanceCount > 0
+                  ? h('p', { className: 'tr-assist-note tr-sources-note' }, enhanceData.sourcesNote)
+                  : null,
+                assistCount > 0
+                  ? h(
+                      'section',
+                      { className: 'tr-assist-section mt-4 border-t border-tr-border pt-3' },
+                      h('h3', { className: 'm-0 px-1 pb-2 text-[9.5px] font-semibold uppercase tracking-wide text-tr-tertiary' }, t('assistTitle')),
+                      h(
+                        'ul',
+                        { className: 'm-0 flex list-none flex-col gap-2 p-0' },
+                        assistAnnotations.map((annotation) =>
+                          h(NoteCard, {
+                            key: annotation.key,
+                            annotation,
+                            index: null,
+                            active: annotation.id === activeId,
+                            onSelect: handleRailSelect,
+                            onRef: (node) => {
+                              if (node) cardRefs.current.set(annotation.id, node);
+                              else cardRefs.current.delete(annotation.id);
+                            },
+                            onNavigate: selectLesson,
+                            onRetryAssist: retryAssist,
+                            onCopy: copyAssist,
+                            copied: copiedId === annotation.id,
+                            t,
+                          }),
+                        ),
+                      ),
+                    )
+                  : null,
+                noteCount > 0 ? h('p', { className: 'mt-4 border-t border-tr-border px-1 pt-3 text-[9.5px] leading-relaxed text-tr-tertiary' }, t('assistDisclaimer')) : null,
+              ),
         ),
       ),
+      selectionMenu
+        ? h(
+            'div',
+            {
+              className: 'tr-selection-menu rounded-card border border-tr-border-strong bg-tr-bg p-1.5 shadow-xl',
+              style: { left: selectionMenu.left, top: selectionMenu.top },
+              onMouseDown: (event) => event.preventDefault(),
+              role: 'menu',
+              'aria-label': t('assistTitle'),
+            },
+            h('span', { className: 'px-2 pb-0.5 pt-1 text-[9px] font-semibold uppercase tracking-wide text-tr-tertiary' }, t('assistTitle')),
+            h(
+              'div',
+              { className: 'grid grid-cols-2 gap-1' },
+              [
+                ['optimize', t('optimize')],
+                ['expand', t('expand')],
+              ].map(([task, label]) =>
+                h(
+                  Button,
+                  {
+                    variant: 'ghost',
+                    size: 'sm',
+                    role: 'menuitem',
+                    key: task,
+                    className: 'tr-selection-action justify-start px-2',
+                    onClick: () => startSelectionAssist(task),
+                  },
+                  label,
+                ),
+              ),
+            ),
+          )
+        : null,
       navOpen ? h('button', { type: 'button', className: 'tr-nav-backdrop', onClick: () => setNavOpen(false), 'aria-label': t('close') }) : null,
       railOpen ? h('button', { type: 'button', className: 'tr-rail-backdrop', onClick: () => setRailOpen(false), 'aria-label': t('close') }) : null,
     );
   }
 
-  function DocumentBody({ html, annotations, activeId, focusAnn, onSelect, onLocated }) {
+  function DocumentBody({ html, annotations, activeId, focusAnn, onSelect, onLocated, onPositions }) {
     const containerRef = useRef(null);
+    const flashTimer = useRef(null);
     const onSelectRef = useRef(onSelect);
     onSelectRef.current = onSelect;
 
@@ -701,8 +1270,9 @@ export function createPlugin(React) {
       if (!container) return undefined;
       const cleanup = highlightAnnotations(container, annotations);
       onLocated(readLocatedAnnotations(container, annotations));
+      onPositions(readAnnotationPositions(container));
       return cleanup;
-    }, [html, annotations, onLocated]);
+    }, [html, annotations, onLocated, onPositions]);
 
     useEffect(() => {
       const container = containerRef.current;
@@ -715,8 +1285,21 @@ export function createPlugin(React) {
       const container = containerRef.current;
       if (!container || !focusAnn?.id) return;
       const mark = container.querySelector(`mark.tr-annotation[data-ann-id="${cssEscape(focusAnn.id)}"]`);
-      if (mark) mark.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      if (!mark) return;
+      mark.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      mark.classList.remove('is-flashing');
+      void mark.offsetWidth;
+      mark.classList.add('is-flashing');
+      clearTimeout(flashTimer.current);
+      flashTimer.current = setTimeout(() => mark.classList.remove('is-flashing'), 1800);
     }, [focusAnn]);
+
+    useEffect(
+      () => () => {
+        clearTimeout(flashTimer.current);
+      },
+      [],
+    );
 
     useEffect(() => {
       const container = containerRef.current;
@@ -750,44 +1333,384 @@ export function createPlugin(React) {
 
   const MemoDocumentBody = React.memo(DocumentBody);
 
-  function NoteCard({ annotation, index, active, missing, onSelect, onRef, t }) {
+  function NoteCard({ annotation, index, active, missing, onSelect, onRef, t, onNavigate, onRetryAssist, onCopy, copied }) {
+    const assist = annotation.kind === 'assist';
+    const proof = annotation.kind === 'proofread';
+    const link = annotation.kind === 'link';
+    const proofType = proof ? (annotation.issueType === 'typo' ? 'typo' : 'grammar') : '';
+    const linkType = link ? (annotation.linkType === 'external' ? 'external' : 'internal') : '';
+    const badgeVariant = proof
+      ? proofType === 'typo'
+        ? 'danger'
+        : 'warn'
+      : link
+        ? linkType === 'external'
+          ? 'accent'
+          : 'success'
+        : assist
+          ? 'accent'
+          : 'muted';
+    const badgeText = proof
+      ? proofType === 'typo'
+        ? '错'
+        : '句'
+      : link
+        ? linkType === 'external'
+          ? '外'
+          : '内'
+        : assist
+          ? '✦'
+          : index ?? '·';
     return h(
       'li',
       {
-        className: `tr-note${active ? ' is-active' : ''}${missing ? ' is-missing' : ''}`,
         ref: onRef,
         onClick: () => onSelect(annotation.id),
-        onKeyDown: (event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            onSelect(annotation.id);
-          }
-        },
-        role: 'button',
-        tabIndex: 0,
+        onKeyDown:
+          assist || proof || link
+            ? undefined
+            : (event) => {
+                if (event.target !== event.currentTarget) return;
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  onSelect(annotation.id);
+                }
+              },
+        role: assist || proof || link ? undefined : 'button',
+        tabIndex: assist || proof || link ? undefined : 0,
+        className: cn(
+          'tr-note group relative flex min-w-0 cursor-pointer flex-col rounded-card border border-tr-border bg-tr-bg p-3 text-tr-fg shadow-sm transition-colors',
+          'hover:border-tr-border-strong',
+          active && 'border-tr-border-strong ring-2 ring-tr-accent/10',
+          missing && 'opacity-80',
+          assist && 'tr-note-assist',
+          proof && `tr-note-proof tr-proof-${proofType}`,
+          link && `tr-note-link tr-link-${linkType}`,
+        ),
       },
       h(
         'div',
-        { className: 'tr-note-head' },
-        h('span', { className: 'tr-note-index' }, index ?? '·'),
-        h('span', { className: 'tr-note-cat' }, annotation.category),
-        missing ? h('span', { className: 'tr-note-missing-tag' }, t('unlocated')) : null,
+        { className: 'flex items-center gap-2' },
+        h(
+          Badge,
+          {
+            variant: badgeVariant,
+            className: 'h-5 min-w-5 justify-center rounded-md px-1 text-[9px] font-semibold',
+          },
+          badgeText,
+        ),
+        h('span', { className: 'tr-note-cat min-w-0 flex-1 truncate text-[10px] font-medium text-tr-secondary' }, annotation.category),
+        assist || proof || link
+          ? h(Badge, { variant: 'outline', className: 'ml-auto px-1.5 py-0 text-[8px]' }, 'AI')
+          : null,
+        assist && annotation.status === 'loading'
+          ? h('span', { className: 'text-[9px] text-tr-tertiary' }, t('generatingShort'))
+          : null,
+        missing
+          ? h(Badge, { variant: 'outline', className: 'px-1.5 py-0 text-[8px]' }, t('unlocated'))
+          : null,
       ),
-      h('blockquote', { className: 'tr-note-quote' }, `“${annotation.quote}”`),
-      h('p', { className: 'tr-note-comment' }, annotation.comment),
+      proof
+        ? h(ProofreadDiff, { annotation })
+        : h(
+            'blockquote',
+            {
+              className:
+                'tr-note-quote mb-2 mt-2 overflow-hidden rounded-md border-l-2 border-tr-border-strong bg-tr-muted/60 px-2.5 py-2 text-[11px] leading-relaxed text-tr-secondary [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]',
+            },
+            `“${annotation.quote}”`,
+          ),
+      proof
+        ? h(ProofreadCardBody, { annotation, t, onCopy, copied })
+        : link
+          ? h(LinkCardBody, { annotation, t, onNavigate, onCopy, copied })
+          : assist
+            ? h(AssistCardBody, {
+                annotation,
+                t,
+                onNavigate,
+                onRetry: onRetryAssist,
+                onCopy,
+                copied,
+              })
+            : h('p', { className: 'm-0 text-[12px] leading-relaxed text-tr-fg' }, annotation.comment),
+    );
+  }
+
+  function ProofreadDiff({ annotation }) {
+    const parts = diffText(annotation.quote, annotation.suggestion);
+    return h(
+      'div',
+      {
+        className:
+          'tr-proof-diff mb-2 mt-2 rounded-md border-l-2 border-tr-border-strong bg-tr-muted/60 px-2.5 py-2 text-[11px] leading-relaxed text-tr-fg',
+        role: 'group',
+        'aria-label': '原文与建议的差异',
+      },
+      parts.map((part, index) =>
+        part.type === 'del'
+          ? h('del', { key: index, className: 'tr-diff-del rounded-sm bg-tr-danger/10 px-0.5 text-tr-danger line-through decoration-1' }, part.text)
+          : part.type === 'ins'
+            ? h('ins', { key: index, className: 'tr-diff-add rounded-sm bg-tr-success/10 px-0.5 text-tr-success no-underline' }, part.text)
+            : h(React.Fragment, { key: index }, part.text),
+      ),
+    );
+  }
+
+  function ProofreadCardBody({ annotation, t, onCopy, copied }) {
+    return h(
+      'div',
+      { className: 'tr-proof-body' },
+      h('p', { className: 'm-0 text-[10.5px] leading-relaxed text-tr-secondary' }, annotation.reason),
+      h(
+        'div',
+        { className: 'flex justify-end pt-2' },
+        h(
+          Button,
+          {
+            variant: 'ghost',
+            size: 'xs',
+            onClick: (event) => {
+              event.stopPropagation();
+              onCopy?.(annotation);
+            },
+          },
+          copied ? t('copied') : t('copy'),
+        ),
+      ),
+    );
+  }
+
+  function AssistCardBody({ annotation, t, onNavigate, onRetry, onCopy, copied }) {
+    if (annotation.status === 'loading') {
+      return h(
+        'div',
+        { className: 'py-1' },
+        h('div', { className: 'tr-assist-skeleton' }, h('span'), h('span'), h('span')),
+        h('p', { className: 'mt-2 text-[10.5px] text-tr-tertiary' }, t('generating')),
+      );
+    }
+    if (annotation.status === 'error') {
+      return h(
+        'div',
+        { className: 'py-1' },
+        h('p', { className: 'mb-2 text-[11px] leading-relaxed text-tr-danger' }, annotation.error || t('assistFailed')),
+        h(
+          Button,
+          {
+            variant: 'outline',
+            size: 'xs',
+            onClick: (event) => {
+              event.stopPropagation();
+              onRetry?.(annotation);
+            },
+          },
+          t('retry'),
+        ),
+      );
+    }
+
+    const result = annotation.result || {};
+    let body = null;
+    if (annotation.assistType === 'optimize') {
+      body = h(
+        'div',
+        { className: 'tr-assist-block' },
+        h('div', { className: 'mb-1 text-[9px] font-semibold uppercase tracking-wide text-tr-tertiary' }, t('optimized')),
+        h('p', { className: 'tr-assist-rewrite m-0 whitespace-pre-wrap rounded-md border-l-2 border-tr-border-strong bg-tr-muted/60 px-2.5 py-2 text-[11.5px] leading-relaxed text-tr-fg' }, result.rewrite || ''),
+        Array.isArray(result.notes) && result.notes.length > 0
+          ? h(
+              'ul',
+              { className: 'mt-2 list-disc space-y-1 pl-4 text-[10.5px] leading-relaxed text-tr-secondary' },
+              result.notes.map((note, index) => h('li', { key: index }, note)),
+            )
+          : null,
+      );
+    } else if (annotation.assistType === 'expand') {
+      body = h(
+        'div',
+        { className: 'tr-assist-block' },
+        h('div', { className: 'mb-1 text-[9px] font-semibold uppercase tracking-wide text-tr-tertiary' }, t('directions')),
+        h(
+          'ol',
+          { className: 'm-0 list-decimal space-y-2 pl-4 text-[11.5px] leading-relaxed text-tr-fg' },
+          (result.directions || []).map((direction, index) =>
+            h(
+              'li',
+              { key: index },
+              h('strong', null, direction.title),
+              h('p', { className: 'mt-0.5 text-[10.5px] leading-relaxed text-tr-secondary' }, direction.detail),
+            ),
+          ),
+        ),
+      );
+    } else if (annotation.assistType === 'internal-links') {
+      const links = result.links || [];
+      body = h(
+        'div',
+        { className: 'tr-assist-block' },
+        links.length === 0
+          ? h('p', { className: 'm-0 text-[10.5px] leading-relaxed text-tr-tertiary' }, t('noLinkSuggestions'))
+          : h(
+              'div',
+              { className: 'flex flex-col gap-2' },
+              links.map((link) =>
+                h(
+                  'div',
+                  { className: 'border-l-2 border-tr-accent/30 pl-2', key: link.lessonId },
+                  h(
+                    'button',
+                    {
+                      type: 'button',
+                      className: 'text-left text-[11.5px] font-semibold text-tr-accent hover:underline',
+                      onClick: (event) => {
+                        event.stopPropagation();
+                        onNavigate?.(link.lessonId);
+                      },
+                      title: t('openLesson'),
+                    },
+                    link.title,
+                    ' ↗',
+                  ),
+                  h('p', { className: 'mt-0.5 text-[10.5px] leading-relaxed text-tr-secondary' }, link.reason),
+                ),
+              ),
+            ),
+      );
+    } else if (annotation.assistType === 'external-links') {
+      const links = result.links || [];
+      body = h(
+        'div',
+        { className: 'tr-assist-block' },
+        links.length === 0
+          ? h('p', { className: 'm-0 text-[10.5px] leading-relaxed text-tr-tertiary' }, t('noLinkSuggestions'))
+          : h(
+              'div',
+              { className: 'flex flex-col gap-2' },
+              links.map((link) =>
+                h(
+                  'div',
+                  { className: 'border-l-2 border-tr-accent/30 pl-2', key: link.url },
+                  h(
+                    'a',
+                    {
+                      className: 'text-left text-[11.5px] font-semibold text-tr-accent hover:underline',
+                      href: link.url,
+                      target: '_blank',
+                      rel: 'noreferrer noopener',
+                      onClick: (event) => event.stopPropagation(),
+                      title: t('openLink'),
+                    },
+                    link.title,
+                    ' ↗',
+                  ),
+                  link.domain ? h('span', { className: 'block text-[9px] text-tr-tertiary' }, link.domain) : null,
+                  h('p', { className: 'mt-0.5 text-[10.5px] leading-relaxed text-tr-secondary' }, link.reason),
+                  link.snippet ? h('p', { className: 'mt-0.5 line-clamp-2 text-[10px] leading-relaxed text-tr-tertiary' }, link.snippet) : null,
+                ),
+              ),
+            ),
+      );
+    } else {
+      body = h('p', { className: 'm-0 text-[12px] leading-relaxed text-tr-fg' }, annotation.comment || '');
+    }
+
+    return h(
+      'div',
+      { className: 'tr-assist-body' },
+      body,
+      result.fallback ? h('p', { className: 'mt-2 text-[9.5px] leading-relaxed text-tr-warn' }, t('fallbackNote')) : null,
+      result.note ? h('p', { className: 'mt-2 text-[9.5px] leading-relaxed text-tr-tertiary' }, result.note) : null,
+      h(
+        'div',
+        { className: 'flex justify-end pt-2' },
+        h(
+          Button,
+          {
+            variant: 'ghost',
+            size: 'xs',
+            onClick: (event) => {
+              event.stopPropagation();
+              onCopy?.(annotation);
+            },
+          },
+          copied ? t('copied') : t('copy'),
+        ),
+      ),
+    );
+  }
+
+  function LinkCardBody({ annotation, t, onNavigate, onCopy, copied }) {
+    const external = annotation.linkType === 'external';
+    return h(
+      'div',
+      { className: 'tr-link-body' },
+      h('div', { className: 'mb-1 text-[9px] font-semibold uppercase tracking-wide text-tr-tertiary' }, external ? t('externalLinks') : t('internalLinks')),
+      external
+        ? h(
+            'a',
+            {
+              className: 'inline text-[11.5px] font-semibold text-tr-accent hover:underline',
+              href: annotation.url,
+              target: '_blank',
+              rel: 'noreferrer noopener',
+              onClick: (event) => event.stopPropagation(),
+              title: t('openLink'),
+            },
+            annotation.title,
+            ' ↗',
+          )
+        : h(
+            'button',
+            {
+              type: 'button',
+              className: 'inline text-[11.5px] font-semibold text-tr-accent hover:underline',
+              onClick: (event) => {
+                event.stopPropagation();
+                onNavigate?.(annotation.lessonId);
+              },
+              title: t('openLesson'),
+            },
+            annotation.title,
+            ' ↗',
+          ),
+      annotation.domain ? h('span', { className: 'block text-[9px] text-tr-tertiary' }, annotation.domain) : null,
+      h('p', { className: 'mt-1 text-[10.5px] leading-relaxed text-tr-secondary' }, annotation.reason),
+      annotation.snippet ? h('p', { className: 'mt-0.5 line-clamp-2 text-[10px] leading-relaxed text-tr-tertiary' }, annotation.snippet) : null,
+      h(
+        'div',
+        { className: 'flex justify-end pt-2' },
+        h(
+          Button,
+          {
+            variant: 'ghost',
+            size: 'xs',
+            onClick: (event) => {
+              event.stopPropagation();
+              onCopy?.(annotation);
+            },
+          },
+          copied ? t('copied') : t('copy'),
+        ),
+      ),
     );
   }
 
   function NavSkeleton({ rows = 6 }) {
     return h(
       'div',
-      { className: 'tr-skeleton', 'aria-hidden': 'true' },
+      { className: 'flex flex-col gap-4 px-4 py-4', 'aria-hidden': 'true' },
       Array.from({ length: 3 }, (_, group) =>
         h(
           'div',
-          { className: 'tr-skeleton-group', key: group },
-          h('div', { className: 'tr-skeleton-bar tr-skeleton-head' }),
-          Array.from({ length: rows - group }, (_, row) => h('div', { className: 'tr-skeleton-bar', key: row })),
+          { className: 'flex flex-col gap-1.5', key: group },
+          h(Skeleton, { className: 'mb-1 h-2.5 w-24' }),
+          Array.from({ length: rows - group }, (_, row) =>
+            h(Skeleton, {
+              key: row,
+              className: cn('h-2', row % 3 === 0 ? 'w-[88%]' : row % 3 === 1 ? 'w-[72%]' : 'w-[60%]'),
+            }),
+          ),
         ),
       ),
     );
@@ -796,12 +1719,17 @@ export function createPlugin(React) {
   function DocSkeleton() {
     return h(
       'div',
-      { className: 'tr-doc-skeleton', 'aria-hidden': 'true' },
-      h('div', { className: 'tr-skeleton-bar tr-skeleton-title' }),
-      h('div', { className: 'tr-skeleton-bar tr-skeleton-line' }),
-      h('div', { className: 'tr-skeleton-bar tr-skeleton-line tr-skeleton-short' }),
-      h('div', { className: 'tr-skeleton-gap' }),
-      Array.from({ length: 8 }, (_, index) => h('div', { className: 'tr-skeleton-bar tr-skeleton-line', key: index })),
+      { className: 'mx-auto flex w-full max-w-[720px] flex-col gap-3 px-8 py-10', 'aria-hidden': 'true' },
+      h(Skeleton, { className: 'mb-2 h-7 w-2/3' }),
+      h(Skeleton, { className: 'h-3 w-full' }),
+      h(Skeleton, { className: 'h-3 w-4/5' }),
+      h(Skeleton, { className: 'my-3 h-3 w-full' }),
+      Array.from({ length: 8 }, (_, index) =>
+        h(Skeleton, {
+          key: index,
+          className: cn('h-3', index % 4 === 3 ? 'w-3/4' : 'w-full'),
+        }),
+      ),
     );
   }
 
@@ -832,6 +1760,15 @@ function chevronIcon() {
   return svg(h('path', { d: 'm8 10 4 4 4-4' }), { width: 14, height: 14 });
 }
 
+function proofIcon() {
+  return svg(
+    h('path', { d: 'M4.8 19.2 6.1 14l9.2-9.2a2.1 2.1 0 0 1 3 3L9 17.1l-4.2 2.1Z' }),
+    h('path', { d: 'm13.7 6.6 3.7 3.7' }),
+    h('path', { d: 'M15.8 4.5h1.2M16.4 3.9v1.2' }),
+    { width: 15, height: 15 },
+  );
+}
+
 function listIcon() {
   return svg(
     h('path', { d: 'M4.5 7h15M4.5 12h15M4.5 17h9' }),
@@ -846,7 +1783,9 @@ function arrowIcon(direction) {
   );
 }
 
-function svg(child, options = {}, overrides = {}) {
+function svg(...args) {
+  const last = args[args.length - 1];
+  const props = last && typeof last === 'object' && !last.$$typeof ? args.pop() : {};
   return h(
     'svg',
     {
@@ -859,9 +1798,9 @@ function svg(child, options = {}, overrides = {}) {
       strokeLinecap: 'round',
       strokeLinejoin: 'round',
       'aria-hidden': 'true',
-      ...overrides,
+      ...props,
     },
-    child,
+    args,
   );
 }
 
@@ -900,6 +1839,23 @@ function svg(child, options = {}, overrides = {}) {
   };
 }
 
+function readEnhanceCache(key, mtime) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const value = JSON.parse(raw);
+    if (!value || value.mtime !== mtime || !value.data) return null;
+    return value;
+  } catch {
+    return null;
+  }
+}
+
+function countEnhanceData(data) {
+  if (!data) return 0;
+  return (data.issues?.length || 0) + (data.internalLinks?.length || 0) + (data.externalLinks?.length || 0);
+}
+
 function flattenLessons(manifest) {
   if (!manifest || !Array.isArray(manifest.courses)) return [];
   const out = [];
@@ -911,6 +1867,146 @@ function flattenLessons(manifest) {
     }
   }
   return out;
+}
+
+function assistLabel(task, t) {
+  const key = {
+    optimize: 'optimize',
+    expand: 'expand',
+    'internal-links': 'internalLinks',
+    'external-links': 'externalLinks',
+  }[task];
+  return t(key || 'assistTitle');
+}
+
+function diffText(before, after) {
+  const a = Array.from(String(before == null ? '' : before));
+  const b = Array.from(String(after == null ? '' : after));
+  if (a.length === 0) return b.length ? [{ type: 'ins', text: b.join('') }] : [];
+  if (b.length === 0) return [{ type: 'del', text: a.join('') }];
+  if (a.length * b.length > 120000) return simpleDiff(a, b);
+
+  const table = Array.from({ length: a.length + 1 }, () => new Uint16Array(b.length + 1));
+  for (let i = a.length - 1; i >= 0; i -= 1) {
+    const row = table[i];
+    const next = table[i + 1];
+    for (let j = b.length - 1; j >= 0; j -= 1) {
+      row[j] = a[i] === b[j] ? next[j + 1] + 1 : Math.max(next[j], row[j + 1]);
+    }
+  }
+  const parts = [];
+  const push = (type, text) => {
+    const last = parts[parts.length - 1];
+    if (last && last.type === type) last.text += text;
+    else parts.push({ type, text });
+  };
+  let i = 0;
+  let j = 0;
+  while (i < a.length || j < b.length) {
+    if (i < a.length && j < b.length && a[i] === b[j]) {
+      push('same', a[i]);
+      i += 1;
+      j += 1;
+    } else if (j < b.length && (i >= a.length || table[i][j + 1] > table[i + 1][j])) {
+      push('ins', b[j]);
+      j += 1;
+    } else {
+      push('del', a[i]);
+      i += 1;
+    }
+  }
+  return parts;
+}
+
+function simpleDiff(a, b) {
+  let prefix = 0;
+  while (prefix < a.length && prefix < b.length && a[prefix] === b[prefix]) prefix += 1;
+  let suffix = 0;
+  while (
+    suffix < a.length - prefix &&
+    suffix < b.length - prefix &&
+    a[a.length - 1 - suffix] === b[b.length - 1 - suffix]
+  ) {
+    suffix += 1;
+  }
+  const parts = [];
+  if (prefix > 0) parts.push({ type: 'same', text: a.slice(0, prefix).join('') });
+  if (a.length - suffix > prefix) parts.push({ type: 'del', text: a.slice(prefix, a.length - suffix).join('') });
+  if (b.length - suffix > prefix) parts.push({ type: 'ins', text: b.slice(prefix, b.length - suffix).join('') });
+  if (suffix > 0) parts.push({ type: 'same', text: a.slice(a.length - suffix).join('') });
+  return parts;
+}
+
+function assistCopyText(annotation, t) {
+  if (annotation.kind === 'proofread') {
+    return `${annotation.quote}
+→ ${annotation.suggestion}
+${annotation.reason}`;
+  }
+  if (annotation.kind === 'link') {
+    return `${annotation.title}${annotation.url ? ` ${annotation.url}` : ''}\n${annotation.reason}\n${annotation.quote}`;
+  }
+  const result = annotation.result || {};
+  if (annotation.assistType === 'optimize') return result.rewrite || '';
+  if (annotation.assistType === 'expand') {
+    return (result.directions || [])
+      .map((direction, index) => `${index + 1}. ${direction.title}\n${direction.detail}`)
+      .join('\n\n');
+  }
+  if (annotation.assistType === 'internal-links') {
+    return (result.links || []).map((link) => `${link.title}\n${link.reason}`).join('\n\n');
+  }
+  if (annotation.assistType === 'external-links') {
+    return (result.links || []).map((link) => `${link.title} ${link.url}\n${link.reason}`).join('\n\n');
+  }
+  return annotation.quote || '';
+}
+
+function fallbackCopy(text) {
+  const area = document.createElement('textarea');
+  area.value = text;
+  area.setAttribute('readonly', '');
+  area.style.position = 'fixed';
+  area.style.opacity = '0';
+  document.body.appendChild(area);
+  area.select();
+  try {
+    document.execCommand('copy');
+  } finally {
+    area.remove();
+  }
+}
+
+function readSelectionContext(range) {
+  const start =
+    range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer;
+  const block =
+    start?.closest?.('p, li, h1, h2, h3, h4, h5, h6, blockquote, td, th') ||
+    start?.closest?.('.tr-doc-body');
+  const paragraph = normalizeSpace(block?.textContent || '');
+  const selected = normalizeSpace(range.toString());
+  const heading = previousHeading(block);
+  return [
+    heading ? `上一级标题：${heading}` : '',
+    paragraph ? `所在段落：${paragraph.slice(0, 1600)}` : '',
+    selected && !paragraph.includes(selected) ? `选中内容：${selected.slice(0, 1600)}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
+
+function previousHeading(element) {
+  const scope = element?.closest('.tr-doc-body') || element;
+  let node = element;
+  while (node && node !== scope?.parentElement) {
+    let previous = node.previousElementSibling;
+    while (previous) {
+      if (/^H[1-6]$/.test(previous.tagName)) return normalizeSpace(previous.textContent).slice(0, 120);
+      previous = previous.previousElementSibling;
+    }
+    node = node.parentElement;
+  }
+  return '';
 }
 
 function matchesQuery(lesson, course, term) {
@@ -929,6 +2025,7 @@ function normalizeAnnotations(items) {
     seen.set(base, count);
     return {
       ...item,
+      kind: item.kind || 'review',
       id: count === 1 ? base : `${base}-${count}`,
       key: `${base}-${index}`,
     };
@@ -938,6 +2035,11 @@ function normalizeAnnotations(items) {
 function sameLocated(a, b) {
   if (a.length !== b.length) return false;
   return a.every((item, index) => item.id === b[index].id && item.index === b[index].index);
+}
+
+function samePositions(a, b) {
+  if (a.length !== b.length) return false;
+  return a.every((item, index) => item.id === b[index].id && item.start === b[index].start);
 }
 
 function interpolate(template, vars) {
@@ -1109,7 +2211,6 @@ const STYLES = `
   background: var(--dsw-alias-interactive-bg-active, color-mix(in srgb, var(--tr-accent) 10%, transparent));
   color: var(--tr-text);
   font-weight: 500;
-  box-shadow: inset 2px 0 0 var(--tr-accent);
 }
 .tr-lesson-title { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .tr-lesson-notes {
@@ -1612,6 +2713,588 @@ const STYLES = `
   line-height: 1;
   vertical-align: super;
   font-style: normal;
+}
+
+.tr-toolbar { position: relative; }
+.tr-link-wrap { position: relative; }
+.tr-link-trigger svg { color: var(--tr-text-3); }
+.tr-link-menu {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  width: min(310px, 78vw);
+  z-index: 45;
+  padding: 8px;
+  border: .5px solid var(--tr-border-strong);
+  border-radius: var(--tr-radius-sm);
+  background: var(--tr-bg);
+  box-shadow: 0 12px 34px rgba(0,0,0,.16);
+}
+.tr-link-menu-title { margin: 2px 4px 7px; color: var(--tr-text-3); font-size: 10.5px; line-height: 1.5; }
+.tr-link-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--tr-text);
+  text-align: left;
+  padding: 8px 8px;
+  cursor: pointer;
+  font: inherit;
+}
+.tr-link-menu-item:hover { background: var(--dsw-alias-interactive-bg-hover, rgba(0,0,0,.045)); }
+.tr-link-menu-icon { color: var(--tr-text-3); flex: none; margin-top: 1px; }
+.tr-link-menu-item > span:last-child { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tr-link-menu-item strong { font-size: 12px; font-weight: 550; }
+.tr-link-menu-item small { color: var(--tr-text-3); font-size: 10.5px; line-height: 1.45; }
+.tr-selection-menu {
+  position: fixed;
+  z-index: 70;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 7px;
+  border: .5px solid var(--tr-border-strong);
+  border-radius: var(--tr-radius-sm);
+  background: var(--tr-bg);
+  box-shadow: 0 14px 40px rgba(0,0,0,.2);
+}
+.tr-selection-menu-label {
+  padding: 1px 4px;
+  color: var(--tr-text-3);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.tr-selection-menu-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+.tr-selection-action {
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--tr-text);
+  padding: 7px 10px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11.5px;
+  white-space: nowrap;
+  text-align: left;
+}
+.tr-selection-action:hover { background: color-mix(in srgb, var(--tr-accent) 9%, transparent); color: var(--tr-accent); }
+.tr-assist-section { margin-top: 18px; border-top: .5px solid var(--tr-border); padding-top: 12px; }
+.tr-assist-section > h3 {
+  margin: 0 4px 8px;
+  color: var(--tr-text-2);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+.tr-assist-empty-hint { margin-top: 8px !important; }
+.tr-note-index-ai { background: var(--tr-accent); font-size: 11px; }
+.tr-note-ai-badge {
+  color: var(--tr-accent);
+  border: .5px solid color-mix(in srgb, var(--tr-accent) 32%, transparent);
+  border-radius: 999px;
+  padding: 1px 5px;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.tr-note-loading { color: var(--tr-text-3); font-size: 9.5px; margin-left: auto; }
+.tr-assist-loading { padding: 4px 0 2px; }
+.tr-assist-loading p { margin: 8px 0 0; color: var(--tr-text-3); font-size: 10.5px; line-height: 1.5; }
+.tr-assist-skeleton { display: flex; flex-direction: column; gap: 5px; }
+.tr-assist-skeleton span {
+  display: block;
+  height: 7px;
+  border-radius: 4px;
+  background: var(--dsw-alias-bg-skeleton, var(--tr-bg-softer));
+  animation: tr-pulse 1.8s ease-in-out infinite;
+}
+.tr-assist-skeleton span:nth-child(1) { width: 92%; }
+.tr-assist-skeleton span:nth-child(2) { width: 76%; }
+.tr-assist-skeleton span:nth-child(3) { width: 58%; }
+.tr-assist-error { padding: 5px 0 2px; }
+.tr-assist-error p { margin: 0 0 8px; color: var(--tr-error); font-size: 11px; line-height: 1.55; }
+.tr-assist-retry,
+.tr-assist-copy {
+  border: .5px solid var(--tr-border);
+  border-radius: 6px;
+  background: var(--tr-bg-soft);
+  color: var(--tr-text-2);
+  padding: 4px 8px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+}
+.tr-assist-retry:hover,
+.tr-assist-copy:hover { color: var(--tr-text); background: var(--tr-bg-softer); }
+.tr-assist-actions { display: flex; justify-content: flex-end; margin-top: 9px; }
+.tr-assist-label {
+  color: var(--tr-text-3);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.tr-assist-rewrite {
+  margin: 0;
+  padding: 9px 10px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--tr-accent) 5%, var(--tr-bg-soft));
+  color: var(--tr-text);
+  font-size: 12px;
+  line-height: 1.72;
+  white-space: pre-wrap;
+}
+.tr-assist-notes { margin: 8px 0 0; padding-left: 16px; color: var(--tr-text-2); font-size: 11px; line-height: 1.6; }
+.tr-assist-notes li { margin: 3px 0; }
+.tr-assist-directions { margin: 0; padding-left: 16px; color: var(--tr-text); font-size: 11.5px; line-height: 1.65; }
+.tr-assist-directions li { margin: 0 0 8px; }
+.tr-assist-directions strong { font-size: 11.5px; font-weight: 600; }
+.tr-assist-directions p { margin: 3px 0 0; color: var(--tr-text-2); }
+.tr-assist-links { display: flex; flex-direction: column; gap: 9px; }
+.tr-assist-link { border-left: 2px solid color-mix(in srgb, var(--tr-accent) 32%, transparent); padding-left: 8px; }
+.tr-assist-link-title {
+  display: inline;
+  border: 0;
+  background: transparent;
+  color: var(--tr-accent);
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+}
+.tr-assist-link-title:hover { text-decoration: underline; }
+.tr-assist-domain { display: block; color: var(--tr-text-3); font-size: 9px; margin-top: 1px; }
+.tr-assist-link-reason { margin: 3px 0 0; color: var(--tr-text-2); font-size: 10.5px; line-height: 1.6; }
+.tr-assist-snippet { margin: 3px 0 0; color: var(--tr-text-3); font-size: 10px; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tr-assist-muted { margin: 0; color: var(--tr-text-3); font-size: 10.5px; line-height: 1.55; }
+.tr-assist-fallback { margin: 8px 0 0; color: var(--tr-warn); font-size: 9.5px; line-height: 1.5; }
+.tr-assist-note { margin: 7px 0 0; color: var(--tr-text-3); font-size: 9.5px; line-height: 1.5; }
+.tr-annotation-assist {
+  background: color-mix(in srgb, var(--tr-accent) 13%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--tr-accent) 65%, transparent);
+}
+.tr-annotation-assist:hover, .tr-annotation-assist.is-active {
+  background: color-mix(in srgb, var(--tr-accent) 22%, transparent);
+  border-bottom-color: var(--tr-accent);
+}
+.tr-annotation-assist .tr-annotation-index { background: var(--tr-accent); }
+@media (prefers-reduced-motion: reduce) {
+  .tr-assist-skeleton span { animation: none; }
+}
+
+
+.tr-proof-trigger { position: relative; }
+.tr-btn-count.tr-proof-count { background: var(--tr-error); }
+.tr-proof-section { margin-top: 18px; border-top: .5px solid var(--tr-border); padding-top: 12px; }
+.tr-proof-idle .tr-proof-start { margin-top: 0; }
+.tr-proof-head { display: flex; align-items: center; gap: 8px; margin: 0 4px 8px; }
+.tr-proof-head h3 { margin: 0; flex: 1; color: var(--tr-text-2); font-size: 11px; font-weight: 600; letter-spacing: .02em; }
+.tr-proof-tag {
+  color: var(--tr-text-3);
+  border: .5px solid var(--tr-border);
+  border-radius: 999px;
+  padding: 1px 6px;
+  font-size: 8.5px;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.tr-proof-tag.is-error { color: var(--tr-error); border-color: color-mix(in srgb, var(--tr-error) 32%, transparent); }
+.tr-proof-tag.is-clean { color: var(--tr-success); border-color: color-mix(in srgb, var(--tr-success) 32%, transparent); }
+.tr-proof-tag.is-loading { color: var(--tr-text-3); }
+.tr-proof-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 11px;
+  border: .5px solid var(--tr-border);
+  border-radius: var(--tr-radius-sm);
+  background: var(--tr-bg);
+  color: var(--tr-text-2);
+  font-size: 10.5px;
+  line-height: 1.55;
+}
+.tr-proof-status.is-loading { color: var(--tr-text-3); }
+.tr-proof-status.is-error { color: var(--tr-error); flex-direction: column; align-items: flex-start; }
+.tr-proof-status.is-clean { color: var(--tr-success); }
+.tr-proof-status p { margin: 0 0 2px; }
+.tr-proof-check {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--tr-success) 14%, transparent);
+  color: var(--tr-success);
+  font-size: 10px;
+  font-weight: 700;
+  flex: none;
+}
+.tr-proof-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.tr-note-proof.tr-proof-typo { background: color-mix(in srgb, var(--tr-error) 4%, var(--tr-bg)); }
+.tr-note-proof.tr-proof-grammar { background: color-mix(in srgb, var(--tr-warn) 4%, var(--tr-bg)); }
+.tr-note-index-proof { font-size: 9px; }
+.tr-note-index-typo { background: var(--tr-error); }
+.tr-note-index-grammar { background: var(--tr-warn); }
+.tr-proof-body { padding-top: 2px; }
+.tr-proof-label {
+  color: var(--tr-text-3);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.tr-proof-suggestion {
+  margin: 0;
+  padding: 7px 9px;
+  border-radius: 6px;
+  background: var(--tr-bg-soft);
+  color: var(--tr-text);
+  font-size: 11.5px;
+  line-height: 1.65;
+}
+.tr-proof-reason { margin: 6px 0 0; color: var(--tr-text-2); font-size: 10.5px; line-height: 1.55; }
+.tr-proof-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+.tr-proof-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  border: .5px solid var(--tr-border);
+  border-radius: 6px;
+  background: var(--tr-bg-soft);
+  color: var(--tr-text-2);
+  padding: 5px 9px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10.5px;
+}
+.tr-proof-start:hover:not(:disabled) { color: var(--tr-text); background: var(--tr-bg-softer); }
+.tr-proof-start:disabled { opacity: .55; cursor: default; }
+.tr-annotation-proof-typo {
+  background: color-mix(in srgb, var(--tr-error) 14%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--tr-error) 65%, transparent);
+  border-bottom-style: wavy;
+}
+.tr-annotation-proof-grammar {
+  background: color-mix(in srgb, var(--tr-warn) 16%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--tr-warn) 65%, transparent);
+  border-bottom-style: wavy;
+}
+.tr-annotation-proof-typo:hover, .tr-annotation-proof-typo.is-active {
+  background: color-mix(in srgb, var(--tr-error) 24%, transparent);
+  border-bottom-color: var(--tr-error);
+}
+.tr-annotation-proof-grammar:hover, .tr-annotation-proof-grammar.is-active {
+  background: color-mix(in srgb, var(--tr-warn) 26%, transparent);
+  border-bottom-color: var(--tr-warn);
+}
+.tr-annotation-proof-typo .tr-annotation-index { background: var(--tr-error); }
+.tr-annotation-proof-grammar .tr-annotation-index { background: var(--tr-warn); }
+.tr-selection-menu-actions .tr-selection-action:last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+.tr-enhance-trigger { position: relative; }
+.tr-note-link.tr-link-internal {
+  background: color-mix(in srgb, var(--tr-success) 4%, var(--tr-bg));
+}
+.tr-note-link.tr-link-external {
+  background: color-mix(in srgb, var(--tr-accent) 4%, var(--tr-bg));
+}
+.tr-note-index-link { font-size: 9px; }
+.tr-note-index-internal { background: var(--tr-success); }
+.tr-note-index-external { background: var(--tr-accent); }
+.tr-link-body { padding-top: 2px; }
+.tr-link-label {
+  color: var(--tr-text-3);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.tr-link-title {
+  display: inline;
+  border: 0;
+  background: transparent;
+  color: var(--tr-success);
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+}
+.tr-note-link.tr-link-external .tr-link-title { color: var(--tr-accent); }
+.tr-link-title:hover { text-decoration: underline; }
+.tr-link-domain { display: block; color: var(--tr-text-3); font-size: 9px; margin-top: 1px; }
+.tr-link-reason { margin: 4px 0 0; color: var(--tr-text-2); font-size: 10.5px; line-height: 1.6; }
+.tr-link-snippet { margin: 3px 0 0; color: var(--tr-text-3); font-size: 10px; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tr-link-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+.tr-annotation-link-internal {
+  background: color-mix(in srgb, var(--tr-success) 14%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--tr-success) 65%, transparent);
+}
+.tr-annotation-link-external {
+  background: color-mix(in srgb, var(--tr-accent) 13%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--tr-accent) 65%, transparent);
+}
+.tr-annotation-link-internal:hover, .tr-annotation-link-internal.is-active {
+  background: color-mix(in srgb, var(--tr-success) 24%, transparent);
+  border-bottom-color: var(--tr-success);
+}
+.tr-annotation-link-external:hover, .tr-annotation-link-external.is-active {
+  background: color-mix(in srgb, var(--tr-accent) 22%, transparent);
+  border-bottom-color: var(--tr-accent);
+}
+.tr-annotation-link-internal .tr-annotation-index { background: var(--tr-success); }
+.tr-annotation-link-external .tr-annotation-index { background: var(--tr-accent); }
+
+/* Unified review card surface */
+.tr-note {
+  --tr-note-accent: var(--tr-text-3);
+  --tr-flash: var(--tr-note-accent);
+  position: relative;
+  border: .5px solid var(--tr-border);
+  border-radius: 9px;
+  background: var(--tr-bg);
+  padding: 11px 12px 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .025);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.tr-note:hover { border-color: var(--tr-border-strong); box-shadow: 0 2px 8px rgba(0, 0, 0, .05); }
+.tr-note.is-active {
+  border-color: var(--tr-border-strong);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tr-note-accent) 11%, transparent), 0 2px 10px rgba(0, 0, 0, .06);
+}
+.tr-note.tr-note-assist { --tr-note-accent: var(--tr-accent); background: var(--tr-bg); }
+.tr-note.tr-note-proof.tr-proof-typo { --tr-note-accent: var(--tr-error); background: var(--tr-bg); }
+.tr-note.tr-note-proof.tr-proof-grammar { --tr-note-accent: var(--tr-warn); background: var(--tr-bg); }
+.tr-note.tr-note-link.tr-link-internal { --tr-note-accent: var(--tr-success); background: var(--tr-bg); }
+.tr-note.tr-note-link.tr-link-external { --tr-note-accent: var(--tr-accent); background: var(--tr-bg); }
+.tr-note-head { display: flex; align-items: center; gap: 7px; margin: 0 0 8px; }
+.tr-note .tr-note-index,
+.tr-note .tr-note-index-ai,
+.tr-note .tr-note-index-proof,
+.tr-note .tr-note-index-typo,
+.tr-note .tr-note-index-grammar,
+.tr-note .tr-note-index-link,
+.tr-note .tr-note-index-internal,
+.tr-note .tr-note-index-external {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--tr-note-accent) 13%, var(--tr-bg));
+  color: var(--tr-note-accent);
+  border: .5px solid color-mix(in srgb, var(--tr-note-accent) 28%, transparent);
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 0;
+}
+.tr-note-cat { flex: 1; min-width: 0; color: var(--tr-text-2); font-size: 10px; font-weight: 500; line-height: 1.4; }
+.tr-note-ai-badge {
+  margin-left: auto;
+  flex: none;
+  border: .5px solid var(--tr-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--tr-text-3);
+  padding: 0 5px;
+  font-size: 8px;
+  line-height: 15px;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+.tr-note-loading { margin-left: 0; }
+.tr-note-quote {
+  margin: 0 0 8px;
+  padding: 7px 9px;
+  border-left: 2px solid var(--tr-border-strong);
+  border-radius: 0 6px 6px 0;
+  background: var(--tr-bg-soft);
+  color: var(--tr-text-2);
+  font-size: 11px;
+  line-height: 1.65;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tr-note-comment { margin: 0; color: var(--tr-text); font-size: 12px; line-height: 1.72; }
+.tr-proof-body, .tr-assist-body, .tr-link-body { padding: 0; }
+.tr-proof-label, .tr-link-label, .tr-assist-label {
+  color: var(--tr-text-3);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  margin: 0 0 4px;
+}
+.tr-proof-diff {
+  margin: 0 0 8px;
+  padding: 7px 9px;
+  border-left: 2px solid var(--tr-border-strong);
+  border-radius: 0 6px 6px 0;
+  background: var(--tr-bg-soft);
+  color: var(--tr-text);
+  font-size: 11.5px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+.tr-diff-del {
+  color: var(--tr-error);
+  background: color-mix(in srgb, var(--tr-error) 14%, transparent);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+.tr-diff-add {
+  color: var(--tr-success);
+  background: color-mix(in srgb, var(--tr-success) 15%, transparent);
+  text-decoration: none;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+.tr-proof-suggestion, .tr-assist-rewrite {
+  margin: 0;
+  padding: 8px 9px;
+  border-left: 2px solid var(--tr-border-strong);
+  border-radius: 0 6px 6px 0;
+  background: var(--tr-bg-soft);
+  color: var(--tr-text);
+  font-size: 11.5px;
+  line-height: 1.68;
+  white-space: pre-wrap;
+}
+.tr-proof-reason { margin: 6px 0 0; color: var(--tr-text-2); font-size: 10.5px; line-height: 1.6; }
+.tr-link-title { color: var(--tr-note-accent); font-size: 11.5px; font-weight: 600; }
+.tr-link-domain { color: var(--tr-text-3); font-size: 9px; margin-top: 1px; }
+.tr-link-reason { margin: 4px 0 0; color: var(--tr-text-2); font-size: 10.5px; line-height: 1.6; }
+.tr-link-snippet { margin: 3px 0 0; color: var(--tr-text-3); font-size: 10px; line-height: 1.55; }
+.tr-proof-actions, .tr-link-actions, .tr-assist-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+.tr-assist-copy, .tr-assist-retry {
+  border: .5px solid var(--tr-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--tr-text-3);
+  padding: 3px 8px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 9.5px;
+  line-height: 1.5;
+}
+.tr-assist-copy:hover, .tr-assist-retry:hover { color: var(--tr-text); border-color: var(--tr-border-strong); background: var(--tr-bg-soft); }
+.tr-proof-section { margin-top: 16px; border-top: .5px solid var(--tr-border); padding-top: 12px; }
+.tr-proof-head { display: flex; align-items: center; gap: 8px; margin: 0 2px 8px; }
+.tr-proof-head h3, .tr-assist-section > h3 {
+  margin: 0;
+  flex: 1;
+  color: var(--tr-text-3);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.tr-assist-section { margin-top: 16px; border-top: .5px solid var(--tr-border); padding-top: 12px; }
+.tr-assist-section > h3 { margin: 0 2px 8px; }
+.tr-proof-tag {
+  color: var(--tr-text-3);
+  border: .5px solid var(--tr-border);
+  border-radius: 999px;
+  padding: 1px 6px;
+  font-size: 8.5px;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.tr-proof-tag.is-error { color: var(--tr-error); border-color: color-mix(in srgb, var(--tr-error) 32%, transparent); }
+.tr-proof-tag.is-clean { color: var(--tr-success); border-color: color-mix(in srgb, var(--tr-success) 32%, transparent); }
+.tr-proof-status { border: .5px solid var(--tr-border); border-radius: 8px; padding: 10px 11px; background: var(--tr-bg); }
+.tr-proof-status + .tr-notes, .tr-proof-status + .tr-review-feed { margin-top: 10px; }
+.tr-sources-note { margin: 10px 4px 0; }
+.tr-rail-tools {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: .5px solid var(--tr-border);
+  background: var(--tr-bg-soft);
+}
+.tr-rail-status {
+  flex: 1;
+  min-width: 0;
+  color: var(--tr-text-3);
+  font-size: 9.5px;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tr-rail-rerun {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 8px;
+  border: .5px solid var(--tr-border);
+  border-radius: 6px;
+  background: var(--tr-bg);
+  color: var(--tr-text-2);
+  cursor: pointer;
+  font: inherit;
+  font-size: 9.5px;
+  flex: none;
+}
+.tr-rail-rerun:hover:not(:disabled) { color: var(--tr-text); border-color: var(--tr-border-strong); }
+.tr-rail-rerun:disabled { opacity: .55; cursor: default; }
+.tr-rail-rerun .tr-spin { display: inline-flex; }
+.tr-proof-start { border-radius: 7px; }
+.tr-annotation { --tr-flash: var(--tr-warn); }
+.tr-annotation-assist { --tr-flash: var(--tr-accent); }
+.tr-annotation-proof-typo { --tr-flash: var(--tr-error); }
+.tr-annotation-proof-grammar { --tr-flash: var(--tr-warn); }
+.tr-annotation-link-internal { --tr-flash: var(--tr-success); }
+.tr-annotation-link-external { --tr-flash: var(--tr-accent); }
+mark.tr-annotation.is-flashing {
+  position: relative;
+  z-index: 2;
+  animation: tr-locate-flash 1.2s ease-out 1;
+}
+@keyframes tr-locate-flash {
+  0% {
+    background: color-mix(in srgb, var(--tr-flash) 18%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--tr-flash) 0%, transparent);
+  }
+  25% {
+    background: color-mix(in srgb, var(--tr-flash) 42%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--tr-flash) 24%, transparent);
+  }
+  65% {
+    background: color-mix(in srgb, var(--tr-flash) 28%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--tr-flash) 0%, transparent);
+  }
+  100% {
+    background: color-mix(in srgb, var(--tr-flash) 18%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--tr-flash) 0%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  mark.tr-annotation.is-flashing { animation: none; outline: 2px solid var(--tr-flash); outline-offset: 2px; }
 }
 @media (max-width: 1180px) {
   .tr-root { grid-template-columns: minmax(200px, 236px) minmax(0, 1fr); }

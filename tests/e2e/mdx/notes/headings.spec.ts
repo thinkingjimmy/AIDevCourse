@@ -35,12 +35,13 @@ for (const scenario of [
           await expect(trigger).toHaveAccessibleName('查看 Jimmy 的批注 1');
           await trigger.scrollIntoViewIfNeeded();
           const url = page.url();
-          const scroll = await page.evaluate(() => scrollY);
+          const pane = page.locator('[data-slot="lesson-region"]');
+          const scroll = await pane.evaluate(element => element.scrollTop);
           await trigger.click();
           const popover = page.locator('[data-slot="jimmy-note-popover"]');
           await expect(popover).toContainText('Agent 101');
           await expect(page).toHaveURL(url);
-          expect(await page.evaluate(() => scrollY)).toBe(scroll);
+          expect(await pane.evaluate(element => element.scrollTop)).toBe(scroll);
           await page.keyboard.press('Escape');
           await expect(popover).toHaveCount(0);
           await expect(trigger).toBeFocused();

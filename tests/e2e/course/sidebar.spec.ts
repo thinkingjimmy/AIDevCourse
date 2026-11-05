@@ -27,7 +27,7 @@ for (const width of [1440, 320]) {
     await expect(sidebar.locator('a[aria-current="page"]')).toContainText('2.1 模型是如何预训练的？');
     await modules.nth(0).click();
     await modules.nth(2).click();
-    await expect(links.locator('> span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2', '3.3']);
+    await expect(links.locator('> span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2', '3.3', '3.4', '3.5']);
     const numbers = await links.locator('> span:first-child').evaluateAll((elements) => elements.map((element) => ({
       text: element.textContent?.trim(), width: element.getBoundingClientRect().width, variant: getComputedStyle(element).fontVariantNumeric,
     })));
@@ -36,7 +36,7 @@ for (const width of [1440, 320]) {
     await capture(page, `sidebar-numbering-${width}`);
     await test.info().attach('Generated lesson numbers', { body: JSON.stringify(numbers, null, 2), contentType: 'application/json' });
     await modules.nth(1).click();
-    await expect(links.locator('> span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '3.1', '3.2', '3.3']);
+    await expect(links.locator('> span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '3.1', '3.2', '3.3', '3.4', '3.5']);
     await sidebar.getByRole('link', { name: '3.2 Tool 是什么？', exact: true }).click();
     await expect(page).toHaveURL('/zh/courses/llm-101/what-is-a-tool');
     await expect(page.locator('article h1')).toHaveText('Tool 是什么？');
@@ -108,11 +108,12 @@ test('responsive bottom sheet fits narrow and short screens with a reachable foo
     await expect(footer).toBeInViewport();
     await sheet.locator('[data-sidebar="menu-sub-button"]').last().scrollIntoViewIfNeeded();
     await expect(footer).toBeInViewport();
-    await sheet.getByRole('button', { name: copy.Language.label, exact: true }).click();
-    await expect(page.locator('.language-options a[hreflang="en"]')).toBeVisible();
+    const achievements = footer.getByRole('button', { name: copy.Course.achievementsTitle, exact: true });
+    await achievements.click();
+    await expect(page.getByRole('dialog', { name: copy.Course.achievementsTitle, exact: true })).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(sheet).toBeVisible();
-    await expect(sheet.getByRole('button', { name: copy.Language.label, exact: true })).toBeFocused();
+    await expect(achievements).toBeFocused();
     const accessibility = await new AxeBuilder({ page }).include('[data-mobile="true"]').analyze();
     expect(accessibility.violations).toEqual([]);
     await capture(page, `mobile-sidebar-${viewport.width}-${viewport.height}`);
@@ -146,8 +147,9 @@ test('responsive sidebar resets mobile state on resize and navigation while pres
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(trigger).toHaveAttribute('aria-expanded', 'false');
   await expect(sheet).toHaveCount(0);
-  await page.evaluate(() => window.scrollTo(0, 200));
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  const pane = page.locator('[data-slot="lesson-region"]');
+  await pane.evaluate(element => element.scrollTo(0, 200));
+  await expect.poll(() => pane.evaluate(element => element.scrollTop)).toBeGreaterThan(0);
   await trigger.click();
   await sheet.locator('a[aria-current="page"]').click();
   await expect(sheet).toHaveCount(0);
@@ -156,6 +158,7 @@ test('responsive sidebar resets mobile state on resize and navigation while pres
   const destination = (await nextLesson.getAttribute('href'))!;
   await nextLesson.click();
   await expect(page).toHaveURL(new RegExp(`${destination}$`));
+  await expect.poll(() => pane.evaluate(element => element.scrollTop)).toBe(0);
   await expect(sheet).toHaveCount(0);
   await page.goBack();
   await expect(page).toHaveURL(new RegExp(`${lesson}$`));
@@ -181,7 +184,7 @@ test('responsive sidebar keeps native course navigation without JavaScript', asy
       await expect(menu.locator('.course-navigation')).toBeVisible();
       await expect(menu.getByRole('link', { name: 'LLM 101', exact: true })).toHaveAttribute('href', '/zh/courses/llm-101');
       await expect(menu.locator('.course-navigation p')).toHaveText(['01 大语言模型的工作原理', '02 模型的训练与能力', '03 AI 应用的工作原理']);
-      await expect(menu.locator('[data-sidebar="menu-sub-button"] > span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2', '3.3']);
+      await expect(menu.locator('[data-sidebar="menu-sub-button"] > span:first-child')).toHaveText(['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2', '3.3', '3.4', '3.5']);
       expect((await page.locator('article').boundingBox())!.y).toBeCloseTo(before, 0);
       await expect(navigation.getByRole('link', { name: copy.Author.website, exact: true })).toHaveAttribute('href', 'https://jimmywong.dev');
       const links = menu.locator('.course-navigation a');

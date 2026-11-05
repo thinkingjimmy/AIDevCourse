@@ -1,7 +1,8 @@
 'use client';
-import { useSyncExternalStore, type ReactNode } from 'react';
+import { useEffect, useRef, useSyncExternalStore, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import type { Locale } from '@/lib/i18n/config';
+import { cn } from '@/lib/utils';
 import { CourseFooter } from './course-footer';
 import { CourseOverviewLink, ModuleTree } from './navigation/module-tree';
 import { CourseMobileNavigation } from './navigation/mobile-navigation';
@@ -48,9 +49,23 @@ export function LearnShell({ locale, children }: { locale: Locale; children: Rea
   const open = useSyncExternalStore(subscribeSidebar, readSidebarOpen, () => true);
   return <SidebarProvider className="bg-background text-foreground" open={open} onOpenChange={setSidebarOpen}>
     <CourseSidebar />
-    <SidebarInset className="min-w-0 bg-background max-[961px]:pb-[calc(6.5rem+env(safe-area-inset-bottom))] [--lesson-sidebar-width:var(--sidebar-width)] peer-data-[collapsible=icon]:[--lesson-sidebar-width:var(--sidebar-width-icon)]">
-      <CourseMobileNavigation locale={locale} />
-      <div data-slot="lesson-region" className="@container/lesson min-w-0 flex-1 px-8 max-[961px]:px-5 min-[961px]:has-[[data-slot=lesson-toc]]:pl-20">{children}</div>
+    <CourseMobileNavigation locale={locale} />
+    <SidebarInset className="@container/reader min-w-0">
+      {children}
     </SidebarInset>
   </SidebarProvider>;
+}
+
+export function LessonRegion({ title, hasToc, children }: { title: string; hasToc: boolean; children: ReactNode }) {
+  const pane = useRef<HTMLElement>(null);
+  useEffect(() => {
+    // History traversal can restore the URL without scrolling a nested pane to its fragment.
+    const revealFragment = () => pane.current?.querySelector(':target')?.scrollIntoView({ block: 'start' });
+    window.addEventListener('hashchange', revealFragment);
+    return () => window.removeEventListener('hashchange', revealFragment);
+  }, []);
+  return <section ref={pane} data-slot="lesson-region" aria-label={title} tabIndex={0} className={cn(
+    '@container/lesson min-h-0 flex-1 overflow-y-auto overscroll-contain px-8 focus-visible:-outline-offset-2 max-[961px]:px-5 max-[961px]:pb-[calc(6.5rem+env(safe-area-inset-bottom))]',
+    hasToc && 'min-[961px]:pl-20',
+  )}>{children}</section>;
 }

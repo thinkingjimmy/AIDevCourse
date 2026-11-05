@@ -24,9 +24,12 @@ for (const [locale, label, completed, next] of [
       const geometry = await button.evaluate((element) => {
         const style = getComputedStyle(element);
         const rect = element.getBoundingClientRect();
-        return { radius: style.borderRadius, height: rect.height, right: rect.right, left: rect.left, width: element.clientWidth, contentWidth: element.scrollWidth };
+        return { radius: style.borderRadius, background: style.backgroundColor, border: style.borderColor, color: style.color, height: rect.height, right: rect.right, left: rect.left, width: element.clientWidth, contentWidth: element.scrollWidth };
       });
       expect(geometry.radius).toBe(`${textSize / 4}px`);
+      expect(geometry.background).toBe('rgb(49, 86, 75)');
+      expect(geometry.border).toBe(geometry.background);
+      expect(geometry.color).toBe('rgb(255, 255, 255)');
       expect(geometry.height).toBeGreaterThanOrEqual(44);
       expect(geometry.left).toBeGreaterThanOrEqual(0);
       expect(geometry.right).toBeLessThanOrEqual(320);

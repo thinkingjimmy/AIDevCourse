@@ -15,7 +15,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
     await page.goto('/zh');
-    await expect(page.locator('#catalog h2')).toHaveText(['开始之前', '入门', '中级']);
+    await expect(page.locator('#catalog h2')).toHaveText(['起步', '入门', '中级']);
     const beginner = page.getByRole('region', { name: '入门', exact: true });
     const intermediate = page.getByRole('region', { name: '中级', exact: true });
     await expect(beginner.getByRole('heading', { level: 3 })).toHaveText(['LLM 101', 'Coding 101', '设计 101']);
@@ -94,7 +94,7 @@ test('read the introduction and open the course on a narrow screen without JavaS
     await expect(page).toHaveURL(course);
     await expect(page.locator('[data-slot="course-empty"]')).toContainText('内容更新中');
     await page.goto('/zh');
-    await expect(page.locator('#catalog h2')).toHaveText(['开始之前', '入门', '中级']);
+    await expect(page.locator('#catalog h2')).toHaveText(['起步', '入门', '中级']);
     await page.getByRole('region', { name: '中级', exact: true }).getByRole('link', { name: 'Agent 101', exact: true }).click();
     await expect(page).toHaveURL(course);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

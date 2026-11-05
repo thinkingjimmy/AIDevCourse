@@ -1,0 +1,67 @@
+:root[data-course-zoom] {
+  --screen-duration: 420ms;
+  --screen-travel: var(--screen-duration) cubic-bezier(.55,.04,.27,1) both;
+}
+:root[data-course-zoom=out] { --screen-duration: 320ms; }
+:root[data-course-zoom]:has([data-slot=site-window][data-variant=open]) { view-transition-name: mac-home; }
+
+:root[data-course-zoom]::view-transition-group(mac-home) {
+  z-index: 0;
+  animation: none;
+}
+:root[data-course-zoom]::view-transition-old(mac-home),
+:root[data-course-zoom]::view-transition-new(mac-home) {
+  image-rendering: pixelated;
+  transform-origin: top left;
+  animation: approach-mac-screen var(--screen-travel);
+}
+:root[data-course-zoom]::view-transition-group(root) {
+  z-index: 1;
+  transform-origin: top left;
+  animation: enter-course-window var(--screen-travel), reveal-course-window var(--screen-travel);
+}
+
+/* The glass clips the course and its paper background together, including in portrait. */
+:root[data-course-zoom]::view-transition-image-pair(root) {
+  inset: calc(-1 * var(--glass-pad-y)) calc(-1 * var(--glass-pad-x));
+  width: auto;
+  height: auto;
+  overflow: hidden;
+  border-radius: 7% / 9%;
+  background: var(--mac-desktop-background);
+}
+:root[data-course-zoom]::view-transition-new(root),
+:root[data-course-zoom]::view-transition-old(root) {
+  inset: var(--glass-pad-y) auto auto var(--glass-pad-x);
+  width: calc(100% - 2 * var(--glass-pad-x));
+  height: calc(100% - 2 * var(--glass-pad-y));
+  transform-origin: center top;
+  mix-blend-mode: normal;
+  animation: frame-course-content var(--screen-duration) cubic-bezier(.48,.18,.24,1) both;
+}
+:root[data-course-zoom=out]::view-transition-new(mac-home),
+:root[data-course-zoom=out]::view-transition-group(root),
+:root[data-course-zoom=out]::view-transition-old(root) { animation-direction: reverse; }
+@keyframes approach-mac-screen {
+  from { transform: translate(0,0) scale(1); }
+  to { transform: var(--home-camera-to); }
+}
+@keyframes enter-course-window {
+  from { transform: var(--course-camera-from); }
+  to { transform: translate(0,0) scale(1); }
+}
+@keyframes reveal-course-window {
+  0% { opacity: 0; }
+  32%, 100% { opacity: 1; }
+}
+@keyframes frame-course-content {
+  from { transform: translateY(calc(-1 * var(--glass-pad-y))) scale(var(--glass-cover)); }
+  to { transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root[data-course-zoom]::view-transition-old(mac-home),
+  :root[data-course-zoom]::view-transition-new(mac-home),
+  :root[data-course-zoom]::view-transition-group(root),
+  :root[data-course-zoom]::view-transition-old(root),
+  :root[data-course-zoom]::view-transition-new(root) { animation: none; }
+}

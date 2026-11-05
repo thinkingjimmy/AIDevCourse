@@ -7,4 +7,5 @@
   <circle cx="38.5" cy="45" r="1.7" fill="#f4efe3"/>
   <circle cx="43" cy="45" r="1.7" fill="#f4efe3"/>
   <circle cx="47.5" cy="45" r="1.7" fill="#f4efe3"/>
+  <path d="M51 7.5l1.3 3.7 3.7 1.3-3.7 1.3L51 17.5l-1.3-3.7L46 12.5l3.7-1.3Z" fill="#f0a52a"/>
 </svg>

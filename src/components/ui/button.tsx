@@ -10,6 +10,7 @@ const buttonVariants = cva(
       variant: {
         action: "transition-none border border-foreground bg-foreground text-white hover:bg-strong",
         "action-outline": "transition-none border border-border bg-background text-foreground hover:bg-surface",
+        "brand-outline": "transition-none border border-brand/35 bg-background text-brand hover:bg-brand-soft active:bg-brand-soft focus-visible:outline-brand",
         "action-raised": "transition-none border border-border bg-background text-muted-foreground shadow-[4px_4px_0_var(--line)] hover:bg-surface",
         keyboard: "transition-none border border-border bg-transparent font-mono font-normal text-muted-foreground",
         paper: "border border-foreground bg-transparent text-inherit hover:bg-accent active:translate-y-px",

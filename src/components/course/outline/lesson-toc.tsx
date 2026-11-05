@@ -36,13 +36,13 @@ export function LessonToc({ items, label, hasNotes = false }: {
   }, [activeUrl]);
 
   return <aside data-slot="lesson-aside" className={cn(
-    '@container/toc fixed top-[50svh] left-[calc(var(--lesson-sidebar-width)+0.5rem)] z-20 hidden w-16 -translate-y-1/2 min-[961px]:block',
-    // Both layouts leave 1rem between the expanded outline and the centered article.
-    hasNotes ? '@[95rem]/lesson:w-56' : '@[72rem]/lesson:w-56',
+    '@container/toc pointer-events-none absolute inset-y-2 left-2 z-20 hidden w-16 flex-col justify-center min-[961px]:flex',
+    // The reader width includes the article's 5rem left gutter and 2rem right padding.
+    hasNotes ? '@[102rem]/reader:w-56' : '@[79rem]/reader:w-56',
   )}>
     <Tooltip.Provider delayDuration={0} skipDelayDuration={0} disableHoverableContent>
       <nav ref={nav} data-slot="lesson-toc" aria-label={label}
-        className="max-h-[calc(100svh-4rem)] overflow-x-hidden overflow-y-auto overscroll-contain py-1 pl-1 [--toc-expanded:0] [scrollbar-width:thin] @[10rem]/toc:[--toc-expanded:1] [&::-webkit-scrollbar]:w-2">
+        className="pointer-events-auto min-h-0 overflow-x-hidden overflow-y-auto overscroll-contain py-1 pl-1 [--toc-expanded:0] [scrollbar-width:thin] @[10rem]/toc:[--toc-expanded:1] [&::-webkit-scrollbar]:w-2">
         {items.map((item, index) => {
           const distance = previewIndex === null ? 4 : Math.min(Math.abs(index - previewIndex), 4);
           return <Tooltip.Root key={item.url} open={previewIndex === index}
@@ -52,16 +52,17 @@ export function LessonToc({ items, label, hasNotes = false }: {
             }}>
             <Tooltip.Trigger asChild>
               <a href={item.url} aria-current={activeUrl === item.url ? 'location' : undefined}
-                className="group flex h-5 w-[52px] items-center text-sm leading-copy font-normal text-muted-foreground no-underline hover:text-foreground focus-visible:-outline-offset-2 aria-[current=location]:text-foreground @[10rem]/toc:h-auto @[10rem]/toc:w-full @[10rem]/toc:py-1 @[10rem]/toc:pr-3"
+                className="group flex h-5 w-[52px] items-center text-sm leading-copy font-normal text-muted-foreground no-underline hover:text-brand focus-visible:-outline-offset-2 focus-visible:outline-brand aria-[current=location]:font-medium aria-[current=location]:text-brand @[10rem]/toc:h-auto @[10rem]/toc:w-full @[10rem]/toc:py-1 @[10rem]/toc:pr-3"
                 onClick={event => { if (event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) setActiveUrl(item.url); }}>
-                <span data-slot="lesson-toc-marker" aria-hidden className="pointer-events-none block h-[3px] w-[52px] origin-left shrink-0 bg-foreground/20 transition-transform duration-150 ease-out group-aria-[current=location]:bg-foreground motion-reduce:transition-none @[10rem]/toc:hidden"
+                <span data-slot="lesson-toc-marker" aria-hidden className={cn('pointer-events-none block h-[3px] w-[52px] origin-left shrink-0 bg-brand/60 transition-transform duration-150 ease-out motion-reduce:transition-none @[10rem]/toc:hidden',
+                  previewIndex === index && 'bg-brand/80', activeUrl === item.url && 'bg-brand')}
                   style={{ transform: `scaleX(${markerWidths[distance] / 52})` }} />
                 <span data-slot="lesson-toc-label" className="sr-only @[10rem]/toc:not-sr-only @[10rem]/toc:block @[10rem]/toc:min-w-0 @[10rem]/toc:wrap-anywhere">{item.title}</span>
               </a>
             </Tooltip.Trigger>
             <Tooltip.Portal>
               <Tooltip.Content data-slot="lesson-toc-title" side="right" sideOffset={12} collisionPadding={16} hideWhenDetached
-                className="quote-frame not-prose z-40 max-w-[min(20rem,calc(100vw-2rem))] px-3 py-2 text-sm leading-copy font-normal text-foreground wrap-anywhere">
+                className="quote-frame not-prose z-40 max-w-[min(20rem,calc(100vw-2rem))] px-3 py-2 text-sm leading-copy font-normal text-brand wrap-anywhere">
                 {item.title}
               </Tooltip.Content>
             </Tooltip.Portal>

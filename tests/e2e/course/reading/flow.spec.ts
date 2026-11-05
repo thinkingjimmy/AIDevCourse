@@ -9,7 +9,7 @@ for (const scenario of [
   { name: 'desktop without JavaScript', width: 1440, javaScriptEnabled: false, catalog: true },
   { name: 'phone without JavaScript', width: 390, javaScriptEnabled: false, catalog: true },
 ]) {
-  test(`course reading uses one tab and a scrolling header on ${scenario.name}`, async ({ browser, baseURL }, testInfo) => {
+  test(`course reading scrolls inside the frame on ${scenario.name}`, async ({ browser, baseURL }, testInfo) => {
     const context = await browser.newContext({ baseURL, viewport: { width: scenario.width, height: 960 },
       javaScriptEnabled: scenario.javaScriptEnabled, reducedMotion: 'reduce' });
     try {
@@ -35,13 +35,25 @@ for (const scenario of [
       await expect(header).toBeVisible();
       await expect(header).toHaveCSS('position', 'static');
       await expect(header).toHaveCSS('border-bottom-width', '1px');
+      await expect(header.locator('.site-header-inner > a')).toHaveCount(1);
+      await expect(header.locator('.site-header-logo [data-slot="brand-mark"]')).toBeVisible();
       await expect(header.locator('.language-picker summary')).toBeVisible();
       await expect(page.locator('main')).toHaveCount(1);
       await expect(page.locator('article h1')).toBeVisible();
       await expect(page.locator('[data-slot="sidebar-footer"] [data-slot="language-menu-trigger"], [data-slot="sidebar-footer"] .language-picker')).toHaveCount(0);
       const background = await page.locator('[data-slot="sidebar-inset"]').evaluate(element => getComputedStyle(element).backgroundColor);
       const sidebar = page.locator('[data-slot="sidebar-container"]');
-      if (scenario.width >= 961) {
+      const frame = page.locator('[data-slot="site-window"]');
+      const pane = page.locator('[data-slot="lesson-region"]');
+      const frameBox = (await frame.boundingBox())!;
+      const headerBox = (await header.boundingBox())!;
+      const paneBox = (await pane.boundingBox())!;
+      const margin = scenario.width <= 721 ? 6 : 12;
+      expect(frameBox).toEqual({ x: margin, y: margin, width: scenario.width - 2 * margin, height: 960 - 2 * margin });
+      expect(paneBox.y + paneBox.height).toBe(frameBox.y + frameBox.height - 1);
+      if (scenario.width >= 961) await expect(sidebar).toBeInViewport();
+      const sidebarBox = scenario.width >= 961 ? (await sidebar.boundingBox())! : null;
+      if (sidebarBox) {
         await expect(sidebar.locator('img')).toHaveCount(0);
         const title = sidebar.getByRole('link', { name: 'LLM 101', exact: true });
         await expect(title).toHaveCount(1);
@@ -51,20 +63,29 @@ for (const scenario of [
         expect(toggleBox.y + toggleBox.height / 2).toBeCloseTo(titleBox.y + titleBox.height / 2, 1);
         evidence.push({ courseTitle: titleBox, toggle: toggleBox });
         await expect(sidebar).toHaveCSS('background-color', background);
-        await expect(page.locator('[data-slot="sidebar-inner"]')).toHaveCSS('background-color', background);
+        await expect(page.locator('[data-slot="sidebar-inner"]')).toHaveCSS('background-color', 'rgb(241, 244, 236)');
         expect((await sidebar.boundingBox())!.y).toBeGreaterThanOrEqual((await header.boundingBox())!.height - 1);
+        const outline = (await page.locator('[data-slot="lesson-aside"]').boundingBox())!;
+        expect(sidebarBox.y).toBe(paneBox.y);
+        expect(outline.x).toBeGreaterThanOrEqual(sidebarBox.x + sidebarBox.width + 8);
+        expect(outline.x + outline.width).toBeLessThanOrEqual((await page.locator('article').boundingBox())!.x);
       }
       await capture('reading-top');
-      await page.evaluate(() => window.scrollTo({ top: 500, behavior: 'instant' }));
-      await expect.poll(async () => { const box = (await header.boundingBox())!; return box.y + box.height; }).toBeLessThan(0);
-      if (scenario.width >= 961 && scenario.javaScriptEnabled) {
-        await expect.poll(async () => (await sidebar.boundingBox())!.y).toBeCloseTo(0, 1);
-        const box = (await sidebar.boundingBox())!;
-        expect(box.y + box.height).toBeCloseTo(960, 1);
-        evidence.push({ sidebarAfterScroll: box });
+      await page.mouse.move(paneBox.x + paneBox.width / 2, paneBox.y + 40);
+      await page.mouse.wheel(0, 520);
+      await expect.poll(() => pane.evaluate(element => element.scrollTop)).toBeGreaterThan(200);
+      await expect(page.locator('article h1')).not.toBeInViewport();
+      expect(await frame.boundingBox()).toEqual(frameBox);
+      expect(await header.boundingBox()).toEqual(headerBox);
+      expect(await page.evaluate(() => window.scrollY)).toBe(0);
+      if (sidebarBox) {
+        expect(await sidebar.boundingBox()).toEqual(sidebarBox);
+        const footer = (await sidebar.locator('[data-slot="sidebar-footer"]').boundingBox())!;
+        expect(footer.y + footer.height).toBe(frameBox.y + frameBox.height - 1);
+        evidence.push({ sidebar: sidebarBox, footer });
       }
+      evidence.push({ frame: frameBox, header: headerBox, pane: paneBox, scrollTop: await pane.evaluate(element => element.scrollTop) });
       await capture('reading-scrolled');
-      await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
       await expect(header).toBeInViewport();
       if (scenario.javaScriptEnabled) {
         await expect(page.getByRole('button', { name: '我的成就', exact: true }).filter({ visible: true })).toBeEnabled({ timeout: 15000 });
@@ -116,3 +137,20 @@ for (const scenario of [
     } finally { await context.close(); }
   });
 }
+
+test('keyboard reading reaches the lesson end and the next lesson opens at the top', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto('/zh/courses/llm-101/what-a-language-model-does');
+  const pane = page.locator('[data-slot="lesson-region"]');
+  const next = pane.locator('[data-slot="lesson-completion"] button');
+  await expect(next).toBeEnabled();
+  await pane.press('PageDown');
+  await expect.poll(() => pane.evaluate(element => element.scrollTop)).toBeGreaterThan(0);
+  await pane.press('End');
+  await expect(next).toBeInViewport();
+  await testInfo.attach('End of lesson', { body: await page.screenshot(), contentType: 'image/png' });
+  await next.click();
+  await expect(page).toHaveURL('/zh/courses/llm-101/what-is-a-token');
+  await expect(pane.locator('h1')).toBeInViewport();
+  expect(await pane.evaluate(element => element.scrollTop)).toBe(0);
+});

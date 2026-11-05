@@ -31,7 +31,7 @@ export default async function ComponentPreview({ searchParams }: { searchParams:
       <h1 className="m-0 text-title leading-heading font-semibold tracking-tight">正文组件</h1>
       <section id="jimmy-notes" className="mx-[calc((100%-min(65.5rem,100vw-2rem))/2)] mt-8 w-[min(65.5rem,calc(100vw-2rem))] @container/lesson">
         <h2 className="m-0 text-2xl font-semibold">Jimmy Note</h2>
-        <p className="mt-3 mb-8 text-base text-muted-foreground">浅橙色高亮关联作者批注；右下折线接入直角卡片，空间不足时点击数字上标阅读，编号按正文顺序自动生成。</p>
+        <p className="mt-3 mb-8 text-base text-muted-foreground">浅绿色高亮关联作者批注；右下折线接入直角卡片，空间不足时点击数字上标阅读，编号按正文顺序自动生成。</p>
         <NoteScope className="grid min-w-0 grid-cols-[minmax(0,1fr)] items-start gap-x-8 @[64rem]/lesson:grid-cols-[minmax(0,1fr)_21rem]">
           <article className="course-prose prose"><Examples components={getMDXComponents()} /></article>
           <NoteRail />

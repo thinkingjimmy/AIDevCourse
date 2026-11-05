@@ -8,6 +8,7 @@ import { getMDXComponents } from '@/components/mdx/components';
 import { LessonVisit } from '@/components/progress/lesson-visit';
 import { LessonCompletion } from '@/components/course/lesson-completion';
 import { LessonToc } from '@/components/course/outline/lesson-toc';
+import { LessonRegion } from '@/components/course/course-layout';
 import { NoteRail, NoteScope } from '@/components/mdx/notes/note-scope';
 import { pageMetadata } from '@/lib/metadata';
 import { cn } from '@/lib/utils';
@@ -25,18 +26,22 @@ export default async function LessonPage({ params }: Props) {
   const Body = article.data.body;
   const toc = (article.data.toc ?? []).filter((item) => item.depth === 2);
   const hasToc = toc.length > 0;
-  return <NoteScope key={doc.url} data-slot="lesson-reading-group" className={cn(
-    'mx-auto grid w-full max-w-[51rem] min-w-0 grid-cols-[minmax(0,1fr)] items-start',
-    doc.hasJimmyNotes && '@[64rem]/lesson:max-w-[74rem] @[64rem]/lesson:grid-cols-[minmax(0,1fr)_23rem]',
-  )}>
+  return <>
     {hasToc && <LessonToc items={toc} label={t('onThisPage')} hasNotes={doc.hasJimmyNotes} />}
-    <article id="main-content" className="block min-w-0 pt-9 pb-20 max-[961px]:pt-7 max-[961px]:pb-[72px]" tabIndex={-1}>
-      <PageTitle variant="lesson">{doc.data.title}</PageTitle>
-      {doc.data.description ? <p className="m-0 mb-5 max-w-none text-base leading-body text-muted-foreground">{doc.data.description}</p> : null}
-      <div className="prose course-prose"><Body components={getMDXComponents(doc.achievements)} /></div>
-      <LessonVisit lessonId={doc.data.lessonId} />
-      <LessonCompletion lessonId={doc.data.lessonId} />
-    </article>
-    {doc.hasJimmyNotes && <NoteRail className="ml-8" />}
-  </NoteScope>;
+    <LessonRegion key={doc.url} title={doc.data.title} hasToc={hasToc}>
+      <NoteScope data-slot="lesson-reading-group" className={cn(
+        'mx-auto grid w-full max-w-[51rem] min-w-0 grid-cols-[minmax(0,1fr)] items-start',
+        doc.hasJimmyNotes && '@[64rem]/lesson:max-w-[74rem] @[64rem]/lesson:grid-cols-[minmax(0,1fr)_23rem]',
+      )}>
+        <article id="main-content" className="block min-w-0 pt-9 pb-20 max-[961px]:pt-7 max-[961px]:pb-[72px]" tabIndex={-1}>
+          <PageTitle variant="lesson">{doc.data.title}</PageTitle>
+          {doc.data.description ? <p className="m-0 mb-5 max-w-none text-base leading-body text-muted-foreground">{doc.data.description}</p> : null}
+          <div className="prose course-prose"><Body components={getMDXComponents(doc.achievements)} /></div>
+          <LessonVisit lessonId={doc.data.lessonId} />
+          <LessonCompletion lessonId={doc.data.lessonId} />
+        </article>
+        {doc.hasJimmyNotes && <NoteRail className="ml-8" />}
+      </NoteScope>
+    </LessonRegion>
+  </>;
 }

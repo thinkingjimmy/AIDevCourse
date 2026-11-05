@@ -4,30 +4,87 @@
  */
 
 export function highlightAnnotations(container, annotations) {
+  clearAnnotationMarks(container);
   if (!annotations.length) return () => {};
   const stream = collectTextStream(container);
   if (!stream.text) return () => {};
-  const matches = [];
+  const priority = (annotation) =>
+    annotation.kind === 'proofread'
+      ? 4
+      : annotation.kind === 'link'
+        ? 3
+        : annotation.kind === 'assist'
+          ? 2
+          : 1;
+  const ordered = [...annotations].sort((a, b) => priority(b) - priority(a));
+  const markMatches = [];
+  const reviewMatches = [];
   const occupied = [];
+  const positions = [];
 
-  for (const annotation of annotations) {
-    const quote = normalizeSpace(annotation.quote || '');
+  for (const annotation of ordered) {
+    const quote = compactSpace(annotation.quote || '');
     if (!quote) continue;
     const start = stream.text.indexOf(quote);
     if (start === -1) continue;
     const end = start + quote.length;
-    if (occupied.some(([from, to]) => start < to && end > from)) continue;
     const startPoint = stream.points[start];
     const endPoint = stream.points[end - 1];
     if (!startPoint || !endPoint || startPoint.block !== endPoint.block) continue;
-    occupied.push([start, end]);
-    matches.push({ annotation, start, end, startPoint, endPoint });
+    positions.push({ id: annotation.id, start });
+    const overlaps = occupied.some(([from, to]) => start < to && end > from);
+    if (annotation.kind === 'review') {
+      reviewMatches.push({ annotation, start, end, startPoint, endPoint, wrap: !overlaps });
+      if (!overlaps) occupied.push([start, end]);
+      continue;
+    }
+    let match = { start, end, startPoint, endPoint };
+    if (overlaps) {
+      match = findFreeSegment(quote, start, end, stream, occupied);
+      if (!match) continue;
+    }
+    occupied.push([match.start, match.end]);
+    markMatches.push({ annotation, ...match });
   }
 
-  matches.sort((a, b) => b.start - a.start);
-  const located = [];
+  reviewMatches.sort((a, b) => a.start - b.start);
+  let reviewNumber = 0;
+  for (const match of reviewMatches) {
+    reviewNumber += 1;
+    match.index = reviewNumber;
+    match.display = String(reviewNumber);
+    match.markClass = '';
+    match.kind = 'review';
+  }
 
-  for (const match of matches) {
+  for (const match of markMatches) {
+    if (match.annotation.kind === 'assist') {
+      match.display = '✦';
+      match.markClass = ' tr-annotation-assist';
+      match.kind = 'assist';
+    } else if (match.annotation.kind === 'link') {
+      const type = match.annotation.linkType === 'external' ? 'external' : 'internal';
+      match.display = type === 'external' ? '外' : '内';
+      match.markClass = ` tr-annotation-link tr-annotation-link-${type}`;
+      match.kind = `link-${type}`;
+    } else {
+      const type = match.annotation.issueType === 'typo' ? 'typo' : 'grammar';
+      match.display = type === 'typo' ? '错' : '句';
+      match.markClass = ` tr-annotation-proof tr-annotation-proof-${type}`;
+      match.kind = type === 'typo' ? 'proofread-typo' : 'proofread-grammar';
+    }
+  }
+
+  const located = reviewMatches.map((match) => ({
+    id: match.annotation.id,
+    index: match.index,
+    start: match.start,
+  }));
+  located.sort((a, b) => a.start - b.start);
+
+  const wraps = [...markMatches, ...reviewMatches.filter((match) => match.wrap)];
+  wraps.sort((a, b) => b.start - a.start);
+  for (const match of wraps) {
     const range = document.createRange();
     range.setStart(match.startPoint.node, match.startPoint.offset);
     range.setEnd(match.endPoint.node, match.endPoint.offset + 1);
@@ -38,40 +95,52 @@ export function highlightAnnotations(container, annotations) {
       continue;
     }
     const mark = document.createElement('mark');
-    mark.className = 'tr-annotation';
+    mark.className = `tr-annotation${match.markClass}`;
     mark.dataset.annId = match.annotation.id;
+    mark.dataset.annKind = match.kind;
     mark.tabIndex = 0;
     mark.setAttribute('role', 'button');
     mark.setAttribute('aria-label', `${match.annotation.category || '审阅'}：${match.annotation.comment || ''}`);
     mark.appendChild(fragment);
     const sup = document.createElement('sup');
     sup.className = 'tr-annotation-index';
-    sup.textContent = '';
+    sup.textContent = match.display;
     mark.appendChild(sup);
     range.insertNode(mark);
-    located.push({ id: match.annotation.id, start: match.start });
   }
 
-  located.sort((a, b) => a.start - b.start);
   located.forEach((item, index) => {
     item.index = index + 1;
-    const mark = container.querySelector(`mark.tr-annotation[data-ann-id="${cssEscape(item.id)}"]`);
-    const sup = mark?.querySelector('sup.tr-annotation-index');
-    if (sup) sup.textContent = String(index + 1);
   });
 
   container.dataset.located = JSON.stringify(located.map(({ id, index }) => ({ id, index })));
+  container.dataset.positions = JSON.stringify(positions);
 
-  return () => {
-    for (const mark of container.querySelectorAll('mark.tr-annotation')) {
-      const parent = mark.parentNode;
-      if (!parent) continue;
-      while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
-      parent.removeChild(mark);
-    }
-    container.normalize();
-    delete container.dataset.located;
-  };
+  return () => clearAnnotationMarks(container);
+}
+
+function clearAnnotationMarks(container) {
+  for (const mark of container.querySelectorAll('mark.tr-annotation')) {
+    const parent = mark.parentNode;
+    if (!parent) continue;
+    for (const badge of mark.querySelectorAll('sup.tr-annotation-index')) badge.remove();
+    while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
+    parent.removeChild(mark);
+  }
+  container.normalize();
+  delete container.dataset.located;
+  delete container.dataset.positions;
+}
+
+export function readAnnotationPositions(container) {
+  const raw = container.dataset.positions;
+  if (!raw) return [];
+  try {
+    const items = JSON.parse(raw);
+    return items.filter((item) => item && typeof item.id === 'string' && Number.isFinite(item.start));
+  } catch {
+    return [];
+  }
 }
 
 export function readLocatedAnnotations(container, annotations) {
@@ -84,6 +153,32 @@ export function readLocatedAnnotations(container, annotations) {
   } catch {
     return [];
   }
+}
+
+function findFreeSegment(quote, start, end, stream, occupied) {
+  const candidates = [];
+  let cursor = 0;
+  for (const segment of quote.split(/(?<=[。！？；，、：:,.!?;])\s*/)) {
+    if (segment.length < 6) continue;
+    const at = quote.indexOf(segment, cursor);
+    if (at < 0) continue;
+    cursor = at + segment.length;
+    candidates.push([start + at, start + at + segment.length]);
+  }
+  for (let length = Math.min(36, quote.length); length >= 8; length -= 4) {
+    for (let offset = 0; offset + length <= quote.length; offset += 4) {
+      candidates.push([start + offset, start + offset + length]);
+    }
+  }
+  for (const [from, to] of candidates) {
+    if (from < start || to > end) continue;
+    if (occupied.some(([left, right]) => from < right && to > left)) continue;
+    const startPoint = stream.points[from];
+    const endPoint = stream.points[to - 1];
+    if (!startPoint || !endPoint || startPoint.block !== endPoint.block) continue;
+    return { start: from, end: to, startPoint, endPoint };
+  }
+  return null;
 }
 
 export function collectTextStream(root) {
@@ -104,27 +199,14 @@ export function collectTextStream(root) {
   });
   const points = [];
   let node;
-  let lastSpace = false;
   while ((node = walker.nextNode())) {
     const value = node.nodeValue || '';
-    if (!value.trim()) {
-      if (points.length && !lastSpace) {
-        points.push({ ch: ' ', node, offset: Math.max(0, value.length - 1), block: blockOf(node) });
-        lastSpace = true;
-      }
-      continue;
-    }
+    if (!value) continue;
     const block = blockOf(node);
     for (let index = 0; index < value.length; index += 1) {
       const ch = value[index];
-      if (/\s/.test(ch)) {
-        if (lastSpace) continue;
-        points.push({ ch: ' ', node, offset: index, block });
-        lastSpace = true;
-      } else {
-        points.push({ ch, node, offset: index, block });
-        lastSpace = false;
-      }
+      if (/\s/.test(ch)) continue;
+      points.push({ ch, node, offset: index, block });
     }
   }
   return { text: points.map((point) => point.ch).join(''), points };
@@ -138,6 +220,10 @@ function blockOf(node) {
 
 export function normalizeSpace(value) {
   return String(value).replace(/\s+/g, ' ').trim();
+}
+
+export function compactSpace(value) {
+  return String(value == null ? '' : value).replace(/\s+/g, '');
 }
 
 export function cssEscape(value) {

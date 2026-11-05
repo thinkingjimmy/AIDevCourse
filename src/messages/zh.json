@@ -70,7 +70,14 @@
     "navHandbook": "手册",
     "footerLead": "aidevcourse.com · 免费、开源、不追踪",
     "footerMeta": "© 2026 Jimmy Wong",
-    "browseCourses": "浏览课程"
+    "browseCourses": "浏览课程",
+    "heroIntro": "从写代码、调模型到搭 Agent，每一课只拆一个零件。",
+    "openingCourse": "正在打开课程…",
+    "cancelOpening": "取消",
+    "previousPage": "上一页",
+    "nextPage": "下一页",
+    "pagination": "课程分页",
+    "gettingStarted": "起步"
   },
   "Course": {
     "emptyTitle": "这一语言还没有课程",
@@ -137,6 +144,7 @@
     "viewAll": "查看所有成就"
   },
   "Author": {
+    "about": "关于作者",
     "website": "个人网站",
     "label": "作者与关注方式",
     "role": "这门课的作者",

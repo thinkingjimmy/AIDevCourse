@@ -88,9 +88,10 @@ test.describe('ChatMessage', () => {
       const assistant = messages.nth(1);
       await expect(user).toHaveAttribute('data-from', 'user');
       await expect(user).toHaveCSS('justify-content', 'flex-end');
-      await expect(user.locator('[data-slot="message-content"]')).toHaveCSS('background-color', 'rgb(244, 244, 245)');
       const avatar = user.locator('[data-slot="message-avatar"]');
       await expect(avatar).toBeVisible();
+      await expect(avatar).toHaveCSS('color', 'rgb(49, 86, 75)');
+      await expect(user.locator('[data-slot="message-content"]')).toHaveCSS('background-color', await avatar.evaluate(element => getComputedStyle(element).backgroundColor));
       await expect(avatar).toHaveAttribute('aria-hidden', 'true');
       await expect(avatar).toHaveCSS('width', '32px');
       await expect(avatar).toHaveCSS('height', '32px');
@@ -116,7 +117,7 @@ test.describe('ChatMessage', () => {
       await expect(assistant.getByRole('link', { name: '写作说明' })).toHaveAttribute('href', '#authoring');
       for (const message of await messages.all()) {
         await expect(message).toHaveCSS('border-top-width', '1px');
-        await expect(message).toHaveCSS('border-top-color', 'rgb(9, 9, 11)');
+        await expect(message).toHaveCSS('border-top-color', 'rgb(49, 86, 75)');
         expect(await message.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
       }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -246,7 +247,7 @@ test.describe('What a language model does lesson demos', () => {
       await page.setViewportSize(viewport);
       await page.goto('/zh/courses/llm-101/what-a-language-model-does');
       const menus = page.getByRole('figure', { name: '两种菜单对比' });
-      const native = menus.getByRole('combobox', { name: '浏览器原生菜单' });
+      const native = menus.getByRole('combobox', { name: /请点击，浏览器原生菜单/ });
       await expect(native.getByRole('option')).toHaveText(['请点击', '菜单 A', '菜单 B', '菜单 C']);
       await expect(menus.locator('[data-slot="button"]')).toHaveCount(2);
       await expect(menus.locator('svg')).toHaveCount(0);
@@ -277,7 +278,9 @@ test.describe('What a language model does lesson demos', () => {
       await native.selectOption('菜单 B');
       await expect(native).toHaveAttribute('aria-label', /已选择 菜单 B/);
       await expect(native).toHaveValue('菜单 B');
-      const trigger = menus.getByRole('button', { name: '打开 shadcn 菜单' });
+      const trigger = menus.getByRole('button', { name: /打开 shadcn 菜单，请点击/ });
+      await expect(trigger).toHaveCSS('color', 'rgb(49, 86, 75)');
+      await expect(menus.locator('figcaption')).toHaveCSS('color', 'rgb(49, 86, 75)');
       await trigger.click();
       await expect(page.getByRole('menuitem')).toHaveText(['菜单 A', '菜单 B', '菜单 C']);
       await page.getByRole('menuitem', { name: '菜单 C' }).click();
@@ -360,20 +363,22 @@ test.describe('Learning achievements', () => {
   const takeaway = '模型的训练数据是有时间限制的，它无法获取训练数据之后的信息。所以，在没有接入天气数据情况下，不可能知道今天广州的天气。';
   async function expectCount(page: Page, value: number) {
     const mobile = (page.viewportSize()?.width ?? 1280) < 961;
-    if (mobile) await page.getByRole('button', { name: '课程目录', exact: true }).click();
+    if (mobile) await page.locator('[data-slot="mobile-sidebar-trigger"]').click();
     await expect(page.locator(count)).toHaveText(`已解锁 ${value} 项成就`);
     const footer = page.locator('[data-sidebar="footer"]');
     await expect(footer.locator(count)).toBeVisible();
     await expect(page.locator('[data-sidebar="header"]').locator(count)).toHaveCount(0);
-    const total = readCatalog().courses.find((course) => course.id === 'llm-101')?.achievements.length ?? 0;
+    const total = new Set(readCatalog().courses.flatMap(course => course.achievements.map(achievement => `${course.id}:${achievement.id}`))).size;
     await expect(footer.getByRole('progressbar')).toHaveAttribute('aria-valuenow', String(total ? value / total * 100 : 0));
     const earned = await footer.locator(count).boundingBox();
-    const more = await footer.getByRole('button', { name: '更多', exact: true }).boundingBox();
-    expect(earned!.x + earned!.width).toBeLessThan(more!.x);
+    const summary = footer.getByRole('button', { name: '我的成就', exact: true });
+    await expect(summary).toBeVisible();
+    const summaryBox = (await summary.boundingBox())!;
+    expect(earned!.x + earned!.width).toBeLessThanOrEqual(summaryBox.x + summaryBox.width);
     await expect(footer.getByText('我的成就', { exact: true })).toBeVisible();
     await expect(footer.getByRole('link', { name: '关于', exact: true })).toHaveCount(0);
-    await expect(footer.getByRole('progressbar')).toHaveCSS('width', '40px');
-    await expect(footer.getByRole('progressbar')).toHaveCSS('height', '40px');
+    await expect(footer.getByRole('progressbar')).toHaveCSS('width', '28px');
+    await expect(footer.getByRole('progressbar')).toHaveCSS('height', '28px');
     await test.info().attach(`achievement-footer-${mobile ? 'mobile' : 'desktop'}-${value}`, { body: await footer.screenshot(), contentType: 'image/png' });
     await expect(page.locator('.course-navigation')).not.toContainText('已完成');
     await expect(page.locator('a[aria-current="page"]').first()).toHaveAttribute('href', path);
@@ -457,7 +462,7 @@ test.describe('Learning achievements', () => {
       await expect(page.locator('.completion-box')).toHaveCount(0);
       await expect(page.locator('[data-slot="lesson-completed"]')).toHaveCount(0);
       await expect(page.getByRole('button', { name: '标记为已完成', exact: true })).toBeEnabled();
-      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await page.locator('[data-slot="lesson-region"]').evaluate(element => element.scrollTo(0, element.scrollHeight));
       await expect(challenge).toHaveAttribute('data-state', 'locked');
       await challenge.scrollIntoViewIfNeeded();
       await test.info().attach(`achievement-before-${viewport.name}`, { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
@@ -499,7 +504,7 @@ test.describe('Learning achievements', () => {
       await test.info().attach(`achievement-after-${viewport.name}`, { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
       await test.info().attach(`achievement-card-after-${viewport.name}`, { body: await challenge.screenshot({ animations: 'disabled' }), contentType: 'image/png' });
       if (viewport.name === 'mobile') {
-        await page.getByRole('button', { name: '课程目录', exact: true }).click();
+        await page.locator('[data-slot="mobile-sidebar-trigger"]').click();
         await expect(page.locator('[data-mobile="true"]')).toContainText('已解锁 1 项成就');
         await test.info().attach('achievement-mobile-sidebar', { body: await page.screenshot(), contentType: 'image/png' });
         await page.keyboard.press('Escape');

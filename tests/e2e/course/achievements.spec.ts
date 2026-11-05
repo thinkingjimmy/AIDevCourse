@@ -15,8 +15,10 @@ test.skip(process.env.CONTENT_TEST === '1', 'Uses the published achievement inve
 
 async function verifyGallerySurface(page: Page) {
   const dialog = page.getByRole('dialog', { name: '我的成就' });
-  const border = await page.locator('[data-slot="sidebar-footer"]').evaluate(element => getComputedStyle(element).borderTopColor);
-  await expect(dialog).toHaveCSS('border-color', border);
+  await expect(dialog).toHaveCSS('border-color', 'rgb(49, 86, 75)');
+  await expect(dialog.getByRole('heading')).toHaveCSS('color', 'rgb(49, 86, 75)');
+  await expect(dialog.getByRole('button', { name: '关闭', exact: true })).toHaveCSS('color', 'rgb(49, 86, 75)');
+  await expect(dialog.getByRole('progressbar').locator('div')).toHaveCSS('background-color', 'rgb(49, 86, 75)');
   const overlay = page.locator('[data-slot="dialog-overlay"]');
   await expect(overlay).toBeVisible();
   await expect(overlay).toHaveCSS('background-color', /[,/]\s*0\.6\)$/);
@@ -51,6 +53,8 @@ test('earned medals, four-column alignment, hover, and lesson navigation', async
   await expect(medals).toHaveCount(total);
   await expect(medals.first()).toHaveAttribute('data-earned', 'true');
   await expect(medals.nth(1)).toHaveAttribute('data-earned', 'false');
+  await expect(medals.first().locator('[data-medal-emblem]')).toHaveCSS('color', 'rgb(49, 86, 75)');
+  await expect(medals.first().locator('[data-medal-emblem]')).toHaveCSS('border-color', 'rgb(49, 86, 75)');
 
   const layout = await dialog.evaluate((element) => {
     const progress = element.querySelector('[role="progressbar"]')!.getBoundingClientRect();
@@ -131,8 +135,9 @@ test('collapsed sidebar keeps an icon-only achievement button in the footer', as
     expect(buttonBounds.height).toBe(44);
     expect(ringBounds.width).toBe(28);
     expect(ringBounds.height).toBe(28);
-    expect(Math.abs(buttonBounds.x + buttonBounds.width / 2 - sidebarBounds.width / 2)).toBeLessThanOrEqual(1);
-    expect(footerBounds.y + footerBounds.height).toBe(viewport.height);
+    expect(Math.abs(buttonBounds.x + buttonBounds.width / 2 - (sidebarBounds.x + sidebarBounds.width / 2))).toBeLessThanOrEqual(1);
+    const frame = (await page.locator('[data-slot="site-window"]').boundingBox())!;
+    expect(footerBounds.y + footerBounds.height).toBe(frame.y + frame.height - 1);
     geometry.push({ viewport, sidebar: sidebarBounds, footer: footerBounds, button: buttonBounds, ring: ringBounds });
   }
 
@@ -143,7 +148,7 @@ test('collapsed sidebar keeps an icon-only achievement button in the footer', as
   await page.reload();
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   await expect.poll(async () => Number(await ring.getAttribute('aria-valuenow'))).toBeCloseTo(100 / total, 8);
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await page.locator('[data-slot="lesson-region"]').evaluate(element => element.scrollTo(0, element.scrollHeight));
   await expect(footer).toBeInViewport();
   await toggle.focus();
   // macOS WebKit uses Option+Tab for full keyboard navigation.
@@ -170,13 +175,13 @@ test('collapsed sidebar keeps an icon-only achievement button in the footer', as
   const mobileFooter = page.locator('[data-mobile="true"] [data-sidebar="footer"]');
   await expect(mobileFooter.locator('[data-achievement-count]')).toBeVisible();
   await expect(mobileFooter.locator('[data-slot="language-menu-trigger"]')).toHaveCount(0);
-  await expect(mobileFooter.locator('[data-slot="author-dialog-trigger"]')).toBeVisible();
+  await expect(mobileFooter.getByRole('button')).toHaveCount(1);
   await page.setViewportSize({ width: 1440, height: 960 });
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
   await toggle.click();
   await expect(trigger.locator('[data-achievement-count]')).toBeVisible();
   await expect(footer.locator('[data-slot="language-menu-trigger"]')).toHaveCount(0);
-  await expect(footer.locator('[data-slot="author-dialog-trigger"]')).toBeVisible();
+  await expect(page.getByRole('banner').locator('[data-slot="author-dialog-trigger"]')).toBeVisible();
 });
 
 for (const width of [320, 390]) {
@@ -184,7 +189,7 @@ for (const width of [320, 390]) {
     const context = await browser.newContext({ viewport: { width, height: 844 }, hasTouch: true, baseURL: testInfo.project.use.baseURL });
     const page = await context.newPage();
     await page.goto(firstLesson.url);
-    await page.getByRole('button', { name: '课程目录', exact: true }).click();
+    await page.locator('[data-slot="mobile-sidebar-trigger"]').click();
     await page.getByRole('button', { name: '我的成就', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: '我的成就' });
     await verifyGallerySurface(page);
@@ -202,6 +207,18 @@ for (const width of [320, 390]) {
     expect(layout.right).toBeLessThanOrEqual(width);
     expect(layout.overflow).toBe(false);
     await testInfo.attach(`achievement-gallery-${width}`, { body: await page.screenshot(), contentType: 'image/png' });
+    if (width === 390) {
+      await page.evaluate(() => { document.documentElement.style.fontSize = '24px'; });
+      const enlarged = await medals.evaluateAll(elements => elements.map(element => {
+        const emblem = element.querySelector('[data-medal-emblem]')!.getBoundingClientRect();
+        const label = element.querySelector('[data-medal-emblem] + span')!.getBoundingClientRect();
+        return { x: emblem.x, bottom: emblem.bottom, labelTop: label.top, overflow: element.scrollWidth > element.clientWidth };
+      }));
+      expect(enlarged.every(item => item.x === enlarged[0].x && item.bottom <= item.labelTop && !item.overflow)).toBe(true);
+      await expect(dialog.getByRole('button', { name: '关闭', exact: true })).toBeInViewport();
+      await testInfo.attach('achievement-gallery-enlarged', { body: await dialog.screenshot({ animations: 'disabled' }), contentType: 'image/png' });
+      await page.evaluate(() => { document.documentElement.style.fontSize = '16px'; });
+    }
     await medals.nth(1).getByRole('link').click();
     await expect(page).toHaveURL(/what-is-a-token#achievement-token-boundaries$/);
     await expect(page.getByRole('dialog')).toHaveCount(0);

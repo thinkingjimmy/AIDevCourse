@@ -7,12 +7,12 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { site } from '@/lib/site-config';
 
-export function SiteShell({ variant = 'framed', className, ...props }: ComponentProps<'div'> & { variant?: 'framed' | 'open' | 'reading' }) {
-  return <div {...props} data-variant={variant} className={cn(
+export function SiteShell({ variant = 'framed', className, ...props }: ComponentProps<'div'> & { variant?: 'framed' | 'open' | 'course' | 'reading' }) {
+  return <div {...props} data-slot="site-window" data-variant={variant} className={cn(
     'group/site relative flex min-h-screen flex-col bg-background text-ui leading-copy text-foreground',
     '[--page-scroll-margin:var(--zinc-header)] [&_:where(h1,h2,h3,h4,[id])]:scroll-mt-(--page-scroll-margin)',
     variant === 'framed' ? '[--zinc-header:56px] before:pointer-events-none before:absolute before:inset-y-0 before:left-[50vw] before:z-[45] before:w-[min(64rem,100%)] before:-translate-x-1/2 before:border-x before:border-border before:content-[\'\']' : '[--zinc-header:67.2px]',
-    variant === 'reading' && '[--lesson-header-offset:var(--zinc-header)] [--page-scroll-margin:1rem]',
+    variant === 'reading' && '[--page-scroll-margin:1rem]',
     className,
   )} />;
 }
@@ -33,7 +33,7 @@ const titleVariants = cva('font-sans font-semibold text-foreground whitespace-pr
     variant: {
       hero: 'm-0 mb-5 text-hero tracking-heading max-[1101px]:text-display max-[841px]:text-title',
       page: 'm-0 mb-[18px] text-5xl tracking-heading max-[721px]:text-title',
-      lesson: 'm-0 mb-3 text-4xl leading-heading tracking-heading',
+      lesson: 'm-0 mb-3 text-4xl leading-heading tracking-heading text-brand',
     },
   },
   defaultVariants: { variant: 'page' },
@@ -79,10 +79,14 @@ export function HeroPrimaryAction({ children, arrow = true, className, ...props 
   </Button>;
 }
 
-export function SiteFooter({ children, meta }: { children: ReactNode; meta: ReactNode }) {
+export function SiteFooter({ children, meta, tools }: { children: ReactNode; meta: ReactNode; tools?: ReactNode }) {
   return <footer className="border-t border-border text-caption text-muted-foreground group-data-[variant=open]/site:border-t-0">
     <PageContainer className="flex items-center justify-between gap-4 py-[18px] max-[721px]:flex-col max-[721px]:items-start max-[721px]:gap-1.5">
-      <span>{children}</span><a href="https://jimmywong.dev" className="font-mono no-underline underline-offset-4 hover:text-foreground hover:underline">{meta}</a>
+      <span>{children}</span>
+      <div className="flex items-center gap-3 max-[721px]:w-full max-[721px]:justify-between">
+        <a href="https://jimmywong.dev" className="font-mono no-underline underline-offset-4 hover:text-foreground hover:underline">{meta}</a>
+        {tools}
+      </div>
     </PageContainer>
   </footer>;
 }

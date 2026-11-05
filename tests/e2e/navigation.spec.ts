@@ -472,7 +472,7 @@ test('sidebar collapse preserves focus, reading space, and navigation state', as
   await expect(toggle).toBeFocused();
   await expect(page.locator('.course-navigation')).not.toBeVisible();
   await expect(page.getByRole('button', { name: dictionary('zh').Language.label, exact: true })).not.toBeVisible();
-  await expect.poll(async () => (await page.locator('[data-slot="sidebar-gap"]').boundingBox())!.width).toBe(48);
+  await expect.poll(async () => (await page.locator('[data-slot="sidebar-container"]').boundingBox())!.width).toBe(48);
   await expect(page.locator('article > .prose')).toBeVisible();
   const report = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
   expect(report.violations).toEqual([]);

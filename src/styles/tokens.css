@@ -16,6 +16,7 @@
   --color-background: #fdfdfc;
   --color-foreground: #09090b;
   --color-brand: #31564b;
+  --color-brand-soft: color-mix(in oklab, var(--color-brand) 14%, var(--color-background));
   --color-primary: #09090b;
   --color-primary-foreground: #fafafa;
   --color-secondary: #f4f4f5;
@@ -35,9 +36,9 @@
   --color-done: #3f6b3a;
   --color-review: #6b5313;
   --color-mark: #f1de9c;
-  --color-note-connector: oklch(0.726 0.169 57.254);
-  --color-note-highlight: oklch(0.92 0.045 57.254);
-  --color-note-ink: oklch(0.42 0.1 57.254);
+  --color-note-connector: var(--color-brand);
+  --color-note-highlight: var(--color-brand-soft);
+  --color-note-ink: var(--color-brand);
   --note-line-width: 1.5px;
   --color-reading: #3f3f46;
   --color-anatomy-paper: oklch(0.982 0.006 173);
@@ -53,14 +54,15 @@
   --color-anatomy-faint: oklch(0.86 0.018 173);
   --color-anatomy-halo: var(--color-anatomy-mid);
   --color-anatomy-dot: var(--color-brand);
-  --color-sidebar: #fafafa;
-  --color-sidebar-foreground: #3f3f46;
-  --color-sidebar-primary: #09090b;
-  --color-sidebar-primary-foreground: #09090b;
-  --color-sidebar-accent: #f4f4f5;
-  --color-sidebar-accent-foreground: #09090b;
-  --color-sidebar-border: #e4e4e7;
-  --color-sidebar-ring: #a1a1aa;
+  --color-sidebar: color-mix(in oklab, var(--color-brand) 5%, var(--color-background));
+  --color-sidebar-foreground: var(--color-reading);
+  --color-sidebar-primary: var(--color-brand);
+  --color-sidebar-primary-foreground: var(--color-background);
+  --color-sidebar-accent: color-mix(in oklab, var(--color-brand) 7%, var(--color-sidebar));
+  --color-sidebar-active: color-mix(in oklab, var(--color-brand) 14%, var(--color-sidebar));
+  --color-sidebar-accent-foreground: var(--color-brand);
+  --color-sidebar-border: color-mix(in oklab, var(--color-brand) 20%, transparent);
+  --color-sidebar-ring: var(--color-brand);
 }
 
 /* Fumadocs retains its syntax and content tokens independently of the site chrome. */

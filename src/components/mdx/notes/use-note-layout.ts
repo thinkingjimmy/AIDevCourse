@@ -51,6 +51,7 @@ export function useNoteLayout(root: RefObject<HTMLDivElement | null>, close: () 
     if (!host) return;
     const column = host.parentElement!;
     const article = scope.querySelector('article');
+    const scroller = scope.closest('[data-slot="lesson-region"]') ?? window;
     let currentRail: HTMLElement | null = null;
     let frame = 0;
     let disposed = false;
@@ -125,7 +126,7 @@ export function useNoteLayout(root: RefObject<HTMLDivElement | null>, close: () 
     resize.observe(scope);
     if (article) resize.observe(article);
     for (const card of cards.current.values()) resize.observe(card);
-    window.addEventListener('scroll', requestUpdate, { passive: true });
+    scroller.addEventListener('scroll', requestUpdate, { passive: true });
     window.addEventListener('resize', requestUpdate);
     window.addEventListener('hashchange', requestUpdate);
     window.addEventListener('pageshow', requestUpdate);
@@ -140,7 +141,7 @@ export function useNoteLayout(root: RefObject<HTMLDivElement | null>, close: () 
       observer.current = null;
       schedule.current = () => {};
       column.style.minHeight = '';
-      window.removeEventListener('scroll', requestUpdate);
+      scroller.removeEventListener('scroll', requestUpdate);
       window.removeEventListener('resize', requestUpdate);
       window.removeEventListener('hashchange', requestUpdate);
       window.removeEventListener('pageshow', requestUpdate);

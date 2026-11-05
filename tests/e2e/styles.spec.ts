@@ -2,7 +2,6 @@ import type { Locale } from '../../src/lib/i18n/config';
 import { localePath } from '../../src/lib/i18n/routing';
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
-import { expectAssembled, expectStill } from './illustrations/poses';
 
 const fixture = process.env.CONTENT_TEST === '1';
 const courseSlug = fixture ? 'ai-coding' : 'llm-101';
@@ -252,177 +251,6 @@ test('storage and clipboard failures keep reading and feedback usable', async ({
   await test.info().attach('Storage and clipboard feedback', { path, contentType: 'image/png' });
 });
 
-test('hero illustrations preserve their opening, hover, and callout behavior', async ({ page }) => {
-  test.skip(fixture, 'Uses the published course illustrations.');
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/zh');
-  const mac = page.locator('[data-slot="home-hero-art"] [data-anatomy="mac"]');
-  const keyboard = mac.locator('[data-asm="kb"]');
-  await expect.poll(() => keyboard.getAttribute('transform')).not.toBeNull();
-  await mac.hover();
-  await expect.poll(() => keyboard.getAttribute('transform')).toBeNull();
-  await page.mouse.move(0, 0);
-  await expect.poll(() => keyboard.getAttribute('transform')).not.toBeNull();
-  await page.goto(`/zh/courses/${courseSlug}`);
-  const chip = page.locator('[data-anatomy="chip"]');
-  await expect(chip).toHaveAttribute('data-settled', 'true');
-  await chip.hover();
-  await expect(chip).toHaveAttribute('data-settled', 'false');
-  await page.mouse.move(0, 0);
-  await expect(chip).toHaveAttribute('data-settled', 'true');
-  await expect(chip.locator('.co').first()).toHaveCSS('opacity', '1');
-  const path = test.info().outputPath('illustrations', 'opened-chip.png');
-  await page.screenshot({ path });
-  await test.info().attach('Opened chip with callouts', { path, contentType: 'image/png' });
-});
-
-test('the entire course card expands the chip once and reverses on leave', async ({ browser, baseURL }) => {
-  test.skip(fixture, 'The public LLM 101 card owns this interaction.');
-  test.setTimeout(30000);
-  const context = await browser.newContext({ baseURL, viewport: viewports[0], reducedMotion: 'no-preference', recordVideo: { dir: test.info().outputPath('video') } });
-  const page = await context.newPage();
-  try {
-    await page.goto('/');
-    const card = page.locator('[data-slot="course-grid"]').getByRole('link', { name: 'LLM 101', exact: true });
-    const chip = card.locator('[data-anatomy="chip"]');
-    const fan = chip.locator('[data-asm="fan"]');
-    await card.scrollIntoViewIfNeeded();
-    await page.mouse.move(0, 0);
-    await expectAssembled(chip);
-    await expectStill(chip);
-    const closed = test.info().outputPath('card-hover-assembled.png');
-    await page.screenshot({ path: closed });
-    await test.info().attach('Card starts assembled', { path: closed, contentType: 'image/png' });
-    await card.getByRole('heading').hover();
-    await expect(chip).toHaveAttribute('data-settled', 'true');
-    await expect(fan).toHaveAttribute('transform', /translate/);
-    const expanded = await fan.getAttribute('transform');
-    await expectStill(chip);
-    await chip.hover();
-    await card.locator('p').last().hover();
-    await expectStill(chip);
-    await expect(fan).toHaveAttribute('transform', expanded!);
-    expect(await card.evaluate((element) => element.matches(':hover'))).toBe(true);
-    const opened = test.info().outputPath('card-hover-exploded.png');
-    await page.screenshot({ path: opened });
-    await test.info().attach('Hovered card stays expanded', { path: opened, contentType: 'image/png' });
-    await page.mouse.move(0, 0);
-    await expect.poll(() => fan.getAttribute('transform'), { intervals: [50] }).not.toBe(expanded);
-    await card.getByRole('heading').hover();
-    await expect(chip).toHaveAttribute('data-settled', 'true');
-    await expect(fan).toHaveAttribute('transform', expanded!);
-    await page.mouse.move(0, 0);
-    await expectAssembled(chip);
-    await card.getByRole('heading').hover();
-    await expect.poll(() => fan.getAttribute('transform'), { intervals: [50] }).not.toBeNull();
-    await page.mouse.move(0, 0);
-    await expectAssembled(chip);
-    await expectStill(chip);
-    await expect(chip.locator('.co')).toHaveCount(0);
-    await card.getByRole('heading').hover();
-    await expect(chip).toHaveAttribute('data-settled', 'true');
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await expectAssembled(chip);
-    await page.mouse.move(0, 0);
-    await card.getByRole('heading').hover();
-    await expectStill(chip);
-    await card.click();
-    await expect(page).toHaveURL(/\/courses\/llm-101$/);
-  } finally {
-    await context.close();
-    const path = await page.video()?.path();
-    if (path) await test.info().attach('Course card hover motion', { path, contentType: 'video/webm' });
-  }
-});
-
-test('course chip hover loops and shows callouts after each opening', async ({ browser, baseURL }) => {
-  const context = await browser.newContext({ baseURL, viewport: viewports[0], reducedMotion: 'no-preference', recordVideo: { dir: test.info().outputPath('video') } });
-  const page = await context.newPage();
-  try {
-    await page.goto(`/courses/${courseSlug}`);
-    const chip = page.locator('[data-anatomy="chip"]');
-    const fan = chip.locator('[data-asm="fan"]');
-    const callout = chip.locator('.co').first();
-    await expect(chip).toHaveAttribute('data-settled', 'true');
-    await expect(callout).toHaveCSS('opacity', '1');
-    await chip.hover();
-    for (let cycle = 0; cycle < 2; cycle++) {
-      await expect.poll(() => fan.getAttribute('transform')).toBeNull();
-      await expect(callout).toHaveCSS('opacity', '0');
-      await expect(chip).toHaveAttribute('data-settled', 'true');
-      await expect.poll(() => callout.evaluate((element) => getComputedStyle(element).opacity), { intervals: [50] }).toBe('1');
-      expect(await chip.evaluate((element) => element.matches(':hover'))).toBe(true);
-    }
-    await expect(chip).toHaveAttribute('data-settled', 'false');
-    await page.mouse.move(0, 0);
-    await expect(chip).toHaveAttribute('data-settled', 'true');
-    const changesWhileStill = () => fan.evaluate((element) => new Promise<number>((resolve) => {
-      let changes = 0;
-      const observer = new MutationObserver(() => changes++);
-      observer.observe(element, { attributes: true, attributeFilter: ['transform'] });
-      setTimeout(() => { observer.disconnect(); resolve(changes); }, 2000);
-    }));
-    expect(await changesWhileStill()).toBe(0);
-    await chip.hover();
-    await expect.poll(() => fan.getAttribute('transform')).toBeNull();
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await expect(chip).toHaveAttribute('data-settled', 'true');
-    await expect(callout).toHaveCSS('opacity', '1');
-    expect(await changesWhileStill()).toBe(0);
-    const path = test.info().outputPath('course-chip-hover-loop.png');
-    await page.screenshot({ path });
-    await test.info().attach('Course chip reopened with callouts', { path, contentType: 'image/png' });
-  } finally {
-    await context.close();
-    const path = await page.video()?.path();
-    if (path) await test.info().attach('Course chip hover loop', { path, contentType: 'video/webm' });
-  }
-});
-
-test('home Mac hover repeats closing and opening until the pointer leaves', async ({ browser, baseURL }) => {
-  const context = await browser.newContext({ baseURL, viewport: viewports[0], reducedMotion: 'no-preference', recordVideo: { dir: test.info().outputPath('video') } });
-  const page = await context.newPage();
-  try {
-    await page.goto('/');
-    const mac = page.locator('[data-slot="home-hero-art"] [data-anatomy="mac"]');
-    const keyboard = mac.locator('[data-asm="kb"]');
-    await expect(mac).toHaveAttribute('data-settled', 'true');
-    await mac.hover();
-    for (let cycle = 0; cycle < 2; cycle++) {
-      await expect.poll(() => keyboard.getAttribute('transform')).toBeNull();
-      await expect(mac).toHaveAttribute('data-settled', 'true');
-      await expect(keyboard).toHaveAttribute('transform', /translate/);
-      expect(await mac.evaluate((element) => element.matches(':hover'))).toBe(true);
-    }
-    await expect(mac).toHaveAttribute('data-settled', 'false');
-    await page.mouse.move(0, 0);
-    await expect(mac).toHaveAttribute('data-settled', 'true');
-    const changesWhileStill = () => keyboard.evaluate((element) => new Promise<number>((resolve) => {
-      let changes = 0;
-      const observer = new MutationObserver(() => changes++);
-      observer.observe(element, { attributes: true, attributeFilter: ['transform'] });
-      setTimeout(() => { observer.disconnect(); resolve(changes); }, 2000);
-    }));
-    expect(await changesWhileStill()).toBe(0);
-    await mac.hover();
-    await expect.poll(() => keyboard.getAttribute('transform')).toBeNull();
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await expect(mac).toHaveAttribute('data-settled', 'true');
-    expect(await changesWhileStill()).toBe(0);
-    await page.mouse.move(0, 0);
-    await page.emulateMedia({ reducedMotion: 'no-preference' });
-    await mac.hover();
-    await expect.poll(() => keyboard.getAttribute('transform')).toBeNull();
-    await expect(mac).toHaveAttribute('data-settled', 'true');
-    const path = test.info().outputPath('home-mac-hover-loop.png');
-    await page.screenshot({ path });
-    await test.info().attach('Mac reopens while still hovered', { path, contentType: 'image/png' });
-  } finally {
-    await context.close();
-    const path = await page.video()?.path();
-    if (path) await test.info().attach('Homepage Mac hover loop', { path, contentType: 'video/webm' });
-  }
-});
 
 for (const viewport of [...viewports, { name: 'narrow', width: 320, height: 844 }]) {
   test(`Tailwind typography stays consistent on ${viewport.name}`, async ({ page }) => {
@@ -436,7 +264,7 @@ for (const viewport of [...viewports, { name: 'narrow', width: 320, height: 844 
         expect((await page.goto(path))?.status()).toBe(200);
         await settle(page);
         await expect(page.locator('body')).toHaveCSS('font-size', '16px');
-        await expect(page.locator('h1')).toHaveCSS('font-size', surface === 'lesson' ? '36px' : viewport.width > 1101 ? '56px' : '32px');
+        await expect(page.locator('h1')).toHaveCSS('font-size', surface === 'lesson' ? '36px' : viewport.width > 841 ? '48px' : viewport.width > 721 ? '40px' : viewport.width > 400 ? '30px' : '24px');
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), path).toBe(true);
         if (surface === 'lesson') {
           const prose = page.locator('.prose');
@@ -485,14 +313,19 @@ for (const viewport of [...viewports, { name: 'narrow', width: 320, height: 844 
 
 for (const viewport of [...viewports, { name: 'narrow', width: 320, height: 844 }]) {
   test(`shadcn heading hierarchy remains readable on ${viewport.name}`, async ({ page }) => {
-    test.skip(fixture, 'Uses the published model selection lesson.');
+    test.skip(fixture, 'Uses the published multimodal lesson.');
     await page.setViewportSize(viewport);
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto(lessonPath('zh', 'how-to-choose-a-language-model'));
+    await page.goto(lessonPath('zh', 'how-models-see-and-hear'));
     await settle(page);
     const prose = page.locator('.course-prose');
-    const h2 = prose.getByRole('heading', { level: 2, name: /Q3：如何评判哪个模型更强/ });
-    const h3 = prose.getByRole('heading', { level: 3, name: '先通过公开评测缩小范围' });
+    const h2 = prose.getByRole('heading', { level: 2 }).first();
+    const h3 = prose.getByRole('heading', { level: 3 }).first();
+    await expect(page.locator('article h1')).toHaveCSS('color', 'rgb(49, 86, 75)');
+    await expect(h2).toHaveCSS('color', 'rgb(49, 86, 75)');
+    await expect(h3).toHaveCSS('color', 'rgb(49, 86, 75)');
+    const bold = prose.locator('strong').first();
+    await expect(bold).toHaveCSS('color', 'rgb(49, 86, 75)');
     await expect(h2).toHaveCSS('font-size', '30px');
     await expect(h3).toHaveCSS('font-size', '24px');
     await expect(h2).toHaveCSS('font-weight', '600');
@@ -562,7 +395,7 @@ async function lessonReadingGeometry(page: Page) {
     const paddingRight = parseFloat(style.paddingRight);
     const group = element.querySelector('[data-slot="lesson-reading-group"]')!.getBoundingClientRect();
     const article = element.querySelector('article')!.getBoundingClientRect();
-    const toc = element.querySelector('[data-slot="lesson-toc"]');
+    const toc = element.closest('main')!.querySelector('[data-slot="lesson-toc"]');
     const tocBox = toc?.getBoundingClientRect();
     const rail = element.querySelector('[data-slot="lesson-rail"]');
     const railBox = rail?.getBoundingClientRect();
@@ -626,8 +459,8 @@ for (const width of [961, 1024, 1100, 1280, 1440, 1920, 2560]) {
     await page.evaluate(() => document.fonts.ready);
     const expanded = await verifyLessonReading(page);
     if (width >= 1920) expect(expanded.articleWidth).toBeCloseTo(680 * 1.2, 0);
-    expect(expanded.sidebar).toEqual({ visible: true, left: 0, width: 320 });
-    expect(expanded.region.left).toBe(320);
+    expect(expanded.sidebar).toEqual({ visible: true, left: 13, width: 272 });
+    expect(expanded.region.left).toBe(expanded.sidebar.left + expanded.sidebar.width);
     await expect(page.locator('[data-sidebar="footer"]')).toBeVisible();
     await expect(page.getByRole('progressbar', { name: dictionary('zh').Course.achievementsTitle })).toBeVisible();
     await attachReadingEvidence(page, `reading-${width}-expanded`, expanded);
@@ -636,8 +469,8 @@ for (const width of [961, 1024, 1100, 1280, 1440, 1920, 2560]) {
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');
     await expect(toggle).toBeFocused();
     const collapsed = await verifyLessonReading(page);
-    expect(collapsed.sidebar).toEqual({ visible: true, left: 0, width: 48 });
-    expect(collapsed.region.left).toBe(48);
+    expect(collapsed.sidebar).toEqual({ visible: true, left: 13, width: 48 });
+    expect(collapsed.region.left).toBe(collapsed.sidebar.left + collapsed.sidebar.width);
     if (width === 1280) {
       expect(expanded.tocVisible).toBe(true);
       expect(collapsed.tocVisible).toBe(true);
@@ -658,7 +491,7 @@ for (const width of [320, 390, 768, 960]) {
     await page.goto(lessonPath('zh', 'what-a-language-model-does'));
     const geometry = await verifyLessonReading(page);
     expect(geometry.sidebar.visible).toBe(false);
-    expect(geometry.region.left).toBe(0);
+    expect(geometry.region.left).toBe(width <= 721 ? 7 : 13);
     const menu = page.getByRole('button', { name: dictionary('zh').Ui.menu, exact: true });
     await menu.click();
     const sheet = page.locator('[data-mobile="true"]');
@@ -666,14 +499,14 @@ for (const width of [320, 390, 768, 960]) {
     const box = (await sheet.boundingBox())!;
     expect(box.x).toBeGreaterThanOrEqual(0);
     expect(box.x + box.width).toBeLessThanOrEqual(width);
-    const languageTrigger = sheet.getByRole('button', { name: dictionary('zh').Language.label, exact: true });
-    await languageTrigger.click();
-    await expect(page.locator('.language-options a[hreflang="en"]')).toBeVisible();
-    await page.keyboard.press('Escape');
-    await expect(languageTrigger).toBeFocused();
     await sheet.getByRole('button', { name: dictionary('zh').Ui.close, exact: true }).click();
     await expect(sheet).not.toBeVisible();
     await expect(menu).toBeFocused();
+    const language = page.getByRole('banner').locator('.language-picker summary');
+    await language.click();
+    await expect(page.locator('.language-options a[hreflang="en"]')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(language).toBeFocused();
     await verifyLessonReading(page);
     await attachReadingEvidence(page, `reading-mobile-${width}`, geometry);
   });

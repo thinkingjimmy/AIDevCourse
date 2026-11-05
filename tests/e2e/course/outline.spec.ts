@@ -18,7 +18,7 @@ async function capture(page: Page, name: string) {
     }
     return {
       viewport: { width: innerWidth, height: innerHeight },
-      scrollY,
+      scrollTop: document.querySelector('[data-slot="lesson-region"]')!.scrollTop,
       article: box(document.querySelector('article')),
       toc: box(document.querySelector('[data-slot="lesson-toc"]')),
       title: box(document.querySelector('[data-slot="lesson-toc-title"]')),
@@ -47,12 +47,14 @@ test('lesson outline previews neighboring markers without moving the article or 
   await expect.poll(widths).toEqual(Array(await links.count()).fill(12));
   await expect(page.locator(titleSelector)).toHaveCount(0);
   const resting = (await toc.boundingBox())!;
-  expect(resting.y + resting.height / 2).toBeCloseTo(480, 0);
+  const pane = page.locator('[data-slot="lesson-region"]');
+  const paneBox = (await pane.boundingBox())!;
+  expect(resting.y + resting.height / 2).toBeCloseTo(paneBox.y + paneBox.height / 2, 0);
   const rows = await links.evaluateAll(elements => elements.map(element => element.getBoundingClientRect().height));
   expect(rows.every(height => height === 20)).toBe(true);
   const article = await page.locator('article').boundingBox();
   expect(resting.x + resting.width).toBeLessThanOrEqual(article!.x);
-  const scrollY = await page.evaluate(() => window.scrollY);
+  const scrollTop = await pane.evaluate(element => element.scrollTop);
   await capture(page, 'lesson-outline-collapsed');
 
   await links.nth(3).hover();
@@ -61,17 +63,18 @@ test('lesson outline previews neighboring markers without moving the article or 
   await expect(page.getByRole('tooltip')).toHaveText((await links.nth(3).textContent())!);
   await expect.poll(widths).toEqual([20, 28, 40, 52, 40, 28, 20]);
   await expect(toc.locator('[aria-current="location"]')).toHaveAttribute('href', (await links.first().getAttribute('href'))!);
-  await expect(toc.locator('[aria-current="location"]').locator(markerSelector)).toHaveCSS('background-color', 'rgb(9, 9, 11)');
+  await expect(toc.locator('[aria-current="location"]').locator(markerSelector)).toHaveCSS('background-color', 'rgb(49, 86, 75)');
   await expect(title).toHaveCSS('box-shadow', /4px 4px 0px 0px/);
   await expect(title).toHaveCSS('border-top-width', '1px');
-  await expect(title).toHaveCSS('border-top-color', 'rgb(9, 9, 11)');
-  await expect(title).toHaveCSS('border-radius', '0px');
-  await expect(title).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(title).toHaveCSS('border-top-color', 'rgb(49, 86, 75)');
+  await expect(title).toHaveCSS('color', 'rgb(49, 86, 75)');
+  await expect(title).toHaveCSS('border-radius', '4px');
+  await expect(title).toHaveCSS('background-color', 'rgb(253, 253, 252)');
   await expect(title).toHaveAttribute('data-side', 'right');
   expect((await title.boundingBox())!.width).toBeLessThanOrEqual(320);
   expect((await title.boundingBox())!.x).toBeGreaterThanOrEqual((await links.nth(3).boundingBox())!.x + 52);
   expect(await page.locator('article').boundingBox()).toEqual(article);
-  expect(await page.evaluate(() => window.scrollY)).toBe(scrollY);
+  expect(await pane.evaluate(element => element.scrollTop)).toBe(scrollTop);
   expect(new URL(page.url()).hash).toBe('');
   await capture(page, 'lesson-outline-hover');
 
@@ -94,6 +97,7 @@ test('lesson outline supports keyboard previews and reduced motion', async ({ pa
   await expect(page.locator(titleSelector)).toBeVisible();
   await expect(page.getByRole('tooltip')).toHaveText((await links.nth(1).textContent())!);
   await expect(links.nth(1)).toHaveCSS('outline-style', 'solid');
+  await expect(links.nth(1)).toHaveCSS('outline-color', 'rgb(49, 86, 75)');
   await expect.poll(() => links.nth(1).locator(markerSelector).evaluate(element => Math.round(element.getBoundingClientRect().width))).toBe(52);
   await capture(page, 'lesson-outline-keyboard');
   const accessibility = await new AxeBuilder({ page }).include(tocSelector).analyze();
@@ -110,7 +114,8 @@ test('lesson outline supports keyboard previews and reduced motion', async ({ pa
   await expect(page.locator('article h2').nth(3)).toBeInViewport();
   await expect(links.nth(3)).toHaveAttribute('aria-current', 'location');
   const centered = (await toc.boundingBox())!;
-  expect(centered.y + centered.height / 2).toBeCloseTo(480, 0);
+  const pane = (await page.locator('[data-slot="lesson-region"]').boundingBox())!;
+  expect(centered.y + centered.height / 2).toBeCloseTo(pane.y + pane.height / 2, 0);
   await capture(page, 'lesson-outline-reduced-motion');
 });
 
@@ -131,7 +136,7 @@ test('lesson outline remains usable while right-hand notes scroll through the vi
   const note = page.locator('[data-jimmy-note-card="streaming-answer"]');
   await expect(note).toBeVisible();
   const article = (await page.locator('article').boundingBox())!;
-  await page.locator('[data-jimmy-note-anchor="streaming-answer"]').evaluate(element => window.scrollTo(0, element.getBoundingClientRect().top + scrollY - 100));
+  await page.locator('[data-jimmy-note-anchor="streaming-answer"]').evaluate(element => element.scrollIntoView({ block: 'center' }));
   await expect(toc).toBeVisible();
   expect(await toc.evaluate(element => (element as HTMLElement).inert)).toBe(false);
   expect((await note.boundingBox())!.width).toBeCloseTo(336, 0);
@@ -190,8 +195,10 @@ test('lesson outline shows complete titles by default when the left gutter is wi
   const outline = (await toc.boundingBox())!;
   expect(outline.width).toBeCloseTo(224, 0);
   expect(article.x - outline.x - outline.width).toBeGreaterThanOrEqual(16);
-  expect(outline.y + outline.height / 2).toBeCloseTo(480, 0);
-  await expect(toc.locator('[aria-current="location"]')).toHaveCSS('color', 'rgb(9, 9, 11)');
+  const pane = (await page.locator('[data-slot="lesson-region"]').boundingBox())!;
+  expect(outline.y + outline.height / 2).toBeCloseTo(pane.y + pane.height / 2, 0);
+  await expect(toc.locator('[aria-current="location"]')).toHaveCSS('color', 'rgb(49, 86, 75)');
+  await expect(toc.locator('[aria-current="location"]')).toHaveCSS('font-weight', '500');
   await links.nth(3).hover();
   await expect(page.locator(titleSelector)).toHaveCount(0);
   expect(await page.locator('article').boundingBox()).toEqual(article);
@@ -221,7 +228,8 @@ test('lesson outline changes between titles and markers without losing focus or 
   await link.focus();
   await expect(label).toHaveCSS('position', 'static');
   await expect(page.locator(titleSelector)).toHaveCount(0);
-  const originalScroll = await page.evaluate(() => scrollY);
+  const pane = page.locator('[data-slot="lesson-region"]');
+  const originalScroll = await pane.evaluate(element => element.scrollTop);
   await page.setViewportSize({ width: 1280, height: 960 });
   await expect(label).toHaveCSS('position', 'absolute');
   await expect(link).toBeFocused();
@@ -234,34 +242,35 @@ test('lesson outline changes between titles and markers without losing focus or 
   await expect(link).toBeFocused();
   await expect(link.locator(markerSelector)).toBeHidden();
   await expect(page.locator(titleSelector)).toHaveCount(0);
-  expect(await page.evaluate(() => scrollY)).toBe(originalScroll);
+  expect(await pane.evaluate(element => element.scrollTop)).toBe(originalScroll);
   await capture(page, 'lesson-outline-responsive-titles');
 });
 
 for (const scenario of [
-  { name: 'with notes', path: lesson, threshold: 1952 },
-  { name: 'without notes', path: '/zh/courses/coding-101/what-is-json', threshold: 1584 },
+  { name: 'with notes', path: lesson, readerRem: 102 },
+  { name: 'without notes', path: '/zh/courses/coding-101/what-is-json', readerRem: 79 },
 ]) {
   test(`lesson outline uses the available gutter ${scenario.name} and follows sidebar resizing`, async ({ page }) => {
-    await page.setViewportSize({ width: scenario.threshold - 1, height: 960 });
+    const threshold = (sidebarRem: number, rootSize = 16) => 26 + (sidebarRem + scenario.readerRem) * rootSize;
+    await page.setViewportSize({ width: threshold(17) - 1, height: 960 });
     await page.goto(scenario.path);
     const toc = page.locator(tocSelector);
     const label = toc.locator('[data-slot="lesson-toc-label"]').first();
     await expect(label).toHaveCSS('position', 'absolute');
-    await page.setViewportSize({ width: scenario.threshold, height: 960 });
+    await page.setViewportSize({ width: threshold(17), height: 960 });
     await expect(label).toHaveCSS('position', 'static');
     const article = (await page.locator('article').boundingBox())!;
     const expanded = (await toc.boundingBox())!;
     expect(article.x - expanded.x - expanded.width).toBeGreaterThanOrEqual(15.9);
     await capture(page, `lesson-outline-gutter-${scenario.name.replaceAll(' ', '-')}`);
     await page.locator('[data-slot="sidebar-trigger"]').click();
-    await page.setViewportSize({ width: scenario.threshold - 273, height: 960 });
+    await page.setViewportSize({ width: threshold(3) - 1, height: 960 });
     await expect(label).toHaveCSS('position', 'absolute');
-    await page.setViewportSize({ width: scenario.threshold - 272, height: 960 });
+    await page.setViewportSize({ width: threshold(3), height: 960 });
     await expect(label).toHaveCSS('position', 'static');
     await page.evaluate(() => { document.documentElement.style.fontSize = '20px'; });
     await expect(label).toHaveCSS('position', 'absolute');
-    await page.setViewportSize({ width: (scenario.threshold - 272) * 1.25, height: 960 });
+    await page.setViewportSize({ width: threshold(3, 20), height: 960 });
     await expect(label).toHaveCSS('position', 'static');
     const enlarged = (await toc.boundingBox())!;
     expect(enlarged.width).toBeCloseTo(280, 0);

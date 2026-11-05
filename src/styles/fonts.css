@@ -4,6 +4,22 @@
 @import '@fontsource-variable/noto-sans-jp';
 
 @font-face {
+  font-family: 'Course Pixel';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('/fonts/hero/course-pixel-zh_hans.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Course Pixel JP';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('/fonts/hero/course-pixel-ja.woff2') format('woff2');
+}
+
+@font-face {
   font-family: 'Geist Pixel';
   font-style: normal;
   font-display: swap;

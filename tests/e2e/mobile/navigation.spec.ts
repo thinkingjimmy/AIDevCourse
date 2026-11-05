@@ -31,7 +31,8 @@ for (const width of [320, 390]) {
         return { label: control.getAttribute('aria-label'), x, y, width, height };
       }));
       expect(geometry.every((control) => control.width >= 44 && control.height >= 44)).toBe(true);
-      await page.evaluate(() => window.scrollTo(0, 480));
+      const pane = page.locator('[data-slot="lesson-region"]');
+      await pane.evaluate(element => element.scrollTo(0, 480));
       await capture(page, `glass-navigation-reading-${width}`);
       const accessibility = await new AxeBuilder({ page }).include(navigationSelector).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
       expect(accessibility.violations).toEqual([]);
@@ -65,7 +66,7 @@ for (const width of [320, 390]) {
       await page.keyboard.press('Escape');
       await expect(author).toBeFocused();
 
-      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+      await pane.evaluate(element => element.scrollTo(0, element.scrollHeight));
       const articleEnd = await page.locator('article').evaluate((element) => element.getBoundingClientRect().bottom);
       expect(articleEnd).toBeLessThan((await navigation.boundingBox())!.y);
       await capture(page, `glass-navigation-article-end-${width}`);

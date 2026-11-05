@@ -41,10 +41,13 @@ function MarkdownTable({ className, ...props }: ComponentProps<'table'>) {
 function HighlightedText({ className, ...props }: ComponentProps<'mark'>) {
   return <mark {...props} className={cn('box-decoration-clone bg-transparent bg-[url(/images/highlight-stroke.svg)] bg-no-repeat px-0.5 text-inherit [background-size:100%_0.95em] [background-position:0_70%] [overflow-wrap:anywhere]', className)} />;
 }
+function StrongText({ className, ...props }: ComponentProps<'strong'>) {
+  return <strong {...props} className={cn('text-brand', className)} />;
+}
 export function getMDXComponents(achievements: readonly AchievementDefinition[] = []): MDXComponents {
   return {
     ...defaults, Steps, Step, Callout, JimmyNote, JimmyNoteAnchor, KeyTakeaway, Chat, ChatMessage, ChatThinking, ChatToolCall, InlineCitation, ChatMessageSequence, XEmbed, YouTube, LLMGenerationDemo, MenuComparisonDemo, NewtonSecondLawDemo, AnimationDemo, TokenizationDiagram, TokenProbabilityDiagram, LLMPretrainingOverview, LLMSingleRoundTrainingDemo, LLMMultiRoundTrainingDemo, MermaidDiagram, ...getAchievementComponents(achievements), pre: LocalizedCodeBlock,
-    a: LinkPreview, mark: HighlightedText, table: MarkdownTable, thead: TableHeader, tbody: TableBody, tfoot: TableFooter,
+    a: LinkPreview, mark: HighlightedText, strong: StrongText, table: MarkdownTable, thead: TableHeader, tbody: TableBody, tfoot: TableFooter,
     tr: TableRow, th: TableHead, td: TableCell, caption: TableCaption,
     h1: (props) => <Heading as="h1" {...props} />,
     h2: (props) => <Heading as="h2" {...props} />,

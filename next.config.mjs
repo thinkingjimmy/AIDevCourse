@@ -1,8 +1,7 @@
 import { createMDX } from 'fumadocs-mdx/next';
 import createNextIntlPlugin from 'next-intl/plugin';
-import redirects from './config/redirects.json' with { type: 'json' };
 import { resolve } from 'node:path';
-import { contentMode } from './config/content-mode.mjs';
+import { contentMode, redirects } from './config/content-mode.mjs';
 
 if (process.env.VERCEL_ENV === 'production') {
   const url = new URL(process.env.SITE_URL || 'invalid');
@@ -19,6 +18,7 @@ const aliases = {
 };
 export default withMDX(withIntl({
   agentRules: false,
+  allowedDevOrigins: ['127.0.0.1'],
   turbopack: { root: process.cwd(), resolveAlias: aliases },
   webpack(config, { dev }) {
     // Dynamic imports in MDX and i18n dependencies cannot be traced by the filesystem cache.

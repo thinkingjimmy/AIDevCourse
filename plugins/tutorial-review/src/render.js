@@ -125,9 +125,9 @@ function renderNode(node, ctx) {
     case 'listItem': {
       const checkbox =
         node.checked === true
-          ? '<span class="tr-task tr-task-checked" aria-hidden="true">✓</span>'
+          ? '<span class="tr-task tr-task-checked" aria-hidden="true" data-no-annotate="1">✓</span>'
           : node.checked === false
-            ? '<span class="tr-task" aria-hidden="true"></span>'
+            ? '<span class="tr-task" aria-hidden="true" data-no-annotate="1"></span>'
             : '';
       return `<li${node.spread ? ' class="tr-loose-item"' : ''}>${checkbox}${renderChildren(node, ctx)}</li>`;
     }
@@ -240,7 +240,7 @@ function renderInlineComponent(node, ctx, name) {
   const children = renderChildren(node, ctx);
   if (name === 'JimmyNoteAnchor') {
     const variant = attr(node, 'variant');
-    return `<span class="tr-author-anchor" title="${escapeAttr(COMPONENT_LABELS.authorNote)}" data-author-anchor="1">${children}<span class="tr-author-anchor-mark" aria-hidden="true">✎</span></span>`;
+    return `<span class="tr-author-anchor" title="${escapeAttr(COMPONENT_LABELS.authorNote)}" data-author-anchor="1">${children}<span class="tr-author-anchor-mark" aria-hidden="true" data-no-annotate="1">✎</span></span>`;
   }
   if (name === 'InlineCitation') {
     return `<cite class="tr-citation">${children}</cite>`;
@@ -305,7 +305,7 @@ function renderQuiz(node, ctx) {
   const optionHtml = options
     .map((option) => {
       const correct = answer && option.value === answer;
-      return `<li class="tr-quiz-option${correct ? ' tr-quiz-correct' : ''}"${correct ? ' data-correct="1"' : ''}>${option.html}${correct ? '<span class="tr-quiz-check" aria-hidden="true">✓</span>' : ''}</li>`;
+      return `<li class="tr-quiz-option${correct ? ' tr-quiz-correct' : ''}"${correct ? ' data-correct="1"' : ''}>${option.html}${correct ? '<span class="tr-quiz-check" aria-hidden="true" data-no-annotate="1">✓</span>' : ''}</li>`;
     })
     .join('');
   return `<section class="tr-quiz"><div class="tr-component-label">${COMPONENT_LABELS.quiz}</div>${title ? `<h4>${escapeHtml(title)}</h4>` : ''}${question ? `<p class="tr-quiz-question">${escapeHtml(question)}</p>` : ''}${optionHtml ? `<ul class="tr-quiz-options">${optionHtml}</ul>` : ''}${explanation ? `<div class="tr-quiz-explain"><span class="tr-quiz-explain-label">${COMPONENT_LABELS.explanation}</span><p>${escapeHtml(explanation)}</p></div>` : ''}${takeaway ? `<div class="tr-quiz-takeaway"><span class="tr-quiz-explain-label">${COMPONENT_LABELS.takeawayShort}</span><p>${escapeHtml(takeaway)}</p></div>` : ''}</section>`;

@@ -3,6 +3,39 @@ import { readCatalog } from '../../../../src/lib/content/manifest';
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published sidebar navigation.');
 
+for (const width of [1440, 390]) {
+  test(`sidebar hover uses green without replacing the active chapter at ${width}px`, async ({ page, browserName }, testInfo) => {
+    await page.setViewportSize({ width, height: 960 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/zh/courses/llm-101/what-is-a-token');
+    if (width < 961) await page.locator('[data-slot="mobile-sidebar-trigger"]').click();
+    const sidebar = page.locator(width < 961 ? '[data-mobile="true"]' : '[data-slot="sidebar-inner"]');
+    await expect(sidebar).toBeVisible();
+    await page.evaluate(() => document.fonts.ready);
+    const active = sidebar.locator('[data-slot="sidebar-menu-sub-button"][data-active="true"]');
+    const sibling = sidebar.locator('[data-slot="sidebar-menu-sub-button"][data-active="false"]').first();
+    const currentColor = await active.evaluate(element => getComputedStyle(element).backgroundColor);
+    await sibling.hover();
+    await expect(sibling).toHaveCSS('color', 'rgb(49, 86, 75)');
+    const hoverColor = await sibling.evaluate(element => getComputedStyle(element).backgroundColor);
+    expect(hoverColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(hoverColor).not.toBe(currentColor);
+    await expect(active).toHaveCSS('background-color', currentColor);
+    const moduleToggle = sidebar.locator('[data-sidebar="menu-button"]').first();
+    await moduleToggle.hover();
+    await expect(moduleToggle).toHaveCSS('background-color', hoverColor);
+    await active.hover();
+    await expect(active).toHaveCSS('background-color', currentColor);
+    await moduleToggle.focus();
+    await page.keyboard.press(browserName === 'webkit' ? 'Alt+Tab' : 'Tab');
+    await expect(sibling).toBeFocused();
+    await expect(sibling).toHaveCSS('outline-color', 'rgb(49, 86, 75)');
+    await sibling.hover();
+    await testInfo.attach(`sidebar-colors-${width}`, { body: await sidebar.screenshot({ animations: 'disabled' }), contentType: 'image/png' });
+    await testInfo.attach('sidebar-color-states', { body: JSON.stringify({ hover: hoverColor, active: currentColor }, null, 2), contentType: 'application/json' });
+  });
+}
+
 async function textBounds(locator: Locator) {
   return locator.evaluate(element => {
     const range = document.createRange();
@@ -13,22 +46,21 @@ async function textBounds(locator: Locator) {
   });
 }
 
-test('sidebar text aligns with the logo and module arrows follow hover and keyboard focus', async ({ page }, testInfo) => {
+test('sidebar text aligns within the Mac window and module arrows follow hover and keyboard focus', async ({ page, browserName }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   const evidence = [];
   for (const course of readCatalog().courses.filter(course => course.slug === 'llm-101')) {
     await page.goto(course.lessons[0].url);
     await page.evaluate(() => document.fonts.ready);
     const sidebar = page.locator('[data-slot="sidebar-inner"]');
-    const logo = page.getByRole('banner').locator('[data-slot="brand-mark"]');
     const title = sidebar.getByRole('link', { name: course.title, exact: true });
     const moduleToggle = sidebar.locator('[data-sidebar="menu-button"]').first();
     const arrow = moduleToggle.locator('svg');
     const moduleNumber = moduleToggle.locator('> span').first();
     const lessonNumber = sidebar.locator('[data-sidebar="menu-sub-button"] > span:first-child').first();
     await expect(lessonNumber).toBeVisible();
-    const left = (await logo.boundingBox())!.x;
-    const positions = { logo: left, course: (await textBounds(title)).left,
+    const left = (await textBounds(title)).left;
+    const positions = { course: (await textBounds(title)).left,
       module: (await moduleNumber.boundingBox())!.x, lesson: (await lessonNumber.boundingBox())!.x };
     for (const position of Object.values(positions)) expect(position).toBeCloseTo(left, 1);
     await page.mouse.move(900, 80);
@@ -46,10 +78,10 @@ test('sidebar text aligns with the logo and module arrows follow hover and keybo
     await page.mouse.move(900, 80);
     await expect(arrow).toHaveCSS('opacity', '0');
     await title.focus();
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(browserName === 'webkit' ? 'Alt+Tab' : 'Tab');
     const toggle = sidebar.locator('[data-sidebar="trigger"]');
     await expect(toggle).toBeFocused();
-    await page.keyboard.press('Tab');
+    await page.keyboard.press(browserName === 'webkit' ? 'Alt+Tab' : 'Tab');
     await expect(moduleToggle).toBeFocused();
     await expect(arrow).toHaveCSS('opacity', '1');
     await moduleToggle.press('Enter');
@@ -66,7 +98,7 @@ test('sidebar text aligns with the logo and module arrows follow hover and keybo
     evidence.push({ locale: course.locale, positions });
   }
   await page.evaluate(() => { document.documentElement.style.fontSize = '20px'; });
-  const logoLeft = (await page.getByRole('banner').locator('[data-slot="brand-mark"]').boundingBox())!.x;
+  const logoLeft = (await textBounds(page.locator('[data-slot="sidebar-header"] a'))).left;
   const title = page.locator('[data-slot="sidebar-header"] a');
   expect((await textBounds(title)).left).toBeCloseTo(logoLeft, 1);
   expect((await page.locator('[data-sidebar="menu-button"] > span').first().boundingBox())!.x).toBeCloseTo(logoLeft, 1);
@@ -108,7 +140,7 @@ test('sidebar alignment and course links work without JavaScript', async ({ brow
     const page = await context.newPage();
     await page.goto('/zh/courses/llm-101/what-a-language-model-does');
     const title = page.locator('[data-slot="sidebar-header"] a');
-    const left = (await page.getByRole('banner').locator('[data-slot="brand-mark"]').boundingBox())!.x;
+    const left = (await textBounds(title)).left;
     expect((await textBounds(title)).left).toBeCloseTo(left, 1);
     expect((await page.locator('[data-sidebar="menu-button"] > span').first().boundingBox())!.x).toBeCloseTo(left, 1);
     expect((await page.locator('[data-sidebar="menu-sub-button"] > span').first().boundingBox())!.x).toBeCloseTo(left, 1);

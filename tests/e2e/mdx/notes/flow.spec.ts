@@ -41,7 +41,7 @@ test.describe('JimmyNote in lessons', () => {
     await expect(anchor).toHaveCSS('text-decoration-line', 'none');
     await expect(card).toBeVisible();
     await expect(page.locator('[data-note-trigger-for="streaming-answer"]')).toBeHidden();
-    await anchor.evaluate(element => window.scrollTo(0, element.getBoundingClientRect().top + scrollY - 350));
+    await anchor.evaluate(element => element.scrollIntoView({ block: 'center' }));
     await verifyConnection(card);
     expect((await card.boundingBox())!.width).toBeCloseTo(336, 0);
     const article = await page.locator('article').boundingBox();
@@ -49,7 +49,7 @@ test.describe('JimmyNote in lessons', () => {
     await expect(toc).toBeVisible();
     await evidence(page, 'jimmy-note-aligned');
 
-    await anchor.evaluate(element => window.scrollTo(0, element.getBoundingClientRect().top + scrollY - 100));
+    await anchor.evaluate(element => element.scrollIntoView({ block: 'start' }));
     await expect(toc).toBeVisible();
     expect(await toc.evaluate(element => (element as HTMLElement).inert)).toBe(false);
     expect((await toc.boundingBox())!.x + (await toc.boundingBox())!.width).toBeLessThanOrEqual(article!.x);
@@ -58,7 +58,7 @@ test.describe('JimmyNote in lessons', () => {
     expect(overlapping!.width).toBe(article!.width);
     await evidence(page, 'jimmy-note-left-outline-available');
 
-    await card.evaluate(element => window.scrollTo(0, element.getBoundingClientRect().bottom + scrollY + 40));
+    await card.evaluate(element => element.closest('[data-slot="lesson-region"]')!.scrollBy(0, element.getBoundingClientRect().height + 40));
     await expect(toc).toBeVisible();
     expect(await toc.evaluate(element => (element as HTMLElement).inert)).toBe(false);
     await evidence(page, 'jimmy-note-left-outline-after-scrolling');
@@ -73,7 +73,7 @@ test.describe('JimmyNote in lessons', () => {
     const card = page.locator(`[data-jimmy-note-card="${id}"]`);
     for (const fontSize of [16, 40]) {
       await page.locator('article .course-prose').evaluate((element, size) => { (element as HTMLElement).style.fontSize = `${size}px`; }, fontSize);
-      await anchor.evaluate(element => window.scrollTo(0, element.getBoundingClientRect().top + scrollY - 180));
+      await anchor.evaluate(element => element.scrollIntoView({ block: 'center' }));
       const geometry = await verifyConnection(card);
       expect(geometry.length).toBeGreaterThan(16);
       if (fontSize === 40) expect(geometry.fragments).toBeGreaterThan(1);
@@ -94,10 +94,16 @@ test.describe('JimmyNote in lessons', () => {
     await expect(scope).toHaveAttribute('data-note-mode', 'popover');
     await page.locator('[data-note-trigger-for="streaming-answer"]').click();
     await expect(page.getByRole('dialog', { name: 'Jimmy 的批注', exact: true })).toBeVisible();
-    await page.setViewportSize({ width: 1456, height: 900 });
+    const railViewportWidth = await page.locator('[data-slot="lesson-region"]').evaluate(element => {
+      const style = getComputedStyle(element);
+      const contentWidth = element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+      const railWidth = 64 * parseFloat(getComputedStyle(document.documentElement).fontSize);
+      return Math.ceil(innerWidth + railWidth - contentWidth);
+    });
+    await page.setViewportSize({ width: railViewportWidth, height: 900 });
     await expect(scope).toHaveAttribute('data-note-mode', 'rail');
     await expect(page.getByRole('dialog', { name: 'Jimmy 的批注', exact: true })).toHaveCount(0);
-    await page.setViewportSize({ width: 1455, height: 900 });
+    await page.setViewportSize({ width: railViewportWidth - 1, height: 900 });
     await expect(scope).toHaveAttribute('data-note-mode', 'popover');
     await evidence(page, 'jimmy-note-container-boundary');
   });

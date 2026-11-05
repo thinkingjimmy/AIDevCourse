@@ -43,61 +43,61 @@ export function AchievementGallery({ children }: { children?: ReactElement }) {
   return <Dialog open={open} onOpenChange={setOpen}>
     <DialogTrigger asChild>
       {children ?? <Button variant="plain" size="reset" disabled={!ready} aria-label={t('achievementsTitle')} title={t('achievementsTitle')}
-        className="group/summary h-11 min-w-0 flex-1 justify-start gap-2.5 rounded-md p-2 text-left hover:bg-sidebar-accent group-data-[collapsible=icon]:size-11 group-data-[collapsible=icon]:flex-none group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:focus-visible:-outline-offset-2">
+        className="group/summary h-11 min-w-0 flex-1 justify-start gap-2.5 rounded-md p-2 text-left hover:bg-brand-soft focus-visible:outline-brand group-data-[collapsible=icon]:size-11 group-data-[collapsible=icon]:flex-none group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:focus-visible:-outline-offset-2">
         <span role="progressbar" aria-label={t('achievementsTitle')} aria-valuetext={countLabel}
           aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-busy={!ready}
           className="flex size-7 shrink-0 items-center justify-center rounded-full p-0.5"
-          style={{ background: `conic-gradient(var(--color-foreground) ${percent}%, var(--color-border) 0)` }}>
+          style={{ background: `conic-gradient(var(--color-brand) ${percent}%, var(--color-brand-soft) 0)` }}>
           <span aria-hidden className="flex size-full items-center justify-center rounded-full bg-sidebar text-base">🥇</span>
         </span>
         <span className="flex h-7 min-w-0 flex-1 flex-col justify-between group-data-[collapsible=icon]:hidden">
-          <span className="block truncate text-caption leading-none font-medium text-foreground">{t('achievementsTitle')}</span>
-          <span data-achievement-count className="block truncate text-xs leading-none text-muted-foreground tabular-nums group-hover/summary:text-strong">{countLabel}</span>
+          <span className="block truncate text-caption leading-none font-medium text-brand">{t('achievementsTitle')}</span>
+          <span data-achievement-count className="block truncate text-xs leading-none text-brand tabular-nums">{countLabel}</span>
         </span>
       </Button>}
     </DialogTrigger>
     <DialogContent data-course-achievements overlayClassName="bg-background/60 backdrop-blur-sm"
-      className="top-1/2 max-h-[calc(100dvh-32px)] w-[min(760px,calc(100vw-32px))] -translate-y-1/2 rounded-sm border-border shadow-[4px_4px_0_var(--color-border)] max-sm:top-1/2">
+      className="top-1/2 max-h-[calc(100dvh-32px)] w-[min(760px,calc(100vw-32px))] -translate-y-1/2 rounded-sm border-brand shadow-[4px_4px_0_var(--color-brand-soft)] max-sm:top-1/2">
       <header className="flex shrink-0 items-center justify-between gap-4 px-6 pt-5 max-sm:px-4">
-        <DialogTitle className="m-0 text-xl leading-snug font-semibold tracking-tight">{t('achievementsTitle')}</DialogTitle>
-        <DialogClose asChild><Button variant="action-outline" size="icon-touch" className="rounded-sm" aria-label={ui('close')}><XIcon size={18} aria-hidden /></Button></DialogClose>
+        <DialogTitle className="m-0 text-xl leading-snug font-semibold tracking-tight text-brand">{t('achievementsTitle')}</DialogTitle>
+        <DialogClose asChild><Button variant="brand-outline" size="icon-touch" className="size-11 rounded-sm before:inset-0" aria-label={ui('close')}><XIcon size={18} aria-hidden /></Button></DialogClose>
       </header>
       <DialogDescription className="sr-only">{countLabel}</DialogDescription>
-      <div className="mx-6 mt-4 shrink-0 pb-5 max-sm:mx-4">
+      <div className="mx-6 mt-4 shrink-0 border-b border-brand/15 pb-5 max-sm:mx-4">
         <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-          <p className="m-0 text-sm text-muted-foreground"><strong className="mr-1 text-4xl leading-none font-semibold text-foreground tabular-nums">{format.number(earned)}</strong> {t('achievementsCollectionCount', { total })}</p>
-          <span className="text-xs text-muted-foreground tabular-nums">{completion}</span>
+          <p className="m-0 text-sm text-brand/80"><strong className="mr-1 text-4xl leading-none font-semibold text-brand tabular-nums">{format.number(earned)}</strong> {t('achievementsCollectionCount', { total })}</p>
+          <span className="text-xs text-brand/80 tabular-nums">{completion}</span>
         </div>
         <div role="progressbar" aria-label={t('achievementsTitle')} aria-valuetext={`${countLabel} · ${completion}`}
           aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-busy={!ready}
-          className="mt-3.5 h-1.5 rounded-sm bg-muted">
-          <div className="h-full rounded-sm bg-foreground" style={{ width: `${percent}%` }} />
+          className="mt-3.5 h-1.5 rounded-sm bg-brand-soft">
+          <div className="h-full rounded-sm bg-brand" style={{ width: `${percent}%` }} />
         </div>
       </div>
-      <div className="min-h-0 overflow-y-auto px-6 pt-6 pb-6 max-sm:px-4">
-        {total ? <ul className="m-0 grid list-none grid-cols-2 gap-x-4 gap-y-5 p-0 sm:grid-cols-4" aria-label={t('achievementsTitle')}>
+      <div className="@container/medals min-h-0 overflow-y-auto px-6 pt-6 pb-6 max-sm:px-4">
+        {total ? <ul className="m-0 grid list-none grid-cols-1 gap-x-4 gap-y-5 p-0 @[15rem]/medals:grid-cols-2 sm:@[34rem]/medals:grid-cols-4" aria-label={t('achievementsTitle')}>
           {achievements.map((achievement) => {
             const unlocked = isEarned(achievement.courseId, achievement.id);
             const Icon = medalIcons[achievement.id as keyof typeof medalIcons] ?? MedalIcon;
             return <li key={`${achievement.courseId}:${achievement.id}`} data-medal={achievement.id} data-medal-course={achievement.courseId} data-earned={unlocked}
               aria-label={`${achievement.title} · ${t(unlocked ? 'achievementEarned' : 'achievementLocked')}`}
-              className="group/medal relative grid min-w-0 grid-rows-[72px_minmax(40px,auto)] content-start justify-items-start gap-y-2 text-left">
+              className="group/medal relative grid min-w-0 grid-rows-[4.5rem_minmax(2.5rem,auto)] content-start justify-items-start gap-y-2 text-left">
               <span data-medal-emblem aria-hidden className={cn(
-                'relative flex size-18 items-center justify-center rounded-sm border shadow-[3px_3px_0_var(--color-border)] before:pointer-events-none before:absolute before:inset-1 before:rounded-sm before:border before:border-border',
-                unlocked ? 'border-foreground bg-background text-foreground before:border-foreground/20' : 'border-border bg-muted text-faint',
+                'relative flex size-18 items-center justify-center rounded-sm border shadow-[3px_3px_0_var(--color-brand-soft)] before:pointer-events-none before:absolute before:inset-1 before:rounded-sm before:border',
+                unlocked ? 'border-brand bg-brand-soft text-brand before:border-brand/25' : 'border-brand/20 bg-brand/5 text-brand/60 before:border-brand/10',
               )}>
                 <Icon size={30} />
-                {unlocked && <span className="absolute -right-1 -bottom-1 flex size-5 items-center justify-center rounded-sm border-2 border-background bg-foreground text-background"><CheckIcon size={12} weight="bold" /></span>}
+                {unlocked && <span className="absolute -right-1 -bottom-1 flex size-5 items-center justify-center rounded-sm border-2 border-background bg-brand text-white"><CheckIcon size={12} weight="bold" /></span>}
               </span>
-              <span className="min-h-10 text-caption leading-copy font-medium [overflow-wrap:anywhere]">{achievement.title}</span>
+              <span className={cn('min-h-10 text-caption leading-copy font-medium text-reading [overflow-wrap:anywhere]', unlocked && 'text-brand')}>{achievement.title}</span>
               <Link data-medal-link href={achievement.url} aria-label={t('achievementVisit', { title: achievement.title })}
                 onClick={() => { setOpen(false); if (isMobile) setOpenMobile(false); }}
-                className="absolute -top-1.5 left-13.5 z-10 flex size-6.5 items-center justify-center rounded-sm border border-border bg-background text-foreground opacity-0 shadow-[2px_2px_0_var(--color-border)] transition-opacity group-hover/medal:opacity-100 group-focus-within/medal:opacity-100 hover:border-foreground hover:bg-surface focus-visible:opacity-100 [@media(hover:none)]:opacity-100 [@media(pointer:coarse)]:opacity-100 [@media(pointer:coarse)]:before:absolute [@media(pointer:coarse)]:before:-inset-2.5">
+                className="absolute -top-1.5 left-13.5 z-10 flex size-6.5 items-center justify-center rounded-sm border border-brand/35 bg-background text-brand opacity-0 shadow-[2px_2px_0_var(--color-brand-soft)] transition-opacity group-hover/medal:opacity-100 group-focus-within/medal:opacity-100 hover:border-brand hover:bg-brand-soft focus-visible:opacity-100 focus-visible:outline-brand [@media(hover:none)]:opacity-100 [@media(pointer:coarse)]:opacity-100 [@media(pointer:coarse)]:before:absolute [@media(pointer:coarse)]:before:-inset-2.5">
                 <ArrowUpRightIcon size={14} aria-hidden />
               </Link>
             </li>;
           })}
-        </ul> : <p className="m-0 text-sm text-muted-foreground">{t('achievementsEmpty')}</p>}
+        </ul> : <p className="m-0 text-sm text-brand/80">{t('achievementsEmpty')}</p>}
       </div>
     </DialogContent>
   </Dialog>;

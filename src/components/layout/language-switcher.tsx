@@ -10,6 +10,10 @@ import { canonicalPath, localePath, stripLocale } from '@/lib/i18n/routing';
 import type { Catalog } from '@/lib/content/model';
 type LanguageProps = { locale: Locale; translations: Catalog['translations'] };
 const languageFlags: Record<Locale, string> = { en: '🇺🇸', zh: '🇨🇳', ja: '🇯🇵', fr: '🇫🇷', es: '🇪🇸' };
+export function HomeLanguageSwitcher(props: LanguageProps) {
+  const path = canonicalPath(usePathname());
+  return stripLocale(path) === '/' ? <LanguageSwitcher {...props} side="top" /> : null;
+}
 export function LanguageSwitcher({ locale, translations, side = 'bottom' }: LanguageProps & { side?: 'top' | 'bottom' }) {
   const t = useTranslations('Language');
   const ref = useRef<HTMLDetailsElement>(null);

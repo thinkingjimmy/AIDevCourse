@@ -24663,10 +24663,10 @@
   }
 
   // ../../node_modules/.pnpm/remark-mark-highlight@0.1.1/node_modules/remark-mark-highlight/dist/index.js
-  function g(r, a, c, e) {
-    let i2 = r.length, t = 0, n;
-    if (a < 0 ? a = -a > i2 ? 0 : i2 + a : a = a > i2 ? i2 : a, c = c > 0 ? c : 0, e.length < 1e4) n = Array.from(e), n.unshift(a, c), r.splice(...n);
-    else for (c && r.splice(a, c); t < e.length; ) n = e.slice(t, t + 1e4), n.unshift(a, 0), r.splice(...n), t += 1e4, a += 1e4;
+  function g(r2, a, c, e) {
+    let i2 = r2.length, t = 0, n;
+    if (a < 0 ? a = -a > i2 ? 0 : i2 + a : a = a > i2 ? i2 : a, c = c > 0 ? c : 0, e.length < 1e4) n = Array.from(e), n.unshift(a, c), r2.splice(...n);
+    else for (c && r2.splice(a, c); t < e.length; ) n = e.slice(t, t + 1e4), n.unshift(a, 0), r2.splice(...n), t += 1e4, a += 1e4;
   }
   var C = s(/[A-Za-z]/);
   var A = s(/[\dA-Za-z]/);
@@ -24674,25 +24674,25 @@
   var O = s(/\d/);
   var Q = s(/[\dA-Fa-f]/);
   var V = s(/[!-/:-@[-`{-~]/);
-  function T(r) {
-    return r !== null && (r < 0 || r === 32);
+  function T(r2) {
+    return r2 !== null && (r2 < 0 || r2 === 32);
   }
   var w = s(/\p{P}|\p{S}/u);
   var b = s(/\s/);
-  function s(r) {
+  function s(r2) {
     return a;
     function a(c) {
-      return c !== null && c > -1 && r.test(String.fromCharCode(c));
+      return c !== null && c > -1 && r2.test(String.fromCharCode(c));
     }
   }
-  function S(r) {
-    if (r === null || T(r) || b(r)) return 1;
-    if (w(r)) return 2;
+  function S(r2) {
+    if (r2 === null || T(r2) || b(r2)) return 1;
+    if (w(r2)) return 2;
   }
-  function D(r, a, c) {
+  function D(r2, a, c) {
     let e = [], i2 = -1;
-    for (; ++i2 < r.length; ) {
-      let t = r[i2].resolveAll;
+    for (; ++i2 < r2.length; ) {
+      let t = r2[i2].resolveAll;
       t && !e.includes(t) && (a = t(a, c), e.push(t));
     }
     return a;
@@ -24701,8 +24701,8 @@
   var f = { attentionSideBefore: 1, attentionSideAfter: 2, atxHeadingOpeningFenceSizeMax: 6, autolinkDomainSizeMax: 63, autolinkSchemeSizeMax: 32, cdataOpeningString: "CDATA[", characterGroupWhitespace: 1, characterGroupPunctuation: 2, characterReferenceDecimalSizeMax: 7, characterReferenceHexadecimalSizeMax: 6, characterReferenceNamedSizeMax: 31, codeFencedSequenceSizeMin: 3, contentTypeDocument: "document", contentTypeFlow: "flow", contentTypeContent: "content", contentTypeString: "string", contentTypeText: "text", hardBreakPrefixSizeMin: 2, htmlRaw: 1, htmlComment: 2, htmlInstruction: 3, htmlDeclaration: 4, htmlCdata: 5, htmlBasic: 6, htmlComplete: 7, htmlRawSizeMax: 8, linkResourceDestinationBalanceMax: 32, linkReferenceSizeMax: 999, listItemValueSizeMax: 10, numericBaseDecimal: 10, numericBaseHexadecimal: 16, tabSize: 4, thematicBreakMarkerCountMin: 3, v8MaxSafeChunkSize: 1e4 };
   var k = { data: "data", whitespace: "whitespace", lineEnding: "lineEnding", lineEndingBlank: "lineEndingBlank", linePrefix: "linePrefix", lineSuffix: "lineSuffix", atxHeading: "atxHeading", atxHeadingSequence: "atxHeadingSequence", atxHeadingText: "atxHeadingText", autolink: "autolink", autolinkEmail: "autolinkEmail", autolinkMarker: "autolinkMarker", autolinkProtocol: "autolinkProtocol", characterEscape: "characterEscape", characterEscapeValue: "characterEscapeValue", characterReference: "characterReference", characterReferenceMarker: "characterReferenceMarker", characterReferenceMarkerNumeric: "characterReferenceMarkerNumeric", characterReferenceMarkerHexadecimal: "characterReferenceMarkerHexadecimal", characterReferenceValue: "characterReferenceValue", codeFenced: "codeFenced", codeFencedFence: "codeFencedFence", codeFencedFenceSequence: "codeFencedFenceSequence", codeFencedFenceInfo: "codeFencedFenceInfo", codeFencedFenceMeta: "codeFencedFenceMeta", codeFlowValue: "codeFlowValue", codeIndented: "codeIndented", codeText: "codeText", codeTextData: "codeTextData", codeTextPadding: "codeTextPadding", codeTextSequence: "codeTextSequence", content: "content", definition: "definition", definitionDestination: "definitionDestination", definitionDestinationLiteral: "definitionDestinationLiteral", definitionDestinationLiteralMarker: "definitionDestinationLiteralMarker", definitionDestinationRaw: "definitionDestinationRaw", definitionDestinationString: "definitionDestinationString", definitionLabel: "definitionLabel", definitionLabelMarker: "definitionLabelMarker", definitionLabelString: "definitionLabelString", definitionMarker: "definitionMarker", definitionTitle: "definitionTitle", definitionTitleMarker: "definitionTitleMarker", definitionTitleString: "definitionTitleString", emphasis: "emphasis", emphasisSequence: "emphasisSequence", emphasisText: "emphasisText", escapeMarker: "escapeMarker", hardBreakEscape: "hardBreakEscape", hardBreakTrailing: "hardBreakTrailing", htmlFlow: "htmlFlow", htmlFlowData: "htmlFlowData", htmlText: "htmlText", htmlTextData: "htmlTextData", image: "image", label: "label", labelText: "labelText", labelLink: "labelLink", labelImage: "labelImage", labelMarker: "labelMarker", labelImageMarker: "labelImageMarker", labelEnd: "labelEnd", link: "link", paragraph: "paragraph", reference: "reference", referenceMarker: "referenceMarker", referenceString: "referenceString", resource: "resource", resourceDestination: "resourceDestination", resourceDestinationLiteral: "resourceDestinationLiteral", resourceDestinationLiteralMarker: "resourceDestinationLiteralMarker", resourceDestinationRaw: "resourceDestinationRaw", resourceDestinationString: "resourceDestinationString", resourceMarker: "resourceMarker", resourceTitle: "resourceTitle", resourceTitleMarker: "resourceTitleMarker", resourceTitleString: "resourceTitleString", setextHeading: "setextHeading", setextHeadingText: "setextHeadingText", setextHeadingLine: "setextHeadingLine", setextHeadingLineSequence: "setextHeadingLineSequence", strong: "strong", strongSequence: "strongSequence", strongText: "strongText", thematicBreak: "thematicBreak", thematicBreakSequence: "thematicBreakSequence", blockQuote: "blockQuote", blockQuotePrefix: "blockQuotePrefix", blockQuoteMarker: "blockQuoteMarker", blockQuotePrefixWhitespace: "blockQuotePrefixWhitespace", listOrdered: "listOrdered", listUnordered: "listUnordered", listItemIndent: "listItemIndent", listItemMarker: "listItemMarker", listItemPrefix: "listItemPrefix", listItemPrefixWhitespace: "listItemPrefixWhitespace", listItemValue: "listItemValue", chunkDocument: "chunkDocument", chunkContent: "chunkContent", chunkFlow: "chunkFlow", chunkText: "chunkText", chunkString: "chunkString" };
   function F() {
-    let r = { name: "highlight", tokenize: c, resolveAll: a };
-    return { text: { [u.equalsTo]: r }, insideSpan: { null: [r] }, attentionMarkers: { null: [u.equalsTo] } };
+    let r2 = { name: "highlight", tokenize: c, resolveAll: a };
+    return { text: { [u.equalsTo]: r2 }, insideSpan: { null: [r2] }, attentionMarkers: { null: [u.equalsTo] } };
     function a(e, i2) {
       let t = -1;
       for (; ++t < e.length; ) if (e[t][0] === "enter" && e[t][1].type === "highlightSequenceTemporary" && e[t][1]._close) {
@@ -24736,24 +24736,24 @@
   L.peek = E;
   var q = { canContainEols: ["mark"], enter: { highlight: H }, exit: { highlight: R } };
   var y = { unsafe: [{ character: "=", inConstruct: "phrasing", notInConstruct: B }], handlers: { mark: L } };
-  function H(r) {
-    this.enter({ type: "mark", children: [], data: { hName: "mark" } }, r);
+  function H(r2) {
+    this.enter({ type: "mark", children: [], data: { hName: "mark" } }, r2);
   }
-  function R(r) {
-    this.exit(r);
+  function R(r2) {
+    this.exit(r2);
   }
-  function L(r, a, c, e) {
+  function L(r2, a, c, e) {
     let i2 = c.createTracker(e), t = c.enter("highlight"), n = i2.move("==");
-    return n += c.containerPhrasing(r, { ...i2.current(), before: n, after: "=" }), n += i2.move("=="), t(), n;
+    return n += c.containerPhrasing(r2, { ...i2.current(), before: n, after: "=" }), n += i2.move("=="), t(), n;
   }
   function E() {
     return "=";
   }
   function I() {
-    let r = this.data();
+    let r2 = this.data();
     a("micromarkExtensions", F()), a("fromMarkdownExtensions", q), a("toMarkdownExtensions", y);
     function a(c, e) {
-      (r[c] ? r[c] : r[c] = []).push(e);
+      (r2[c] ? r2[c] : r2[c] = []).push(e);
     }
   }
 
@@ -24863,7 +24863,7 @@
         return `<${tag}${start2}>${renderChildren(node2, ctx)}</${tag}>`;
       }
       case "listItem": {
-        const checkbox = node2.checked === true ? '<span class="tr-task tr-task-checked" aria-hidden="true">\u2713</span>' : node2.checked === false ? '<span class="tr-task" aria-hidden="true"></span>' : "";
+        const checkbox = node2.checked === true ? '<span class="tr-task tr-task-checked" aria-hidden="true" data-no-annotate="1">\u2713</span>' : node2.checked === false ? '<span class="tr-task" aria-hidden="true" data-no-annotate="1"></span>' : "";
         return `<li${node2.spread ? ' class="tr-loose-item"' : ""}>${checkbox}${renderChildren(node2, ctx)}</li>`;
       }
       case "link":
@@ -24963,7 +24963,7 @@
     const children = renderChildren(node2, ctx);
     if (name2 === "JimmyNoteAnchor") {
       const variant = attr(node2, "variant");
-      return `<span class="tr-author-anchor" title="${escapeAttr(COMPONENT_LABELS.authorNote)}" data-author-anchor="1">${children}<span class="tr-author-anchor-mark" aria-hidden="true">\u270E</span></span>`;
+      return `<span class="tr-author-anchor" title="${escapeAttr(COMPONENT_LABELS.authorNote)}" data-author-anchor="1">${children}<span class="tr-author-anchor-mark" aria-hidden="true" data-no-annotate="1">\u270E</span></span>`;
     }
     if (name2 === "InlineCitation") {
       return `<cite class="tr-citation">${children}</cite>`;
@@ -25021,7 +25021,7 @@
     }));
     const optionHtml = options.map((option) => {
       const correct = answer && option.value === answer;
-      return `<li class="tr-quiz-option${correct ? " tr-quiz-correct" : ""}"${correct ? ' data-correct="1"' : ""}>${option.html}${correct ? '<span class="tr-quiz-check" aria-hidden="true">\u2713</span>' : ""}</li>`;
+      return `<li class="tr-quiz-option${correct ? " tr-quiz-correct" : ""}"${correct ? ' data-correct="1"' : ""}>${option.html}${correct ? '<span class="tr-quiz-check" aria-hidden="true" data-no-annotate="1">\u2713</span>' : ""}</li>`;
     }).join("");
     return `<section class="tr-quiz"><div class="tr-component-label">${COMPONENT_LABELS.quiz}</div>${title ? `<h4>${escapeHtml(title)}</h4>` : ""}${question ? `<p class="tr-quiz-question">${escapeHtml(question)}</p>` : ""}${optionHtml ? `<ul class="tr-quiz-options">${optionHtml}</ul>` : ""}${explanation ? `<div class="tr-quiz-explain"><span class="tr-quiz-explain-label">${COMPONENT_LABELS.explanation}</span><p>${escapeHtml(explanation)}</p></div>` : ""}${takeaway ? `<div class="tr-quiz-takeaway"><span class="tr-quiz-explain-label">${COMPONENT_LABELS.takeawayShort}</span><p>${escapeHtml(takeaway)}</p></div>` : ""}</section>`;
   }
@@ -25053,29 +25053,77 @@
 
   // src/highlight.js
   function highlightAnnotations(container, annotations) {
+    clearAnnotationMarks(container);
     if (!annotations.length) return () => {
     };
     const stream = collectTextStream(container);
     if (!stream.text) return () => {
     };
-    const matches = [];
+    const priority = (annotation) => annotation.kind === "proofread" ? 4 : annotation.kind === "link" ? 3 : annotation.kind === "assist" ? 2 : 1;
+    const ordered = [...annotations].sort((a, b2) => priority(b2) - priority(a));
+    const markMatches = [];
+    const reviewMatches = [];
     const occupied = [];
-    for (const annotation of annotations) {
-      const quote = normalizeSpace(annotation.quote || "");
+    const positions = [];
+    for (const annotation of ordered) {
+      const quote = compactSpace(annotation.quote || "");
       if (!quote) continue;
       const start2 = stream.text.indexOf(quote);
       if (start2 === -1) continue;
       const end = start2 + quote.length;
-      if (occupied.some(([from, to]) => start2 < to && end > from)) continue;
       const startPoint = stream.points[start2];
       const endPoint = stream.points[end - 1];
       if (!startPoint || !endPoint || startPoint.block !== endPoint.block) continue;
-      occupied.push([start2, end]);
-      matches.push({ annotation, start: start2, end, startPoint, endPoint });
+      positions.push({ id: annotation.id, start: start2 });
+      const overlaps = occupied.some(([from, to]) => start2 < to && end > from);
+      if (annotation.kind === "review") {
+        reviewMatches.push({ annotation, start: start2, end, startPoint, endPoint, wrap: !overlaps });
+        if (!overlaps) occupied.push([start2, end]);
+        continue;
+      }
+      let match = { start: start2, end, startPoint, endPoint };
+      if (overlaps) {
+        match = findFreeSegment(quote, start2, end, stream, occupied);
+        if (!match) continue;
+      }
+      occupied.push([match.start, match.end]);
+      markMatches.push({ annotation, ...match });
     }
-    matches.sort((a, b2) => b2.start - a.start);
-    const located = [];
-    for (const match of matches) {
+    reviewMatches.sort((a, b2) => a.start - b2.start);
+    let reviewNumber = 0;
+    for (const match of reviewMatches) {
+      reviewNumber += 1;
+      match.index = reviewNumber;
+      match.display = String(reviewNumber);
+      match.markClass = "";
+      match.kind = "review";
+    }
+    for (const match of markMatches) {
+      if (match.annotation.kind === "assist") {
+        match.display = "\u2726";
+        match.markClass = " tr-annotation-assist";
+        match.kind = "assist";
+      } else if (match.annotation.kind === "link") {
+        const type = match.annotation.linkType === "external" ? "external" : "internal";
+        match.display = type === "external" ? "\u5916" : "\u5185";
+        match.markClass = ` tr-annotation-link tr-annotation-link-${type}`;
+        match.kind = `link-${type}`;
+      } else {
+        const type = match.annotation.issueType === "typo" ? "typo" : "grammar";
+        match.display = type === "typo" ? "\u9519" : "\u53E5";
+        match.markClass = ` tr-annotation-proof tr-annotation-proof-${type}`;
+        match.kind = type === "typo" ? "proofread-typo" : "proofread-grammar";
+      }
+    }
+    const located = reviewMatches.map((match) => ({
+      id: match.annotation.id,
+      index: match.index,
+      start: match.start
+    }));
+    located.sort((a, b2) => a.start - b2.start);
+    const wraps = [...markMatches, ...reviewMatches.filter((match) => match.wrap)];
+    wraps.sort((a, b2) => b2.start - a.start);
+    for (const match of wraps) {
       const range = document.createRange();
       range.setStart(match.startPoint.node, match.startPoint.offset);
       range.setEnd(match.endPoint.node, match.endPoint.offset + 1);
@@ -25086,37 +25134,47 @@
         continue;
       }
       const mark = document.createElement("mark");
-      mark.className = "tr-annotation";
+      mark.className = `tr-annotation${match.markClass}`;
       mark.dataset.annId = match.annotation.id;
+      mark.dataset.annKind = match.kind;
       mark.tabIndex = 0;
       mark.setAttribute("role", "button");
       mark.setAttribute("aria-label", `${match.annotation.category || "\u5BA1\u9605"}\uFF1A${match.annotation.comment || ""}`);
       mark.appendChild(fragment);
       const sup = document.createElement("sup");
       sup.className = "tr-annotation-index";
-      sup.textContent = "";
+      sup.textContent = match.display;
       mark.appendChild(sup);
       range.insertNode(mark);
-      located.push({ id: match.annotation.id, start: match.start });
     }
-    located.sort((a, b2) => a.start - b2.start);
     located.forEach((item, index2) => {
       item.index = index2 + 1;
-      const mark = container.querySelector(`mark.tr-annotation[data-ann-id="${cssEscape(item.id)}"]`);
-      const sup = mark?.querySelector("sup.tr-annotation-index");
-      if (sup) sup.textContent = String(index2 + 1);
     });
     container.dataset.located = JSON.stringify(located.map(({ id, index: index2 }) => ({ id, index: index2 })));
-    return () => {
-      for (const mark of container.querySelectorAll("mark.tr-annotation")) {
-        const parent = mark.parentNode;
-        if (!parent) continue;
-        while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
-        parent.removeChild(mark);
-      }
-      container.normalize();
-      delete container.dataset.located;
-    };
+    container.dataset.positions = JSON.stringify(positions);
+    return () => clearAnnotationMarks(container);
+  }
+  function clearAnnotationMarks(container) {
+    for (const mark of container.querySelectorAll("mark.tr-annotation")) {
+      const parent = mark.parentNode;
+      if (!parent) continue;
+      for (const badge of mark.querySelectorAll("sup.tr-annotation-index")) badge.remove();
+      while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
+      parent.removeChild(mark);
+    }
+    container.normalize();
+    delete container.dataset.located;
+    delete container.dataset.positions;
+  }
+  function readAnnotationPositions(container) {
+    const raw = container.dataset.positions;
+    if (!raw) return [];
+    try {
+      const items = JSON.parse(raw);
+      return items.filter((item) => item && typeof item.id === "string" && Number.isFinite(item.start));
+    } catch {
+      return [];
+    }
   }
   function readLocatedAnnotations(container, annotations) {
     const raw = container.dataset.located;
@@ -25128,6 +25186,31 @@
     } catch {
       return [];
     }
+  }
+  function findFreeSegment(quote, start2, end, stream, occupied) {
+    const candidates = [];
+    let cursor = 0;
+    for (const segment of quote.split(/(?<=[。！？；，、：:,.!?;])\s*/)) {
+      if (segment.length < 6) continue;
+      const at2 = quote.indexOf(segment, cursor);
+      if (at2 < 0) continue;
+      cursor = at2 + segment.length;
+      candidates.push([start2 + at2, start2 + at2 + segment.length]);
+    }
+    for (let length = Math.min(36, quote.length); length >= 8; length -= 4) {
+      for (let offset2 = 0; offset2 + length <= quote.length; offset2 += 4) {
+        candidates.push([start2 + offset2, start2 + offset2 + length]);
+      }
+    }
+    for (const [from, to] of candidates) {
+      if (from < start2 || to > end) continue;
+      if (occupied.some(([left, right]) => from < right && to > left)) continue;
+      const startPoint = stream.points[from];
+      const endPoint = stream.points[to - 1];
+      if (!startPoint || !endPoint || startPoint.block !== endPoint.block) continue;
+      return { start: from, end: to, startPoint, endPoint };
+    }
+    return null;
   }
   function collectTextStream(root2) {
     const view = root2.ownerDocument?.defaultView || globalThis;
@@ -25147,27 +25230,14 @@
     });
     const points = [];
     let node2;
-    let lastSpace = false;
     while (node2 = walker.nextNode()) {
       const value = node2.nodeValue || "";
-      if (!value.trim()) {
-        if (points.length && !lastSpace) {
-          points.push({ ch: " ", node: node2, offset: Math.max(0, value.length - 1), block: blockOf(node2) });
-          lastSpace = true;
-        }
-        continue;
-      }
+      if (!value) continue;
       const block = blockOf(node2);
       for (let index2 = 0; index2 < value.length; index2 += 1) {
         const ch = value[index2];
-        if (/\s/.test(ch)) {
-          if (lastSpace) continue;
-          points.push({ ch: " ", node: node2, offset: index2, block });
-          lastSpace = true;
-        } else {
-          points.push({ ch, node: node2, offset: index2, block });
-          lastSpace = false;
-        }
+        if (/\s/.test(ch)) continue;
+        points.push({ ch, node: node2, offset: index2, block });
       }
     }
     return { text: points.map((point3) => point3.ch).join(""), points };
@@ -25180,20 +25250,4379 @@
   function normalizeSpace(value) {
     return String(value).replace(/\s+/g, " ").trim();
   }
+  function compactSpace(value) {
+    return String(value == null ? "" : value).replace(/\s+/g, "");
+  }
   function cssEscape(value) {
     if (typeof CSS !== "undefined" && typeof CSS.escape === "function") return CSS.escape(value);
     return String(value).replace(/["\\]/g, "\\$&");
   }
 
+  // ../../node_modules/.pnpm/clsx@2.1.1/node_modules/clsx/dist/clsx.mjs
+  function r(e) {
+    var t, f2, n = "";
+    if ("string" == typeof e || "number" == typeof e) n += e;
+    else if ("object" == typeof e) if (Array.isArray(e)) {
+      var o = e.length;
+      for (t = 0; t < o; t++) e[t] && (f2 = r(e[t])) && (n && (n += " "), n += f2);
+    } else for (f2 in e) e[f2] && (n && (n += " "), n += f2);
+    return n;
+  }
+  function clsx() {
+    for (var e, t, f2 = 0, n = "", o = arguments.length; f2 < o; f2++) (e = arguments[f2]) && (t = r(e)) && (n && (n += " "), n += t);
+    return n;
+  }
+
+  // ../../node_modules/.pnpm/tailwind-merge@3.7.0/node_modules/tailwind-merge/dist/bundle-mjs.mjs
+  var concatArrays = (array1, array2) => {
+    const combinedArray = new Array(array1.length + array2.length);
+    for (let i2 = 0; i2 < array1.length; i2++) {
+      combinedArray[i2] = array1[i2];
+    }
+    for (let i2 = 0; i2 < array2.length; i2++) {
+      combinedArray[array1.length + i2] = array2[i2];
+    }
+    return combinedArray;
+  };
+  var createClassValidatorObject = (classGroupId, validator) => ({
+    classGroupId,
+    validator
+  });
+  var createClassPartObject = (nextPart = /* @__PURE__ */ new Map(), validators = null, classGroupId) => ({
+    nextPart,
+    validators,
+    classGroupId
+  });
+  var CLASS_PART_SEPARATOR = "-";
+  var EMPTY_CONFLICTS = [];
+  var ARBITRARY_PROPERTY_PREFIX = "arbitrary..";
+  var createClassGroupUtils = (config) => {
+    const classMap = createClassMap(config);
+    const {
+      conflictingClassGroups,
+      conflictingClassGroupModifiers
+    } = config;
+    const getClassGroupId = (className) => {
+      if (className.startsWith("[") && className.endsWith("]")) {
+        return getGroupIdForArbitraryProperty(className);
+      }
+      const classParts = className.split(CLASS_PART_SEPARATOR);
+      const startIndex = classParts[0] === "" && classParts.length > 1 ? 1 : 0;
+      return getGroupRecursive(classParts, startIndex, classMap);
+    };
+    const getConflictingClassGroupIds = (classGroupId, hasPostfixModifier) => {
+      if (hasPostfixModifier) {
+        const modifierConflicts = conflictingClassGroupModifiers[classGroupId];
+        const baseConflicts = conflictingClassGroups[classGroupId];
+        if (modifierConflicts) {
+          if (baseConflicts) {
+            return concatArrays(baseConflicts, modifierConflicts);
+          }
+          return modifierConflicts;
+        }
+        return baseConflicts || EMPTY_CONFLICTS;
+      }
+      return conflictingClassGroups[classGroupId] || EMPTY_CONFLICTS;
+    };
+    return {
+      getClassGroupId,
+      getConflictingClassGroupIds
+    };
+  };
+  var getGroupRecursive = (classParts, startIndex, classPartObject) => {
+    const classPathsLength = classParts.length - startIndex;
+    if (classPathsLength === 0) {
+      return classPartObject.classGroupId;
+    }
+    const currentClassPart = classParts[startIndex];
+    const nextClassPartObject = classPartObject.nextPart.get(currentClassPart);
+    if (nextClassPartObject) {
+      const result = getGroupRecursive(classParts, startIndex + 1, nextClassPartObject);
+      if (result) return result;
+    }
+    const validators = classPartObject.validators;
+    if (validators === null) {
+      return void 0;
+    }
+    const classRest = startIndex === 0 ? classParts.join(CLASS_PART_SEPARATOR) : classParts.slice(startIndex).join(CLASS_PART_SEPARATOR);
+    const validatorsLength = validators.length;
+    for (let i2 = 0; i2 < validatorsLength; i2++) {
+      const validatorObj = validators[i2];
+      if (validatorObj.validator(classRest)) {
+        return validatorObj.classGroupId;
+      }
+    }
+    return void 0;
+  };
+  var getGroupIdForArbitraryProperty = (className) => className.slice(1, -1).indexOf(":") === -1 ? void 0 : (() => {
+    const content3 = className.slice(1, -1);
+    const colonIndex = content3.indexOf(":");
+    const property = content3.slice(0, colonIndex);
+    return property ? ARBITRARY_PROPERTY_PREFIX + property : void 0;
+  })();
+  var createClassMap = (config) => {
+    const {
+      theme,
+      classGroups
+    } = config;
+    return processClassGroups(classGroups, theme);
+  };
+  var processClassGroups = (classGroups, theme) => {
+    const classMap = createClassPartObject();
+    for (const classGroupId in classGroups) {
+      const group = classGroups[classGroupId];
+      processClassesRecursively(group, classMap, classGroupId, theme);
+    }
+    return classMap;
+  };
+  var processClassesRecursively = (classGroup, classPartObject, classGroupId, theme) => {
+    const len = classGroup.length;
+    for (let i2 = 0; i2 < len; i2++) {
+      const classDefinition = classGroup[i2];
+      processClassDefinition(classDefinition, classPartObject, classGroupId, theme);
+    }
+  };
+  var processClassDefinition = (classDefinition, classPartObject, classGroupId, theme) => {
+    if (typeof classDefinition === "string") {
+      processStringDefinition(classDefinition, classPartObject, classGroupId);
+      return;
+    }
+    if (typeof classDefinition === "function") {
+      processFunctionDefinition(classDefinition, classPartObject, classGroupId, theme);
+      return;
+    }
+    processObjectDefinition(classDefinition, classPartObject, classGroupId, theme);
+  };
+  var processStringDefinition = (classDefinition, classPartObject, classGroupId) => {
+    const classPartObjectToEdit = classDefinition === "" ? classPartObject : getPart(classPartObject, classDefinition);
+    classPartObjectToEdit.classGroupId = classGroupId;
+  };
+  var processFunctionDefinition = (classDefinition, classPartObject, classGroupId, theme) => {
+    if (isThemeGetter(classDefinition)) {
+      processClassesRecursively(classDefinition(theme), classPartObject, classGroupId, theme);
+      return;
+    }
+    if (classPartObject.validators === null) {
+      classPartObject.validators = [];
+    }
+    classPartObject.validators.push(createClassValidatorObject(classGroupId, classDefinition));
+  };
+  var processObjectDefinition = (classDefinition, classPartObject, classGroupId, theme) => {
+    const entries = Object.entries(classDefinition);
+    const len = entries.length;
+    for (let i2 = 0; i2 < len; i2++) {
+      const [key, value] = entries[i2];
+      processClassesRecursively(value, getPart(classPartObject, key), classGroupId, theme);
+    }
+  };
+  var getPart = (classPartObject, path2) => {
+    let current2 = classPartObject;
+    const parts = path2.split(CLASS_PART_SEPARATOR);
+    const len = parts.length;
+    for (let i2 = 0; i2 < len; i2++) {
+      const part = parts[i2];
+      let next = current2.nextPart.get(part);
+      if (!next) {
+        next = createClassPartObject();
+        current2.nextPart.set(part, next);
+      }
+      current2 = next;
+    }
+    return current2;
+  };
+  var isThemeGetter = (func) => "isThemeGetter" in func && func.isThemeGetter === true;
+  var createLruCache = (maxCacheSize) => {
+    if (maxCacheSize < 1) {
+      return {
+        get: () => void 0,
+        set: () => {
+        }
+      };
+    }
+    let cacheSize = 0;
+    let cache = /* @__PURE__ */ Object.create(null);
+    let previousCache = /* @__PURE__ */ Object.create(null);
+    const update = (key, value) => {
+      cache[key] = value;
+      cacheSize++;
+      if (cacheSize > maxCacheSize) {
+        cacheSize = 0;
+        previousCache = cache;
+        cache = /* @__PURE__ */ Object.create(null);
+      }
+    };
+    return {
+      get(key) {
+        let value = cache[key];
+        if (value !== void 0) {
+          return value;
+        }
+        if ((value = previousCache[key]) !== void 0) {
+          update(key, value);
+          return value;
+        }
+      },
+      set(key, value) {
+        if (key in cache) {
+          cache[key] = value;
+        } else {
+          update(key, value);
+        }
+      }
+    };
+  };
+  var IMPORTANT_MODIFIER = "!";
+  var MODIFIER_SEPARATOR = ":";
+  var EMPTY_MODIFIERS = [];
+  var createResultObject = (modifiers, hasImportantModifier, baseClassName, maybePostfixModifierPosition, isExternal) => ({
+    modifiers,
+    hasImportantModifier,
+    baseClassName,
+    maybePostfixModifierPosition,
+    isExternal
+  });
+  var createParseClassName = (config) => {
+    const {
+      prefix,
+      experimentalParseClassName
+    } = config;
+    let parseClassName = (className) => {
+      const modifiers = [];
+      let bracketDepth = 0;
+      let parenDepth = 0;
+      let modifierStart = 0;
+      let postfixModifierPosition;
+      const len = className.length;
+      for (let index2 = 0; index2 < len; index2++) {
+        const currentCharacter = className[index2];
+        if (bracketDepth === 0 && parenDepth === 0) {
+          if (currentCharacter === MODIFIER_SEPARATOR) {
+            modifiers.push(className.slice(modifierStart, index2));
+            modifierStart = index2 + 1;
+            continue;
+          }
+          if (currentCharacter === "/") {
+            postfixModifierPosition = index2;
+            continue;
+          }
+        }
+        if (currentCharacter === "[") bracketDepth++;
+        else if (currentCharacter === "]") bracketDepth--;
+        else if (currentCharacter === "(") parenDepth++;
+        else if (currentCharacter === ")") parenDepth--;
+      }
+      const baseClassNameWithImportantModifier = modifiers.length === 0 ? className : className.slice(modifierStart);
+      let baseClassName = baseClassNameWithImportantModifier;
+      let hasImportantModifier = false;
+      if (baseClassNameWithImportantModifier.endsWith(IMPORTANT_MODIFIER)) {
+        baseClassName = baseClassNameWithImportantModifier.slice(0, -1);
+        hasImportantModifier = true;
+      } else if (
+        /**
+         * In Tailwind CSS v3 the important modifier was at the start of the base class name. This is still supported for legacy reasons.
+         * @see https://github.com/dcastil/tailwind-merge/issues/513#issuecomment-2614029864
+         */
+        baseClassNameWithImportantModifier.startsWith(IMPORTANT_MODIFIER)
+      ) {
+        baseClassName = baseClassNameWithImportantModifier.slice(1);
+        hasImportantModifier = true;
+      }
+      const maybePostfixModifierPosition = postfixModifierPosition && postfixModifierPosition > modifierStart ? postfixModifierPosition - modifierStart : void 0;
+      return createResultObject(modifiers, hasImportantModifier, baseClassName, maybePostfixModifierPosition);
+    };
+    if (prefix) {
+      const fullPrefix = prefix + MODIFIER_SEPARATOR;
+      const parseClassNameOriginal = parseClassName;
+      parseClassName = (className) => className.startsWith(fullPrefix) ? parseClassNameOriginal(className.slice(fullPrefix.length)) : createResultObject(EMPTY_MODIFIERS, false, className, void 0, true);
+    }
+    if (experimentalParseClassName) {
+      const parseClassNameOriginal = parseClassName;
+      parseClassName = (className) => experimentalParseClassName({
+        className,
+        parseClassName: parseClassNameOriginal
+      });
+    }
+    return parseClassName;
+  };
+  var createSortModifiers = (config) => {
+    const modifierWeights = /* @__PURE__ */ new Map();
+    config.orderSensitiveModifiers.forEach((mod, index2) => {
+      modifierWeights.set(mod, 1e6 + index2);
+    });
+    return (modifiers) => {
+      const result = [];
+      let currentSegment = [];
+      for (let i2 = 0; i2 < modifiers.length; i2++) {
+        const modifier = modifiers[i2];
+        const isArbitrary = modifier[0] === "[";
+        const isOrderSensitive = modifierWeights.has(modifier);
+        if (isArbitrary || isOrderSensitive) {
+          if (currentSegment.length > 0) {
+            currentSegment.sort();
+            result.push(...currentSegment);
+            currentSegment = [];
+          }
+          result.push(modifier);
+        } else {
+          currentSegment.push(modifier);
+        }
+      }
+      if (currentSegment.length > 0) {
+        currentSegment.sort();
+        result.push(...currentSegment);
+      }
+      return result;
+    };
+  };
+  var createConfigUtils = (config) => ({
+    cache: createLruCache(config.cacheSize),
+    parseClassName: createParseClassName(config),
+    sortModifiers: createSortModifiers(config),
+    postfixLookupClassGroupIds: createPostfixLookupClassGroupIds(config),
+    ...createClassGroupUtils(config)
+  });
+  var createPostfixLookupClassGroupIds = (config) => {
+    const lookup = /* @__PURE__ */ Object.create(null);
+    const classGroupIds = config.postfixLookupClassGroups;
+    if (classGroupIds) {
+      for (let i2 = 0; i2 < classGroupIds.length; i2++) {
+        lookup[classGroupIds[i2]] = true;
+      }
+    }
+    return lookup;
+  };
+  var SPLIT_CLASSES_REGEX = /\s+/;
+  var mergeClassList = (classList, configUtils) => {
+    const {
+      parseClassName,
+      getClassGroupId,
+      getConflictingClassGroupIds,
+      sortModifiers,
+      postfixLookupClassGroupIds
+    } = configUtils;
+    const classGroupsInConflict = [];
+    const classNames = classList.trim().split(SPLIT_CLASSES_REGEX);
+    let result = "";
+    for (let index2 = classNames.length - 1; index2 >= 0; index2 -= 1) {
+      const originalClassName = classNames[index2];
+      const {
+        isExternal,
+        modifiers,
+        hasImportantModifier,
+        baseClassName,
+        maybePostfixModifierPosition
+      } = parseClassName(originalClassName);
+      if (isExternal) {
+        result = originalClassName + (result.length > 0 ? " " + result : result);
+        continue;
+      }
+      let hasPostfixModifier = !!maybePostfixModifierPosition;
+      let classGroupId;
+      if (hasPostfixModifier) {
+        const baseClassNameWithoutPostfix = baseClassName.substring(0, maybePostfixModifierPosition);
+        classGroupId = getClassGroupId(baseClassNameWithoutPostfix);
+        const classGroupIdWithPostfix = classGroupId && postfixLookupClassGroupIds[classGroupId] ? getClassGroupId(baseClassName) : void 0;
+        if (classGroupIdWithPostfix && classGroupIdWithPostfix !== classGroupId) {
+          classGroupId = classGroupIdWithPostfix;
+          hasPostfixModifier = false;
+        }
+      } else {
+        classGroupId = getClassGroupId(baseClassName);
+      }
+      if (!classGroupId) {
+        if (!hasPostfixModifier) {
+          result = originalClassName + (result.length > 0 ? " " + result : result);
+          continue;
+        }
+        classGroupId = getClassGroupId(baseClassName);
+        if (!classGroupId) {
+          result = originalClassName + (result.length > 0 ? " " + result : result);
+          continue;
+        }
+        hasPostfixModifier = false;
+      }
+      const variantModifier = modifiers.length === 0 ? "" : modifiers.length === 1 ? modifiers[0] : sortModifiers(modifiers).join(":");
+      const modifierId = hasImportantModifier ? variantModifier + IMPORTANT_MODIFIER : variantModifier;
+      const classId = modifierId + classGroupId;
+      if (classGroupsInConflict.indexOf(classId) > -1) {
+        continue;
+      }
+      classGroupsInConflict.push(classId);
+      const conflictGroups = getConflictingClassGroupIds(classGroupId, hasPostfixModifier);
+      for (let i2 = 0; i2 < conflictGroups.length; ++i2) {
+        const group = conflictGroups[i2];
+        classGroupsInConflict.push(modifierId + group);
+      }
+      result = originalClassName + (result.length > 0 ? " " + result : result);
+    }
+    return result;
+  };
+  var twJoin = (...classLists) => {
+    let index2 = 0;
+    let argument;
+    let resolvedValue;
+    let string3 = "";
+    while (index2 < classLists.length) {
+      if (argument = classLists[index2++]) {
+        if (resolvedValue = toValue(argument)) {
+          string3 && (string3 += " ");
+          string3 += resolvedValue;
+        }
+      }
+    }
+    return string3;
+  };
+  var toValue = (mix) => {
+    if (typeof mix === "string") {
+      return mix;
+    }
+    let resolvedValue;
+    let string3 = "";
+    for (let k2 = 0; k2 < mix.length; k2++) {
+      if (mix[k2]) {
+        if (resolvedValue = toValue(mix[k2])) {
+          string3 && (string3 += " ");
+          string3 += resolvedValue;
+        }
+      }
+    }
+    return string3;
+  };
+  var createTailwindMerge = (createConfigFirst, ...createConfigRest) => {
+    let configUtils;
+    let cacheGet;
+    let cacheSet;
+    let functionToCall;
+    const initTailwindMerge = (classList) => {
+      const config = createConfigRest.reduce((previousConfig, createConfigCurrent) => createConfigCurrent(previousConfig), createConfigFirst());
+      configUtils = createConfigUtils(config);
+      cacheGet = configUtils.cache.get;
+      cacheSet = configUtils.cache.set;
+      functionToCall = tailwindMerge;
+      return tailwindMerge(classList);
+    };
+    const tailwindMerge = (classList) => {
+      const cachedResult = cacheGet(classList);
+      if (cachedResult) {
+        return cachedResult;
+      }
+      const result = mergeClassList(classList, configUtils);
+      cacheSet(classList, result);
+      return result;
+    };
+    functionToCall = initTailwindMerge;
+    return (...args) => functionToCall(twJoin(...args));
+  };
+  var fallbackThemeArr = [];
+  var fromTheme = (key) => {
+    const themeGetter = (theme) => theme[key] || fallbackThemeArr;
+    themeGetter.isThemeGetter = true;
+    themeGetter.themeKey = key;
+    return themeGetter;
+  };
+  var arbitraryValueRegex = /^\[(?:(\w[\w-]*):)?(.+)\]$/i;
+  var arbitraryVariableRegex = /^\((?:(\w[\w-]*):)?(.+)\)$/i;
+  var fractionRegex = /^\d+(?:\.\d+)?\/\d+(?:\.\d+)?$/;
+  var tshirtUnitRegex = /^(\d+(\.\d+)?)?(xs|sm|md|lg|xl)$/;
+  var lengthUnitRegex = /\d+(%|px|r?em|[sdl]?v([hwib]|min|max)|pt|pc|in|cm|mm|cap|ch|ex|r?lh|cq(w|h|i|b|min|max))|\b(calc|min|max|clamp)\(.+\)|^0$/;
+  var colorFunctionRegex = /^(rgba?|hsla?|hwb|(ok)?(lab|lch)|color-mix|color|light-dark)\(.+\)$/;
+  var shadowRegex = /^(inset_)?-?((\d+)?\.?(\d+)[a-z]+|0)_-?((\d+)?\.?(\d+)[a-z]+|0)/;
+  var imageRegex = /^(url|image|image-set|cross-fade|element|(repeating-)?(linear|radial|conic)-gradient)\(.+\)$/;
+  var isFraction = (value) => fractionRegex.test(value);
+  var isNumber = (value) => !!value && !Number.isNaN(Number(value));
+  var isInteger = (value) => !!value && Number.isInteger(Number(value));
+  var isPercent = (value) => value.endsWith("%") && isNumber(value.slice(0, -1));
+  var isTshirtSize = (value) => tshirtUnitRegex.test(value);
+  var isAny = () => true;
+  var isLengthOnly = (value) => (
+    // `colorFunctionRegex` check is necessary because color functions can have percentages in them which which would be incorrectly classified as lengths.
+    // For example, `hsl(0 0% 0%)` would be classified as a length without this check.
+    // I could also use lookbehind assertion in `lengthUnitRegex` but that isn't supported widely enough.
+    lengthUnitRegex.test(value) && !colorFunctionRegex.test(value)
+  );
+  var isNever = () => false;
+  var isShadow = (value) => shadowRegex.test(value);
+  var isImage = (value) => imageRegex.test(value);
+  var isAnyNonArbitrary = (value) => !isArbitraryValue(value) && !isArbitraryVariable(value);
+  var isNamedContainerQuery = (value) => value.startsWith("@container") && (value[10] === "/" && value[11] !== void 0 || value[11] === "s" && value[16] !== void 0 && value.startsWith("-size/", 10) || value[11] === "n" && value[18] !== void 0 && value.startsWith("-normal/", 10));
+  var isArbitrarySize = (value) => getIsArbitraryValue(value, isLabelSize, isNever);
+  var isArbitraryValue = (value) => arbitraryValueRegex.test(value);
+  var isArbitraryLength = (value) => getIsArbitraryValue(value, isLabelLength, isLengthOnly);
+  var isArbitraryNumber = (value) => getIsArbitraryValue(value, isLabelNumber, isNumber);
+  var isArbitraryWeight = (value) => getIsArbitraryValue(value, isLabelWeight, isAny);
+  var isArbitraryFamilyName = (value) => getIsArbitraryValue(value, isLabelFamilyName, isNever);
+  var isArbitraryPosition = (value) => getIsArbitraryValue(value, isLabelPosition, isNever);
+  var isArbitraryImage = (value) => getIsArbitraryValue(value, isLabelImage, isImage);
+  var isArbitraryShadow = (value) => getIsArbitraryValue(value, isLabelShadow, isShadow);
+  var isArbitraryVariable = (value) => arbitraryVariableRegex.test(value);
+  var isArbitraryVariableLength = (value) => getIsArbitraryVariable(value, isLabelLength);
+  var isArbitraryVariableFamilyName = (value) => getIsArbitraryVariable(value, isLabelFamilyName);
+  var isArbitraryVariablePosition = (value) => getIsArbitraryVariable(value, isLabelPosition);
+  var isArbitraryVariableSize = (value) => getIsArbitraryVariable(value, isLabelSize);
+  var isArbitraryVariableImage = (value) => getIsArbitraryVariable(value, isLabelImage);
+  var isArbitraryVariableShadow = (value) => getIsArbitraryVariable(value, isLabelShadow, true);
+  var isArbitraryVariableWeight = (value) => getIsArbitraryVariable(value, isLabelWeight, true);
+  var getIsArbitraryValue = (value, testLabel, testValue) => {
+    const result = arbitraryValueRegex.exec(value);
+    if (result) {
+      if (result[1]) {
+        return testLabel(result[1]);
+      }
+      return testValue(result[2]);
+    }
+    return false;
+  };
+  var getIsArbitraryVariable = (value, testLabel, shouldMatchNoLabel = false) => {
+    const result = arbitraryVariableRegex.exec(value);
+    if (result) {
+      if (result[1]) {
+        return testLabel(result[1]);
+      }
+      return shouldMatchNoLabel;
+    }
+    return false;
+  };
+  var isLabelPosition = (label) => label === "position" || label === "percentage";
+  var isLabelImage = (label) => label === "image" || label === "url";
+  var isLabelSize = (label) => label === "length" || label === "size" || label === "bg-size";
+  var isLabelLength = (label) => label === "length";
+  var isLabelNumber = (label) => label === "number";
+  var isLabelFamilyName = (label) => label === "family-name";
+  var isLabelWeight = (label) => label === "number" || label === "weight";
+  var isLabelShadow = (label) => label === "shadow";
+  var getDefaultConfig = () => {
+    const themeColor = fromTheme("color");
+    const themeFont = fromTheme("font");
+    const themeText = fromTheme("text");
+    const themeFontWeight = fromTheme("font-weight");
+    const themeTracking = fromTheme("tracking");
+    const themeLeading = fromTheme("leading");
+    const themeBreakpoint = fromTheme("breakpoint");
+    const themeContainer = fromTheme("container");
+    const themeSpacing = fromTheme("spacing");
+    const themeRadius = fromTheme("radius");
+    const themeShadow = fromTheme("shadow");
+    const themeInsetShadow = fromTheme("inset-shadow");
+    const themeTextShadow = fromTheme("text-shadow");
+    const themeDropShadow = fromTheme("drop-shadow");
+    const themeBlur = fromTheme("blur");
+    const themePerspective = fromTheme("perspective");
+    const themeAspect = fromTheme("aspect");
+    const themeEase = fromTheme("ease");
+    const themeAnimate = fromTheme("animate");
+    const scaleBreak = () => ["auto", "avoid", "all", "avoid-page", "page", "left", "right", "column"];
+    const scalePosition = () => [
+      "center",
+      "top",
+      "bottom",
+      "left",
+      "right",
+      "top-left",
+      // Deprecated since Tailwind CSS v4.1.0, see https://github.com/tailwindlabs/tailwindcss/pull/17378
+      "left-top",
+      "top-right",
+      // Deprecated since Tailwind CSS v4.1.0, see https://github.com/tailwindlabs/tailwindcss/pull/17378
+      "right-top",
+      "bottom-right",
+      // Deprecated since Tailwind CSS v4.1.0, see https://github.com/tailwindlabs/tailwindcss/pull/17378
+      "right-bottom",
+      "bottom-left",
+      // Deprecated since Tailwind CSS v4.1.0, see https://github.com/tailwindlabs/tailwindcss/pull/17378
+      "left-bottom"
+    ];
+    const scalePositionWithArbitrary = () => [...scalePosition(), isArbitraryVariable, isArbitraryValue];
+    const scaleOverflow = () => ["auto", "hidden", "clip", "visible", "scroll"];
+    const scaleOverscroll = () => ["auto", "contain", "none"];
+    const scaleUnambiguousSpacing = () => [isArbitraryVariable, isArbitraryValue, themeSpacing];
+    const scaleInset = () => [isFraction, "full", "auto", ...scaleUnambiguousSpacing()];
+    const scaleGridTemplateColsRows = () => [isInteger, "none", "subgrid", isArbitraryVariable, isArbitraryValue];
+    const scaleGridColRowStartAndEnd = () => ["auto", {
+      span: ["full", isInteger, isArbitraryVariable, isArbitraryValue]
+    }, isInteger, isArbitraryVariable, isArbitraryValue];
+    const scaleGridColRowStartOrEnd = () => [isInteger, "auto", isArbitraryVariable, isArbitraryValue];
+    const scaleGridAutoColsRows = () => ["auto", "min", "max", "fr", isArbitraryVariable, isArbitraryValue];
+    const scaleAlignPrimaryAxis = () => ["start", "end", "center", "between", "around", "evenly", "stretch", "baseline", "center-safe", "end-safe"];
+    const scaleAlignSecondaryAxis = () => ["start", "end", "center", "stretch", "center-safe", "end-safe"];
+    const scaleMargin = () => ["auto", ...scaleUnambiguousSpacing()];
+    const scaleSizing = () => [isFraction, "auto", "full", "dvw", "dvh", "lvw", "lvh", "svw", "svh", "min", "max", "fit", ...scaleUnambiguousSpacing()];
+    const scaleSizingInline = () => [themeContainer, isFraction, "screen", "full", "dvw", "lvw", "svw", "min", "max", "fit", ...scaleUnambiguousSpacing()];
+    const scaleSizingBlock = () => [isFraction, "screen", "full", "lh", "dvh", "lvh", "svh", "min", "max", "fit", ...scaleUnambiguousSpacing()];
+    const scaleColor = () => [themeColor, isArbitraryVariable, isArbitraryValue];
+    const scaleBgPosition = () => [...scalePosition(), isArbitraryVariablePosition, isArbitraryPosition, {
+      position: [isArbitraryVariable, isArbitraryValue]
+    }];
+    const scaleBgRepeat = () => ["no-repeat", {
+      repeat: ["", "x", "y", "space", "round"]
+    }];
+    const scaleBgSize = () => ["auto", "cover", "contain", isArbitraryVariableSize, isArbitrarySize, {
+      size: [isArbitraryVariable, isArbitraryValue]
+    }];
+    const scaleGradientStopPosition = () => [isPercent, isArbitraryVariableLength, isArbitraryLength];
+    const scaleRadius = () => [
+      // Deprecated since Tailwind CSS v4.0.0
+      "",
+      "none",
+      "full",
+      themeRadius,
+      isArbitraryVariable,
+      isArbitraryValue
+    ];
+    const scaleBorderWidth = () => ["", isNumber, isArbitraryVariableLength, isArbitraryLength];
+    const scaleLineStyle = () => ["solid", "dashed", "dotted", "double"];
+    const scaleBlendMode = () => ["normal", "multiply", "screen", "overlay", "darken", "lighten", "color-dodge", "color-burn", "hard-light", "soft-light", "difference", "exclusion", "hue", "saturation", "color", "luminosity"];
+    const scaleMaskImagePosition = () => [isNumber, isPercent, isArbitraryVariablePosition, isArbitraryPosition];
+    const scaleBlur = () => [
+      // Deprecated since Tailwind CSS v4.0.0
+      "",
+      "none",
+      themeBlur,
+      isArbitraryVariable,
+      isArbitraryValue
+    ];
+    const scaleRotate = () => ["none", isNumber, isArbitraryVariable, isArbitraryValue];
+    const scaleScale = () => ["none", isNumber, isArbitraryVariable, isArbitraryValue];
+    const scaleSkew = () => [isNumber, isArbitraryVariable, isArbitraryValue];
+    const scaleTranslate = () => [isFraction, "full", ...scaleUnambiguousSpacing()];
+    return {
+      cacheSize: 500,
+      theme: {
+        animate: ["spin", "ping", "pulse", "bounce"],
+        aspect: ["video"],
+        blur: [isTshirtSize],
+        breakpoint: [isTshirtSize],
+        color: [isAny],
+        container: [isTshirtSize],
+        "drop-shadow": [isTshirtSize],
+        ease: ["in", "out", "in-out"],
+        font: [isAnyNonArbitrary],
+        "font-weight": ["thin", "extralight", "light", "normal", "medium", "semibold", "bold", "extrabold", "black"],
+        "inset-shadow": [isTshirtSize],
+        leading: ["none", "tight", "snug", "normal", "relaxed", "loose"],
+        perspective: ["dramatic", "near", "normal", "midrange", "distant", "none"],
+        radius: [isTshirtSize],
+        shadow: [isTshirtSize],
+        spacing: ["px", isNumber],
+        text: [isTshirtSize],
+        "text-shadow": [isTshirtSize],
+        tracking: ["tighter", "tight", "normal", "wide", "wider", "widest"]
+      },
+      classGroups: {
+        // --------------
+        // --- Layout ---
+        // --------------
+        /**
+         * Aspect Ratio
+         * @see https://tailwindcss.com/docs/aspect-ratio
+         */
+        aspect: [{
+          aspect: ["auto", "square", isFraction, isArbitraryValue, isArbitraryVariable, themeAspect]
+        }],
+        /**
+         * Container
+         * @see https://tailwindcss.com/docs/container
+         * @deprecated since Tailwind CSS v4.0.0
+         */
+        container: ["container"],
+        /**
+         * Container Type
+         * @see https://tailwindcss.com/docs/responsive-design#container-queries
+         */
+        "container-type": [{
+          "@container": ["", "normal", "size", isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Container Name
+         * @see https://tailwindcss.com/docs/responsive-design#named-containers
+         */
+        "container-named": [isNamedContainerQuery],
+        /**
+         * Columns
+         * @see https://tailwindcss.com/docs/columns
+         */
+        columns: [{
+          columns: [isNumber, "auto", isArbitraryValue, isArbitraryVariable, themeContainer]
+        }],
+        /**
+         * Break After
+         * @see https://tailwindcss.com/docs/break-after
+         */
+        "break-after": [{
+          "break-after": scaleBreak()
+        }],
+        /**
+         * Break Before
+         * @see https://tailwindcss.com/docs/break-before
+         */
+        "break-before": [{
+          "break-before": scaleBreak()
+        }],
+        /**
+         * Break Inside
+         * @see https://tailwindcss.com/docs/break-inside
+         */
+        "break-inside": [{
+          "break-inside": ["auto", "avoid", "avoid-page", "avoid-column"]
+        }],
+        /**
+         * Box Decoration Break
+         * @see https://tailwindcss.com/docs/box-decoration-break
+         */
+        "box-decoration": [{
+          "box-decoration": ["slice", "clone"]
+        }],
+        /**
+         * Box Sizing
+         * @see https://tailwindcss.com/docs/box-sizing
+         */
+        box: [{
+          box: ["border", "content"]
+        }],
+        /**
+         * Display
+         * @see https://tailwindcss.com/docs/display
+         */
+        display: ["block", "inline-block", "inline", "flex", "inline-flex", "table", "inline-table", "table-caption", "table-cell", "table-column", "table-column-group", "table-footer-group", "table-header-group", "table-row-group", "table-row", "flow-root", "grid", "inline-grid", "contents", "list-item", "hidden"],
+        /**
+         * Screen Reader Only
+         * @see https://tailwindcss.com/docs/display#screen-reader-only
+         */
+        sr: ["sr-only", "not-sr-only"],
+        /**
+         * Floats
+         * @see https://tailwindcss.com/docs/float
+         */
+        float: [{
+          float: ["right", "left", "none", "start", "end"]
+        }],
+        /**
+         * Clear
+         * @see https://tailwindcss.com/docs/clear
+         */
+        clear: [{
+          clear: ["left", "right", "both", "none", "start", "end"]
+        }],
+        /**
+         * Isolation
+         * @see https://tailwindcss.com/docs/isolation
+         */
+        isolation: ["isolate", "isolation-auto"],
+        /**
+         * Object Fit
+         * @see https://tailwindcss.com/docs/object-fit
+         */
+        "object-fit": [{
+          object: ["contain", "cover", "fill", "none", "scale-down"]
+        }],
+        /**
+         * Object Position
+         * @see https://tailwindcss.com/docs/object-position
+         */
+        "object-position": [{
+          object: scalePositionWithArbitrary()
+        }],
+        /**
+         * Overflow
+         * @see https://tailwindcss.com/docs/overflow
+         */
+        overflow: [{
+          overflow: scaleOverflow()
+        }],
+        /**
+         * Overflow X
+         * @see https://tailwindcss.com/docs/overflow
+         */
+        "overflow-x": [{
+          "overflow-x": scaleOverflow()
+        }],
+        /**
+         * Overflow Y
+         * @see https://tailwindcss.com/docs/overflow
+         */
+        "overflow-y": [{
+          "overflow-y": scaleOverflow()
+        }],
+        /**
+         * Overscroll Behavior
+         * @see https://tailwindcss.com/docs/overscroll-behavior
+         */
+        overscroll: [{
+          overscroll: scaleOverscroll()
+        }],
+        /**
+         * Overscroll Behavior X
+         * @see https://tailwindcss.com/docs/overscroll-behavior
+         */
+        "overscroll-x": [{
+          "overscroll-x": scaleOverscroll()
+        }],
+        /**
+         * Overscroll Behavior Y
+         * @see https://tailwindcss.com/docs/overscroll-behavior
+         */
+        "overscroll-y": [{
+          "overscroll-y": scaleOverscroll()
+        }],
+        /**
+         * Position
+         * @see https://tailwindcss.com/docs/position
+         */
+        position: ["static", "fixed", "absolute", "relative", "sticky"],
+        /**
+         * Inset
+         * @see https://tailwindcss.com/docs/top-right-bottom-left
+         */
+        inset: [{
+          inset: scaleInset()
+        }],
+        /**
+         * Inset Inline
+         * @see https://tailwindcss.com/docs/top-right-bottom-left
+         */
+        "inset-x": [{
+          "inset-x": scaleInset()
+        }],
+        /**
+         * Inset Block
+         * @see https://tailwindcss.com/docs/top-right-bottom-left
+         */
+        "inset-y": [{
+          "inset-y": scaleInset()
+        }],
+        /**
+         * Inset Inline Start
+         * @see https://tailwindcss.com/docs/top-right-bottom-left
+         * @todo class group will be renamed to `inset-s` in next major release
+         */
+        start: [{
+          "inset-s": scaleInset(),
+          /**
+           * @deprecated since Tailwind CSS v4.2.0 in favor of `inset-s-*` utilities.
+           * @see https://github.com/tailwindlabs/tailwindcss/pull/19613
+           */
+          start: scaleInset()
+        }],
+        /**
+         * Inset Inline End
+         * @see https://tailwindcss.com/docs/top-right-bottom-left
+         * @todo class group will be renamed to `inset-e` in next major release
+         */
+        end: [{
+          "inset-e": scaleInset(),
+          /**
+           * @deprecated since Tailwind CSS v4.2.0 in favor of `inset-e-*` utilities.
+           * @see https://github.com/tailwindlabs/tailwindcss/pull/19613
+           */
+          end: scaleInset()
+        }],
+        /**
+         * Inset Block Start
+         * @see https://tailwindcss.com/docs/top-right-bottom-left
+         */
+        "inset-bs": [{
+          "inset-bs": scaleInset()
+        }],
+        /**
+         * Inset Block End
+         * @see https://tailwindcss.com/docs/top-right-bottom-left
+         */
+        "inset-be": [{
+          "inset-be": scaleInset()
+        }],
+        /**
+         * Top
+         * @see https://tailwindcss.com/docs/top-right-bottom-left
+         */
+        top: [{
+          top: scaleInset()
+        }],
+        /**
+         * Right
+         * @see https://tailwindcss.com/docs/top-right-bottom-left
+         */
+        right: [{
+          right: scaleInset()
+        }],
+        /**
+         * Bottom
+         * @see https://tailwindcss.com/docs/top-right-bottom-left
+         */
+        bottom: [{
+          bottom: scaleInset()
+        }],
+        /**
+         * Left
+         * @see https://tailwindcss.com/docs/top-right-bottom-left
+         */
+        left: [{
+          left: scaleInset()
+        }],
+        /**
+         * Visibility
+         * @see https://tailwindcss.com/docs/visibility
+         */
+        visibility: ["visible", "invisible", "collapse"],
+        /**
+         * Z-Index
+         * @see https://tailwindcss.com/docs/z-index
+         */
+        z: [{
+          z: [isInteger, "auto", isArbitraryVariable, isArbitraryValue]
+        }],
+        // ------------------------
+        // --- Flexbox and Grid ---
+        // ------------------------
+        /**
+         * Flex Basis
+         * @see https://tailwindcss.com/docs/flex-basis
+         */
+        basis: [{
+          basis: [isFraction, "full", "auto", themeContainer, ...scaleUnambiguousSpacing()]
+        }],
+        /**
+         * Flex Direction
+         * @see https://tailwindcss.com/docs/flex-direction
+         */
+        "flex-direction": [{
+          flex: ["row", "row-reverse", "col", "col-reverse"]
+        }],
+        /**
+         * Flex Wrap
+         * @see https://tailwindcss.com/docs/flex-wrap
+         */
+        "flex-wrap": [{
+          flex: ["nowrap", "wrap", "wrap-reverse"]
+        }],
+        /**
+         * Flex
+         * @see https://tailwindcss.com/docs/flex
+         */
+        flex: [{
+          flex: [isNumber, isFraction, "auto", "initial", "none", isArbitraryValue]
+        }],
+        /**
+         * Flex Grow
+         * @see https://tailwindcss.com/docs/flex-grow
+         */
+        grow: [{
+          grow: ["", isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Flex Shrink
+         * @see https://tailwindcss.com/docs/flex-shrink
+         */
+        shrink: [{
+          shrink: ["", isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Order
+         * @see https://tailwindcss.com/docs/order
+         */
+        order: [{
+          order: [isInteger, "first", "last", "none", isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Grid Template Columns
+         * @see https://tailwindcss.com/docs/grid-template-columns
+         */
+        "grid-cols": [{
+          "grid-cols": scaleGridTemplateColsRows()
+        }],
+        /**
+         * Grid Column Start / End
+         * @see https://tailwindcss.com/docs/grid-column
+         */
+        "col-start-end": [{
+          col: scaleGridColRowStartAndEnd()
+        }],
+        /**
+         * Grid Column Start
+         * @see https://tailwindcss.com/docs/grid-column
+         */
+        "col-start": [{
+          "col-start": scaleGridColRowStartOrEnd()
+        }],
+        /**
+         * Grid Column End
+         * @see https://tailwindcss.com/docs/grid-column
+         */
+        "col-end": [{
+          "col-end": scaleGridColRowStartOrEnd()
+        }],
+        /**
+         * Grid Template Rows
+         * @see https://tailwindcss.com/docs/grid-template-rows
+         */
+        "grid-rows": [{
+          "grid-rows": scaleGridTemplateColsRows()
+        }],
+        /**
+         * Grid Row Start / End
+         * @see https://tailwindcss.com/docs/grid-row
+         */
+        "row-start-end": [{
+          row: scaleGridColRowStartAndEnd()
+        }],
+        /**
+         * Grid Row Start
+         * @see https://tailwindcss.com/docs/grid-row
+         */
+        "row-start": [{
+          "row-start": scaleGridColRowStartOrEnd()
+        }],
+        /**
+         * Grid Row End
+         * @see https://tailwindcss.com/docs/grid-row
+         */
+        "row-end": [{
+          "row-end": scaleGridColRowStartOrEnd()
+        }],
+        /**
+         * Grid Auto Flow
+         * @see https://tailwindcss.com/docs/grid-auto-flow
+         */
+        "grid-flow": [{
+          "grid-flow": ["row", "col", "dense", "row-dense", "col-dense"]
+        }],
+        /**
+         * Grid Auto Columns
+         * @see https://tailwindcss.com/docs/grid-auto-columns
+         */
+        "auto-cols": [{
+          "auto-cols": scaleGridAutoColsRows()
+        }],
+        /**
+         * Grid Auto Rows
+         * @see https://tailwindcss.com/docs/grid-auto-rows
+         */
+        "auto-rows": [{
+          "auto-rows": scaleGridAutoColsRows()
+        }],
+        /**
+         * Gap
+         * @see https://tailwindcss.com/docs/gap
+         */
+        gap: [{
+          gap: scaleUnambiguousSpacing()
+        }],
+        /**
+         * Gap X
+         * @see https://tailwindcss.com/docs/gap
+         */
+        "gap-x": [{
+          "gap-x": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Gap Y
+         * @see https://tailwindcss.com/docs/gap
+         */
+        "gap-y": [{
+          "gap-y": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Justify Content
+         * @see https://tailwindcss.com/docs/justify-content
+         */
+        "justify-content": [{
+          justify: [...scaleAlignPrimaryAxis(), "normal"]
+        }],
+        /**
+         * Justify Items
+         * @see https://tailwindcss.com/docs/justify-items
+         */
+        "justify-items": [{
+          "justify-items": [...scaleAlignSecondaryAxis(), "normal"]
+        }],
+        /**
+         * Justify Self
+         * @see https://tailwindcss.com/docs/justify-self
+         */
+        "justify-self": [{
+          "justify-self": ["auto", ...scaleAlignSecondaryAxis()]
+        }],
+        /**
+         * Align Content
+         * @see https://tailwindcss.com/docs/align-content
+         */
+        "align-content": [{
+          content: ["normal", ...scaleAlignPrimaryAxis()]
+        }],
+        /**
+         * Align Items
+         * @see https://tailwindcss.com/docs/align-items
+         */
+        "align-items": [{
+          items: [...scaleAlignSecondaryAxis(), {
+            baseline: ["", "last"]
+          }]
+        }],
+        /**
+         * Align Self
+         * @see https://tailwindcss.com/docs/align-self
+         */
+        "align-self": [{
+          self: ["auto", ...scaleAlignSecondaryAxis(), {
+            baseline: ["", "last"]
+          }]
+        }],
+        /**
+         * Place Content
+         * @see https://tailwindcss.com/docs/place-content
+         */
+        "place-content": [{
+          "place-content": scaleAlignPrimaryAxis()
+        }],
+        /**
+         * Place Items
+         * @see https://tailwindcss.com/docs/place-items
+         */
+        "place-items": [{
+          "place-items": [...scaleAlignSecondaryAxis(), "baseline"]
+        }],
+        /**
+         * Place Self
+         * @see https://tailwindcss.com/docs/place-self
+         */
+        "place-self": [{
+          "place-self": ["auto", ...scaleAlignSecondaryAxis()]
+        }],
+        // Spacing
+        /**
+         * Padding
+         * @see https://tailwindcss.com/docs/padding
+         */
+        p: [{
+          p: scaleUnambiguousSpacing()
+        }],
+        /**
+         * Padding Inline
+         * @see https://tailwindcss.com/docs/padding
+         */
+        px: [{
+          px: scaleUnambiguousSpacing()
+        }],
+        /**
+         * Padding Block
+         * @see https://tailwindcss.com/docs/padding
+         */
+        py: [{
+          py: scaleUnambiguousSpacing()
+        }],
+        /**
+         * Padding Inline Start
+         * @see https://tailwindcss.com/docs/padding
+         */
+        ps: [{
+          ps: scaleUnambiguousSpacing()
+        }],
+        /**
+         * Padding Inline End
+         * @see https://tailwindcss.com/docs/padding
+         */
+        pe: [{
+          pe: scaleUnambiguousSpacing()
+        }],
+        /**
+         * Padding Block Start
+         * @see https://tailwindcss.com/docs/padding
+         */
+        pbs: [{
+          pbs: scaleUnambiguousSpacing()
+        }],
+        /**
+         * Padding Block End
+         * @see https://tailwindcss.com/docs/padding
+         */
+        pbe: [{
+          pbe: scaleUnambiguousSpacing()
+        }],
+        /**
+         * Padding Top
+         * @see https://tailwindcss.com/docs/padding
+         */
+        pt: [{
+          pt: scaleUnambiguousSpacing()
+        }],
+        /**
+         * Padding Right
+         * @see https://tailwindcss.com/docs/padding
+         */
+        pr: [{
+          pr: scaleUnambiguousSpacing()
+        }],
+        /**
+         * Padding Bottom
+         * @see https://tailwindcss.com/docs/padding
+         */
+        pb: [{
+          pb: scaleUnambiguousSpacing()
+        }],
+        /**
+         * Padding Left
+         * @see https://tailwindcss.com/docs/padding
+         */
+        pl: [{
+          pl: scaleUnambiguousSpacing()
+        }],
+        /**
+         * Margin
+         * @see https://tailwindcss.com/docs/margin
+         */
+        m: [{
+          m: scaleMargin()
+        }],
+        /**
+         * Margin Inline
+         * @see https://tailwindcss.com/docs/margin
+         */
+        mx: [{
+          mx: scaleMargin()
+        }],
+        /**
+         * Margin Block
+         * @see https://tailwindcss.com/docs/margin
+         */
+        my: [{
+          my: scaleMargin()
+        }],
+        /**
+         * Margin Inline Start
+         * @see https://tailwindcss.com/docs/margin
+         */
+        ms: [{
+          ms: scaleMargin()
+        }],
+        /**
+         * Margin Inline End
+         * @see https://tailwindcss.com/docs/margin
+         */
+        me: [{
+          me: scaleMargin()
+        }],
+        /**
+         * Margin Block Start
+         * @see https://tailwindcss.com/docs/margin
+         */
+        mbs: [{
+          mbs: scaleMargin()
+        }],
+        /**
+         * Margin Block End
+         * @see https://tailwindcss.com/docs/margin
+         */
+        mbe: [{
+          mbe: scaleMargin()
+        }],
+        /**
+         * Margin Top
+         * @see https://tailwindcss.com/docs/margin
+         */
+        mt: [{
+          mt: scaleMargin()
+        }],
+        /**
+         * Margin Right
+         * @see https://tailwindcss.com/docs/margin
+         */
+        mr: [{
+          mr: scaleMargin()
+        }],
+        /**
+         * Margin Bottom
+         * @see https://tailwindcss.com/docs/margin
+         */
+        mb: [{
+          mb: scaleMargin()
+        }],
+        /**
+         * Margin Left
+         * @see https://tailwindcss.com/docs/margin
+         */
+        ml: [{
+          ml: scaleMargin()
+        }],
+        /**
+         * Space Between X
+         * @see https://tailwindcss.com/docs/margin#adding-space-between-children
+         */
+        "space-x": [{
+          "space-x": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Space Between X Reverse
+         * @see https://tailwindcss.com/docs/margin#adding-space-between-children
+         */
+        "space-x-reverse": ["space-x-reverse"],
+        /**
+         * Space Between Y
+         * @see https://tailwindcss.com/docs/margin#adding-space-between-children
+         */
+        "space-y": [{
+          "space-y": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Space Between Y Reverse
+         * @see https://tailwindcss.com/docs/margin#adding-space-between-children
+         */
+        "space-y-reverse": ["space-y-reverse"],
+        // --------------
+        // --- Sizing ---
+        // --------------
+        /**
+         * Size
+         * @see https://tailwindcss.com/docs/width#setting-both-width-and-height
+         */
+        size: [{
+          size: scaleSizing()
+        }],
+        /**
+         * Inline Size
+         * @see https://tailwindcss.com/docs/inline-size
+         */
+        "inline-size": [{
+          inline: ["auto", ...scaleSizingInline()]
+        }],
+        /**
+         * Min-Inline Size
+         * @see https://tailwindcss.com/docs/min-inline-size
+         */
+        "min-inline-size": [{
+          "min-inline": ["auto", ...scaleSizingInline()]
+        }],
+        /**
+         * Max-Inline Size
+         * @see https://tailwindcss.com/docs/max-inline-size
+         */
+        "max-inline-size": [{
+          "max-inline": ["none", ...scaleSizingInline()]
+        }],
+        /**
+         * Block Size
+         * @see https://tailwindcss.com/docs/block-size
+         */
+        "block-size": [{
+          block: ["auto", ...scaleSizingBlock()]
+        }],
+        /**
+         * Min-Block Size
+         * @see https://tailwindcss.com/docs/min-block-size
+         */
+        "min-block-size": [{
+          "min-block": ["auto", ...scaleSizingBlock()]
+        }],
+        /**
+         * Max-Block Size
+         * @see https://tailwindcss.com/docs/max-block-size
+         */
+        "max-block-size": [{
+          "max-block": ["none", ...scaleSizingBlock()]
+        }],
+        /**
+         * Width
+         * @see https://tailwindcss.com/docs/width
+         */
+        w: [{
+          w: [themeContainer, "screen", ...scaleSizing()]
+        }],
+        /**
+         * Min-Width
+         * @see https://tailwindcss.com/docs/min-width
+         */
+        "min-w": [{
+          "min-w": [
+            themeContainer,
+            "screen",
+            /** Deprecated. @see https://github.com/tailwindlabs/tailwindcss.com/issues/2027#issuecomment-2620152757 */
+            "none",
+            ...scaleSizing()
+          ]
+        }],
+        /**
+         * Max-Width
+         * @see https://tailwindcss.com/docs/max-width
+         */
+        "max-w": [{
+          "max-w": [
+            themeContainer,
+            "screen",
+            "none",
+            /** Deprecated since Tailwind CSS v4.0.0. @see https://github.com/tailwindlabs/tailwindcss.com/issues/2027#issuecomment-2620152757 */
+            "prose",
+            /** Deprecated since Tailwind CSS v4.0.0. @see https://github.com/tailwindlabs/tailwindcss.com/issues/2027#issuecomment-2620152757 */
+            {
+              screen: [themeBreakpoint]
+            },
+            ...scaleSizing()
+          ]
+        }],
+        /**
+         * Height
+         * @see https://tailwindcss.com/docs/height
+         */
+        h: [{
+          h: ["screen", "lh", ...scaleSizing()]
+        }],
+        /**
+         * Min-Height
+         * @see https://tailwindcss.com/docs/min-height
+         */
+        "min-h": [{
+          "min-h": ["screen", "lh", "none", ...scaleSizing()]
+        }],
+        /**
+         * Max-Height
+         * @see https://tailwindcss.com/docs/max-height
+         */
+        "max-h": [{
+          "max-h": ["screen", "lh", "none", ...scaleSizing()]
+        }],
+        // ------------------
+        // --- Typography ---
+        // ------------------
+        /**
+         * Font Size
+         * @see https://tailwindcss.com/docs/font-size
+         */
+        "font-size": [{
+          text: ["base", themeText, isArbitraryVariableLength, isArbitraryLength]
+        }],
+        /**
+         * Font Smoothing
+         * @see https://tailwindcss.com/docs/font-smoothing
+         */
+        "font-smoothing": ["antialiased", "subpixel-antialiased"],
+        /**
+         * Font Style
+         * @see https://tailwindcss.com/docs/font-style
+         */
+        "font-style": ["italic", "not-italic"],
+        /**
+         * Font Weight
+         * @see https://tailwindcss.com/docs/font-weight
+         */
+        "font-weight": [{
+          font: [themeFontWeight, isArbitraryVariableWeight, isArbitraryWeight]
+        }],
+        /**
+         * Font Stretch
+         * @see https://tailwindcss.com/docs/font-stretch
+         */
+        "font-stretch": [{
+          "font-stretch": ["ultra-condensed", "extra-condensed", "condensed", "semi-condensed", "normal", "semi-expanded", "expanded", "extra-expanded", "ultra-expanded", isPercent, isArbitraryValue]
+        }],
+        /**
+         * Font Family
+         * @see https://tailwindcss.com/docs/font-family
+         */
+        "font-family": [{
+          font: [isArbitraryVariableFamilyName, isArbitraryFamilyName, themeFont]
+        }],
+        /**
+         * Font Feature Settings
+         * @see https://tailwindcss.com/docs/font-feature-settings
+         */
+        "font-features": [{
+          "font-features": [isArbitraryValue]
+        }],
+        /**
+         * Font Variant Numeric
+         * @see https://tailwindcss.com/docs/font-variant-numeric
+         */
+        "fvn-normal": ["normal-nums"],
+        /**
+         * Font Variant Numeric
+         * @see https://tailwindcss.com/docs/font-variant-numeric
+         */
+        "fvn-ordinal": ["ordinal"],
+        /**
+         * Font Variant Numeric
+         * @see https://tailwindcss.com/docs/font-variant-numeric
+         */
+        "fvn-slashed-zero": ["slashed-zero"],
+        /**
+         * Font Variant Numeric
+         * @see https://tailwindcss.com/docs/font-variant-numeric
+         */
+        "fvn-figure": ["lining-nums", "oldstyle-nums"],
+        /**
+         * Font Variant Numeric
+         * @see https://tailwindcss.com/docs/font-variant-numeric
+         */
+        "fvn-spacing": ["proportional-nums", "tabular-nums"],
+        /**
+         * Font Variant Numeric
+         * @see https://tailwindcss.com/docs/font-variant-numeric
+         */
+        "fvn-fraction": ["diagonal-fractions", "stacked-fractions"],
+        /**
+         * Letter Spacing
+         * @see https://tailwindcss.com/docs/letter-spacing
+         */
+        tracking: [{
+          tracking: [themeTracking, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Line Clamp
+         * @see https://tailwindcss.com/docs/line-clamp
+         */
+        "line-clamp": [{
+          "line-clamp": [isNumber, "none", isArbitraryVariable, isArbitraryNumber]
+        }],
+        /**
+         * Line Height
+         * @see https://tailwindcss.com/docs/line-height
+         */
+        leading: [{
+          leading: [
+            "none",
+            /** Deprecated since Tailwind CSS v4.0.0. @see https://github.com/tailwindlabs/tailwindcss.com/issues/2027#issuecomment-2620152757 */
+            themeLeading,
+            ...scaleUnambiguousSpacing()
+          ]
+        }],
+        /**
+         * List Style Image
+         * @see https://tailwindcss.com/docs/list-style-image
+         */
+        "list-image": [{
+          "list-image": ["none", isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * List Style Position
+         * @see https://tailwindcss.com/docs/list-style-position
+         */
+        "list-style-position": [{
+          list: ["inside", "outside"]
+        }],
+        /**
+         * List Style Type
+         * @see https://tailwindcss.com/docs/list-style-type
+         */
+        "list-style-type": [{
+          list: ["disc", "decimal", "none", isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Text Alignment
+         * @see https://tailwindcss.com/docs/text-align
+         */
+        "text-alignment": [{
+          text: ["left", "center", "right", "justify", "start", "end"]
+        }],
+        /**
+         * Placeholder Color
+         * @deprecated since Tailwind CSS v3.0.0
+         * @see https://v3.tailwindcss.com/docs/placeholder-color
+         */
+        "placeholder-color": [{
+          placeholder: scaleColor()
+        }],
+        /**
+         * Text Color
+         * @see https://tailwindcss.com/docs/text-color
+         */
+        "text-color": [{
+          text: scaleColor()
+        }],
+        /**
+         * Text Decoration
+         * @see https://tailwindcss.com/docs/text-decoration
+         */
+        "text-decoration": ["underline", "overline", "line-through", "no-underline"],
+        /**
+         * Text Decoration Style
+         * @see https://tailwindcss.com/docs/text-decoration-style
+         */
+        "text-decoration-style": [{
+          decoration: [...scaleLineStyle(), "wavy"]
+        }],
+        /**
+         * Text Decoration Thickness
+         * @see https://tailwindcss.com/docs/text-decoration-thickness
+         */
+        "text-decoration-thickness": [{
+          decoration: [isNumber, "from-font", "auto", isArbitraryVariable, isArbitraryLength]
+        }],
+        /**
+         * Text Decoration Color
+         * @see https://tailwindcss.com/docs/text-decoration-color
+         */
+        "text-decoration-color": [{
+          decoration: scaleColor()
+        }],
+        /**
+         * Text Underline Offset
+         * @see https://tailwindcss.com/docs/text-underline-offset
+         */
+        "underline-offset": [{
+          "underline-offset": [isNumber, "auto", isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Text Transform
+         * @see https://tailwindcss.com/docs/text-transform
+         */
+        "text-transform": ["uppercase", "lowercase", "capitalize", "normal-case"],
+        /**
+         * Text Overflow
+         * @see https://tailwindcss.com/docs/text-overflow
+         */
+        "text-overflow": ["truncate", "text-ellipsis", "text-clip"],
+        /**
+         * Text Wrap
+         * @see https://tailwindcss.com/docs/text-wrap
+         */
+        "text-wrap": [{
+          text: ["wrap", "nowrap", "balance", "pretty"]
+        }],
+        /**
+         * Text Indent
+         * @see https://tailwindcss.com/docs/text-indent
+         */
+        indent: [{
+          indent: scaleUnambiguousSpacing()
+        }],
+        /**
+         * Tab Size
+         * @see https://tailwindcss.com/docs/tab-size
+         */
+        "tab-size": [{
+          tab: [isInteger, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Vertical Alignment
+         * @see https://tailwindcss.com/docs/vertical-align
+         */
+        "vertical-align": [{
+          align: ["baseline", "top", "middle", "bottom", "text-top", "text-bottom", "sub", "super", isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Whitespace
+         * @see https://tailwindcss.com/docs/whitespace
+         */
+        whitespace: [{
+          whitespace: ["normal", "nowrap", "pre", "pre-line", "pre-wrap", "break-spaces"]
+        }],
+        /**
+         * Word Break
+         * @see https://tailwindcss.com/docs/word-break
+         */
+        break: [{
+          break: ["normal", "words", "all", "keep"]
+        }],
+        /**
+         * Overflow Wrap
+         * @see https://tailwindcss.com/docs/overflow-wrap
+         */
+        wrap: [{
+          wrap: ["break-word", "anywhere", "normal"]
+        }],
+        /**
+         * Hyphens
+         * @see https://tailwindcss.com/docs/hyphens
+         */
+        hyphens: [{
+          hyphens: ["none", "manual", "auto"]
+        }],
+        /**
+         * Content
+         * @see https://tailwindcss.com/docs/content
+         */
+        content: [{
+          content: ["none", isArbitraryVariable, isArbitraryValue]
+        }],
+        // -------------------
+        // --- Backgrounds ---
+        // -------------------
+        /**
+         * Background Attachment
+         * @see https://tailwindcss.com/docs/background-attachment
+         */
+        "bg-attachment": [{
+          bg: ["fixed", "local", "scroll"]
+        }],
+        /**
+         * Background Clip
+         * @see https://tailwindcss.com/docs/background-clip
+         */
+        "bg-clip": [{
+          "bg-clip": ["border", "padding", "content", "text"]
+        }],
+        /**
+         * Background Origin
+         * @see https://tailwindcss.com/docs/background-origin
+         */
+        "bg-origin": [{
+          "bg-origin": ["border", "padding", "content"]
+        }],
+        /**
+         * Background Position
+         * @see https://tailwindcss.com/docs/background-position
+         */
+        "bg-position": [{
+          bg: scaleBgPosition()
+        }],
+        /**
+         * Background Repeat
+         * @see https://tailwindcss.com/docs/background-repeat
+         */
+        "bg-repeat": [{
+          bg: scaleBgRepeat()
+        }],
+        /**
+         * Background Size
+         * @see https://tailwindcss.com/docs/background-size
+         */
+        "bg-size": [{
+          bg: scaleBgSize()
+        }],
+        /**
+         * Background Image
+         * @see https://tailwindcss.com/docs/background-image
+         */
+        "bg-image": [{
+          bg: ["none", {
+            linear: [{
+              to: ["t", "tr", "r", "br", "b", "bl", "l", "tl"]
+            }, isInteger, isArbitraryVariable, isArbitraryValue],
+            radial: ["", isArbitraryVariable, isArbitraryValue],
+            conic: ["", isInteger, isArbitraryVariable, isArbitraryValue]
+          }, isArbitraryVariableImage, isArbitraryImage]
+        }],
+        /**
+         * Background Color
+         * @see https://tailwindcss.com/docs/background-color
+         */
+        "bg-color": [{
+          bg: scaleColor()
+        }],
+        /**
+         * Gradient Color Stops From Position
+         * @see https://tailwindcss.com/docs/gradient-color-stops
+         */
+        "gradient-from-pos": [{
+          from: scaleGradientStopPosition()
+        }],
+        /**
+         * Gradient Color Stops Via Position
+         * @see https://tailwindcss.com/docs/gradient-color-stops
+         */
+        "gradient-via-pos": [{
+          via: scaleGradientStopPosition()
+        }],
+        /**
+         * Gradient Color Stops To Position
+         * @see https://tailwindcss.com/docs/gradient-color-stops
+         */
+        "gradient-to-pos": [{
+          to: scaleGradientStopPosition()
+        }],
+        /**
+         * Gradient Color Stops From
+         * @see https://tailwindcss.com/docs/gradient-color-stops
+         */
+        "gradient-from": [{
+          from: scaleColor()
+        }],
+        /**
+         * Gradient Color Stops Via
+         * @see https://tailwindcss.com/docs/gradient-color-stops
+         */
+        "gradient-via": [{
+          via: scaleColor()
+        }],
+        /**
+         * Gradient Color Stops To
+         * @see https://tailwindcss.com/docs/gradient-color-stops
+         */
+        "gradient-to": [{
+          to: scaleColor()
+        }],
+        // ---------------
+        // --- Borders ---
+        // ---------------
+        /**
+         * Border Radius
+         * @see https://tailwindcss.com/docs/border-radius
+         */
+        rounded: [{
+          rounded: scaleRadius()
+        }],
+        /**
+         * Border Radius Start
+         * @see https://tailwindcss.com/docs/border-radius
+         */
+        "rounded-s": [{
+          "rounded-s": scaleRadius()
+        }],
+        /**
+         * Border Radius End
+         * @see https://tailwindcss.com/docs/border-radius
+         */
+        "rounded-e": [{
+          "rounded-e": scaleRadius()
+        }],
+        /**
+         * Border Radius Top
+         * @see https://tailwindcss.com/docs/border-radius
+         */
+        "rounded-t": [{
+          "rounded-t": scaleRadius()
+        }],
+        /**
+         * Border Radius Right
+         * @see https://tailwindcss.com/docs/border-radius
+         */
+        "rounded-r": [{
+          "rounded-r": scaleRadius()
+        }],
+        /**
+         * Border Radius Bottom
+         * @see https://tailwindcss.com/docs/border-radius
+         */
+        "rounded-b": [{
+          "rounded-b": scaleRadius()
+        }],
+        /**
+         * Border Radius Left
+         * @see https://tailwindcss.com/docs/border-radius
+         */
+        "rounded-l": [{
+          "rounded-l": scaleRadius()
+        }],
+        /**
+         * Border Radius Start Start
+         * @see https://tailwindcss.com/docs/border-radius
+         */
+        "rounded-ss": [{
+          "rounded-ss": scaleRadius()
+        }],
+        /**
+         * Border Radius Start End
+         * @see https://tailwindcss.com/docs/border-radius
+         */
+        "rounded-se": [{
+          "rounded-se": scaleRadius()
+        }],
+        /**
+         * Border Radius End End
+         * @see https://tailwindcss.com/docs/border-radius
+         */
+        "rounded-ee": [{
+          "rounded-ee": scaleRadius()
+        }],
+        /**
+         * Border Radius End Start
+         * @see https://tailwindcss.com/docs/border-radius
+         */
+        "rounded-es": [{
+          "rounded-es": scaleRadius()
+        }],
+        /**
+         * Border Radius Top Left
+         * @see https://tailwindcss.com/docs/border-radius
+         */
+        "rounded-tl": [{
+          "rounded-tl": scaleRadius()
+        }],
+        /**
+         * Border Radius Top Right
+         * @see https://tailwindcss.com/docs/border-radius
+         */
+        "rounded-tr": [{
+          "rounded-tr": scaleRadius()
+        }],
+        /**
+         * Border Radius Bottom Right
+         * @see https://tailwindcss.com/docs/border-radius
+         */
+        "rounded-br": [{
+          "rounded-br": scaleRadius()
+        }],
+        /**
+         * Border Radius Bottom Left
+         * @see https://tailwindcss.com/docs/border-radius
+         */
+        "rounded-bl": [{
+          "rounded-bl": scaleRadius()
+        }],
+        /**
+         * Border Width
+         * @see https://tailwindcss.com/docs/border-width
+         */
+        "border-w": [{
+          border: scaleBorderWidth()
+        }],
+        /**
+         * Border Width Inline
+         * @see https://tailwindcss.com/docs/border-width
+         */
+        "border-w-x": [{
+          "border-x": scaleBorderWidth()
+        }],
+        /**
+         * Border Width Block
+         * @see https://tailwindcss.com/docs/border-width
+         */
+        "border-w-y": [{
+          "border-y": scaleBorderWidth()
+        }],
+        /**
+         * Border Width Inline Start
+         * @see https://tailwindcss.com/docs/border-width
+         */
+        "border-w-s": [{
+          "border-s": scaleBorderWidth()
+        }],
+        /**
+         * Border Width Inline End
+         * @see https://tailwindcss.com/docs/border-width
+         */
+        "border-w-e": [{
+          "border-e": scaleBorderWidth()
+        }],
+        /**
+         * Border Width Block Start
+         * @see https://tailwindcss.com/docs/border-width
+         */
+        "border-w-bs": [{
+          "border-bs": scaleBorderWidth()
+        }],
+        /**
+         * Border Width Block End
+         * @see https://tailwindcss.com/docs/border-width
+         */
+        "border-w-be": [{
+          "border-be": scaleBorderWidth()
+        }],
+        /**
+         * Border Width Top
+         * @see https://tailwindcss.com/docs/border-width
+         */
+        "border-w-t": [{
+          "border-t": scaleBorderWidth()
+        }],
+        /**
+         * Border Width Right
+         * @see https://tailwindcss.com/docs/border-width
+         */
+        "border-w-r": [{
+          "border-r": scaleBorderWidth()
+        }],
+        /**
+         * Border Width Bottom
+         * @see https://tailwindcss.com/docs/border-width
+         */
+        "border-w-b": [{
+          "border-b": scaleBorderWidth()
+        }],
+        /**
+         * Border Width Left
+         * @see https://tailwindcss.com/docs/border-width
+         */
+        "border-w-l": [{
+          "border-l": scaleBorderWidth()
+        }],
+        /**
+         * Divide Width X
+         * @see https://tailwindcss.com/docs/border-width#between-children
+         */
+        "divide-x": [{
+          "divide-x": scaleBorderWidth()
+        }],
+        /**
+         * Divide Width X Reverse
+         * @see https://tailwindcss.com/docs/border-width#between-children
+         */
+        "divide-x-reverse": ["divide-x-reverse"],
+        /**
+         * Divide Width Y
+         * @see https://tailwindcss.com/docs/border-width#between-children
+         */
+        "divide-y": [{
+          "divide-y": scaleBorderWidth()
+        }],
+        /**
+         * Divide Width Y Reverse
+         * @see https://tailwindcss.com/docs/border-width#between-children
+         */
+        "divide-y-reverse": ["divide-y-reverse"],
+        /**
+         * Border Style
+         * @see https://tailwindcss.com/docs/border-style
+         */
+        "border-style": [{
+          border: [...scaleLineStyle(), "hidden", "none"]
+        }],
+        /**
+         * Divide Style
+         * @see https://tailwindcss.com/docs/border-style#setting-the-divider-style
+         */
+        "divide-style": [{
+          divide: [...scaleLineStyle(), "hidden", "none"]
+        }],
+        /**
+         * Border Color
+         * @see https://tailwindcss.com/docs/border-color
+         */
+        "border-color": [{
+          border: scaleColor()
+        }],
+        /**
+         * Border Color Inline
+         * @see https://tailwindcss.com/docs/border-color
+         */
+        "border-color-x": [{
+          "border-x": scaleColor()
+        }],
+        /**
+         * Border Color Block
+         * @see https://tailwindcss.com/docs/border-color
+         */
+        "border-color-y": [{
+          "border-y": scaleColor()
+        }],
+        /**
+         * Border Color Inline Start
+         * @see https://tailwindcss.com/docs/border-color
+         */
+        "border-color-s": [{
+          "border-s": scaleColor()
+        }],
+        /**
+         * Border Color Inline End
+         * @see https://tailwindcss.com/docs/border-color
+         */
+        "border-color-e": [{
+          "border-e": scaleColor()
+        }],
+        /**
+         * Border Color Block Start
+         * @see https://tailwindcss.com/docs/border-color
+         */
+        "border-color-bs": [{
+          "border-bs": scaleColor()
+        }],
+        /**
+         * Border Color Block End
+         * @see https://tailwindcss.com/docs/border-color
+         */
+        "border-color-be": [{
+          "border-be": scaleColor()
+        }],
+        /**
+         * Border Color Top
+         * @see https://tailwindcss.com/docs/border-color
+         */
+        "border-color-t": [{
+          "border-t": scaleColor()
+        }],
+        /**
+         * Border Color Right
+         * @see https://tailwindcss.com/docs/border-color
+         */
+        "border-color-r": [{
+          "border-r": scaleColor()
+        }],
+        /**
+         * Border Color Bottom
+         * @see https://tailwindcss.com/docs/border-color
+         */
+        "border-color-b": [{
+          "border-b": scaleColor()
+        }],
+        /**
+         * Border Color Left
+         * @see https://tailwindcss.com/docs/border-color
+         */
+        "border-color-l": [{
+          "border-l": scaleColor()
+        }],
+        /**
+         * Divide Color
+         * @see https://tailwindcss.com/docs/divide-color
+         */
+        "divide-color": [{
+          divide: scaleColor()
+        }],
+        /**
+         * Outline Style
+         * @see https://tailwindcss.com/docs/outline-style
+         */
+        "outline-style": [{
+          outline: [...scaleLineStyle(), "none", "hidden"]
+        }],
+        /**
+         * Outline Offset
+         * @see https://tailwindcss.com/docs/outline-offset
+         */
+        "outline-offset": [{
+          "outline-offset": [isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Outline Width
+         * @see https://tailwindcss.com/docs/outline-width
+         */
+        "outline-w": [{
+          outline: ["", isNumber, isArbitraryVariableLength, isArbitraryLength]
+        }],
+        /**
+         * Outline Color
+         * @see https://tailwindcss.com/docs/outline-color
+         */
+        "outline-color": [{
+          outline: scaleColor()
+        }],
+        // ---------------
+        // --- Effects ---
+        // ---------------
+        /**
+         * Box Shadow
+         * @see https://tailwindcss.com/docs/box-shadow
+         */
+        shadow: [{
+          shadow: [
+            // Deprecated since Tailwind CSS v4.0.0
+            "",
+            // Deprecated since Tailwind CSS v4.0.0
+            "inner",
+            "none",
+            themeShadow,
+            isArbitraryVariableShadow,
+            isArbitraryShadow
+          ]
+        }],
+        /**
+         * Box Shadow Color
+         * @see https://tailwindcss.com/docs/box-shadow#setting-the-shadow-color
+         */
+        "shadow-color": [{
+          shadow: scaleColor()
+        }],
+        /**
+         * Inset Box Shadow
+         * @see https://tailwindcss.com/docs/box-shadow#adding-an-inset-shadow
+         */
+        "inset-shadow": [{
+          "inset-shadow": ["none", themeInsetShadow, isArbitraryVariableShadow, isArbitraryShadow]
+        }],
+        /**
+         * Inset Box Shadow Color
+         * @see https://tailwindcss.com/docs/box-shadow#setting-the-inset-shadow-color
+         */
+        "inset-shadow-color": [{
+          "inset-shadow": scaleColor()
+        }],
+        /**
+         * Ring Width
+         * @see https://tailwindcss.com/docs/box-shadow#adding-a-ring
+         */
+        "ring-w": [{
+          ring: scaleBorderWidth()
+        }],
+        /**
+         * Ring Width Inset
+         * @see https://v3.tailwindcss.com/docs/ring-width#inset-rings
+         * @deprecated since Tailwind CSS v4.0.0
+         * @see https://github.com/tailwindlabs/tailwindcss/blob/v4.0.0/packages/tailwindcss/src/utilities.ts#L4158
+         */
+        "ring-w-inset": ["ring-inset"],
+        /**
+         * Ring Color
+         * @see https://tailwindcss.com/docs/box-shadow#setting-the-ring-color
+         */
+        "ring-color": [{
+          ring: scaleColor()
+        }],
+        /**
+         * Ring Offset Width
+         * @see https://v3.tailwindcss.com/docs/ring-offset-width
+         * @deprecated since Tailwind CSS v4.0.0
+         * @see https://github.com/tailwindlabs/tailwindcss/blob/v4.0.0/packages/tailwindcss/src/utilities.ts#L4158
+         */
+        "ring-offset-w": [{
+          "ring-offset": [isNumber, isArbitraryLength]
+        }],
+        /**
+         * Ring Offset Color
+         * @see https://v3.tailwindcss.com/docs/ring-offset-color
+         * @deprecated since Tailwind CSS v4.0.0
+         * @see https://github.com/tailwindlabs/tailwindcss/blob/v4.0.0/packages/tailwindcss/src/utilities.ts#L4158
+         */
+        "ring-offset-color": [{
+          "ring-offset": scaleColor()
+        }],
+        /**
+         * Inset Ring Width
+         * @see https://tailwindcss.com/docs/box-shadow#adding-an-inset-ring
+         */
+        "inset-ring-w": [{
+          "inset-ring": scaleBorderWidth()
+        }],
+        /**
+         * Inset Ring Color
+         * @see https://tailwindcss.com/docs/box-shadow#setting-the-inset-ring-color
+         */
+        "inset-ring-color": [{
+          "inset-ring": scaleColor()
+        }],
+        /**
+         * Text Shadow
+         * @see https://tailwindcss.com/docs/text-shadow
+         */
+        "text-shadow": [{
+          "text-shadow": ["none", themeTextShadow, isArbitraryVariableShadow, isArbitraryShadow]
+        }],
+        /**
+         * Text Shadow Color
+         * @see https://tailwindcss.com/docs/text-shadow#setting-the-shadow-color
+         */
+        "text-shadow-color": [{
+          "text-shadow": scaleColor()
+        }],
+        /**
+         * Opacity
+         * @see https://tailwindcss.com/docs/opacity
+         */
+        opacity: [{
+          opacity: [isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Mix Blend Mode
+         * @see https://tailwindcss.com/docs/mix-blend-mode
+         */
+        "mix-blend": [{
+          "mix-blend": [...scaleBlendMode(), "plus-darker", "plus-lighter"]
+        }],
+        /**
+         * Background Blend Mode
+         * @see https://tailwindcss.com/docs/background-blend-mode
+         */
+        "bg-blend": [{
+          "bg-blend": scaleBlendMode()
+        }],
+        /**
+         * Mask Clip
+         * @see https://tailwindcss.com/docs/mask-clip
+         */
+        "mask-clip": [{
+          "mask-clip": ["border", "padding", "content", "fill", "stroke", "view"]
+        }, "mask-no-clip"],
+        /**
+         * Mask Composite
+         * @see https://tailwindcss.com/docs/mask-composite
+         */
+        "mask-composite": [{
+          mask: ["add", "subtract", "intersect", "exclude"]
+        }],
+        /**
+         * Mask Image
+         * @see https://tailwindcss.com/docs/mask-image
+         */
+        "mask-image-linear-pos": [{
+          "mask-linear": [isNumber]
+        }],
+        "mask-image-linear-from-pos": [{
+          "mask-linear-from": scaleMaskImagePosition()
+        }],
+        "mask-image-linear-to-pos": [{
+          "mask-linear-to": scaleMaskImagePosition()
+        }],
+        "mask-image-linear-from-color": [{
+          "mask-linear-from": scaleColor()
+        }],
+        "mask-image-linear-to-color": [{
+          "mask-linear-to": scaleColor()
+        }],
+        "mask-image-t-from-pos": [{
+          "mask-t-from": scaleMaskImagePosition()
+        }],
+        "mask-image-t-to-pos": [{
+          "mask-t-to": scaleMaskImagePosition()
+        }],
+        "mask-image-t-from-color": [{
+          "mask-t-from": scaleColor()
+        }],
+        "mask-image-t-to-color": [{
+          "mask-t-to": scaleColor()
+        }],
+        "mask-image-r-from-pos": [{
+          "mask-r-from": scaleMaskImagePosition()
+        }],
+        "mask-image-r-to-pos": [{
+          "mask-r-to": scaleMaskImagePosition()
+        }],
+        "mask-image-r-from-color": [{
+          "mask-r-from": scaleColor()
+        }],
+        "mask-image-r-to-color": [{
+          "mask-r-to": scaleColor()
+        }],
+        "mask-image-b-from-pos": [{
+          "mask-b-from": scaleMaskImagePosition()
+        }],
+        "mask-image-b-to-pos": [{
+          "mask-b-to": scaleMaskImagePosition()
+        }],
+        "mask-image-b-from-color": [{
+          "mask-b-from": scaleColor()
+        }],
+        "mask-image-b-to-color": [{
+          "mask-b-to": scaleColor()
+        }],
+        "mask-image-l-from-pos": [{
+          "mask-l-from": scaleMaskImagePosition()
+        }],
+        "mask-image-l-to-pos": [{
+          "mask-l-to": scaleMaskImagePosition()
+        }],
+        "mask-image-l-from-color": [{
+          "mask-l-from": scaleColor()
+        }],
+        "mask-image-l-to-color": [{
+          "mask-l-to": scaleColor()
+        }],
+        "mask-image-x-from-pos": [{
+          "mask-x-from": scaleMaskImagePosition()
+        }],
+        "mask-image-x-to-pos": [{
+          "mask-x-to": scaleMaskImagePosition()
+        }],
+        "mask-image-x-from-color": [{
+          "mask-x-from": scaleColor()
+        }],
+        "mask-image-x-to-color": [{
+          "mask-x-to": scaleColor()
+        }],
+        "mask-image-y-from-pos": [{
+          "mask-y-from": scaleMaskImagePosition()
+        }],
+        "mask-image-y-to-pos": [{
+          "mask-y-to": scaleMaskImagePosition()
+        }],
+        "mask-image-y-from-color": [{
+          "mask-y-from": scaleColor()
+        }],
+        "mask-image-y-to-color": [{
+          "mask-y-to": scaleColor()
+        }],
+        "mask-image-radial": [{
+          "mask-radial": [isArbitraryVariable, isArbitraryValue]
+        }],
+        "mask-image-radial-from-pos": [{
+          "mask-radial-from": scaleMaskImagePosition()
+        }],
+        "mask-image-radial-to-pos": [{
+          "mask-radial-to": scaleMaskImagePosition()
+        }],
+        "mask-image-radial-from-color": [{
+          "mask-radial-from": scaleColor()
+        }],
+        "mask-image-radial-to-color": [{
+          "mask-radial-to": scaleColor()
+        }],
+        "mask-image-radial-shape": [{
+          "mask-radial": ["circle", "ellipse"]
+        }],
+        "mask-image-radial-size": [{
+          "mask-radial": [{
+            closest: ["side", "corner"],
+            farthest: ["side", "corner"]
+          }]
+        }],
+        "mask-image-radial-pos": [{
+          "mask-radial-at": scalePosition()
+        }],
+        "mask-image-conic-pos": [{
+          "mask-conic": [isNumber]
+        }],
+        "mask-image-conic-from-pos": [{
+          "mask-conic-from": scaleMaskImagePosition()
+        }],
+        "mask-image-conic-to-pos": [{
+          "mask-conic-to": scaleMaskImagePosition()
+        }],
+        "mask-image-conic-from-color": [{
+          "mask-conic-from": scaleColor()
+        }],
+        "mask-image-conic-to-color": [{
+          "mask-conic-to": scaleColor()
+        }],
+        /**
+         * Mask Mode
+         * @see https://tailwindcss.com/docs/mask-mode
+         */
+        "mask-mode": [{
+          mask: ["alpha", "luminance", "match"]
+        }],
+        /**
+         * Mask Origin
+         * @see https://tailwindcss.com/docs/mask-origin
+         */
+        "mask-origin": [{
+          "mask-origin": ["border", "padding", "content", "fill", "stroke", "view"]
+        }],
+        /**
+         * Mask Position
+         * @see https://tailwindcss.com/docs/mask-position
+         */
+        "mask-position": [{
+          mask: scaleBgPosition()
+        }],
+        /**
+         * Mask Repeat
+         * @see https://tailwindcss.com/docs/mask-repeat
+         */
+        "mask-repeat": [{
+          mask: scaleBgRepeat()
+        }],
+        /**
+         * Mask Size
+         * @see https://tailwindcss.com/docs/mask-size
+         */
+        "mask-size": [{
+          mask: scaleBgSize()
+        }],
+        /**
+         * Mask Type
+         * @see https://tailwindcss.com/docs/mask-type
+         */
+        "mask-type": [{
+          "mask-type": ["alpha", "luminance"]
+        }],
+        /**
+         * Mask Image
+         * @see https://tailwindcss.com/docs/mask-image
+         */
+        "mask-image": [{
+          mask: ["none", isArbitraryVariable, isArbitraryValue]
+        }],
+        // ---------------
+        // --- Filters ---
+        // ---------------
+        /**
+         * Filter
+         * @see https://tailwindcss.com/docs/filter
+         */
+        filter: [{
+          filter: [
+            // Deprecated since Tailwind CSS v3.0.0
+            "",
+            "none",
+            isArbitraryVariable,
+            isArbitraryValue
+          ]
+        }],
+        /**
+         * Blur
+         * @see https://tailwindcss.com/docs/blur
+         */
+        blur: [{
+          blur: scaleBlur()
+        }],
+        /**
+         * Brightness
+         * @see https://tailwindcss.com/docs/brightness
+         */
+        brightness: [{
+          brightness: [isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Contrast
+         * @see https://tailwindcss.com/docs/contrast
+         */
+        contrast: [{
+          contrast: [isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Drop Shadow
+         * @see https://tailwindcss.com/docs/drop-shadow
+         */
+        "drop-shadow": [{
+          "drop-shadow": [
+            // Deprecated since Tailwind CSS v4.0.0
+            "",
+            "none",
+            themeDropShadow,
+            isArbitraryVariableShadow,
+            isArbitraryShadow
+          ]
+        }],
+        /**
+         * Drop Shadow Color
+         * @see https://tailwindcss.com/docs/filter-drop-shadow#setting-the-shadow-color
+         */
+        "drop-shadow-color": [{
+          "drop-shadow": scaleColor()
+        }],
+        /**
+         * Grayscale
+         * @see https://tailwindcss.com/docs/grayscale
+         */
+        grayscale: [{
+          grayscale: ["", isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Hue Rotate
+         * @see https://tailwindcss.com/docs/hue-rotate
+         */
+        "hue-rotate": [{
+          "hue-rotate": [isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Invert
+         * @see https://tailwindcss.com/docs/invert
+         */
+        invert: [{
+          invert: ["", isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Saturate
+         * @see https://tailwindcss.com/docs/saturate
+         */
+        saturate: [{
+          saturate: [isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Sepia
+         * @see https://tailwindcss.com/docs/sepia
+         */
+        sepia: [{
+          sepia: ["", isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Backdrop Filter
+         * @see https://tailwindcss.com/docs/backdrop-filter
+         */
+        "backdrop-filter": [{
+          "backdrop-filter": [
+            // Deprecated since Tailwind CSS v3.0.0
+            "",
+            "none",
+            isArbitraryVariable,
+            isArbitraryValue
+          ]
+        }],
+        /**
+         * Backdrop Blur
+         * @see https://tailwindcss.com/docs/backdrop-blur
+         */
+        "backdrop-blur": [{
+          "backdrop-blur": scaleBlur()
+        }],
+        /**
+         * Backdrop Brightness
+         * @see https://tailwindcss.com/docs/backdrop-brightness
+         */
+        "backdrop-brightness": [{
+          "backdrop-brightness": [isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Backdrop Contrast
+         * @see https://tailwindcss.com/docs/backdrop-contrast
+         */
+        "backdrop-contrast": [{
+          "backdrop-contrast": [isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Backdrop Grayscale
+         * @see https://tailwindcss.com/docs/backdrop-grayscale
+         */
+        "backdrop-grayscale": [{
+          "backdrop-grayscale": ["", isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Backdrop Hue Rotate
+         * @see https://tailwindcss.com/docs/backdrop-hue-rotate
+         */
+        "backdrop-hue-rotate": [{
+          "backdrop-hue-rotate": [isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Backdrop Invert
+         * @see https://tailwindcss.com/docs/backdrop-invert
+         */
+        "backdrop-invert": [{
+          "backdrop-invert": ["", isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Backdrop Opacity
+         * @see https://tailwindcss.com/docs/backdrop-opacity
+         */
+        "backdrop-opacity": [{
+          "backdrop-opacity": [isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Backdrop Saturate
+         * @see https://tailwindcss.com/docs/backdrop-saturate
+         */
+        "backdrop-saturate": [{
+          "backdrop-saturate": [isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Backdrop Sepia
+         * @see https://tailwindcss.com/docs/backdrop-sepia
+         */
+        "backdrop-sepia": [{
+          "backdrop-sepia": ["", isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        // --------------
+        // --- Tables ---
+        // --------------
+        /**
+         * Border Collapse
+         * @see https://tailwindcss.com/docs/border-collapse
+         */
+        "border-collapse": [{
+          border: ["collapse", "separate"]
+        }],
+        /**
+         * Border Spacing
+         * @see https://tailwindcss.com/docs/border-spacing
+         */
+        "border-spacing": [{
+          "border-spacing": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Border Spacing X
+         * @see https://tailwindcss.com/docs/border-spacing
+         */
+        "border-spacing-x": [{
+          "border-spacing-x": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Border Spacing Y
+         * @see https://tailwindcss.com/docs/border-spacing
+         */
+        "border-spacing-y": [{
+          "border-spacing-y": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Table Layout
+         * @see https://tailwindcss.com/docs/table-layout
+         */
+        "table-layout": [{
+          table: ["auto", "fixed"]
+        }],
+        /**
+         * Caption Side
+         * @see https://tailwindcss.com/docs/caption-side
+         */
+        caption: [{
+          caption: ["top", "bottom"]
+        }],
+        // ---------------------------------
+        // --- Transitions and Animation ---
+        // ---------------------------------
+        /**
+         * Transition Property
+         * @see https://tailwindcss.com/docs/transition-property
+         */
+        transition: [{
+          transition: ["", "all", "colors", "opacity", "shadow", "transform", "none", isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Transition Behavior
+         * @see https://tailwindcss.com/docs/transition-behavior
+         */
+        "transition-behavior": [{
+          transition: ["normal", "discrete"]
+        }],
+        /**
+         * Transition Duration
+         * @see https://tailwindcss.com/docs/transition-duration
+         */
+        duration: [{
+          duration: [isNumber, "initial", isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Transition Timing Function
+         * @see https://tailwindcss.com/docs/transition-timing-function
+         */
+        ease: [{
+          ease: ["linear", "initial", themeEase, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Transition Delay
+         * @see https://tailwindcss.com/docs/transition-delay
+         */
+        delay: [{
+          delay: [isNumber, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Animation
+         * @see https://tailwindcss.com/docs/animation
+         */
+        animate: [{
+          animate: ["none", themeAnimate, isArbitraryVariable, isArbitraryValue]
+        }],
+        // ------------------
+        // --- Transforms ---
+        // ------------------
+        /**
+         * Backface Visibility
+         * @see https://tailwindcss.com/docs/backface-visibility
+         */
+        backface: [{
+          backface: ["hidden", "visible"]
+        }],
+        /**
+         * Perspective
+         * @see https://tailwindcss.com/docs/perspective
+         */
+        perspective: [{
+          perspective: [themePerspective, isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Perspective Origin
+         * @see https://tailwindcss.com/docs/perspective-origin
+         */
+        "perspective-origin": [{
+          "perspective-origin": scalePositionWithArbitrary()
+        }],
+        /**
+         * Rotate
+         * @see https://tailwindcss.com/docs/rotate
+         */
+        rotate: [{
+          rotate: scaleRotate()
+        }],
+        /**
+         * Rotate X
+         * @see https://tailwindcss.com/docs/rotate
+         */
+        "rotate-x": [{
+          "rotate-x": scaleRotate()
+        }],
+        /**
+         * Rotate Y
+         * @see https://tailwindcss.com/docs/rotate
+         */
+        "rotate-y": [{
+          "rotate-y": scaleRotate()
+        }],
+        /**
+         * Rotate Z
+         * @see https://tailwindcss.com/docs/rotate
+         */
+        "rotate-z": [{
+          "rotate-z": scaleRotate()
+        }],
+        /**
+         * Scale
+         * @see https://tailwindcss.com/docs/scale
+         */
+        scale: [{
+          scale: scaleScale()
+        }],
+        /**
+         * Scale X
+         * @see https://tailwindcss.com/docs/scale
+         */
+        "scale-x": [{
+          "scale-x": scaleScale()
+        }],
+        /**
+         * Scale Y
+         * @see https://tailwindcss.com/docs/scale
+         */
+        "scale-y": [{
+          "scale-y": scaleScale()
+        }],
+        /**
+         * Scale Z
+         * @see https://tailwindcss.com/docs/scale
+         */
+        "scale-z": [{
+          "scale-z": scaleScale()
+        }],
+        /**
+         * Scale 3D
+         * @see https://tailwindcss.com/docs/scale
+         */
+        "scale-3d": ["scale-3d"],
+        /**
+         * Skew
+         * @see https://tailwindcss.com/docs/skew
+         */
+        skew: [{
+          skew: scaleSkew()
+        }],
+        /**
+         * Skew X
+         * @see https://tailwindcss.com/docs/skew
+         */
+        "skew-x": [{
+          "skew-x": scaleSkew()
+        }],
+        /**
+         * Skew Y
+         * @see https://tailwindcss.com/docs/skew
+         */
+        "skew-y": [{
+          "skew-y": scaleSkew()
+        }],
+        /**
+         * Transform
+         * @see https://tailwindcss.com/docs/transform
+         */
+        transform: [{
+          transform: [isArbitraryVariable, isArbitraryValue, "", "none", "gpu", "cpu"]
+        }],
+        /**
+         * Transform Origin
+         * @see https://tailwindcss.com/docs/transform-origin
+         */
+        "transform-origin": [{
+          origin: scalePositionWithArbitrary()
+        }],
+        /**
+         * Transform Style
+         * @see https://tailwindcss.com/docs/transform-style
+         */
+        "transform-style": [{
+          transform: ["3d", "flat"]
+        }],
+        /**
+         * Translate
+         * @see https://tailwindcss.com/docs/translate
+         */
+        translate: [{
+          translate: scaleTranslate()
+        }],
+        /**
+         * Translate X
+         * @see https://tailwindcss.com/docs/translate
+         */
+        "translate-x": [{
+          "translate-x": scaleTranslate()
+        }],
+        /**
+         * Translate Y
+         * @see https://tailwindcss.com/docs/translate
+         */
+        "translate-y": [{
+          "translate-y": scaleTranslate()
+        }],
+        /**
+         * Translate Z
+         * @see https://tailwindcss.com/docs/translate
+         */
+        "translate-z": [{
+          "translate-z": scaleTranslate()
+        }],
+        /**
+         * Translate None
+         * @see https://tailwindcss.com/docs/translate
+         */
+        "translate-none": ["translate-none"],
+        /**
+         * Zoom
+         * @see https://tailwindcss.com/docs/zoom
+         */
+        zoom: [{
+          zoom: [isInteger, isArbitraryVariable, isArbitraryValue]
+        }],
+        // ---------------------
+        // --- Interactivity ---
+        // ---------------------
+        /**
+         * Accent Color
+         * @see https://tailwindcss.com/docs/accent-color
+         */
+        accent: [{
+          accent: scaleColor()
+        }],
+        /**
+         * Appearance
+         * @see https://tailwindcss.com/docs/appearance
+         */
+        appearance: [{
+          appearance: ["none", "auto"]
+        }],
+        /**
+         * Caret Color
+         * @see https://tailwindcss.com/docs/just-in-time-mode#caret-color-utilities
+         */
+        "caret-color": [{
+          caret: scaleColor()
+        }],
+        /**
+         * Color Scheme
+         * @see https://tailwindcss.com/docs/color-scheme
+         */
+        "color-scheme": [{
+          scheme: ["normal", "dark", "light", "light-dark", "only-dark", "only-light"]
+        }],
+        /**
+         * Cursor
+         * @see https://tailwindcss.com/docs/cursor
+         */
+        cursor: [{
+          cursor: ["auto", "default", "pointer", "wait", "text", "move", "help", "not-allowed", "none", "context-menu", "progress", "cell", "crosshair", "vertical-text", "alias", "copy", "no-drop", "grab", "grabbing", "all-scroll", "col-resize", "row-resize", "n-resize", "e-resize", "s-resize", "w-resize", "ne-resize", "nw-resize", "se-resize", "sw-resize", "ew-resize", "ns-resize", "nesw-resize", "nwse-resize", "zoom-in", "zoom-out", isArbitraryVariable, isArbitraryValue]
+        }],
+        /**
+         * Field Sizing
+         * @see https://tailwindcss.com/docs/field-sizing
+         */
+        "field-sizing": [{
+          "field-sizing": ["fixed", "content"]
+        }],
+        /**
+         * Pointer Events
+         * @see https://tailwindcss.com/docs/pointer-events
+         */
+        "pointer-events": [{
+          "pointer-events": ["auto", "none"]
+        }],
+        /**
+         * Resize
+         * @see https://tailwindcss.com/docs/resize
+         */
+        resize: [{
+          resize: ["none", "", "y", "x"]
+        }],
+        /**
+         * Scroll Behavior
+         * @see https://tailwindcss.com/docs/scroll-behavior
+         */
+        "scroll-behavior": [{
+          scroll: ["auto", "smooth"]
+        }],
+        /**
+         * Scrollbar Thumb Color
+         * @see https://tailwindcss.com/docs/scrollbar-color
+         */
+        "scrollbar-thumb-color": [{
+          "scrollbar-thumb": scaleColor()
+        }],
+        /**
+         * Scrollbar Track Color
+         * @see https://tailwindcss.com/docs/scrollbar-color
+         */
+        "scrollbar-track-color": [{
+          "scrollbar-track": scaleColor()
+        }],
+        /**
+         * Scrollbar Gutter
+         * @see https://tailwindcss.com/docs/scrollbar-gutter
+         */
+        "scrollbar-gutter": [{
+          "scrollbar-gutter": ["auto", "stable", "both"]
+        }],
+        /**
+         * Scrollbar Width
+         * @see https://tailwindcss.com/docs/scrollbar-width
+         */
+        "scrollbar-w": [{
+          scrollbar: ["auto", "thin", "none"]
+        }],
+        /**
+         * Scroll Margin
+         * @see https://tailwindcss.com/docs/scroll-margin
+         */
+        "scroll-m": [{
+          "scroll-m": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Margin Inline
+         * @see https://tailwindcss.com/docs/scroll-margin
+         */
+        "scroll-mx": [{
+          "scroll-mx": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Margin Block
+         * @see https://tailwindcss.com/docs/scroll-margin
+         */
+        "scroll-my": [{
+          "scroll-my": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Margin Inline Start
+         * @see https://tailwindcss.com/docs/scroll-margin
+         */
+        "scroll-ms": [{
+          "scroll-ms": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Margin Inline End
+         * @see https://tailwindcss.com/docs/scroll-margin
+         */
+        "scroll-me": [{
+          "scroll-me": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Margin Block Start
+         * @see https://tailwindcss.com/docs/scroll-margin
+         */
+        "scroll-mbs": [{
+          "scroll-mbs": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Margin Block End
+         * @see https://tailwindcss.com/docs/scroll-margin
+         */
+        "scroll-mbe": [{
+          "scroll-mbe": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Margin Top
+         * @see https://tailwindcss.com/docs/scroll-margin
+         */
+        "scroll-mt": [{
+          "scroll-mt": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Margin Right
+         * @see https://tailwindcss.com/docs/scroll-margin
+         */
+        "scroll-mr": [{
+          "scroll-mr": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Margin Bottom
+         * @see https://tailwindcss.com/docs/scroll-margin
+         */
+        "scroll-mb": [{
+          "scroll-mb": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Margin Left
+         * @see https://tailwindcss.com/docs/scroll-margin
+         */
+        "scroll-ml": [{
+          "scroll-ml": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Padding
+         * @see https://tailwindcss.com/docs/scroll-padding
+         */
+        "scroll-p": [{
+          "scroll-p": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Padding Inline
+         * @see https://tailwindcss.com/docs/scroll-padding
+         */
+        "scroll-px": [{
+          "scroll-px": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Padding Block
+         * @see https://tailwindcss.com/docs/scroll-padding
+         */
+        "scroll-py": [{
+          "scroll-py": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Padding Inline Start
+         * @see https://tailwindcss.com/docs/scroll-padding
+         */
+        "scroll-ps": [{
+          "scroll-ps": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Padding Inline End
+         * @see https://tailwindcss.com/docs/scroll-padding
+         */
+        "scroll-pe": [{
+          "scroll-pe": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Padding Block Start
+         * @see https://tailwindcss.com/docs/scroll-padding
+         */
+        "scroll-pbs": [{
+          "scroll-pbs": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Padding Block End
+         * @see https://tailwindcss.com/docs/scroll-padding
+         */
+        "scroll-pbe": [{
+          "scroll-pbe": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Padding Top
+         * @see https://tailwindcss.com/docs/scroll-padding
+         */
+        "scroll-pt": [{
+          "scroll-pt": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Padding Right
+         * @see https://tailwindcss.com/docs/scroll-padding
+         */
+        "scroll-pr": [{
+          "scroll-pr": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Padding Bottom
+         * @see https://tailwindcss.com/docs/scroll-padding
+         */
+        "scroll-pb": [{
+          "scroll-pb": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Padding Left
+         * @see https://tailwindcss.com/docs/scroll-padding
+         */
+        "scroll-pl": [{
+          "scroll-pl": scaleUnambiguousSpacing()
+        }],
+        /**
+         * Scroll Snap Align
+         * @see https://tailwindcss.com/docs/scroll-snap-align
+         */
+        "snap-align": [{
+          snap: ["start", "end", "center", "align-none"]
+        }],
+        /**
+         * Scroll Snap Stop
+         * @see https://tailwindcss.com/docs/scroll-snap-stop
+         */
+        "snap-stop": [{
+          snap: ["normal", "always"]
+        }],
+        /**
+         * Scroll Snap Type
+         * @see https://tailwindcss.com/docs/scroll-snap-type
+         */
+        "snap-type": [{
+          snap: ["none", "x", "y", "both"]
+        }],
+        /**
+         * Scroll Snap Type Strictness
+         * @see https://tailwindcss.com/docs/scroll-snap-type
+         */
+        "snap-strictness": [{
+          snap: ["mandatory", "proximity"]
+        }],
+        /**
+         * Touch Action
+         * @see https://tailwindcss.com/docs/touch-action
+         */
+        touch: [{
+          touch: ["auto", "none", "manipulation"]
+        }],
+        /**
+         * Touch Action X
+         * @see https://tailwindcss.com/docs/touch-action
+         */
+        "touch-x": [{
+          "touch-pan": ["x", "left", "right"]
+        }],
+        /**
+         * Touch Action Y
+         * @see https://tailwindcss.com/docs/touch-action
+         */
+        "touch-y": [{
+          "touch-pan": ["y", "up", "down"]
+        }],
+        /**
+         * Touch Action Pinch Zoom
+         * @see https://tailwindcss.com/docs/touch-action
+         */
+        "touch-pz": ["touch-pinch-zoom"],
+        /**
+         * User Select
+         * @see https://tailwindcss.com/docs/user-select
+         */
+        select: [{
+          select: ["none", "text", "all", "auto"]
+        }],
+        /**
+         * Will Change
+         * @see https://tailwindcss.com/docs/will-change
+         */
+        "will-change": [{
+          "will-change": ["auto", "scroll", "contents", "transform", isArbitraryVariable, isArbitraryValue]
+        }],
+        // -----------
+        // --- SVG ---
+        // -----------
+        /**
+         * Fill
+         * @see https://tailwindcss.com/docs/fill
+         */
+        fill: [{
+          fill: ["none", ...scaleColor()]
+        }],
+        /**
+         * Stroke Width
+         * @see https://tailwindcss.com/docs/stroke-width
+         */
+        "stroke-w": [{
+          stroke: [isNumber, isArbitraryVariableLength, isArbitraryLength, isArbitraryNumber]
+        }],
+        /**
+         * Stroke
+         * @see https://tailwindcss.com/docs/stroke
+         */
+        stroke: [{
+          stroke: ["none", ...scaleColor()]
+        }],
+        // ---------------------
+        // --- Accessibility ---
+        // ---------------------
+        /**
+         * Forced Color Adjust
+         * @see https://tailwindcss.com/docs/forced-color-adjust
+         */
+        "forced-color-adjust": [{
+          "forced-color-adjust": ["auto", "none"]
+        }]
+      },
+      conflictingClassGroups: {
+        "container-named": ["container-type"],
+        overflow: ["overflow-x", "overflow-y"],
+        overscroll: ["overscroll-x", "overscroll-y"],
+        inset: ["inset-x", "inset-y", "inset-bs", "inset-be", "start", "end", "top", "right", "bottom", "left"],
+        "inset-x": ["start", "end", "right", "left"],
+        "inset-y": ["inset-bs", "inset-be", "top", "bottom"],
+        flex: ["basis", "grow", "shrink"],
+        gap: ["gap-x", "gap-y"],
+        p: ["px", "py", "ps", "pe", "pbs", "pbe", "pt", "pr", "pb", "pl"],
+        px: ["ps", "pe", "pr", "pl"],
+        py: ["pbs", "pbe", "pt", "pb"],
+        m: ["mx", "my", "ms", "me", "mbs", "mbe", "mt", "mr", "mb", "ml"],
+        mx: ["ms", "me", "mr", "ml"],
+        my: ["mbs", "mbe", "mt", "mb"],
+        size: ["w", "h"],
+        "font-size": ["leading"],
+        "fvn-normal": ["fvn-ordinal", "fvn-slashed-zero", "fvn-figure", "fvn-spacing", "fvn-fraction"],
+        "fvn-ordinal": ["fvn-normal"],
+        "fvn-slashed-zero": ["fvn-normal"],
+        "fvn-figure": ["fvn-normal"],
+        "fvn-spacing": ["fvn-normal"],
+        "fvn-fraction": ["fvn-normal"],
+        "line-clamp": ["display", "overflow"],
+        rounded: ["rounded-s", "rounded-e", "rounded-t", "rounded-r", "rounded-b", "rounded-l", "rounded-ss", "rounded-se", "rounded-ee", "rounded-es", "rounded-tl", "rounded-tr", "rounded-br", "rounded-bl"],
+        "rounded-s": ["rounded-ss", "rounded-es"],
+        "rounded-e": ["rounded-se", "rounded-ee"],
+        "rounded-t": ["rounded-tl", "rounded-tr"],
+        "rounded-r": ["rounded-tr", "rounded-br"],
+        "rounded-b": ["rounded-br", "rounded-bl"],
+        "rounded-l": ["rounded-tl", "rounded-bl"],
+        "border-spacing": ["border-spacing-x", "border-spacing-y"],
+        "border-w": ["border-w-x", "border-w-y", "border-w-s", "border-w-e", "border-w-bs", "border-w-be", "border-w-t", "border-w-r", "border-w-b", "border-w-l"],
+        "border-w-x": ["border-w-s", "border-w-e", "border-w-r", "border-w-l"],
+        "border-w-y": ["border-w-bs", "border-w-be", "border-w-t", "border-w-b"],
+        "border-color": ["border-color-x", "border-color-y", "border-color-s", "border-color-e", "border-color-bs", "border-color-be", "border-color-t", "border-color-r", "border-color-b", "border-color-l"],
+        "border-color-x": ["border-color-s", "border-color-e", "border-color-r", "border-color-l"],
+        "border-color-y": ["border-color-bs", "border-color-be", "border-color-t", "border-color-b"],
+        translate: ["translate-x", "translate-y", "translate-none"],
+        "translate-none": ["translate", "translate-x", "translate-y", "translate-z"],
+        "scroll-m": ["scroll-mx", "scroll-my", "scroll-ms", "scroll-me", "scroll-mbs", "scroll-mbe", "scroll-mt", "scroll-mr", "scroll-mb", "scroll-ml"],
+        "scroll-mx": ["scroll-ms", "scroll-me", "scroll-mr", "scroll-ml"],
+        "scroll-my": ["scroll-mbs", "scroll-mbe", "scroll-mt", "scroll-mb"],
+        "scroll-p": ["scroll-px", "scroll-py", "scroll-ps", "scroll-pe", "scroll-pbs", "scroll-pbe", "scroll-pt", "scroll-pr", "scroll-pb", "scroll-pl"],
+        "scroll-px": ["scroll-ps", "scroll-pe", "scroll-pr", "scroll-pl"],
+        "scroll-py": ["scroll-pbs", "scroll-pbe", "scroll-pt", "scroll-pb"],
+        touch: ["touch-x", "touch-y", "touch-pz"],
+        "touch-x": ["touch"],
+        "touch-y": ["touch"],
+        "touch-pz": ["touch"]
+      },
+      conflictingClassGroupModifiers: {
+        "font-size": ["leading"]
+      },
+      postfixLookupClassGroups: ["container-type"],
+      orderSensitiveModifiers: ["*", "**", "after", "backdrop", "before", "details-content", "file", "first-letter", "first-line", "marker", "placeholder", "selection"]
+    };
+  };
+  var twMerge = /* @__PURE__ */ createTailwindMerge(getDefaultConfig);
+
+  // src/ui.js
+  function cn(...inputs) {
+    return twMerge(clsx(inputs));
+  }
+  var BUTTON_BASE = "inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-md font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-tr-accent/30 disabled:pointer-events-none disabled:opacity-50";
+  var BUTTON_VARIANTS = {
+    default: "bg-tr-accent text-tr-accent-fg shadow-sm hover:bg-tr-accent/90",
+    outline: "border border-tr-border bg-tr-bg text-tr-fg hover:bg-tr-muted",
+    ghost: "text-tr-secondary hover:bg-tr-muted hover:text-tr-fg",
+    secondary: "bg-tr-muted text-tr-fg hover:bg-tr-surface",
+    destructive: "bg-tr-danger text-white hover:bg-tr-danger/90"
+  };
+  var BUTTON_SIZES = {
+    xs: "h-6 gap-1 px-2 text-[10px]",
+    sm: "h-7 gap-1.5 px-2.5 text-[11px]",
+    default: "h-8 gap-1.5 px-3 text-xs",
+    icon: "h-7 w-7 p-0",
+    "icon-xs": "h-6 w-6 p-0"
+  };
+  var BADGE_BASE = "inline-flex items-center justify-center gap-1 rounded-full border px-1.5 py-0.5 text-[9px] font-medium leading-none";
+  var BADGE_VARIANTS = {
+    outline: "border-tr-border bg-transparent text-tr-secondary",
+    muted: "border-transparent bg-tr-muted text-tr-secondary",
+    accent: "border-tr-accent/15 bg-tr-accent/10 text-tr-accent",
+    danger: "border-tr-danger/15 bg-tr-danger/10 text-tr-danger",
+    warn: "border-tr-warn/20 bg-tr-warn/10 text-tr-warn",
+    success: "border-tr-success/20 bg-tr-success/10 text-tr-success"
+  };
+  function createUi(h) {
+    function Button({ className, variant = "ghost", size = "sm", type = "button", ...props }) {
+      return h("button", {
+        type,
+        className: cn(BUTTON_BASE, BUTTON_VARIANTS[variant] || BUTTON_VARIANTS.ghost, BUTTON_SIZES[size] || BUTTON_SIZES.sm, className),
+        ...props
+      });
+    }
+    function Badge({ className, variant = "outline", ...props }) {
+      return h("span", {
+        className: cn(BADGE_BASE, BADGE_VARIANTS[variant] || BADGE_VARIANTS.outline, className),
+        ...props
+      });
+    }
+    function Card({ className, ...props }) {
+      return h("div", {
+        className: cn("flex min-w-0 flex-col rounded-card border border-tr-border bg-tr-bg text-tr-fg shadow-sm", className),
+        ...props
+      });
+    }
+    function CardHeader({ className, ...props }) {
+      return h("div", { className: cn("flex items-center gap-2 px-3 pt-2.5 pb-1.5", className), ...props });
+    }
+    function CardContent({ className, ...props }) {
+      return h("div", { className: cn("px-3 pb-2.5", className), ...props });
+    }
+    function CardFooter({ className, ...props }) {
+      return h("div", { className: cn("flex items-center justify-end gap-1 px-3 pb-2.5", className), ...props });
+    }
+    function Input({ className, ...props }) {
+      return h("input", {
+        className: cn(
+          "h-8 w-full min-w-0 rounded-md border border-tr-border bg-tr-bg px-2.5 text-[11px] text-tr-fg outline-none transition placeholder:text-tr-tertiary focus:border-tr-accent focus:ring-2 focus:ring-tr-accent/15",
+          className
+        ),
+        ...props
+      });
+    }
+    function Separator({ className, ...props }) {
+      return h("div", { className: cn("h-px w-full shrink-0 bg-tr-border", className), ...props });
+    }
+    function Skeleton({ className, ...props }) {
+      return h("div", { className: cn("animate-pulse rounded-md bg-tr-muted", className), ...props });
+    }
+    return {
+      cn,
+      Button,
+      Badge,
+      Card,
+      CardHeader,
+      CardContent,
+      CardFooter,
+      Input,
+      Separator,
+      Skeleton
+    };
+  }
+
+  // src/generated-css.js
+  var TAILWIND_CSS = `/*! tailwindcss v4.3.3 | MIT License | https://tailwindcss.com */
+@layer properties;
+@layer theme {
+  :root, :host {
+    --color-white: #fff;
+    --spacing: 0.25rem;
+    --text-xs: 0.75rem;
+    --text-xs--line-height: calc(1 / 0.75);
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --tracking-tight: -0.025em;
+    --tracking-wide: 0.025em;
+    --leading-snug: 1.375;
+    --leading-relaxed: 1.625;
+    --radius-sm: 0.25rem;
+    --radius-md: 0.375rem;
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    --default-transition-duration: 150ms;
+    --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    --color-tr-bg: var(--dsw-alias-bg-base, #ffffff);
+    --color-tr-fg: var(--dsw-alias-label-primary, #18181b);
+    --color-tr-secondary: var(--dsw-alias-label-secondary, #52525b);
+    --color-tr-tertiary: var(--dsw-alias-label-tertiary, #8b8b93);
+    --color-tr-muted: var(--dsw-alias-bg-layer-1, #f6f6f7);
+    --color-tr-surface: var(--dsw-alias-bg-layer-2, #f0f0f2);
+    --color-tr-border: var(--dsw-alias-border-l2, rgba(0, 0, 0, 0.1));
+    --color-tr-border-strong: var(--dsw-alias-border-l3, rgba(0, 0, 0, 0.16));
+    --color-tr-accent: var(--dsw-alias-brand-primary, #2563eb);
+    --color-tr-accent-fg: var(--dsw-alias-label-primary-foreground, #ffffff);
+    --color-tr-danger: var(--dsw-alias-state-error-primary, #dc2626);
+    --color-tr-warn: var(--dsw-alias-state-warn-primary, #d97706);
+    --color-tr-success: var(--dsw-alias-state-success-primary, #16a34a);
+    --radius-card: var(--dsw-radius-lg, 10px);
+    --font-tr: var(--dsw-font-base-16-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+  }
+}
+@layer utilities {
+  .pointer-events-none {
+    pointer-events: none;
+  }
+  .absolute {
+    position: absolute;
+  }
+  .fixed {
+    position: fixed;
+  }
+  .relative {
+    position: relative;
+  }
+  .-top-1 {
+    top: calc(var(--spacing) * -1);
+  }
+  .top-1 {
+    top: var(--spacing);
+  }
+  .top-1\\/2 {
+    top: calc(1 / 2 * 100%);
+  }
+  .-right-1 {
+    right: calc(var(--spacing) * -1);
+  }
+  .right-1 {
+    right: var(--spacing);
+  }
+  .left-2\\.5 {
+    left: calc(var(--spacing) * 2.5);
+  }
+  .container {
+    width: 100%;
+    @media (width >= 40rem) {
+      max-width: 40rem;
+    }
+    @media (width >= 48rem) {
+      max-width: 48rem;
+    }
+    @media (width >= 64rem) {
+      max-width: 64rem;
+    }
+    @media (width >= 80rem) {
+      max-width: 80rem;
+    }
+    @media (width >= 96rem) {
+      max-width: 96rem;
+    }
+  }
+  .m-0 {
+    margin: 0px;
+  }
+  .m-3 {
+    margin: calc(var(--spacing) * 3);
+  }
+  .mx-auto {
+    margin-inline: auto;
+  }
+  .my-3 {
+    margin-block: calc(var(--spacing) * 3);
+  }
+  .mt-0\\.5 {
+    margin-top: calc(var(--spacing) * 0.5);
+  }
+  .mt-1 {
+    margin-top: var(--spacing);
+  }
+  .mt-2 {
+    margin-top: calc(var(--spacing) * 2);
+  }
+  .mt-4 {
+    margin-top: calc(var(--spacing) * 4);
+  }
+  .mb-1 {
+    margin-bottom: var(--spacing);
+  }
+  .mb-2 {
+    margin-bottom: calc(var(--spacing) * 2);
+  }
+  .ml-auto {
+    margin-left: auto;
+  }
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  .\\[display\\:-webkit-box\\] {
+    display: -webkit-box;
+  }
+  .block {
+    display: block;
+  }
+  .flex {
+    display: flex;
+  }
+  .grid {
+    display: grid;
+  }
+  .inline {
+    display: inline;
+  }
+  .inline-flex {
+    display: inline-flex;
+  }
+  .table {
+    display: table;
+  }
+  .h-2 {
+    height: calc(var(--spacing) * 2);
+  }
+  .h-2\\.5 {
+    height: calc(var(--spacing) * 2.5);
+  }
+  .h-3 {
+    height: calc(var(--spacing) * 3);
+  }
+  .h-4 {
+    height: calc(var(--spacing) * 4);
+  }
+  .h-5 {
+    height: calc(var(--spacing) * 5);
+  }
+  .h-6 {
+    height: calc(var(--spacing) * 6);
+  }
+  .h-7 {
+    height: calc(var(--spacing) * 7);
+  }
+  .h-8 {
+    height: calc(var(--spacing) * 8);
+  }
+  .h-px {
+    height: 1px;
+  }
+  .w-2\\/3 {
+    width: calc(2 / 3 * 100%);
+  }
+  .w-3\\/4 {
+    width: calc(3 / 4 * 100%);
+  }
+  .w-4 {
+    width: calc(var(--spacing) * 4);
+  }
+  .w-4\\/5 {
+    width: calc(4 / 5 * 100%);
+  }
+  .w-6 {
+    width: calc(var(--spacing) * 6);
+  }
+  .w-7 {
+    width: calc(var(--spacing) * 7);
+  }
+  .w-24 {
+    width: calc(var(--spacing) * 24);
+  }
+  .w-\\[60\\%\\] {
+    width: 60%;
+  }
+  .w-\\[72\\%\\] {
+    width: 72%;
+  }
+  .w-\\[88\\%\\] {
+    width: 88%;
+  }
+  .w-full {
+    width: 100%;
+  }
+  .max-w-\\[720px\\] {
+    max-width: 720px;
+  }
+  .min-w-0 {
+    min-width: 0px;
+  }
+  .min-w-5 {
+    min-width: calc(var(--spacing) * 5);
+  }
+  .flex-1 {
+    flex: 1;
+  }
+  .shrink-0 {
+    flex-shrink: 0;
+  }
+  .border-collapse {
+    border-collapse: collapse;
+  }
+  .-translate-y-1\\/2 {
+    --tw-translate-y: calc(calc(1 / 2 * 100%) * -1);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .transform {
+    transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
+  }
+  .animate-pulse {
+    animation: var(--animate-pulse);
+  }
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  .resize {
+    resize: both;
+  }
+  .list-decimal {
+    list-style-type: decimal;
+  }
+  .list-disc {
+    list-style-type: disc;
+  }
+  .list-none {
+    list-style-type: none;
+  }
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .flex-col {
+    flex-direction: column;
+  }
+  .flex-wrap {
+    flex-wrap: wrap;
+  }
+  .items-center {
+    align-items: center;
+  }
+  .items-start {
+    align-items: flex-start;
+  }
+  .justify-center {
+    justify-content: center;
+  }
+  .justify-end {
+    justify-content: flex-end;
+  }
+  .justify-start {
+    justify-content: flex-start;
+  }
+  .gap-1 {
+    gap: var(--spacing);
+  }
+  .gap-1\\.5 {
+    gap: calc(var(--spacing) * 1.5);
+  }
+  .gap-2 {
+    gap: calc(var(--spacing) * 2);
+  }
+  .gap-3 {
+    gap: calc(var(--spacing) * 3);
+  }
+  .gap-4 {
+    gap: calc(var(--spacing) * 4);
+  }
+  :where(.space-y-1 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(var(--spacing) * var(--tw-space-y-reverse));
+    margin-block-end: calc(var(--spacing) * calc(1 - var(--tw-space-y-reverse)));
+  }
+  :where(.space-y-2 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));
+    margin-block-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)));
+  }
+  .truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .overflow-hidden {
+    overflow: hidden;
+  }
+  .rounded-card {
+    border-radius: var(--radius-card);
+  }
+  .rounded-full {
+    border-radius: calc(infinity * 1px);
+  }
+  .rounded-md {
+    border-radius: var(--radius-md);
+  }
+  .rounded-sm {
+    border-radius: var(--radius-sm);
+  }
+  .border {
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+  }
+  .border-t {
+    border-top-style: var(--tw-border-style);
+    border-top-width: 1px;
+  }
+  .border-r {
+    border-right-style: var(--tw-border-style);
+    border-right-width: 1px;
+  }
+  .border-b {
+    border-bottom-style: var(--tw-border-style);
+    border-bottom-width: 1px;
+  }
+  .border-l {
+    border-left-style: var(--tw-border-style);
+    border-left-width: 1px;
+  }
+  .border-l-2 {
+    border-left-style: var(--tw-border-style);
+    border-left-width: 2px;
+  }
+  .border-tr-accent\\/15 {
+    border-color: var(--color-tr-accent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-tr-accent) 15%, transparent);
+    }
+  }
+  .border-tr-accent\\/30 {
+    border-color: var(--color-tr-accent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-tr-accent) 30%, transparent);
+    }
+  }
+  .border-tr-border {
+    border-color: var(--color-tr-border);
+  }
+  .border-tr-border-strong {
+    border-color: var(--color-tr-border-strong);
+  }
+  .border-tr-danger\\/15 {
+    border-color: var(--color-tr-danger);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-tr-danger) 15%, transparent);
+    }
+  }
+  .border-tr-danger\\/20 {
+    border-color: var(--color-tr-danger);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-tr-danger) 20%, transparent);
+    }
+  }
+  .border-tr-success\\/20 {
+    border-color: var(--color-tr-success);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-tr-success) 20%, transparent);
+    }
+  }
+  .border-tr-warn\\/20 {
+    border-color: var(--color-tr-warn);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-tr-warn) 20%, transparent);
+    }
+  }
+  .border-transparent {
+    border-color: transparent;
+  }
+  .bg-tr-accent {
+    background-color: var(--color-tr-accent);
+  }
+  .bg-tr-accent\\/10 {
+    background-color: var(--color-tr-accent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-tr-accent) 10%, transparent);
+    }
+  }
+  .bg-tr-bg {
+    background-color: var(--color-tr-bg);
+  }
+  .bg-tr-bg\\/60 {
+    background-color: var(--color-tr-bg);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-tr-bg) 60%, transparent);
+    }
+  }
+  .bg-tr-bg\\/95 {
+    background-color: var(--color-tr-bg);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-tr-bg) 95%, transparent);
+    }
+  }
+  .bg-tr-border {
+    background-color: var(--color-tr-border);
+  }
+  .bg-tr-danger {
+    background-color: var(--color-tr-danger);
+  }
+  .bg-tr-danger\\/5 {
+    background-color: var(--color-tr-danger);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-tr-danger) 5%, transparent);
+    }
+  }
+  .bg-tr-danger\\/10 {
+    background-color: var(--color-tr-danger);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-tr-danger) 10%, transparent);
+    }
+  }
+  .bg-tr-muted {
+    background-color: var(--color-tr-muted);
+  }
+  .bg-tr-muted\\/30 {
+    background-color: var(--color-tr-muted);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-tr-muted) 30%, transparent);
+    }
+  }
+  .bg-tr-muted\\/40 {
+    background-color: var(--color-tr-muted);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-tr-muted) 40%, transparent);
+    }
+  }
+  .bg-tr-muted\\/60 {
+    background-color: var(--color-tr-muted);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-tr-muted) 60%, transparent);
+    }
+  }
+  .bg-tr-success\\/5 {
+    background-color: var(--color-tr-success);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-tr-success) 5%, transparent);
+    }
+  }
+  .bg-tr-success\\/10 {
+    background-color: var(--color-tr-success);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-tr-success) 10%, transparent);
+    }
+  }
+  .bg-tr-success\\/15 {
+    background-color: var(--color-tr-success);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-tr-success) 15%, transparent);
+    }
+  }
+  .bg-tr-warn\\/10 {
+    background-color: var(--color-tr-warn);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-tr-warn) 10%, transparent);
+    }
+  }
+  .bg-transparent {
+    background-color: transparent;
+  }
+  .p-0 {
+    padding: 0px;
+  }
+  .p-1\\.5 {
+    padding: calc(var(--spacing) * 1.5);
+  }
+  .p-2\\.5 {
+    padding: calc(var(--spacing) * 2.5);
+  }
+  .p-3 {
+    padding: calc(var(--spacing) * 3);
+  }
+  .px-0\\.5 {
+    padding-inline: calc(var(--spacing) * 0.5);
+  }
+  .px-1 {
+    padding-inline: var(--spacing);
+  }
+  .px-1\\.5 {
+    padding-inline: calc(var(--spacing) * 1.5);
+  }
+  .px-2 {
+    padding-inline: calc(var(--spacing) * 2);
+  }
+  .px-2\\.5 {
+    padding-inline: calc(var(--spacing) * 2.5);
+  }
+  .px-3 {
+    padding-inline: calc(var(--spacing) * 3);
+  }
+  .px-4 {
+    padding-inline: calc(var(--spacing) * 4);
+  }
+  .px-8 {
+    padding-inline: calc(var(--spacing) * 8);
+  }
+  .py-0 {
+    padding-block: 0px;
+  }
+  .py-0\\.5 {
+    padding-block: calc(var(--spacing) * 0.5);
+  }
+  .py-1 {
+    padding-block: var(--spacing);
+  }
+  .py-1\\.5 {
+    padding-block: calc(var(--spacing) * 1.5);
+  }
+  .py-2 {
+    padding-block: calc(var(--spacing) * 2);
+  }
+  .py-2\\.5 {
+    padding-block: calc(var(--spacing) * 2.5);
+  }
+  .py-4 {
+    padding-block: calc(var(--spacing) * 4);
+  }
+  .py-8 {
+    padding-block: calc(var(--spacing) * 8);
+  }
+  .py-10 {
+    padding-block: calc(var(--spacing) * 10);
+  }
+  .pt-1 {
+    padding-top: var(--spacing);
+  }
+  .pt-2 {
+    padding-top: calc(var(--spacing) * 2);
+  }
+  .pt-2\\.5 {
+    padding-top: calc(var(--spacing) * 2.5);
+  }
+  .pt-3 {
+    padding-top: calc(var(--spacing) * 3);
+  }
+  .pt-4 {
+    padding-top: calc(var(--spacing) * 4);
+  }
+  .pt-5 {
+    padding-top: calc(var(--spacing) * 5);
+  }
+  .pr-8 {
+    padding-right: calc(var(--spacing) * 8);
+  }
+  .pb-0\\.5 {
+    padding-bottom: calc(var(--spacing) * 0.5);
+  }
+  .pb-1 {
+    padding-bottom: var(--spacing);
+  }
+  .pb-1\\.5 {
+    padding-bottom: calc(var(--spacing) * 1.5);
+  }
+  .pb-2 {
+    padding-bottom: calc(var(--spacing) * 2);
+  }
+  .pb-2\\.5 {
+    padding-bottom: calc(var(--spacing) * 2.5);
+  }
+  .pb-3 {
+    padding-bottom: calc(var(--spacing) * 3);
+  }
+  .pl-2 {
+    padding-left: calc(var(--spacing) * 2);
+  }
+  .pl-4 {
+    padding-left: calc(var(--spacing) * 4);
+  }
+  .pl-8 {
+    padding-left: calc(var(--spacing) * 8);
+  }
+  .text-left {
+    text-align: left;
+  }
+  .font-tr {
+    font-family: var(--font-tr);
+  }
+  .text-xs {
+    font-size: var(--text-xs);
+    line-height: var(--tw-leading, var(--text-xs--line-height));
+  }
+  .text-\\[8px\\] {
+    font-size: 8px;
+  }
+  .text-\\[9\\.5px\\] {
+    font-size: 9.5px;
+  }
+  .text-\\[9px\\] {
+    font-size: 9px;
+  }
+  .text-\\[10\\.5px\\] {
+    font-size: 10.5px;
+  }
+  .text-\\[10px\\] {
+    font-size: 10px;
+  }
+  .text-\\[11\\.5px\\] {
+    font-size: 11.5px;
+  }
+  .text-\\[11px\\] {
+    font-size: 11px;
+  }
+  .text-\\[12px\\] {
+    font-size: 12px;
+  }
+  .text-\\[15px\\] {
+    font-size: 15px;
+  }
+  .leading-none {
+    --tw-leading: 1;
+    line-height: 1;
+  }
+  .leading-relaxed {
+    --tw-leading: var(--leading-relaxed);
+    line-height: var(--leading-relaxed);
+  }
+  .leading-snug {
+    --tw-leading: var(--leading-snug);
+    line-height: var(--leading-snug);
+  }
+  .font-medium {
+    --tw-font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-medium);
+  }
+  .font-normal {
+    --tw-font-weight: var(--font-weight-normal);
+    font-weight: var(--font-weight-normal);
+  }
+  .font-semibold {
+    --tw-font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-semibold);
+  }
+  .tracking-tight {
+    --tw-tracking: var(--tracking-tight);
+    letter-spacing: var(--tracking-tight);
+  }
+  .tracking-wide {
+    --tw-tracking: var(--tracking-wide);
+    letter-spacing: var(--tracking-wide);
+  }
+  .whitespace-nowrap {
+    white-space: nowrap;
+  }
+  .whitespace-pre-wrap {
+    white-space: pre-wrap;
+  }
+  .text-tr-accent {
+    color: var(--color-tr-accent);
+  }
+  .text-tr-accent-fg {
+    color: var(--color-tr-accent-fg);
+  }
+  .text-tr-danger {
+    color: var(--color-tr-danger);
+  }
+  .text-tr-fg {
+    color: var(--color-tr-fg);
+  }
+  .text-tr-secondary {
+    color: var(--color-tr-secondary);
+  }
+  .text-tr-success {
+    color: var(--color-tr-success);
+  }
+  .text-tr-tertiary {
+    color: var(--color-tr-tertiary);
+  }
+  .text-tr-warn {
+    color: var(--color-tr-warn);
+  }
+  .text-white {
+    color: var(--color-white);
+  }
+  .uppercase {
+    text-transform: uppercase;
+  }
+  .line-through {
+    text-decoration-line: line-through;
+  }
+  .no-underline {
+    text-decoration-line: none;
+  }
+  .decoration-1 {
+    text-decoration-thickness: 1px;
+  }
+  .opacity-80 {
+    opacity: 80%;
+  }
+  .shadow-sm {
+    --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .shadow-xl {
+    --tw-shadow: 0 20px 25px -5px var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 8px 10px -6px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .ring-2 {
+    --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .ring-tr-accent\\/10 {
+    --tw-ring-color: var(--color-tr-accent);
+    @supports (color: color-mix(in lab, red, red)) {
+      --tw-ring-color: color-mix(in oklab, var(--color-tr-accent) 10%, transparent);
+    }
+  }
+  .outline {
+    outline-style: var(--tw-outline-style);
+    outline-width: 1px;
+  }
+  .transition {
+    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .transition-colors {
+    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .ease-in-out {
+    --tw-ease: var(--ease-in-out);
+    transition-timing-function: var(--ease-in-out);
+  }
+  .ease-out {
+    --tw-ease: var(--ease-out);
+    transition-timing-function: var(--ease-out);
+  }
+  .outline-none {
+    --tw-outline-style: none;
+    outline-style: none;
+  }
+  .\\[-webkit-box-orient\\:vertical\\] {
+    -webkit-box-orient: vertical;
+  }
+  .\\[-webkit-line-clamp\\:4\\] {
+    -webkit-line-clamp: 4;
+  }
+  .placeholder\\:text-tr-tertiary::placeholder {
+    color: var(--color-tr-tertiary);
+  }
+  @media (hover: hover) {
+    .hover\\:border-tr-border-strong:hover {
+      border-color: var(--color-tr-border-strong);
+    }
+    .hover\\:bg-tr-accent\\/90:hover {
+      background-color: var(--color-tr-accent);
+    }
+    @supports (color: color-mix(in lab, red, red)) {
+      .hover\\:bg-tr-accent\\/90:hover {
+        background-color: color-mix(in oklab, var(--color-tr-accent) 90%, transparent);
+      }
+    }
+    .hover\\:bg-tr-danger\\/90:hover {
+      background-color: var(--color-tr-danger);
+    }
+    @supports (color: color-mix(in lab, red, red)) {
+      .hover\\:bg-tr-danger\\/90:hover {
+        background-color: color-mix(in oklab, var(--color-tr-danger) 90%, transparent);
+      }
+    }
+    .hover\\:bg-tr-muted:hover {
+      background-color: var(--color-tr-muted);
+    }
+    .hover\\:bg-tr-surface:hover {
+      background-color: var(--color-tr-surface);
+    }
+    .hover\\:text-tr-fg:hover {
+      color: var(--color-tr-fg);
+    }
+    .hover\\:underline:hover {
+      text-decoration-line: underline;
+    }
+  }
+  .focus\\:border-tr-accent:focus {
+    border-color: var(--color-tr-accent);
+  }
+  .focus\\:ring-2:focus {
+    --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .focus\\:ring-tr-accent\\/15:focus {
+    --tw-ring-color: var(--color-tr-accent);
+    @supports (color: color-mix(in lab, red, red)) {
+      --tw-ring-color: color-mix(in oklab, var(--color-tr-accent) 15%, transparent);
+    }
+  }
+  .focus-visible\\:ring-2:focus-visible {
+    --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .focus-visible\\:ring-tr-accent\\/30:focus-visible {
+    --tw-ring-color: var(--color-tr-accent);
+    @supports (color: color-mix(in lab, red, red)) {
+      --tw-ring-color: color-mix(in oklab, var(--color-tr-accent) 30%, transparent);
+    }
+  }
+  .disabled\\:pointer-events-none:disabled {
+    pointer-events: none;
+  }
+  .disabled\\:opacity-50:disabled {
+    opacity: 50%;
+  }
+}
+@property --tw-translate-x {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-translate-y {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-translate-z {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-rotate-x {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-rotate-y {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-rotate-z {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-skew-x {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-skew-y {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-space-y-reverse {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+@property --tw-border-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+@property --tw-leading {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-font-weight {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-tracking {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-inset-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-inset-shadow-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-inset-shadow-alpha {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+@property --tw-ring-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ring-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-inset-ring-color {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-inset-ring-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-ring-inset {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-ring-offset-width {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --tw-ring-offset-color {
+  syntax: "*";
+  inherits: false;
+  initial-value: #fff;
+}
+@property --tw-ring-offset-shadow {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0 0 #0000;
+}
+@property --tw-outline-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+@property --tw-ease {
+  syntax: "*";
+  inherits: false;
+}
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+@layer properties {
+  @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
+    *, ::before, ::after, ::backdrop {
+      --tw-translate-x: 0;
+      --tw-translate-y: 0;
+      --tw-translate-z: 0;
+      --tw-rotate-x: initial;
+      --tw-rotate-y: initial;
+      --tw-rotate-z: initial;
+      --tw-skew-x: initial;
+      --tw-skew-y: initial;
+      --tw-space-y-reverse: 0;
+      --tw-border-style: solid;
+      --tw-leading: initial;
+      --tw-font-weight: initial;
+      --tw-tracking: initial;
+      --tw-shadow: 0 0 #0000;
+      --tw-shadow-color: initial;
+      --tw-shadow-alpha: 100%;
+      --tw-inset-shadow: 0 0 #0000;
+      --tw-inset-shadow-color: initial;
+      --tw-inset-shadow-alpha: 100%;
+      --tw-ring-color: initial;
+      --tw-ring-shadow: 0 0 #0000;
+      --tw-inset-ring-color: initial;
+      --tw-inset-ring-shadow: 0 0 #0000;
+      --tw-ring-inset: initial;
+      --tw-ring-offset-width: 0px;
+      --tw-ring-offset-color: #fff;
+      --tw-ring-offset-shadow: 0 0 #0000;
+      --tw-outline-style: solid;
+      --tw-ease: initial;
+    }
+  }
+}
+`;
+
   // locale/zh.json
   var zh_default = {
     meta: {
-      title: "\u6559\u7A0B\u5BA1\u9605",
-      description: "\u53EA\u8BFB\u6D4F\u89C8\u8BFE\u7A0B\u539F\u6587\uFF0C\u5E76\u5728\u9875\u8FB9\u67E5\u770B\u5212\u7EBF\u4E0E\u5BA1\u9605\u6279\u6CE8\u3002"
+      title: "\u6559\u7A0B\u64B0\u5199\u52A9\u624B",
+      description: "\u53EA\u8BFB\u6D4F\u89C8\u6559\u7A0B\uFF0C\u7528 AI \u8F85\u52A9\u4F18\u5316\u8868\u8FBE\u3001\u6269\u5199\u601D\u8DEF\u548C\u67E5\u627E\u76F8\u5173\u94FE\u63A5\uFF1B\u6279\u6CE8\u4E0E\u5EFA\u8BAE\u90FD\u4E0D\u6539\u52A8\u539F\u6587\u3002"
     },
-    panel: "\u5BA1\u9605",
-    title: "\u6559\u7A0B\u5BA1\u9605",
-    subtitle: "\u5212\u7EBF\u5904\u9644\u6709\u66F4\u4E25\u8C28\u7684\u89E3\u91CA\uFF1B\u539F\u6587\u4E0D\u6539\u52A8\u3002",
+    panel: "\u64B0\u5199",
+    title: "\u6559\u7A0B\u64B0\u5199\u52A9\u624B",
+    subtitle: "\u53EA\u8BFB\u539F\u6587\u3001\u5BA1\u9605\u6279\u6CE8\u4E0E AI \u5199\u4F5C\u5EFA\u8BAE\uFF1B\u539F\u6587\u4E0D\u6539\u52A8\u3002",
     search: "\u641C\u7D22\u6559\u7A0B",
     refresh: "\u5237\u65B0\u76EE\u5F55",
     refreshing: "\u6B63\u5728\u5237\u65B0",
@@ -25222,18 +29651,73 @@
     noResults: "\u6CA1\u6709\u5339\u914D\u7684\u6559\u7A0B",
     clearSearch: "\u6E05\u9664\u641C\u7D22",
     close: "\u5173\u95ED",
-    refreshFailed: "\u5237\u65B0\u5931\u8D25\uFF0C\u4ECD\u663E\u793A\u4E0A\u6B21\u8BFB\u53D6\u7684\u5185\u5BB9\u3002"
+    refreshFailed: "\u5237\u65B0\u5931\u8D25\uFF0C\u4ECD\u663E\u793A\u4E0A\u6B21\u8BFB\u53D6\u7684\u5185\u5BB9\u3002",
+    assistTitle: "\u5199\u4F5C\u52A9\u624B",
+    assistHint: "\u9009\u4E2D\u6B63\u6587\u540E\u51FA\u73B0\uFF1B\u5EFA\u8BAE\u53EA\u5199\u5165\u6279\u6CE8\uFF0C\u4E0D\u6539\u539F\u6587\u3002",
+    optimize: "\u4F18\u5316\u8868\u8FBE",
+    expand: "\u6269\u5199\u601D\u8DEF",
+    internalLinks: "\u5185\u94FE\u5EFA\u8BAE",
+    externalLinks: "\u5916\u94FE\u5EFA\u8BAE",
+    linkMenu: "\u94FE\u63A5\u5EFA\u8BAE",
+    linkMenuHint: "\u4E3A\u6574\u7BC7\u6559\u7A0B\u5BFB\u627E\u76F8\u5173\u7AE0\u8282\u6216\u6743\u5A01\u5916\u94FE",
+    internalHint: "\u63A8\u8350\u5176\u4ED6\u6559\u7A0B\u7AE0\u8282",
+    externalHint: "\u641C\u7D22\u6743\u5A01\u5916\u90E8\u8D44\u6599",
+    generating: "\u6B63\u5728\u8BFB\u53D6\u4E0A\u4E0B\u6587\u5E76\u751F\u6210\u5EFA\u8BAE\u2026",
+    generatingShort: "\u751F\u6210\u4E2D",
+    optimized: "\u5EFA\u8BAE\u6539\u5199",
+    directions: "\u7075\u611F\u65B9\u5411",
+    copy: "\u590D\u5236\u5EFA\u8BAE",
+    copied: "\u5DF2\u590D\u5236",
+    openLesson: "\u6253\u5F00\u7AE0\u8282",
+    openLink: "\u6253\u5F00\u94FE\u63A5",
+    assistEmpty: "\u9009\u4E2D\u6B63\u6587\uFF0C\u6216\u70B9\u5DE5\u5177\u680F\u300C\u94FE\u63A5\u5EFA\u8BAE\u300D\uFF0C\u751F\u6210\u6539\u5199\u3001\u6269\u5199\u6216\u94FE\u63A5\u5EFA\u8BAE\u3002",
+    assistDisclaimer: "AI \u5EFA\u8BAE\uFF0C\u9700\u4EBA\u5DE5\u6838\u5BF9\u540E\u91C7\u7528\uFF1B\u4E0D\u4F1A\u81EA\u52A8\u4FEE\u6539\u539F\u6587\u3002",
+    assistFailed: "\u751F\u6210\u5931\u8D25\uFF0C\u8BF7\u91CD\u8BD5\u3002",
+    assistTimeout: "\u751F\u6210\u8D85\u65F6\uFF0C\u8BF7\u91CD\u8BD5\u3002",
+    noLinkSuggestions: "\u6CA1\u6709\u627E\u5230\u8DB3\u591F\u53EF\u9760\u7684\u63A8\u8350\u3002",
+    fallbackNote: "\u6A21\u578B\u6682\u65F6\u4E0D\u53EF\u7528\uFF0C\u4EE5\u4E0B\u4E3A\u964D\u7EA7\u7ED3\u679C\u3002",
+    reviewNotes: "\u5BA1\u9605\u6279\u6CE8",
+    assistCount: "\u5199\u4F5C\u5EFA\u8BAE",
+    proofread: "\u6821\u5BF9",
+    proofreadHint: "\u68C0\u67E5\u9519\u522B\u5B57\u4E0E\u4E0D\u901A\u987A\u8BED\u53E5",
+    proofreadSelection: "\u6821\u5BF9\u9009\u4E2D",
+    proofreadLesson: "\u6821\u5BF9\u5168\u6587",
+    proofreadTitle: "\u8BED\u53E5\u4E0E\u9519\u5B57",
+    proofreadLoading: "\u6B63\u5728\u6821\u5BF9\u8BED\u53E5\u4E0E\u9519\u5B57\u2026",
+    proofreadClean: "\u672A\u53D1\u73B0\u660E\u663E\u7684\u8BED\u53E5\u6216\u9519\u5B57\u95EE\u9898\u3002",
+    proofreadIssues: "{count} \u5904\u9700\u8981\u6838\u5BF9",
+    proofreadFailed: "\u6821\u5BF9\u5931\u8D25\uFF0C\u8BF7\u91CD\u8BD5\u3002",
+    proofreadAgain: "\u91CD\u65B0\u6821\u5BF9",
+    typo: "\u9519\u522B\u5B57",
+    grammar: "\u8BED\u53E5\u4E0D\u901A\u987A",
+    suggestion: "\u5EFA\u8BAE\u6539\u4E3A",
+    proofreadScopeSelection: "\u9009\u4E2D\u90E8\u5206",
+    proofreadScopeLesson: "\u6574\u7BC7\u6559\u7A0B",
+    proofreadChecking: "\u6821\u5BF9\u4E2D",
+    proofreadPassed: "\u901A\u8FC7",
+    proofreadFailedShort: "\u5931\u8D25",
+    reviewEnhanceTitle: "\u6821\u5BF9\u4E0E\u94FE\u63A5\u5EFA\u8BAE",
+    reviewEnhanceLoading: "\u6B63\u5728\u81EA\u52A8\u6821\u5BF9\u5E76\u67E5\u627E\u76F8\u5173\u7AE0\u8282\u4E0E\u5916\u90E8\u8D44\u6599\u2026",
+    reviewEnhanceLoadingShort: "\u751F\u6210\u4E2D",
+    reviewEnhanceClean: "\u672A\u53D1\u73B0\u660E\u663E\u7684\u6821\u5BF9\u6216\u94FE\u63A5\u5EFA\u8BAE\u3002",
+    reviewEnhanceFailed: "\u81EA\u52A8\u5BA1\u9605\u751F\u6210\u5931\u8D25",
+    reviewEnhanceFailedShort: "\u5931\u8D25",
+    reviewEnhancePassed: "\u901A\u8FC7",
+    reviewEnhanceCount: "{count} \u6761\u5EFA\u8BAE",
+    reviewEnhanceAgain: "\u91CD\u65B0\u5BA1\u9605",
+    reviewEnhanceUpdated: "\u5DF2\u7F13\u5B58",
+    reviewEnhanceAuto: "\u6253\u5F00\u540E\u81EA\u52A8\u751F\u6210"
   };
 
   // locale/en.json
   var en_default = {
     meta: {
-      title: "Tutorial Review",
-      description: "Read tutorials without editing and inspect margin annotations on highlighted passages."
+      title: "Tutorial Writing Assistant",
+      description: "Read tutorials, get AI help with wording, expansion, and related links; suggestions never edit the source."
     },
-    panel: "Review",
-    title: "Tutorial Review",
-    subtitle: "Highlights carry a more precise explanation; the source stays untouched.",
+    panel: "Write",
+    title: "Tutorial Writing Assistant",
+    subtitle: "Read-only text, review notes, and AI writing suggestions; the source stays untouched.",
     search: "Search tutorials",
     refresh: "Refresh",
     refreshing: "Refreshing",
@@ -25262,17 +29746,75 @@
     noResults: "No matching tutorials",
     clearSearch: "Clear search",
     close: "Close",
-    refreshFailed: "Refresh failed; showing the last loaded content."
+    refreshFailed: "Refresh failed; showing the last loaded content.",
+    assistTitle: "Writing assistant",
+    assistHint: "Select body text to get suggestions; suggestions never edit the source.",
+    optimize: "Polish wording",
+    expand: "Expand ideas",
+    internalLinks: "Internal links",
+    externalLinks: "External links",
+    linkMenu: "Link ideas",
+    linkMenuHint: "Find related lessons or authoritative sources for the whole tutorial",
+    internalHint: "Suggest other lessons",
+    externalHint: "Search authoritative sources",
+    generating: "Reading the context and drafting suggestions\u2026",
+    generatingShort: "Generating",
+    optimized: "Suggested rewrite",
+    directions: "Idea directions",
+    copy: "Copy suggestion",
+    copied: "Copied",
+    openLesson: "Open lesson",
+    openLink: "Open link",
+    assistEmpty: "Select body text, or use Link ideas in the toolbar, to get rewrites, expansions, or link suggestions.",
+    assistDisclaimer: "AI suggestions; review before use. The source is never edited.",
+    assistFailed: "Generation failed. Try again.",
+    assistTimeout: "Generation timed out. Try again.",
+    noLinkSuggestions: "No sufficiently reliable suggestions found.",
+    fallbackNote: "The model was unavailable; showing a fallback result.",
+    reviewNotes: "Review notes",
+    assistCount: "Writing suggestions",
+    proofread: "Proofread",
+    proofreadHint: "Check typos and awkward sentences",
+    proofreadSelection: "Proofread selection",
+    proofreadLesson: "Proofread tutorial",
+    proofreadTitle: "Typos & wording",
+    proofreadLoading: "Checking typos and awkward sentences\u2026",
+    proofreadClean: "No obvious typos or awkward sentences found.",
+    proofreadIssues: "{count} to review",
+    proofreadFailed: "Proofreading failed. Try again.",
+    proofreadAgain: "Proofread again",
+    typo: "Typo",
+    grammar: "Awkward sentence",
+    suggestion: "Suggested fix",
+    proofreadScopeSelection: "Selection",
+    proofreadScopeLesson: "Whole tutorial",
+    proofreadChecking: "Checking",
+    proofreadPassed: "Pass",
+    proofreadFailedShort: "Failed",
+    reviewEnhanceTitle: "Proofreading & links",
+    reviewEnhanceLoading: "Proofreading and finding related lessons and sources\u2026",
+    reviewEnhanceLoadingShort: "Working",
+    reviewEnhanceClean: "No obvious proofreading or link suggestions.",
+    reviewEnhanceFailed: "Automatic review failed",
+    reviewEnhanceFailedShort: "Failed",
+    reviewEnhancePassed: "Pass",
+    reviewEnhanceCount: "{count} suggestions",
+    reviewEnhanceAgain: "Re-run review",
+    reviewEnhanceUpdated: "Cached",
+    reviewEnhanceAuto: "Generated on open"
   };
 
   // src/client.js
   var NS = "tutorialReview";
   var PANEL_ID = "tutorial-review";
   var STORAGE_KEY = "dsh.tutorial-review.lesson";
+  var ENHANCE_CACHE_PREFIX = "dsh.tutorial-review.enhance.v2:";
   var DICTIONARIES = { zh: zh_default, en: en_default };
   function createPlugin(React) {
     const h = React.createElement;
     const { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } = React;
+    const ui = createUi(h);
+    const { Button, Badge, Input, Separator, Skeleton } = ui;
     function fallbackT(key, vars) {
       const lang = typeof navigator !== "undefined" && String(navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en";
       return interpolate(DICTIONARIES[lang]?.[key] ?? DICTIONARIES.zh[key] ?? key, vars);
@@ -25311,12 +29853,22 @@
       const [collapsed, setCollapsed] = useState(() => /* @__PURE__ */ new Set());
       const [activeId, setActiveId] = useState("");
       const [located, setLocated] = useState([]);
+      const [positions, setPositions] = useState([]);
       const [focusAnn, setFocusAnn] = useState(null);
       const [refreshing, setRefreshing] = useState(false);
       const [refreshedAt, setRefreshedAt] = useState(null);
       const [railOpen, setRailOpen] = useState(false);
       const [navOpen, setNavOpen] = useState(false);
+      const [assistByLesson, setAssistByLesson] = useState({});
+      const [enhanceByLesson, setEnhanceByLesson] = useState({});
+      const [enhanceNonce, setEnhanceNonce] = useState(0);
+      const [selectionMenu, setSelectionMenu] = useState(null);
+      const [copiedId, setCopiedId] = useState("");
+      const forceEnhance = useRef(false);
+      const enhanceRequests = useRef(/* @__PURE__ */ new Map());
+      const enhanceSeq = useRef(/* @__PURE__ */ new Map());
       const activeSource = useRef("mark");
+      const assistSeq = useRef(0);
       const docRequest = useRef(0);
       const cardRefs = useRef(/* @__PURE__ */ new Map());
       const mounted = useRef(true);
@@ -25357,6 +29909,7 @@
               setFocusAnn(null);
             }
             setLocated([]);
+            setPositions([]);
             try {
               localStorage.setItem(STORAGE_KEY, lessonId);
             } catch {
@@ -25403,6 +29956,28 @@
         };
       }, [fetchJson, loadDoc]);
       const lessons = useMemo(() => flattenLessons(manifest), [manifest]);
+      const cachedEnhanceCounts = useMemo(() => {
+        const counts = {};
+        if (!manifest) return counts;
+        for (const lesson of lessons) {
+          const cached = readEnhanceCache(`${ENHANCE_CACHE_PREFIX}${lesson.lessonId}`, lesson.mtime);
+          if (cached) counts[lesson.lessonId] = countEnhanceData(cached.data);
+        }
+        return counts;
+      }, [manifest, lessons]);
+      const autoCountFor = (lesson) => {
+        if (!lesson) return 0;
+        const entry = enhanceByLesson[lesson.lessonId];
+        if (entry?.data) return countEnhanceData(entry.data);
+        return cachedEnhanceCounts[lesson.lessonId] || 0;
+      };
+      const totalAutoCount = useMemo(
+        () => lessons.reduce((sum, lesson) => {
+          const entry = enhanceByLesson[lesson.lessonId];
+          return sum + (entry?.data ? countEnhanceData(entry.data) : cachedEnhanceCounts[lesson.lessonId] || 0);
+        }, 0),
+        [lessons, enhanceByLesson, cachedEnhanceCounts]
+      );
       const currentIndex = lessons.findIndex((lesson) => lesson.lessonId === selectedId);
       const currentLesson = currentIndex >= 0 ? lessons[currentIndex] : null;
       const course = useMemo(() => {
@@ -25422,19 +29997,92 @@
         }).filter((item) => item.sections.length > 0);
       }, [manifest, query]);
       const annotations = useMemo(() => normalizeAnnotations(doc?.annotations || []), [doc]);
-      const annotationById = useMemo(() => new Map(annotations.map((item) => [item.id, item])), [annotations]);
+      const assistAnnotations = useMemo(
+        () => (doc?.lessonId ? assistByLesson[doc.lessonId] || [] : []).map((item) => ({ ...item, kind: "assist", key: item.id })),
+        [assistByLesson, doc?.lessonId]
+      );
+      const enhanceEntry = useMemo(
+        () => doc?.lessonId ? enhanceByLesson[doc.lessonId] : void 0,
+        [enhanceByLesson, doc?.lessonId]
+      );
+      const enhanceData = enhanceEntry?.data;
+      const proofreadAnnotations = useMemo(() => {
+        if (!doc?.lessonId || !enhanceData?.issues?.length) return [];
+        return enhanceData.issues.map((issue, index2) => ({
+          id: `enh-proof-${doc.lessonId}-${index2}`,
+          kind: "proofread",
+          issueType: issue.type === "typo" ? "typo" : "grammar",
+          quote: issue.quote,
+          category: issue.type === "typo" ? t("typo") : t("grammar"),
+          suggestion: issue.suggestion,
+          reason: issue.reason,
+          comment: issue.reason,
+          key: `enh-proof-${index2}`
+        }));
+      }, [doc?.lessonId, enhanceData, t]);
+      const internalLinkAnnotations = useMemo(() => {
+        if (!doc?.lessonId || !enhanceData?.internalLinks?.length) return [];
+        return enhanceData.internalLinks.map((link2, index2) => ({
+          id: `enh-in-${doc.lessonId}-${index2}`,
+          kind: "link",
+          linkType: "internal",
+          quote: link2.quote,
+          category: t("internalLinks"),
+          title: link2.title,
+          lessonId: link2.lessonId,
+          reason: link2.reason,
+          comment: link2.reason,
+          key: `enh-in-${index2}`
+        }));
+      }, [doc?.lessonId, enhanceData, t]);
+      const externalLinkAnnotations = useMemo(() => {
+        if (!doc?.lessonId || !enhanceData?.externalLinks?.length) return [];
+        return enhanceData.externalLinks.map((link2, index2) => ({
+          id: `enh-ex-${doc.lessonId}-${index2}`,
+          kind: "link",
+          linkType: "external",
+          quote: link2.quote,
+          category: t("externalLinks"),
+          title: link2.title,
+          url: link2.url,
+          domain: link2.domain,
+          snippet: link2.snippet,
+          reason: link2.reason,
+          comment: link2.reason,
+          key: `enh-ex-${index2}`
+        }));
+      }, [doc?.lessonId, enhanceData, t]);
+      const reviewEnhanceAnnotations = useMemo(
+        () => [...proofreadAnnotations, ...internalLinkAnnotations, ...externalLinkAnnotations],
+        [proofreadAnnotations, internalLinkAnnotations, externalLinkAnnotations]
+      );
+      const allAnnotations = useMemo(
+        () => [...annotations, ...assistAnnotations, ...reviewEnhanceAnnotations],
+        [annotations, assistAnnotations, reviewEnhanceAnnotations]
+      );
+      const annotationById = useMemo(() => new Map(allAnnotations.map((item) => [item.id, item])), [allAnnotations]);
+      const positionById = useMemo(() => new Map(positions.map((item) => [item.id, item.start])), [positions]);
+      const reviewCards = useMemo(() => {
+        const cards = [...annotations, ...reviewEnhanceAnnotations];
+        return cards.sort((a, b2) => {
+          const left = positionById.get(a.id);
+          const right = positionById.get(b2.id);
+          if (left == null && right == null) return 0;
+          if (left == null) return 1;
+          if (right == null) return -1;
+          return left - right;
+        });
+      }, [annotations, reviewEnhanceAnnotations, positionById]);
       const locatedOrder = useMemo(() => new Map(located.map((item) => [item.id, item.index])), [located]);
-      const sortedAnnotations = useMemo(() => {
-        const positioned = annotations.filter((item) => locatedOrder.has(item.id)).sort((a, b2) => locatedOrder.get(a.id) - locatedOrder.get(b2.id));
-        const missing = annotations.filter((item) => !locatedOrder.has(item.id));
-        return { positioned, missing };
-      }, [annotations, locatedOrder]);
       const rendered = useMemo(() => {
         if (!doc) return { html: "", error: false };
         return renderTutorial(doc.source, { lessonId: doc.lessonId });
       }, [doc]);
       const handleLocated = useCallback((next) => {
         setLocated((previous4) => sameLocated(previous4, next) ? previous4 : next);
+      }, []);
+      const handlePositions = useCallback((next) => {
+        setPositions((previous4) => samePositions(previous4, next) ? previous4 : next);
       }, []);
       const handleMarkSelect = useCallback((id) => {
         if (!id) return;
@@ -25478,7 +30126,11 @@
           const available = flattenLessons(nextManifest);
           const preferred = available.find((lesson) => lesson.annotationCount > 0)?.lessonId;
           const target = available.some((lesson) => lesson.lessonId === selectedId) ? selectedId : preferred || available[0]?.lessonId;
-          if (target) await loadDoc(target, { keepActive: true });
+          if (target) {
+            forceEnhance.current = true;
+            await loadDoc(target, { keepActive: true });
+          }
+          setEnhanceNonce((nonce) => nonce + 1);
           setLoadError("");
           setNotice("");
         } catch (error) {
@@ -25504,37 +30156,335 @@
         },
         [currentIndex, lessons, loadDoc]
       );
-      const noteCount = annotations.length;
+      const addAssist = useCallback((lessonId, item) => {
+        setAssistByLesson((previous4) => ({
+          ...previous4,
+          [lessonId]: [...previous4[lessonId] || [], item]
+        }));
+      }, []);
+      const updateAssist = useCallback((lessonId, id, patch) => {
+        setAssistByLesson((previous4) => {
+          const list4 = previous4[lessonId] || [];
+          return {
+            ...previous4,
+            [lessonId]: list4.map((item) => item.id === id ? { ...item, ...patch } : item)
+          };
+        });
+      }, []);
+      const replaceAssist = useCallback((lessonId, id, items) => {
+        setAssistByLesson((previous4) => {
+          const list4 = previous4[lessonId] || [];
+          const index2 = list4.findIndex((item) => item.id === id);
+          const next = list4.filter((item) => item.id !== id);
+          const at2 = index2 < 0 ? next.length : index2;
+          next.splice(at2, 0, ...items);
+          return { ...previous4, [lessonId]: next };
+        });
+      }, []);
+      const runAssist = useCallback(
+        async ({ task, selection, context = "", scope = "selection" }, existingId) => {
+          const lessonId = doc?.lessonId;
+          if (!lessonId || !selection) return;
+          const id = existingId || `assist-${Date.now()}-${assistSeq.current += 1}`;
+          if (existingId) {
+            updateAssist(lessonId, existingId, { status: "loading", error: "", comment: "" });
+          } else {
+            addAssist(lessonId, {
+              id,
+              kind: "assist",
+              assistType: task,
+              quote: selection,
+              category: assistLabel(task, t),
+              comment: "",
+              status: "loading",
+              createdAt: Date.now(),
+              context,
+              scope
+            });
+          }
+          setActiveId(id);
+          setSelectionMenu(null);
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 12e4);
+          try {
+            const response = await fetch("/api/tutorial-review/assist", {
+              method: "POST",
+              credentials: "same-origin",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ task, lessonId, selection, context, scope }),
+              signal: controller.signal
+            });
+            let payload = null;
+            try {
+              payload = await response.json();
+            } catch {
+              payload = null;
+            }
+            if (!response.ok) throw new Error(payload?.message || `HTTP ${response.status}`);
+            if (!payload || payload.kind !== task) throw new Error(t("assistFailed"));
+            const links = Array.isArray(payload.links) ? payload.links : [];
+            const linkTask = task === "internal-links" || task === "external-links";
+            if (linkTask && links.length > 0) {
+              const cards = links.map((link2, index2) => ({
+                id: `${id}-${index2}`,
+                kind: "assist",
+                assistType: task,
+                quote: link2.quote || selection,
+                category: assistLabel(task, t),
+                comment: index2 === 0 ? payload.note || "" : "",
+                status: "done",
+                result: { ...payload, links: [link2], fallback: index2 === 0 ? payload.fallback : false },
+                note: index2 === 0 ? payload.note || "" : "",
+                createdAt: Date.now() + index2,
+                context,
+                scope
+              }));
+              replaceAssist(lessonId, id, cards);
+              setActiveId(cards[0].id);
+            } else {
+              updateAssist(lessonId, id, {
+                status: "done",
+                result: payload,
+                note: payload.note || "",
+                comment: payload.note || ""
+              });
+            }
+          } catch (error) {
+            const message = error?.name === "AbortError" ? t("assistTimeout") : error instanceof Error ? error.message : String(error);
+            updateAssist(lessonId, id, { status: "error", error: message, comment: "" });
+          } finally {
+            clearTimeout(timer);
+          }
+        },
+        [addAssist, doc?.lessonId, replaceAssist, t, updateAssist]
+      );
+      const retryAssist = useCallback(
+        (annotation) => {
+          if (!annotation || !doc) return;
+          runAssist(
+            {
+              task: annotation.assistType,
+              selection: annotation.quote,
+              context: annotation.context || "",
+              scope: annotation.scope || "selection"
+            },
+            annotation.id
+          );
+        },
+        [doc, runAssist]
+      );
+      const copyAssist = useCallback(async (annotation) => {
+        const text5 = assistCopyText(annotation, t);
+        try {
+          if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text5);
+          else fallbackCopy(text5);
+          setCopiedId(annotation.id);
+          setTimeout(() => {
+            if (mounted.current) setCopiedId("");
+          }, 1600);
+        } catch {
+        }
+      }, [t]);
+      const startSelectionAssist = useCallback(
+        (task) => {
+          const menu = selectionMenu;
+          if (!menu || !doc) return;
+          window.getSelection()?.removeAllRanges();
+          runAssist({ task, selection: menu.text, context: menu.context, scope: "selection" });
+        },
+        [doc, runAssist, selectionMenu]
+      );
+      const runEnhance = useCallback(
+        async (target, force = false) => {
+          const lessonId = target?.lessonId;
+          if (!lessonId) return;
+          const mtime = target.mtime;
+          const key = `${ENHANCE_CACHE_PREFIX}${lessonId}`;
+          if (force) {
+            try {
+              localStorage.removeItem(key);
+            } catch {
+            }
+          } else {
+            const cached = readEnhanceCache(key, mtime);
+            if (cached) {
+              setEnhanceByLesson((previous4) => ({
+                ...previous4,
+                [lessonId]: { status: "done", data: cached.data, generatedAt: cached.generatedAt, mtime }
+              }));
+              return;
+            }
+          }
+          if (!force && enhanceRequests.current.get(lessonId) === mtime) return;
+          const seq = (enhanceSeq.current.get(lessonId) || 0) + 1;
+          enhanceSeq.current.set(lessonId, seq);
+          enhanceRequests.current.set(lessonId, mtime);
+          setEnhanceByLesson((previous4) => ({
+            ...previous4,
+            [lessonId]: { ...previous4[lessonId] || {}, status: "loading", mtime }
+          }));
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 18e4);
+          try {
+            const response = await fetch("/api/tutorial-review/assist", {
+              method: "POST",
+              credentials: "same-origin",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({
+                task: "review-enhance",
+                lessonId,
+                selection: target.title,
+                context: "",
+                scope: "lesson"
+              }),
+              signal: controller.signal
+            });
+            let payload = null;
+            try {
+              payload = await response.json();
+            } catch {
+              payload = null;
+            }
+            if (!response.ok) throw new Error(payload?.message || `HTTP ${response.status}`);
+            if (!payload || payload.kind !== "review-enhance") throw new Error(t("reviewEnhanceFailed"));
+            if (enhanceSeq.current.get(lessonId) !== seq) return;
+            const data2 = {
+              issues: Array.isArray(payload.issues) ? payload.issues : [],
+              internalLinks: Array.isArray(payload.internalLinks) ? payload.internalLinks : [],
+              externalLinks: Array.isArray(payload.externalLinks) ? payload.externalLinks : [],
+              note: payload.note || "",
+              sourcesNote: payload.sourcesNote || ""
+            };
+            const generatedAt = Date.now();
+            try {
+              localStorage.setItem(key, JSON.stringify({ mtime, generatedAt, data: data2 }));
+            } catch {
+            }
+            setEnhanceByLesson((previous4) => ({
+              ...previous4,
+              [lessonId]: { status: "done", data: data2, generatedAt, mtime }
+            }));
+          } catch (error) {
+            if (enhanceSeq.current.get(lessonId) !== seq) return;
+            const message = error?.name === "AbortError" ? t("assistTimeout") : error instanceof Error ? error.message : String(error);
+            setEnhanceByLesson((previous4) => ({
+              ...previous4,
+              [lessonId]: { ...previous4[lessonId] || {}, status: "error", error: message, mtime }
+            }));
+          } finally {
+            clearTimeout(timer);
+            if (enhanceSeq.current.get(lessonId) === seq) enhanceRequests.current.delete(lessonId);
+          }
+        },
+        [t]
+      );
+      const regenerateEnhance = useCallback(() => {
+        if (doc) runEnhance(doc, true);
+      }, [doc, runEnhance]);
+      useEffect(() => {
+        if (!doc) return;
+        const force = forceEnhance.current;
+        forceEnhance.current = false;
+        runEnhance(doc, force);
+      }, [doc?.lessonId, doc?.mtime, enhanceNonce, runEnhance]);
+      useEffect(() => {
+        if (!doc) return void 0;
+        let frame = 0;
+        const clear = () => setSelectionMenu(null);
+        const measure = () => {
+          frame = 0;
+          const selection = window.getSelection();
+          if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+            clear();
+            return;
+          }
+          const range = selection.getRangeAt(0);
+          const body = document.querySelector(".tr-doc-body");
+          if (!body || !body.contains(range.commonAncestorContainer)) {
+            clear();
+            return;
+          }
+          const startElement = range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer;
+          if (!startElement || startElement.closest?.("pre, code, [data-no-annotate]")) {
+            clear();
+            return;
+          }
+          const text5 = normalizeSpace(selection.toString());
+          if (text5.length < 4) {
+            clear();
+            return;
+          }
+          const rect = typeof range.getBoundingClientRect === "function" ? range.getBoundingClientRect() : startElement.getBoundingClientRect?.();
+          if (!rect || rect.width === 0 && rect.height === 0) {
+            clear();
+            return;
+          }
+          const half = Math.min(140, Math.max(70, window.innerWidth / 2 - 12));
+          const left = Math.min(
+            window.innerWidth - half - 8,
+            Math.max(half + 8, rect.left + rect.width / 2)
+          );
+          let top = rect.bottom + 10;
+          if (top + 82 > window.innerHeight) top = Math.max(16, rect.top - 72);
+          setSelectionMenu({ text: text5, context: readSelectionContext(range), left, top });
+        };
+        const schedule = () => {
+          if (frame) return;
+          frame = requestAnimationFrame(measure);
+        };
+        const hide = () => setSelectionMenu(null);
+        document.addEventListener("selectionchange", schedule);
+        document.addEventListener("mouseup", schedule);
+        document.addEventListener("keyup", schedule);
+        window.addEventListener("scroll", hide, true);
+        window.addEventListener("resize", hide);
+        return () => {
+          if (frame) cancelAnimationFrame(frame);
+          document.removeEventListener("selectionchange", schedule);
+          document.removeEventListener("mouseup", schedule);
+          document.removeEventListener("keyup", schedule);
+          window.removeEventListener("scroll", hide, true);
+          window.removeEventListener("resize", hide);
+          setSelectionMenu(null);
+        };
+      }, [doc?.lessonId]);
+      const assistCount = assistAnnotations.length;
+      const enhanceCount = reviewEnhanceAnnotations.length;
+      const noteCount = annotations.length + enhanceCount;
+      const enhanceLoading = enhanceEntry?.status === "loading";
       const searchActive = query.trim().length > 0;
       return h(
         "div",
-        { className: "tr-root" },
-        h("style", null, STYLES),
+        { className: "tr-root font-tr" },
+        h("style", null, `@layer components {${STYLES}}`),
+        h("style", null, TAILWIND_CSS),
         h(
           "aside",
-          { className: `tr-nav${navOpen ? " is-open" : ""}`, "aria-label": t("panel") },
+          { className: cn("tr-nav border-r border-tr-border bg-tr-muted/40", navOpen && "is-open"), "aria-label": t("panel") },
           h(
             "div",
-            { className: "tr-nav-head" },
-            h("div", { className: "tr-nav-kicker" }, t("title")),
-            h("p", { className: "tr-nav-sub" }, t("subtitle"))
+            { className: "flex flex-col gap-1 border-b border-tr-border px-4 pb-3 pt-5" },
+            h("div", { className: "text-[15px] font-semibold tracking-tight text-tr-fg" }, t("title")),
+            h("p", { className: "m-0 text-[11px] leading-relaxed text-tr-tertiary" }, t("subtitle"))
           ),
           h(
-            "label",
-            { className: "tr-search" },
-            searchIcon(),
-            h("input", {
+            "div",
+            { className: "relative m-3" },
+            h("span", { className: "pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-tr-tertiary" }, searchIcon()),
+            h(Input, {
               type: "search",
               value: query,
               onChange: (event) => setQuery(event.target.value),
               placeholder: t("search"),
-              "aria-label": t("search")
+              "aria-label": t("search"),
+              className: "pl-8 pr-8"
             }),
             query ? h(
-              "button",
+              Button,
               {
-                type: "button",
-                className: "tr-search-clear",
+                variant: "ghost",
+                size: "icon-xs",
+                className: "absolute right-1 top-1 text-tr-tertiary",
                 onClick: () => setQuery(""),
                 "aria-label": t("clearSearch")
               },
@@ -25543,7 +30493,7 @@
           ),
           h(
             "div",
-            { className: "tr-nav-scroll" },
+            { className: "tr-nav-scroll px-2 py-2" },
             loading && !manifest ? h(NavSkeleton, { rows: 7 }) : filteredCourses.length === 0 ? h(
               "div",
               { className: "tr-nav-empty" },
@@ -25553,7 +30503,10 @@
               const isCollapsed = !searchActive && collapsed.has(item.id);
               const count = item.sections.reduce((sum, section) => sum + section.lessons.length, 0);
               const notes = item.sections.reduce(
-                (sum, section) => sum + section.lessons.reduce((n, lesson) => n + (lesson.annotationCount || 0), 0),
+                (sum, section) => sum + section.lessons.reduce(
+                  (n, lesson) => n + (lesson.annotationCount || 0) + autoCountFor(lesson),
+                  0
+                ),
                 0
               );
               return h(
@@ -25563,35 +30516,39 @@
                   "button",
                   {
                     type: "button",
-                    className: "tr-course-head",
+                    className: "group flex w-full items-center gap-1.5 rounded-md px-1.5 py-1.5 text-left text-[11.5px] font-medium text-tr-fg transition-colors hover:bg-tr-muted",
                     onClick: () => toggleCourse(item.id),
                     "aria-expanded": !isCollapsed
                   },
                   h("span", { className: "tr-chevron", "data-collapsed": isCollapsed ? "1" : "0" }, chevronIcon()),
                   h("span", { className: "tr-course-title" }, item.title),
-                  h("span", { className: "tr-course-count" }, `${count} ${t("lessons")}`),
-                  notes > 0 ? h("span", { className: "tr-course-notes" }, notes) : null
+                  h("span", { className: "text-[10px] font-normal text-tr-tertiary" }, `${count} ${t("lessons")}`),
+                  notes > 0 ? h(Badge, { variant: "warn", className: "px-1.5 py-0 text-[9px]" }, notes) : null
                 ),
                 isCollapsed ? null : item.sections.map(
                   (section, sectionIndex) => h(
                     "div",
                     { className: "tr-section", key: `${item.id}-${section.title || "root"}-${sectionIndex}` },
-                    section.title && (sectionIndex > 0 || item.sections.length > 1) ? h("div", { className: "tr-section-title" }, section.title) : null,
-                    section.lessons.map(
-                      (lesson) => h(
+                    section.title && (sectionIndex > 0 || item.sections.length > 1) ? h("div", { className: "px-2 pb-1 pt-2 text-[9.5px] font-medium uppercase tracking-wide text-tr-tertiary" }, section.title) : null,
+                    section.lessons.map((lesson) => {
+                      const notes2 = (lesson.annotationCount || 0) + autoCountFor(lesson);
+                      return h(
                         "button",
                         {
                           type: "button",
                           key: lesson.lessonId,
-                          className: `tr-lesson${lesson.lessonId === selectedId ? " is-active" : ""}`,
+                          className: cn(
+                            "tr-lesson group flex w-full items-start gap-2 rounded-md px-2 py-1.5 text-left text-[11.5px] leading-snug text-tr-secondary transition-colors hover:bg-tr-muted hover:text-tr-fg",
+                            lesson.lessonId === selectedId && "is-active bg-tr-accent/10 font-medium text-tr-fg"
+                          ),
                           onClick: () => selectLesson(lesson.lessonId),
                           "aria-current": lesson.lessonId === selectedId ? "page" : void 0,
                           title: lesson.title
                         },
                         h("span", { className: "tr-lesson-title" }, lesson.title),
-                        lesson.annotationCount > 0 ? h("span", { className: "tr-lesson-notes", title: t("annotations") }, lesson.annotationCount) : null
-                      )
-                    )
+                        notes2 > 0 ? h(Badge, { variant: "warn", className: "tr-lesson-notes ml-auto mt-0.5 px-1.5 py-0 text-[9px]", title: t("annotations") }, notes2) : null
+                      );
+                    })
                   )
                 )
               );
@@ -25599,11 +30556,11 @@
           ),
           h(
             "div",
-            { className: "tr-nav-foot" },
+            { className: "flex flex-wrap gap-1 border-t border-tr-border px-4 py-2 text-[10px] text-tr-tertiary" },
             h(
               "span",
               null,
-              `${manifest?.totalLessons || 0} ${t("lessons")} \xB7 ${manifest?.totalAnnotations || 0} ${t("notes")}`
+              `${manifest?.totalLessons || 0} ${t("lessons")} \xB7 ${(manifest?.totalAnnotations || 0) + totalAutoCount} ${t("notes")}`
             ),
             refreshedAt ? h("span", { className: "tr-foot-time" }, `\xB7 ${formatTime(refreshedAt)}`) : null
           )
@@ -25613,15 +30570,15 @@
           { className: "tr-main" },
           h(
             "header",
-            { className: "tr-toolbar" },
+            { className: "tr-toolbar border-b border-tr-border bg-tr-bg/95" },
             h(
               "div",
-              { className: "tr-crumbs" },
+              { className: "flex min-w-0 items-center gap-1.5 text-[11px] text-tr-tertiary" },
               h(
                 "button",
                 {
                   type: "button",
-                  className: "tr-crumb-root",
+                  className: "tr-crumb-root text-tr-tertiary transition-colors hover:text-tr-fg",
                   onClick: () => {
                     setQuery("");
                   }
@@ -25629,7 +30586,7 @@
                 t("title")
               ),
               course ? h("span", { className: "tr-crumb-sep" }, "/") : null,
-              course ? h("span", { className: "tr-crumb-course" }, course.title) : null
+              course ? h("span", { className: "truncate text-tr-secondary" }, course.title) : null
             ),
             h(
               "div",
@@ -25655,12 +30612,13 @@
                   title: t("annotations")
                 },
                 noteIcon(),
-                noteCount > 0 ? h("span", { className: "tr-btn-count" }, noteCount) : null
+                noteCount > 0 ? h(Badge, { variant: "accent", className: "absolute -right-1 -top-1 px-1 py-0 text-[8px]" }, noteCount) : null
               ),
               h(
-                "button",
+                Button,
                 {
-                  type: "button",
+                  variant: "outline",
+                  size: "sm",
                   className: "tr-refresh",
                   onClick: refresh,
                   disabled: refreshing || loading,
@@ -25690,21 +30648,13 @@
               { className: "tr-state tr-state-error" },
               h("h2", null, t("loadFailed")),
               h("p", null, loadError),
-              h(
-                "button",
-                { type: "button", className: "tr-primary", onClick: refresh },
-                t("retry")
-              )
+              h(Button, { variant: "default", size: "sm", onClick: refresh }, t("retry"))
             ) : loading && !manifest ? h(DocSkeleton) : !doc ? docError ? h(
               "div",
               { className: "tr-state tr-state-error" },
               h("h2", null, t("loadFailed")),
               h("p", null, docError),
-              h(
-                "button",
-                { type: "button", className: "tr-primary", onClick: () => loadDoc(selectedId) },
-                t("retry")
-              )
+              h(Button, { variant: "default", size: "sm", onClick: () => loadDoc(selectedId) }, t("retry"))
             ) : h(
               "div",
               { className: "tr-state tr-state-empty" },
@@ -25753,20 +30703,17 @@
                   "div",
                   { className: "tr-state tr-state-error tr-inline-state" },
                   h("p", null, docError),
-                  h(
-                    "button",
-                    { type: "button", className: "tr-primary", onClick: () => loadDoc(selectedId) },
-                    t("retry")
-                  )
+                  h(Button, { variant: "default", size: "sm", onClick: () => loadDoc(selectedId) }, t("retry"))
                 ) : null,
                 rendered.error ? h("div", { className: "tr-parse-error", dangerouslySetInnerHTML: { __html: rendered.html } }) : null,
                 docError ? null : h(MemoDocumentBody, {
                   html: rendered.html,
-                  annotations,
+                  annotations: allAnnotations,
                   activeId,
                   focusAnn,
                   onSelect: handleMarkSelect,
-                  onLocated: handleLocated
+                  onLocated: handleLocated,
+                  onPositions: handlePositions
                 }),
                 noteCount === 0 && !docError ? h("div", { className: "tr-no-notes" }, noteIcon(18), h("span", null, t("noAnnotations"))) : null,
                 h(
@@ -25815,12 +30762,12 @@
         ),
         h(
           "aside",
-          { className: `tr-rail${railOpen ? " is-open" : ""}`, "aria-label": t("annotations") },
+          { className: cn("tr-rail border-l border-tr-border bg-tr-muted/30", railOpen && "is-open"), "aria-label": t("annotations") },
           h(
             "div",
-            { className: "tr-rail-head" },
-            h("h2", null, t("annotations")),
-            h("span", { className: "tr-rail-count" }, noteCount),
+            { className: "flex items-center gap-2 border-b border-tr-border px-4 pb-2 pt-4" },
+            h("h2", { className: "m-0 min-w-0 flex-1 text-[12px] font-semibold tracking-tight" }, t("annotations")),
+            h(Badge, { variant: "muted", className: "px-1.5 py-0 text-[9px]" }, noteCount),
             h(
               "button",
               {
@@ -25834,53 +30781,160 @@
           ),
           h(
             "div",
-            { className: "tr-rail-scroll" },
-            noteCount === 0 ? h("div", { className: "tr-rail-empty" }, h("p", null, t("noAnnotations"))) : h(
-              "ol",
-              { className: "tr-notes" },
-              sortedAnnotations.positioned.map(
-                (annotation, index2) => h(NoteCard, {
-                  key: annotation.key,
-                  annotation,
-                  index: index2 + 1,
-                  active: annotation.id === activeId,
-                  onSelect: handleRailSelect,
-                  onRef: (node2) => {
-                    if (node2) cardRefs.current.set(annotation.id, node2);
-                    else cardRefs.current.delete(annotation.id);
-                  },
-                  t
-                })
-              )
+            { className: "flex items-center gap-2 border-b border-tr-border bg-tr-bg/60 px-3 py-2" },
+            h(
+              "span",
+              { className: "min-w-0 flex-1 truncate text-[9.5px] text-tr-tertiary" },
+              enhanceEntry?.status === "loading" ? t("reviewEnhanceLoadingShort") : enhanceEntry?.status === "error" ? t("reviewEnhanceFailedShort") : enhanceEntry?.generatedAt ? `${t("reviewEnhanceUpdated")} \xB7 ${formatTime(new Date(enhanceEntry.generatedAt))}` : t("reviewEnhanceAuto")
             ),
-            sortedAnnotations.missing.length > 0 ? h(
-              "section",
-              { className: "tr-missing" },
-              h("h3", null, t("unlocated")),
-              h("p", null, t("unlocatedHint")),
-              sortedAnnotations.missing.map(
-                (annotation, index2) => h(NoteCard, {
-                  key: annotation.key,
-                  annotation,
-                  index: null,
-                  missing: true,
-                  active: annotation.id === activeId,
-                  onSelect: handleRailSelect,
-                  onRef: null,
-                  t,
-                  extraKey: index2
+            h(
+              Button,
+              {
+                variant: "outline",
+                size: "xs",
+                className: "tr-rail-rerun",
+                onClick: regenerateEnhance,
+                disabled: !doc || enhanceLoading,
+                title: t("reviewEnhanceAgain")
+              },
+              h("span", { className: enhanceLoading ? "tr-spin" : "" }, refreshIcon()),
+              h("span", null, enhanceLoading ? t("reviewEnhanceLoadingShort") : t("reviewEnhanceAgain"))
+            )
+          ),
+          h(
+            "div",
+            { className: "tr-rail-scroll p-2.5" },
+            noteCount === 0 && assistCount === 0 && !enhanceEntry ? h(
+              "div",
+              { className: "flex flex-col gap-2 px-3 py-8 text-[11px] leading-relaxed text-tr-tertiary" },
+              h("p", null, t("noAnnotations")),
+              h("p", { className: "tr-assist-empty-hint" }, t("assistEmpty"))
+            ) : h(
+              React.Fragment,
+              null,
+              enhanceEntry?.status === "loading" ? h(
+                "div",
+                {
+                  className: "tr-proof-status is-loading flex items-center gap-2 rounded-md border border-tr-border bg-tr-bg px-3 py-2.5 text-[10.5px] text-tr-tertiary"
+                },
+                h("span", { className: "tr-spin" }, refreshIcon()),
+                h("span", null, t("reviewEnhanceLoading"))
+              ) : enhanceEntry?.status === "error" ? h(
+                "div",
+                {
+                  className: "tr-proof-status is-error flex flex-col items-start gap-2 rounded-md border border-tr-danger/20 bg-tr-danger/5 px-3 py-2.5 text-[10.5px] text-tr-danger"
+                },
+                h("p", { className: "m-0 leading-relaxed" }, enhanceEntry.error || t("reviewEnhanceFailed")),
+                h(
+                  Button,
+                  { variant: "outline", size: "xs", onClick: regenerateEnhance },
+                  t("retry")
+                )
+              ) : enhanceEntry?.status === "done" && enhanceCount === 0 ? h(
+                "div",
+                {
+                  className: "tr-proof-status is-clean flex items-center gap-2 rounded-md border border-tr-success/20 bg-tr-success/5 px-3 py-2.5 text-[10.5px] text-tr-success"
+                },
+                h("span", { className: "flex h-4 w-4 items-center justify-center rounded-full bg-tr-success/15 text-[10px] font-semibold", "aria-hidden": "true" }, "\u2713"),
+                h("span", null, enhanceData?.note || t("reviewEnhanceClean"))
+              ) : null,
+              reviewCards.length > 0 ? h(
+                "ol",
+                { className: "tr-notes tr-review-feed flex flex-col gap-2" },
+                reviewCards.map((annotation) => {
+                  const isReview = annotation.kind === "review";
+                  const index2 = isReview ? locatedOrder.get(annotation.id) : null;
+                  const missing = isReview && !locatedOrder.has(annotation.id);
+                  return h(NoteCard, {
+                    key: annotation.key,
+                    annotation,
+                    index: index2 ?? null,
+                    missing,
+                    active: annotation.id === activeId,
+                    onSelect: handleRailSelect,
+                    onRef: (node2) => {
+                      if (node2) cardRefs.current.set(annotation.id, node2);
+                      else cardRefs.current.delete(annotation.id);
+                    },
+                    onNavigate: selectLesson,
+                    onRetryAssist: annotation.kind === "assist" ? retryAssist : void 0,
+                    onCopy: copyAssist,
+                    copied: copiedId === annotation.id,
+                    t
+                  });
                 })
-              )
-            ) : null,
-            noteCount > 0 ? h("p", { className: "tr-rail-foot" }, t("subtitle")) : null
+              ) : null,
+              enhanceData?.sourcesNote && enhanceCount > 0 ? h("p", { className: "tr-assist-note tr-sources-note" }, enhanceData.sourcesNote) : null,
+              assistCount > 0 ? h(
+                "section",
+                { className: "tr-assist-section mt-4 border-t border-tr-border pt-3" },
+                h("h3", { className: "m-0 px-1 pb-2 text-[9.5px] font-semibold uppercase tracking-wide text-tr-tertiary" }, t("assistTitle")),
+                h(
+                  "ul",
+                  { className: "m-0 flex list-none flex-col gap-2 p-0" },
+                  assistAnnotations.map(
+                    (annotation) => h(NoteCard, {
+                      key: annotation.key,
+                      annotation,
+                      index: null,
+                      active: annotation.id === activeId,
+                      onSelect: handleRailSelect,
+                      onRef: (node2) => {
+                        if (node2) cardRefs.current.set(annotation.id, node2);
+                        else cardRefs.current.delete(annotation.id);
+                      },
+                      onNavigate: selectLesson,
+                      onRetryAssist: retryAssist,
+                      onCopy: copyAssist,
+                      copied: copiedId === annotation.id,
+                      t
+                    })
+                  )
+                )
+              ) : null,
+              noteCount > 0 ? h("p", { className: "mt-4 border-t border-tr-border px-1 pt-3 text-[9.5px] leading-relaxed text-tr-tertiary" }, t("assistDisclaimer")) : null
+            )
           )
         ),
+        selectionMenu ? h(
+          "div",
+          {
+            className: "tr-selection-menu rounded-card border border-tr-border-strong bg-tr-bg p-1.5 shadow-xl",
+            style: { left: selectionMenu.left, top: selectionMenu.top },
+            onMouseDown: (event) => event.preventDefault(),
+            role: "menu",
+            "aria-label": t("assistTitle")
+          },
+          h("span", { className: "px-2 pb-0.5 pt-1 text-[9px] font-semibold uppercase tracking-wide text-tr-tertiary" }, t("assistTitle")),
+          h(
+            "div",
+            { className: "grid grid-cols-2 gap-1" },
+            [
+              ["optimize", t("optimize")],
+              ["expand", t("expand")]
+            ].map(
+              ([task, label]) => h(
+                Button,
+                {
+                  variant: "ghost",
+                  size: "sm",
+                  role: "menuitem",
+                  key: task,
+                  className: "tr-selection-action justify-start px-2",
+                  onClick: () => startSelectionAssist(task)
+                },
+                label
+              )
+            )
+          )
+        ) : null,
         navOpen ? h("button", { type: "button", className: "tr-nav-backdrop", onClick: () => setNavOpen(false), "aria-label": t("close") }) : null,
         railOpen ? h("button", { type: "button", className: "tr-rail-backdrop", onClick: () => setRailOpen(false), "aria-label": t("close") }) : null
       );
     }
-    function DocumentBody({ html: html2, annotations, activeId, focusAnn, onSelect, onLocated }) {
+    function DocumentBody({ html: html2, annotations, activeId, focusAnn, onSelect, onLocated, onPositions }) {
       const containerRef = useRef(null);
+      const flashTimer = useRef(null);
       const onSelectRef = useRef(onSelect);
       onSelectRef.current = onSelect;
       useLayoutEffect(() => {
@@ -25888,8 +30942,9 @@
         if (!container) return void 0;
         const cleanup = highlightAnnotations(container, annotations);
         onLocated(readLocatedAnnotations(container, annotations));
+        onPositions(readAnnotationPositions(container));
         return cleanup;
-      }, [html2, annotations, onLocated]);
+      }, [html2, annotations, onLocated, onPositions]);
       useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
@@ -25900,8 +30955,20 @@
         const container = containerRef.current;
         if (!container || !focusAnn?.id) return;
         const mark = container.querySelector(`mark.tr-annotation[data-ann-id="${cssEscape(focusAnn.id)}"]`);
-        if (mark) mark.scrollIntoView({ block: "center", behavior: "smooth" });
+        if (!mark) return;
+        mark.scrollIntoView({ block: "center", behavior: "smooth" });
+        mark.classList.remove("is-flashing");
+        void mark.offsetWidth;
+        mark.classList.add("is-flashing");
+        clearTimeout(flashTimer.current);
+        flashTimer.current = setTimeout(() => mark.classList.remove("is-flashing"), 1800);
       }, [focusAnn]);
+      useEffect(
+        () => () => {
+          clearTimeout(flashTimer.current);
+        },
+        []
+      );
       useEffect(() => {
         const container = containerRef.current;
         if (!container) return void 0;
@@ -25931,44 +30998,328 @@
       return h("div", { className: "tr-doc-body", ref: containerRef, dangerouslySetInnerHTML: { __html: html2 } });
     }
     const MemoDocumentBody = React.memo(DocumentBody);
-    function NoteCard({ annotation, index: index2, active, missing, onSelect, onRef, t }) {
+    function NoteCard({ annotation, index: index2, active, missing, onSelect, onRef, t, onNavigate, onRetryAssist, onCopy, copied }) {
+      const assist = annotation.kind === "assist";
+      const proof = annotation.kind === "proofread";
+      const link2 = annotation.kind === "link";
+      const proofType = proof ? annotation.issueType === "typo" ? "typo" : "grammar" : "";
+      const linkType = link2 ? annotation.linkType === "external" ? "external" : "internal" : "";
+      const badgeVariant = proof ? proofType === "typo" ? "danger" : "warn" : link2 ? linkType === "external" ? "accent" : "success" : assist ? "accent" : "muted";
+      const badgeText = proof ? proofType === "typo" ? "\u9519" : "\u53E5" : link2 ? linkType === "external" ? "\u5916" : "\u5185" : assist ? "\u2726" : index2 ?? "\xB7";
       return h(
         "li",
         {
-          className: `tr-note${active ? " is-active" : ""}${missing ? " is-missing" : ""}`,
           ref: onRef,
           onClick: () => onSelect(annotation.id),
-          onKeyDown: (event) => {
+          onKeyDown: assist || proof || link2 ? void 0 : (event) => {
+            if (event.target !== event.currentTarget) return;
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
               onSelect(annotation.id);
             }
           },
-          role: "button",
-          tabIndex: 0
+          role: assist || proof || link2 ? void 0 : "button",
+          tabIndex: assist || proof || link2 ? void 0 : 0,
+          className: cn(
+            "tr-note group relative flex min-w-0 cursor-pointer flex-col rounded-card border border-tr-border bg-tr-bg p-3 text-tr-fg shadow-sm transition-colors",
+            "hover:border-tr-border-strong",
+            active && "border-tr-border-strong ring-2 ring-tr-accent/10",
+            missing && "opacity-80",
+            assist && "tr-note-assist",
+            proof && `tr-note-proof tr-proof-${proofType}`,
+            link2 && `tr-note-link tr-link-${linkType}`
+          )
         },
         h(
           "div",
-          { className: "tr-note-head" },
-          h("span", { className: "tr-note-index" }, index2 ?? "\xB7"),
-          h("span", { className: "tr-note-cat" }, annotation.category),
-          missing ? h("span", { className: "tr-note-missing-tag" }, t("unlocated")) : null
+          { className: "flex items-center gap-2" },
+          h(
+            Badge,
+            {
+              variant: badgeVariant,
+              className: "h-5 min-w-5 justify-center rounded-md px-1 text-[9px] font-semibold"
+            },
+            badgeText
+          ),
+          h("span", { className: "tr-note-cat min-w-0 flex-1 truncate text-[10px] font-medium text-tr-secondary" }, annotation.category),
+          assist || proof || link2 ? h(Badge, { variant: "outline", className: "ml-auto px-1.5 py-0 text-[8px]" }, "AI") : null,
+          assist && annotation.status === "loading" ? h("span", { className: "text-[9px] text-tr-tertiary" }, t("generatingShort")) : null,
+          missing ? h(Badge, { variant: "outline", className: "px-1.5 py-0 text-[8px]" }, t("unlocated")) : null
         ),
-        h("blockquote", { className: "tr-note-quote" }, `\u201C${annotation.quote}\u201D`),
-        h("p", { className: "tr-note-comment" }, annotation.comment)
+        proof ? h(ProofreadDiff, { annotation }) : h(
+          "blockquote",
+          {
+            className: "tr-note-quote mb-2 mt-2 overflow-hidden rounded-md border-l-2 border-tr-border-strong bg-tr-muted/60 px-2.5 py-2 text-[11px] leading-relaxed text-tr-secondary [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]"
+          },
+          `\u201C${annotation.quote}\u201D`
+        ),
+        proof ? h(ProofreadCardBody, { annotation, t, onCopy, copied }) : link2 ? h(LinkCardBody, { annotation, t, onNavigate, onCopy, copied }) : assist ? h(AssistCardBody, {
+          annotation,
+          t,
+          onNavigate,
+          onRetry: onRetryAssist,
+          onCopy,
+          copied
+        }) : h("p", { className: "m-0 text-[12px] leading-relaxed text-tr-fg" }, annotation.comment)
+      );
+    }
+    function ProofreadDiff({ annotation }) {
+      const parts = diffText(annotation.quote, annotation.suggestion);
+      return h(
+        "div",
+        {
+          className: "tr-proof-diff mb-2 mt-2 rounded-md border-l-2 border-tr-border-strong bg-tr-muted/60 px-2.5 py-2 text-[11px] leading-relaxed text-tr-fg",
+          role: "group",
+          "aria-label": "\u539F\u6587\u4E0E\u5EFA\u8BAE\u7684\u5DEE\u5F02"
+        },
+        parts.map(
+          (part, index2) => part.type === "del" ? h("del", { key: index2, className: "tr-diff-del rounded-sm bg-tr-danger/10 px-0.5 text-tr-danger line-through decoration-1" }, part.text) : part.type === "ins" ? h("ins", { key: index2, className: "tr-diff-add rounded-sm bg-tr-success/10 px-0.5 text-tr-success no-underline" }, part.text) : h(React.Fragment, { key: index2 }, part.text)
+        )
+      );
+    }
+    function ProofreadCardBody({ annotation, t, onCopy, copied }) {
+      return h(
+        "div",
+        { className: "tr-proof-body" },
+        h("p", { className: "m-0 text-[10.5px] leading-relaxed text-tr-secondary" }, annotation.reason),
+        h(
+          "div",
+          { className: "flex justify-end pt-2" },
+          h(
+            Button,
+            {
+              variant: "ghost",
+              size: "xs",
+              onClick: (event) => {
+                event.stopPropagation();
+                onCopy?.(annotation);
+              }
+            },
+            copied ? t("copied") : t("copy")
+          )
+        )
+      );
+    }
+    function AssistCardBody({ annotation, t, onNavigate, onRetry, onCopy, copied }) {
+      if (annotation.status === "loading") {
+        return h(
+          "div",
+          { className: "py-1" },
+          h("div", { className: "tr-assist-skeleton" }, h("span"), h("span"), h("span")),
+          h("p", { className: "mt-2 text-[10.5px] text-tr-tertiary" }, t("generating"))
+        );
+      }
+      if (annotation.status === "error") {
+        return h(
+          "div",
+          { className: "py-1" },
+          h("p", { className: "mb-2 text-[11px] leading-relaxed text-tr-danger" }, annotation.error || t("assistFailed")),
+          h(
+            Button,
+            {
+              variant: "outline",
+              size: "xs",
+              onClick: (event) => {
+                event.stopPropagation();
+                onRetry?.(annotation);
+              }
+            },
+            t("retry")
+          )
+        );
+      }
+      const result = annotation.result || {};
+      let body = null;
+      if (annotation.assistType === "optimize") {
+        body = h(
+          "div",
+          { className: "tr-assist-block" },
+          h("div", { className: "mb-1 text-[9px] font-semibold uppercase tracking-wide text-tr-tertiary" }, t("optimized")),
+          h("p", { className: "tr-assist-rewrite m-0 whitespace-pre-wrap rounded-md border-l-2 border-tr-border-strong bg-tr-muted/60 px-2.5 py-2 text-[11.5px] leading-relaxed text-tr-fg" }, result.rewrite || ""),
+          Array.isArray(result.notes) && result.notes.length > 0 ? h(
+            "ul",
+            { className: "mt-2 list-disc space-y-1 pl-4 text-[10.5px] leading-relaxed text-tr-secondary" },
+            result.notes.map((note, index2) => h("li", { key: index2 }, note))
+          ) : null
+        );
+      } else if (annotation.assistType === "expand") {
+        body = h(
+          "div",
+          { className: "tr-assist-block" },
+          h("div", { className: "mb-1 text-[9px] font-semibold uppercase tracking-wide text-tr-tertiary" }, t("directions")),
+          h(
+            "ol",
+            { className: "m-0 list-decimal space-y-2 pl-4 text-[11.5px] leading-relaxed text-tr-fg" },
+            (result.directions || []).map(
+              (direction, index2) => h(
+                "li",
+                { key: index2 },
+                h("strong", null, direction.title),
+                h("p", { className: "mt-0.5 text-[10.5px] leading-relaxed text-tr-secondary" }, direction.detail)
+              )
+            )
+          )
+        );
+      } else if (annotation.assistType === "internal-links") {
+        const links = result.links || [];
+        body = h(
+          "div",
+          { className: "tr-assist-block" },
+          links.length === 0 ? h("p", { className: "m-0 text-[10.5px] leading-relaxed text-tr-tertiary" }, t("noLinkSuggestions")) : h(
+            "div",
+            { className: "flex flex-col gap-2" },
+            links.map(
+              (link2) => h(
+                "div",
+                { className: "border-l-2 border-tr-accent/30 pl-2", key: link2.lessonId },
+                h(
+                  "button",
+                  {
+                    type: "button",
+                    className: "text-left text-[11.5px] font-semibold text-tr-accent hover:underline",
+                    onClick: (event) => {
+                      event.stopPropagation();
+                      onNavigate?.(link2.lessonId);
+                    },
+                    title: t("openLesson")
+                  },
+                  link2.title,
+                  " \u2197"
+                ),
+                h("p", { className: "mt-0.5 text-[10.5px] leading-relaxed text-tr-secondary" }, link2.reason)
+              )
+            )
+          )
+        );
+      } else if (annotation.assistType === "external-links") {
+        const links = result.links || [];
+        body = h(
+          "div",
+          { className: "tr-assist-block" },
+          links.length === 0 ? h("p", { className: "m-0 text-[10.5px] leading-relaxed text-tr-tertiary" }, t("noLinkSuggestions")) : h(
+            "div",
+            { className: "flex flex-col gap-2" },
+            links.map(
+              (link2) => h(
+                "div",
+                { className: "border-l-2 border-tr-accent/30 pl-2", key: link2.url },
+                h(
+                  "a",
+                  {
+                    className: "text-left text-[11.5px] font-semibold text-tr-accent hover:underline",
+                    href: link2.url,
+                    target: "_blank",
+                    rel: "noreferrer noopener",
+                    onClick: (event) => event.stopPropagation(),
+                    title: t("openLink")
+                  },
+                  link2.title,
+                  " \u2197"
+                ),
+                link2.domain ? h("span", { className: "block text-[9px] text-tr-tertiary" }, link2.domain) : null,
+                h("p", { className: "mt-0.5 text-[10.5px] leading-relaxed text-tr-secondary" }, link2.reason),
+                link2.snippet ? h("p", { className: "mt-0.5 line-clamp-2 text-[10px] leading-relaxed text-tr-tertiary" }, link2.snippet) : null
+              )
+            )
+          )
+        );
+      } else {
+        body = h("p", { className: "m-0 text-[12px] leading-relaxed text-tr-fg" }, annotation.comment || "");
+      }
+      return h(
+        "div",
+        { className: "tr-assist-body" },
+        body,
+        result.fallback ? h("p", { className: "mt-2 text-[9.5px] leading-relaxed text-tr-warn" }, t("fallbackNote")) : null,
+        result.note ? h("p", { className: "mt-2 text-[9.5px] leading-relaxed text-tr-tertiary" }, result.note) : null,
+        h(
+          "div",
+          { className: "flex justify-end pt-2" },
+          h(
+            Button,
+            {
+              variant: "ghost",
+              size: "xs",
+              onClick: (event) => {
+                event.stopPropagation();
+                onCopy?.(annotation);
+              }
+            },
+            copied ? t("copied") : t("copy")
+          )
+        )
+      );
+    }
+    function LinkCardBody({ annotation, t, onNavigate, onCopy, copied }) {
+      const external = annotation.linkType === "external";
+      return h(
+        "div",
+        { className: "tr-link-body" },
+        h("div", { className: "mb-1 text-[9px] font-semibold uppercase tracking-wide text-tr-tertiary" }, external ? t("externalLinks") : t("internalLinks")),
+        external ? h(
+          "a",
+          {
+            className: "inline text-[11.5px] font-semibold text-tr-accent hover:underline",
+            href: annotation.url,
+            target: "_blank",
+            rel: "noreferrer noopener",
+            onClick: (event) => event.stopPropagation(),
+            title: t("openLink")
+          },
+          annotation.title,
+          " \u2197"
+        ) : h(
+          "button",
+          {
+            type: "button",
+            className: "inline text-[11.5px] font-semibold text-tr-accent hover:underline",
+            onClick: (event) => {
+              event.stopPropagation();
+              onNavigate?.(annotation.lessonId);
+            },
+            title: t("openLesson")
+          },
+          annotation.title,
+          " \u2197"
+        ),
+        annotation.domain ? h("span", { className: "block text-[9px] text-tr-tertiary" }, annotation.domain) : null,
+        h("p", { className: "mt-1 text-[10.5px] leading-relaxed text-tr-secondary" }, annotation.reason),
+        annotation.snippet ? h("p", { className: "mt-0.5 line-clamp-2 text-[10px] leading-relaxed text-tr-tertiary" }, annotation.snippet) : null,
+        h(
+          "div",
+          { className: "flex justify-end pt-2" },
+          h(
+            Button,
+            {
+              variant: "ghost",
+              size: "xs",
+              onClick: (event) => {
+                event.stopPropagation();
+                onCopy?.(annotation);
+              }
+            },
+            copied ? t("copied") : t("copy")
+          )
+        )
       );
     }
     function NavSkeleton({ rows = 6 }) {
       return h(
         "div",
-        { className: "tr-skeleton", "aria-hidden": "true" },
+        { className: "flex flex-col gap-4 px-4 py-4", "aria-hidden": "true" },
         Array.from(
           { length: 3 },
           (_, group) => h(
             "div",
-            { className: "tr-skeleton-group", key: group },
-            h("div", { className: "tr-skeleton-bar tr-skeleton-head" }),
-            Array.from({ length: rows - group }, (_2, row) => h("div", { className: "tr-skeleton-bar", key: row }))
+            { className: "flex flex-col gap-1.5", key: group },
+            h(Skeleton, { className: "mb-1 h-2.5 w-24" }),
+            Array.from(
+              { length: rows - group },
+              (_2, row) => h(Skeleton, {
+                key: row,
+                className: cn("h-2", row % 3 === 0 ? "w-[88%]" : row % 3 === 1 ? "w-[72%]" : "w-[60%]")
+              })
+            )
           )
         )
       );
@@ -25976,12 +31327,18 @@
     function DocSkeleton() {
       return h(
         "div",
-        { className: "tr-doc-skeleton", "aria-hidden": "true" },
-        h("div", { className: "tr-skeleton-bar tr-skeleton-title" }),
-        h("div", { className: "tr-skeleton-bar tr-skeleton-line" }),
-        h("div", { className: "tr-skeleton-bar tr-skeleton-line tr-skeleton-short" }),
-        h("div", { className: "tr-skeleton-gap" }),
-        Array.from({ length: 8 }, (_, index2) => h("div", { className: "tr-skeleton-bar tr-skeleton-line", key: index2 }))
+        { className: "mx-auto flex w-full max-w-[720px] flex-col gap-3 px-8 py-10", "aria-hidden": "true" },
+        h(Skeleton, { className: "mb-2 h-7 w-2/3" }),
+        h(Skeleton, { className: "h-3 w-full" }),
+        h(Skeleton, { className: "h-3 w-4/5" }),
+        h(Skeleton, { className: "my-3 h-3 w-full" }),
+        Array.from(
+          { length: 8 },
+          (_, index2) => h(Skeleton, {
+            key: index2,
+            className: cn("h-3", index2 % 4 === 3 ? "w-3/4" : "w-full")
+          })
+        )
       );
     }
     function refreshIcon() {
@@ -26007,6 +31364,14 @@
     function chevronIcon() {
       return svg(h("path", { d: "m8 10 4 4 4-4" }), { width: 14, height: 14 });
     }
+    function proofIcon() {
+      return svg(
+        h("path", { d: "M4.8 19.2 6.1 14l9.2-9.2a2.1 2.1 0 0 1 3 3L9 17.1l-4.2 2.1Z" }),
+        h("path", { d: "m13.7 6.6 3.7 3.7" }),
+        h("path", { d: "M15.8 4.5h1.2M16.4 3.9v1.2" }),
+        { width: 15, height: 15 }
+      );
+    }
     function listIcon() {
       return svg(
         h("path", { d: "M4.5 7h15M4.5 12h15M4.5 17h9" }),
@@ -26019,7 +31384,9 @@
         { width: 15, height: 15, className: "tr-arrow" }
       );
     }
-    function svg(child, options = {}, overrides = {}) {
+    function svg(...args) {
+      const last = args[args.length - 1];
+      const props = last && typeof last === "object" && !last.$$typeof ? args.pop() : {};
       return h(
         "svg",
         {
@@ -26032,9 +31399,9 @@
           strokeLinecap: "round",
           strokeLinejoin: "round",
           "aria-hidden": "true",
-          ...overrides
+          ...props
         },
-        child
+        args
       );
     }
     const MemoReviewPage = React.memo(ReviewPage);
@@ -26071,6 +31438,21 @@
       }
     };
   }
+  function readEnhanceCache(key, mtime) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return null;
+      const value = JSON.parse(raw);
+      if (!value || value.mtime !== mtime || !value.data) return null;
+      return value;
+    } catch {
+      return null;
+    }
+  }
+  function countEnhanceData(data2) {
+    if (!data2) return 0;
+    return (data2.issues?.length || 0) + (data2.internalLinks?.length || 0) + (data2.externalLinks?.length || 0);
+  }
   function flattenLessons(manifest) {
     if (!manifest || !Array.isArray(manifest.courses)) return [];
     const out = [];
@@ -26083,6 +31465,132 @@
     }
     return out;
   }
+  function assistLabel(task, t) {
+    const key = {
+      optimize: "optimize",
+      expand: "expand",
+      "internal-links": "internalLinks",
+      "external-links": "externalLinks"
+    }[task];
+    return t(key || "assistTitle");
+  }
+  function diffText(before, after) {
+    const a = Array.from(String(before == null ? "" : before));
+    const b2 = Array.from(String(after == null ? "" : after));
+    if (a.length === 0) return b2.length ? [{ type: "ins", text: b2.join("") }] : [];
+    if (b2.length === 0) return [{ type: "del", text: a.join("") }];
+    if (a.length * b2.length > 12e4) return simpleDiff(a, b2);
+    const table = Array.from({ length: a.length + 1 }, () => new Uint16Array(b2.length + 1));
+    for (let i3 = a.length - 1; i3 >= 0; i3 -= 1) {
+      const row = table[i3];
+      const next = table[i3 + 1];
+      for (let j2 = b2.length - 1; j2 >= 0; j2 -= 1) {
+        row[j2] = a[i3] === b2[j2] ? next[j2 + 1] + 1 : Math.max(next[j2], row[j2 + 1]);
+      }
+    }
+    const parts = [];
+    const push2 = (type, text5) => {
+      const last = parts[parts.length - 1];
+      if (last && last.type === type) last.text += text5;
+      else parts.push({ type, text: text5 });
+    };
+    let i2 = 0;
+    let j = 0;
+    while (i2 < a.length || j < b2.length) {
+      if (i2 < a.length && j < b2.length && a[i2] === b2[j]) {
+        push2("same", a[i2]);
+        i2 += 1;
+        j += 1;
+      } else if (j < b2.length && (i2 >= a.length || table[i2][j + 1] > table[i2 + 1][j])) {
+        push2("ins", b2[j]);
+        j += 1;
+      } else {
+        push2("del", a[i2]);
+        i2 += 1;
+      }
+    }
+    return parts;
+  }
+  function simpleDiff(a, b2) {
+    let prefix = 0;
+    while (prefix < a.length && prefix < b2.length && a[prefix] === b2[prefix]) prefix += 1;
+    let suffix = 0;
+    while (suffix < a.length - prefix && suffix < b2.length - prefix && a[a.length - 1 - suffix] === b2[b2.length - 1 - suffix]) {
+      suffix += 1;
+    }
+    const parts = [];
+    if (prefix > 0) parts.push({ type: "same", text: a.slice(0, prefix).join("") });
+    if (a.length - suffix > prefix) parts.push({ type: "del", text: a.slice(prefix, a.length - suffix).join("") });
+    if (b2.length - suffix > prefix) parts.push({ type: "ins", text: b2.slice(prefix, b2.length - suffix).join("") });
+    if (suffix > 0) parts.push({ type: "same", text: a.slice(a.length - suffix).join("") });
+    return parts;
+  }
+  function assistCopyText(annotation, t) {
+    if (annotation.kind === "proofread") {
+      return `${annotation.quote}
+\u2192 ${annotation.suggestion}
+${annotation.reason}`;
+    }
+    if (annotation.kind === "link") {
+      return `${annotation.title}${annotation.url ? ` ${annotation.url}` : ""}
+${annotation.reason}
+${annotation.quote}`;
+    }
+    const result = annotation.result || {};
+    if (annotation.assistType === "optimize") return result.rewrite || "";
+    if (annotation.assistType === "expand") {
+      return (result.directions || []).map((direction, index2) => `${index2 + 1}. ${direction.title}
+${direction.detail}`).join("\n\n");
+    }
+    if (annotation.assistType === "internal-links") {
+      return (result.links || []).map((link2) => `${link2.title}
+${link2.reason}`).join("\n\n");
+    }
+    if (annotation.assistType === "external-links") {
+      return (result.links || []).map((link2) => `${link2.title} ${link2.url}
+${link2.reason}`).join("\n\n");
+    }
+    return annotation.quote || "";
+  }
+  function fallbackCopy(text5) {
+    const area = document.createElement("textarea");
+    area.value = text5;
+    area.setAttribute("readonly", "");
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    try {
+      document.execCommand("copy");
+    } finally {
+      area.remove();
+    }
+  }
+  function readSelectionContext(range) {
+    const start2 = range.startContainer.nodeType === 3 ? range.startContainer.parentElement : range.startContainer;
+    const block = start2?.closest?.("p, li, h1, h2, h3, h4, h5, h6, blockquote, td, th") || start2?.closest?.(".tr-doc-body");
+    const paragraph2 = normalizeSpace(block?.textContent || "");
+    const selected = normalizeSpace(range.toString());
+    const heading2 = previousHeading(block);
+    return [
+      heading2 ? `\u4E0A\u4E00\u7EA7\u6807\u9898\uFF1A${heading2}` : "",
+      paragraph2 ? `\u6240\u5728\u6BB5\u843D\uFF1A${paragraph2.slice(0, 1600)}` : "",
+      selected && !paragraph2.includes(selected) ? `\u9009\u4E2D\u5185\u5BB9\uFF1A${selected.slice(0, 1600)}` : ""
+    ].filter(Boolean).join("\n");
+  }
+  function previousHeading(element2) {
+    const scope = element2?.closest(".tr-doc-body") || element2;
+    let node2 = element2;
+    while (node2 && node2 !== scope?.parentElement) {
+      let previous4 = node2.previousElementSibling;
+      while (previous4) {
+        if (/^H[1-6]$/.test(previous4.tagName)) return normalizeSpace(previous4.textContent).slice(0, 120);
+        previous4 = previous4.previousElementSibling;
+      }
+      node2 = node2.parentElement;
+    }
+    return "";
+  }
   function matchesQuery(lesson, course, term) {
     return [lesson.title, lesson.description, lesson.lessonId, course.title].filter(Boolean).join(" ").toLowerCase().includes(term);
   }
@@ -26094,6 +31602,7 @@
       seen.set(base, count);
       return {
         ...item,
+        kind: item.kind || "review",
         id: count === 1 ? base : `${base}-${count}`,
         key: `${base}-${index2}`
       };
@@ -26102,6 +31611,10 @@
   function sameLocated(a, b2) {
     if (a.length !== b2.length) return false;
     return a.every((item, index2) => item.id === b2[index2].id && item.index === b2[index2].index);
+  }
+  function samePositions(a, b2) {
+    if (a.length !== b2.length) return false;
+    return a.every((item, index2) => item.id === b2[index2].id && item.start === b2[index2].start);
   }
   function interpolate(template, vars) {
     if (!vars) return String(template);
@@ -26269,7 +31782,6 @@
   background: var(--dsw-alias-interactive-bg-active, color-mix(in srgb, var(--tr-accent) 10%, transparent));
   color: var(--tr-text);
   font-weight: 500;
-  box-shadow: inset 2px 0 0 var(--tr-accent);
 }
 .tr-lesson-title { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .tr-lesson-notes {
@@ -26772,6 +32284,588 @@
   line-height: 1;
   vertical-align: super;
   font-style: normal;
+}
+
+.tr-toolbar { position: relative; }
+.tr-link-wrap { position: relative; }
+.tr-link-trigger svg { color: var(--tr-text-3); }
+.tr-link-menu {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  width: min(310px, 78vw);
+  z-index: 45;
+  padding: 8px;
+  border: .5px solid var(--tr-border-strong);
+  border-radius: var(--tr-radius-sm);
+  background: var(--tr-bg);
+  box-shadow: 0 12px 34px rgba(0,0,0,.16);
+}
+.tr-link-menu-title { margin: 2px 4px 7px; color: var(--tr-text-3); font-size: 10.5px; line-height: 1.5; }
+.tr-link-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--tr-text);
+  text-align: left;
+  padding: 8px 8px;
+  cursor: pointer;
+  font: inherit;
+}
+.tr-link-menu-item:hover { background: var(--dsw-alias-interactive-bg-hover, rgba(0,0,0,.045)); }
+.tr-link-menu-icon { color: var(--tr-text-3); flex: none; margin-top: 1px; }
+.tr-link-menu-item > span:last-child { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tr-link-menu-item strong { font-size: 12px; font-weight: 550; }
+.tr-link-menu-item small { color: var(--tr-text-3); font-size: 10.5px; line-height: 1.45; }
+.tr-selection-menu {
+  position: fixed;
+  z-index: 70;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 7px;
+  border: .5px solid var(--tr-border-strong);
+  border-radius: var(--tr-radius-sm);
+  background: var(--tr-bg);
+  box-shadow: 0 14px 40px rgba(0,0,0,.2);
+}
+.tr-selection-menu-label {
+  padding: 1px 4px;
+  color: var(--tr-text-3);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.tr-selection-menu-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+.tr-selection-action {
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--tr-text);
+  padding: 7px 10px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11.5px;
+  white-space: nowrap;
+  text-align: left;
+}
+.tr-selection-action:hover { background: color-mix(in srgb, var(--tr-accent) 9%, transparent); color: var(--tr-accent); }
+.tr-assist-section { margin-top: 18px; border-top: .5px solid var(--tr-border); padding-top: 12px; }
+.tr-assist-section > h3 {
+  margin: 0 4px 8px;
+  color: var(--tr-text-2);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+.tr-assist-empty-hint { margin-top: 8px !important; }
+.tr-note-index-ai { background: var(--tr-accent); font-size: 11px; }
+.tr-note-ai-badge {
+  color: var(--tr-accent);
+  border: .5px solid color-mix(in srgb, var(--tr-accent) 32%, transparent);
+  border-radius: 999px;
+  padding: 1px 5px;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.tr-note-loading { color: var(--tr-text-3); font-size: 9.5px; margin-left: auto; }
+.tr-assist-loading { padding: 4px 0 2px; }
+.tr-assist-loading p { margin: 8px 0 0; color: var(--tr-text-3); font-size: 10.5px; line-height: 1.5; }
+.tr-assist-skeleton { display: flex; flex-direction: column; gap: 5px; }
+.tr-assist-skeleton span {
+  display: block;
+  height: 7px;
+  border-radius: 4px;
+  background: var(--dsw-alias-bg-skeleton, var(--tr-bg-softer));
+  animation: tr-pulse 1.8s ease-in-out infinite;
+}
+.tr-assist-skeleton span:nth-child(1) { width: 92%; }
+.tr-assist-skeleton span:nth-child(2) { width: 76%; }
+.tr-assist-skeleton span:nth-child(3) { width: 58%; }
+.tr-assist-error { padding: 5px 0 2px; }
+.tr-assist-error p { margin: 0 0 8px; color: var(--tr-error); font-size: 11px; line-height: 1.55; }
+.tr-assist-retry,
+.tr-assist-copy {
+  border: .5px solid var(--tr-border);
+  border-radius: 6px;
+  background: var(--tr-bg-soft);
+  color: var(--tr-text-2);
+  padding: 4px 8px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+}
+.tr-assist-retry:hover,
+.tr-assist-copy:hover { color: var(--tr-text); background: var(--tr-bg-softer); }
+.tr-assist-actions { display: flex; justify-content: flex-end; margin-top: 9px; }
+.tr-assist-label {
+  color: var(--tr-text-3);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.tr-assist-rewrite {
+  margin: 0;
+  padding: 9px 10px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--tr-accent) 5%, var(--tr-bg-soft));
+  color: var(--tr-text);
+  font-size: 12px;
+  line-height: 1.72;
+  white-space: pre-wrap;
+}
+.tr-assist-notes { margin: 8px 0 0; padding-left: 16px; color: var(--tr-text-2); font-size: 11px; line-height: 1.6; }
+.tr-assist-notes li { margin: 3px 0; }
+.tr-assist-directions { margin: 0; padding-left: 16px; color: var(--tr-text); font-size: 11.5px; line-height: 1.65; }
+.tr-assist-directions li { margin: 0 0 8px; }
+.tr-assist-directions strong { font-size: 11.5px; font-weight: 600; }
+.tr-assist-directions p { margin: 3px 0 0; color: var(--tr-text-2); }
+.tr-assist-links { display: flex; flex-direction: column; gap: 9px; }
+.tr-assist-link { border-left: 2px solid color-mix(in srgb, var(--tr-accent) 32%, transparent); padding-left: 8px; }
+.tr-assist-link-title {
+  display: inline;
+  border: 0;
+  background: transparent;
+  color: var(--tr-accent);
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+}
+.tr-assist-link-title:hover { text-decoration: underline; }
+.tr-assist-domain { display: block; color: var(--tr-text-3); font-size: 9px; margin-top: 1px; }
+.tr-assist-link-reason { margin: 3px 0 0; color: var(--tr-text-2); font-size: 10.5px; line-height: 1.6; }
+.tr-assist-snippet { margin: 3px 0 0; color: var(--tr-text-3); font-size: 10px; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tr-assist-muted { margin: 0; color: var(--tr-text-3); font-size: 10.5px; line-height: 1.55; }
+.tr-assist-fallback { margin: 8px 0 0; color: var(--tr-warn); font-size: 9.5px; line-height: 1.5; }
+.tr-assist-note { margin: 7px 0 0; color: var(--tr-text-3); font-size: 9.5px; line-height: 1.5; }
+.tr-annotation-assist {
+  background: color-mix(in srgb, var(--tr-accent) 13%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--tr-accent) 65%, transparent);
+}
+.tr-annotation-assist:hover, .tr-annotation-assist.is-active {
+  background: color-mix(in srgb, var(--tr-accent) 22%, transparent);
+  border-bottom-color: var(--tr-accent);
+}
+.tr-annotation-assist .tr-annotation-index { background: var(--tr-accent); }
+@media (prefers-reduced-motion: reduce) {
+  .tr-assist-skeleton span { animation: none; }
+}
+
+
+.tr-proof-trigger { position: relative; }
+.tr-btn-count.tr-proof-count { background: var(--tr-error); }
+.tr-proof-section { margin-top: 18px; border-top: .5px solid var(--tr-border); padding-top: 12px; }
+.tr-proof-idle .tr-proof-start { margin-top: 0; }
+.tr-proof-head { display: flex; align-items: center; gap: 8px; margin: 0 4px 8px; }
+.tr-proof-head h3 { margin: 0; flex: 1; color: var(--tr-text-2); font-size: 11px; font-weight: 600; letter-spacing: .02em; }
+.tr-proof-tag {
+  color: var(--tr-text-3);
+  border: .5px solid var(--tr-border);
+  border-radius: 999px;
+  padding: 1px 6px;
+  font-size: 8.5px;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.tr-proof-tag.is-error { color: var(--tr-error); border-color: color-mix(in srgb, var(--tr-error) 32%, transparent); }
+.tr-proof-tag.is-clean { color: var(--tr-success); border-color: color-mix(in srgb, var(--tr-success) 32%, transparent); }
+.tr-proof-tag.is-loading { color: var(--tr-text-3); }
+.tr-proof-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 11px;
+  border: .5px solid var(--tr-border);
+  border-radius: var(--tr-radius-sm);
+  background: var(--tr-bg);
+  color: var(--tr-text-2);
+  font-size: 10.5px;
+  line-height: 1.55;
+}
+.tr-proof-status.is-loading { color: var(--tr-text-3); }
+.tr-proof-status.is-error { color: var(--tr-error); flex-direction: column; align-items: flex-start; }
+.tr-proof-status.is-clean { color: var(--tr-success); }
+.tr-proof-status p { margin: 0 0 2px; }
+.tr-proof-check {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--tr-success) 14%, transparent);
+  color: var(--tr-success);
+  font-size: 10px;
+  font-weight: 700;
+  flex: none;
+}
+.tr-proof-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.tr-note-proof.tr-proof-typo { background: color-mix(in srgb, var(--tr-error) 4%, var(--tr-bg)); }
+.tr-note-proof.tr-proof-grammar { background: color-mix(in srgb, var(--tr-warn) 4%, var(--tr-bg)); }
+.tr-note-index-proof { font-size: 9px; }
+.tr-note-index-typo { background: var(--tr-error); }
+.tr-note-index-grammar { background: var(--tr-warn); }
+.tr-proof-body { padding-top: 2px; }
+.tr-proof-label {
+  color: var(--tr-text-3);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.tr-proof-suggestion {
+  margin: 0;
+  padding: 7px 9px;
+  border-radius: 6px;
+  background: var(--tr-bg-soft);
+  color: var(--tr-text);
+  font-size: 11.5px;
+  line-height: 1.65;
+}
+.tr-proof-reason { margin: 6px 0 0; color: var(--tr-text-2); font-size: 10.5px; line-height: 1.55; }
+.tr-proof-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+.tr-proof-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  border: .5px solid var(--tr-border);
+  border-radius: 6px;
+  background: var(--tr-bg-soft);
+  color: var(--tr-text-2);
+  padding: 5px 9px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10.5px;
+}
+.tr-proof-start:hover:not(:disabled) { color: var(--tr-text); background: var(--tr-bg-softer); }
+.tr-proof-start:disabled { opacity: .55; cursor: default; }
+.tr-annotation-proof-typo {
+  background: color-mix(in srgb, var(--tr-error) 14%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--tr-error) 65%, transparent);
+  border-bottom-style: wavy;
+}
+.tr-annotation-proof-grammar {
+  background: color-mix(in srgb, var(--tr-warn) 16%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--tr-warn) 65%, transparent);
+  border-bottom-style: wavy;
+}
+.tr-annotation-proof-typo:hover, .tr-annotation-proof-typo.is-active {
+  background: color-mix(in srgb, var(--tr-error) 24%, transparent);
+  border-bottom-color: var(--tr-error);
+}
+.tr-annotation-proof-grammar:hover, .tr-annotation-proof-grammar.is-active {
+  background: color-mix(in srgb, var(--tr-warn) 26%, transparent);
+  border-bottom-color: var(--tr-warn);
+}
+.tr-annotation-proof-typo .tr-annotation-index { background: var(--tr-error); }
+.tr-annotation-proof-grammar .tr-annotation-index { background: var(--tr-warn); }
+.tr-selection-menu-actions .tr-selection-action:last-child:nth-child(odd) { grid-column: 1 / -1; }
+
+.tr-enhance-trigger { position: relative; }
+.tr-note-link.tr-link-internal {
+  background: color-mix(in srgb, var(--tr-success) 4%, var(--tr-bg));
+}
+.tr-note-link.tr-link-external {
+  background: color-mix(in srgb, var(--tr-accent) 4%, var(--tr-bg));
+}
+.tr-note-index-link { font-size: 9px; }
+.tr-note-index-internal { background: var(--tr-success); }
+.tr-note-index-external { background: var(--tr-accent); }
+.tr-link-body { padding-top: 2px; }
+.tr-link-label {
+  color: var(--tr-text-3);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.tr-link-title {
+  display: inline;
+  border: 0;
+  background: transparent;
+  color: var(--tr-success);
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+}
+.tr-note-link.tr-link-external .tr-link-title { color: var(--tr-accent); }
+.tr-link-title:hover { text-decoration: underline; }
+.tr-link-domain { display: block; color: var(--tr-text-3); font-size: 9px; margin-top: 1px; }
+.tr-link-reason { margin: 4px 0 0; color: var(--tr-text-2); font-size: 10.5px; line-height: 1.6; }
+.tr-link-snippet { margin: 3px 0 0; color: var(--tr-text-3); font-size: 10px; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.tr-link-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+.tr-annotation-link-internal {
+  background: color-mix(in srgb, var(--tr-success) 14%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--tr-success) 65%, transparent);
+}
+.tr-annotation-link-external {
+  background: color-mix(in srgb, var(--tr-accent) 13%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--tr-accent) 65%, transparent);
+}
+.tr-annotation-link-internal:hover, .tr-annotation-link-internal.is-active {
+  background: color-mix(in srgb, var(--tr-success) 24%, transparent);
+  border-bottom-color: var(--tr-success);
+}
+.tr-annotation-link-external:hover, .tr-annotation-link-external.is-active {
+  background: color-mix(in srgb, var(--tr-accent) 22%, transparent);
+  border-bottom-color: var(--tr-accent);
+}
+.tr-annotation-link-internal .tr-annotation-index { background: var(--tr-success); }
+.tr-annotation-link-external .tr-annotation-index { background: var(--tr-accent); }
+
+/* Unified review card surface */
+.tr-note {
+  --tr-note-accent: var(--tr-text-3);
+  --tr-flash: var(--tr-note-accent);
+  position: relative;
+  border: .5px solid var(--tr-border);
+  border-radius: 9px;
+  background: var(--tr-bg);
+  padding: 11px 12px 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .025);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.tr-note:hover { border-color: var(--tr-border-strong); box-shadow: 0 2px 8px rgba(0, 0, 0, .05); }
+.tr-note.is-active {
+  border-color: var(--tr-border-strong);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tr-note-accent) 11%, transparent), 0 2px 10px rgba(0, 0, 0, .06);
+}
+.tr-note.tr-note-assist { --tr-note-accent: var(--tr-accent); background: var(--tr-bg); }
+.tr-note.tr-note-proof.tr-proof-typo { --tr-note-accent: var(--tr-error); background: var(--tr-bg); }
+.tr-note.tr-note-proof.tr-proof-grammar { --tr-note-accent: var(--tr-warn); background: var(--tr-bg); }
+.tr-note.tr-note-link.tr-link-internal { --tr-note-accent: var(--tr-success); background: var(--tr-bg); }
+.tr-note.tr-note-link.tr-link-external { --tr-note-accent: var(--tr-accent); background: var(--tr-bg); }
+.tr-note-head { display: flex; align-items: center; gap: 7px; margin: 0 0 8px; }
+.tr-note .tr-note-index,
+.tr-note .tr-note-index-ai,
+.tr-note .tr-note-index-proof,
+.tr-note .tr-note-index-typo,
+.tr-note .tr-note-index-grammar,
+.tr-note .tr-note-index-link,
+.tr-note .tr-note-index-internal,
+.tr-note .tr-note-index-external {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--tr-note-accent) 13%, var(--tr-bg));
+  color: var(--tr-note-accent);
+  border: .5px solid color-mix(in srgb, var(--tr-note-accent) 28%, transparent);
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 0;
+}
+.tr-note-cat { flex: 1; min-width: 0; color: var(--tr-text-2); font-size: 10px; font-weight: 500; line-height: 1.4; }
+.tr-note-ai-badge {
+  margin-left: auto;
+  flex: none;
+  border: .5px solid var(--tr-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--tr-text-3);
+  padding: 0 5px;
+  font-size: 8px;
+  line-height: 15px;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+.tr-note-loading { margin-left: 0; }
+.tr-note-quote {
+  margin: 0 0 8px;
+  padding: 7px 9px;
+  border-left: 2px solid var(--tr-border-strong);
+  border-radius: 0 6px 6px 0;
+  background: var(--tr-bg-soft);
+  color: var(--tr-text-2);
+  font-size: 11px;
+  line-height: 1.65;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tr-note-comment { margin: 0; color: var(--tr-text); font-size: 12px; line-height: 1.72; }
+.tr-proof-body, .tr-assist-body, .tr-link-body { padding: 0; }
+.tr-proof-label, .tr-link-label, .tr-assist-label {
+  color: var(--tr-text-3);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  margin: 0 0 4px;
+}
+.tr-proof-diff {
+  margin: 0 0 8px;
+  padding: 7px 9px;
+  border-left: 2px solid var(--tr-border-strong);
+  border-radius: 0 6px 6px 0;
+  background: var(--tr-bg-soft);
+  color: var(--tr-text);
+  font-size: 11.5px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+.tr-diff-del {
+  color: var(--tr-error);
+  background: color-mix(in srgb, var(--tr-error) 14%, transparent);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+.tr-diff-add {
+  color: var(--tr-success);
+  background: color-mix(in srgb, var(--tr-success) 15%, transparent);
+  text-decoration: none;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+.tr-proof-suggestion, .tr-assist-rewrite {
+  margin: 0;
+  padding: 8px 9px;
+  border-left: 2px solid var(--tr-border-strong);
+  border-radius: 0 6px 6px 0;
+  background: var(--tr-bg-soft);
+  color: var(--tr-text);
+  font-size: 11.5px;
+  line-height: 1.68;
+  white-space: pre-wrap;
+}
+.tr-proof-reason { margin: 6px 0 0; color: var(--tr-text-2); font-size: 10.5px; line-height: 1.6; }
+.tr-link-title { color: var(--tr-note-accent); font-size: 11.5px; font-weight: 600; }
+.tr-link-domain { color: var(--tr-text-3); font-size: 9px; margin-top: 1px; }
+.tr-link-reason { margin: 4px 0 0; color: var(--tr-text-2); font-size: 10.5px; line-height: 1.6; }
+.tr-link-snippet { margin: 3px 0 0; color: var(--tr-text-3); font-size: 10px; line-height: 1.55; }
+.tr-proof-actions, .tr-link-actions, .tr-assist-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+.tr-assist-copy, .tr-assist-retry {
+  border: .5px solid var(--tr-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--tr-text-3);
+  padding: 3px 8px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 9.5px;
+  line-height: 1.5;
+}
+.tr-assist-copy:hover, .tr-assist-retry:hover { color: var(--tr-text); border-color: var(--tr-border-strong); background: var(--tr-bg-soft); }
+.tr-proof-section { margin-top: 16px; border-top: .5px solid var(--tr-border); padding-top: 12px; }
+.tr-proof-head { display: flex; align-items: center; gap: 8px; margin: 0 2px 8px; }
+.tr-proof-head h3, .tr-assist-section > h3 {
+  margin: 0;
+  flex: 1;
+  color: var(--tr-text-3);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.tr-assist-section { margin-top: 16px; border-top: .5px solid var(--tr-border); padding-top: 12px; }
+.tr-assist-section > h3 { margin: 0 2px 8px; }
+.tr-proof-tag {
+  color: var(--tr-text-3);
+  border: .5px solid var(--tr-border);
+  border-radius: 999px;
+  padding: 1px 6px;
+  font-size: 8.5px;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.tr-proof-tag.is-error { color: var(--tr-error); border-color: color-mix(in srgb, var(--tr-error) 32%, transparent); }
+.tr-proof-tag.is-clean { color: var(--tr-success); border-color: color-mix(in srgb, var(--tr-success) 32%, transparent); }
+.tr-proof-status { border: .5px solid var(--tr-border); border-radius: 8px; padding: 10px 11px; background: var(--tr-bg); }
+.tr-proof-status + .tr-notes, .tr-proof-status + .tr-review-feed { margin-top: 10px; }
+.tr-sources-note { margin: 10px 4px 0; }
+.tr-rail-tools {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: .5px solid var(--tr-border);
+  background: var(--tr-bg-soft);
+}
+.tr-rail-status {
+  flex: 1;
+  min-width: 0;
+  color: var(--tr-text-3);
+  font-size: 9.5px;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tr-rail-rerun {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 8px;
+  border: .5px solid var(--tr-border);
+  border-radius: 6px;
+  background: var(--tr-bg);
+  color: var(--tr-text-2);
+  cursor: pointer;
+  font: inherit;
+  font-size: 9.5px;
+  flex: none;
+}
+.tr-rail-rerun:hover:not(:disabled) { color: var(--tr-text); border-color: var(--tr-border-strong); }
+.tr-rail-rerun:disabled { opacity: .55; cursor: default; }
+.tr-rail-rerun .tr-spin { display: inline-flex; }
+.tr-proof-start { border-radius: 7px; }
+.tr-annotation { --tr-flash: var(--tr-warn); }
+.tr-annotation-assist { --tr-flash: var(--tr-accent); }
+.tr-annotation-proof-typo { --tr-flash: var(--tr-error); }
+.tr-annotation-proof-grammar { --tr-flash: var(--tr-warn); }
+.tr-annotation-link-internal { --tr-flash: var(--tr-success); }
+.tr-annotation-link-external { --tr-flash: var(--tr-accent); }
+mark.tr-annotation.is-flashing {
+  position: relative;
+  z-index: 2;
+  animation: tr-locate-flash 1.2s ease-out 1;
+}
+@keyframes tr-locate-flash {
+  0% {
+    background: color-mix(in srgb, var(--tr-flash) 18%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--tr-flash) 0%, transparent);
+  }
+  25% {
+    background: color-mix(in srgb, var(--tr-flash) 42%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--tr-flash) 24%, transparent);
+  }
+  65% {
+    background: color-mix(in srgb, var(--tr-flash) 28%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--tr-flash) 0%, transparent);
+  }
+  100% {
+    background: color-mix(in srgb, var(--tr-flash) 18%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--tr-flash) 0%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  mark.tr-annotation.is-flashing { animation: none; outline: 2px solid var(--tr-flash); outline-offset: 2px; }
 }
 @media (max-width: 1180px) {
   .tr-root { grid-template-columns: minmax(200px, 236px) minmax(0, 1fr); }

@@ -70,7 +70,14 @@
     "navHandbook": "Manuel",
     "footerLead": "aidevcourse.com · Gratuit, open source, sans pistage",
     "footerMeta": "© 2026 Jimmy Wong",
-    "browseCourses": "Voir les cours"
+    "browseCourses": "Voir les cours",
+    "heroIntro": "Du code aux modèles et aux agents. Une pièce, une leçon.",
+    "openingCourse": "Ouverture du cours…",
+    "cancelOpening": "Annuler",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "pagination": "Pages des cours",
+    "gettingStarted": "Pour commencer"
   },
   "Course": {
     "emptyTitle": "Pas encore de cours dans cette langue",
@@ -137,6 +144,7 @@
     "viewAll": "Voir tous les accomplissements"
   },
   "Author": {
+    "about": "À propos de l’auteur",
     "website": "Site personnel",
     "label": "Auteur et liens pour le suivre",
     "role": "Auteur du cours",

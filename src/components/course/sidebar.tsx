@@ -63,7 +63,7 @@ export function SidebarProvider({ open, onOpenChange, className, style, children
 
   const value = useMemo(() => ({ open, isMobile, openMobile, mobileDialogId, setOpenMobile, toggleSidebar }), [open, isMobile, openMobile, mobileDialogId, setOpenMobile, toggleSidebar]);
   return <SidebarContext.Provider value={value}>
-    <div {...props} data-slot="sidebar-wrapper" style={style} className={cn('group/sidebar-wrapper flex min-h-[calc(100svh-var(--zinc-header,0px))] w-full [--sidebar-width:20rem] [--sidebar-width-icon:3rem]', className)}>{children}</div>
+    <div {...props} data-slot="sidebar-wrapper" style={style} className={cn('group/sidebar-wrapper flex min-h-0 w-full flex-1 [--sidebar-width:17rem] [--sidebar-width-icon:3rem]', className)}>{children}</div>
   </SidebarContext.Provider>;
 }
 
@@ -93,10 +93,9 @@ export function Sidebar({ label, className, children, ...props }: ComponentProps
       }}>{children}</div>
     </SheetContent>
   </Sheet>;
-  return <div className="group peer hidden text-sidebar-foreground min-[961px]:block" data-state={open ? 'expanded' : 'collapsed'} data-collapsible={open ? '' : 'icon'} data-slot="sidebar">
-    <div data-slot="sidebar-gap" className="relative w-(--sidebar-width) bg-transparent group-data-[collapsible=icon]:w-(--sidebar-width-icon)" />
-    <div {...props} data-slot="sidebar-container" className={cn('fixed top-[var(--lesson-header-offset,0px)] bottom-0 left-0 z-10 hidden w-(--sidebar-width) border-r border-sidebar-border bg-background min-[961px]:flex group-data-[collapsible=icon]:w-(--sidebar-width-icon)', className)}>
-      <div data-sidebar="sidebar" data-slot="sidebar-inner" className="flex h-full w-full flex-col bg-background text-foreground">{children}</div>
+  return <div className="group hidden shrink-0 text-sidebar-foreground min-[961px]:flex" data-state={open ? 'expanded' : 'collapsed'} data-collapsible={open ? '' : 'icon'} data-slot="sidebar">
+    <div {...props} data-slot="sidebar-container" className={cn('flex w-(--sidebar-width) border-r border-sidebar-border bg-background group-data-[collapsible=icon]:w-(--sidebar-width-icon)', className)}>
+      <div data-sidebar="sidebar" data-slot="sidebar-inner" className="flex w-full flex-col bg-background text-foreground">{children}</div>
     </div>
   </div>;
 }
@@ -105,7 +104,7 @@ export function SidebarTrigger({ className, onClick, ...props }: ComponentProps<
   const { toggleSidebar, isMobile, openMobile, open } = useSidebar();
   const Icon = isMobile ? XIcon : SidebarSimpleIcon;
   return <Button {...props} data-sidebar="trigger" data-slot="sidebar-trigger" variant="ghost" size="icon-touch" aria-expanded={isMobile ? openMobile : open}
-    className={cn('size-9 shrink-0 text-muted-foreground before:-inset-1 group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:before:-inset-1.5', className)} onClick={(event) => {
+    className={cn('size-9 shrink-0 text-muted-foreground before:-inset-1 hover:bg-sidebar-accent hover:text-brand focus-visible:outline-brand group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:before:-inset-1.5', className)} onClick={(event) => {
       onClick?.(event);
       if (!event.defaultPrevented) { event.currentTarget.focus(); toggleSidebar(); }
     }}><Icon size={20} className="size-5 group-data-[collapsible=icon]:size-4" aria-hidden /></Button>;

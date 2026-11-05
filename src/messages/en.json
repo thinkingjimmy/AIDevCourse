@@ -70,7 +70,14 @@
     "navHandbook": "Handbook",
     "footerLead": "aidevcourse.com · Free, open source, no tracking",
     "footerMeta": "© 2026 Jimmy Wong",
-    "browseCourses": "Browse courses"
+    "browseCourses": "Browse courses",
+    "heroIntro": "From code and models to agents. One piece, one lesson.",
+    "openingCourse": "Opening course…",
+    "cancelOpening": "Cancel",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "pagination": "Course pages",
+    "gettingStarted": "Getting started"
   },
   "Course": {
     "emptyTitle": "No courses in this language yet",
@@ -137,6 +144,7 @@
     "viewAll": "View all achievements"
   },
   "Author": {
+    "about": "About the author",
     "website": "Personal website",
     "label": "About the author and follow links",
     "role": "Course author",

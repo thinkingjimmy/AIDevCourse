@@ -4,8 +4,8 @@ import { readFileSync } from 'node:fs';
 const copy = (locale: string) => JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
 const pages = [
   { path: '/zh', locale: 'zh', status: 200 },
-  { path: '/zh/courses/ai-coding', locale: 'zh', status: 200 },
-  { path: '/zh/courses/ai-coding/about-this-course', locale: 'zh', status: 200 },
+  { path: '/zh/courses/getting-started', locale: 'zh', status: 200 },
+  { path: '/zh/courses/getting-started/about-this-course', locale: 'zh', status: 200 },
   { path: '/zh/about', locale: 'zh', status: 200 },
   { path: '/zh/missing-author-page', locale: 'zh', status: 404 },
   { path: '/unsupported-locale', locale: 'en', status: 404 },
@@ -26,7 +26,7 @@ for (const width of [1440, 320]) {
       const messages = copy(entry.locale);
       const header = page.getByRole('banner');
       const trigger = header.getByRole('button', { name: messages.Author.label, exact: true });
-      await expect(trigger).toHaveText('👋');
+      await expect(trigger).toHaveText(entry.path === '/zh' ? messages.Author.about : '👋');
       await expect(header.getByRole('link', { name: messages.Ui.about, exact: true })).toHaveCount(0);
       await expect(page.locator('[data-slot="sidebar-footer"] [data-slot="author-dialog-trigger"]')).toHaveCount(0);
       const box = (await trigger.boundingBox())!;
@@ -62,7 +62,7 @@ test('header author fallback works without JavaScript on home, lesson, and missi
       await expect(header.locator('[data-slot="author-dialog-trigger"]')).toBeHidden();
       const website = header.getByRole('link', { name: messages.Author.website, exact: true });
       await expect(website).toBeVisible();
-      await expect(website).toHaveText('👋');
+      await expect(website).toHaveText(entry.path === '/zh' ? messages.Author.about : '👋');
       await expect(website).toHaveAttribute('href', 'https://jimmywong.dev');
       await expect(website).toHaveAttribute('target', '_blank');
       await expect(website).toHaveAttribute('rel', 'noopener noreferrer');

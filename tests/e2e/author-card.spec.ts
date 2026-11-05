@@ -105,7 +105,8 @@ async function verifyCard(page: Page, locale = 'zh') {
     return {
       width: bounds.width,
       radius: frameStyle.borderRadius,
-      baseRadius: getComputedStyle(document.documentElement).getPropertyValue('--radius').trim(),
+      border: frameStyle.borderColor,
+      titleBarBorder: getComputedStyle(frame.querySelector('.author-window-bar')!).borderBottomColor,
       shadow: frameStyle.boxShadow,
       radii,
       overflow: [...element.querySelectorAll('*')].some(item => {
@@ -115,8 +116,10 @@ async function verifyCard(page: Page, locale = 'zh') {
       }),
     };
   });
-  expect(geometry.radius).toBe(geometry.baseRadius);
-  expect(geometry.radii.every(radius => radius === geometry.baseRadius)).toBe(true);
+  expect(geometry.radius).toBe('2px');
+  expect(geometry.radii.every(radius => radius === '2px')).toBe(true);
+  expect(geometry.border).toBe('rgb(49, 86, 75)');
+  expect(geometry.titleBarBorder).toBe(geometry.border);
   expect(geometry.shadow).toMatch(/4px 4px 0px 0px/);
   expect(geometry.overflow).toBe(false);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -145,7 +148,11 @@ test('author dialog opens from the header and preserves working links', async ({
   await openAuthor(page);
   const { geometry } = await verifyCard(page);
   const dialog = page.getByRole('dialog', { name: dictionary('zh').label });
-  await expect(page.locator('[data-slot="dialog-overlay"]')).toHaveCSS('backdrop-filter', 'blur(8px)');
+  await expect(page.locator('[data-slot="dialog-overlay"]')).toHaveCSS('backdrop-filter', 'blur(4px)');
+  await expect(dialog.locator('.author-window-title')).toBeVisible();
+  const closeBounds = (await dialog.locator('.author-window-close').boundingBox())!;
+  expect(closeBounds.width).toBeGreaterThanOrEqual(44);
+  expect(closeBounds.height).toBeGreaterThanOrEqual(44);
   const accessibility = await new AxeBuilder({ page }).include('[data-author-dialog]').analyze();
   expect(accessibility.violations).toEqual([]);
   await capture(page, 'author-dialog-desktop');
@@ -181,6 +188,10 @@ test('author dialog remains reachable on narrow and short screens', async ({ pag
     const bounds = (await dialog.boundingBox())!;
     expect(bounds.y).toBeGreaterThanOrEqual(0);
     expect(bounds.y + bounds.height).toBeLessThanOrEqual(viewport.height);
+    const wechat = dialog.locator('[data-slot="author-wechat"]');
+    await wechat.scrollIntoViewIfNeeded();
+    await expect(wechat).toBeInViewport({ ratio: .95 });
+    await expect(close).toBeInViewport();
     await capture(page, `author-dialog-${viewport.width}-${viewport.height}`);
     await page.keyboard.press('Escape');
     await expect(dialog).toHaveCount(0);
@@ -268,23 +279,20 @@ test('lesson outline follows reading without changing the URL or page position',
   const toc = page.locator('[data-slot="lesson-toc"]');
   const links = toc.locator('a');
   const headings = page.locator('article h2');
+  const pane = page.locator('[data-slot="lesson-region"]');
   const active = toc.locator('[aria-current="location"]');
   await expect(active).toHaveCount(1);
   await expect(active).toHaveAttribute('href', (await links.first().getAttribute('href'))!);
   const evidence = [];
   for (const index of [1, 3, 5, 0]) {
-    await headings.nth(index).evaluate(heading => {
-      const margin = parseFloat(getComputedStyle(heading).scrollMarginTop);
-      window.scrollTo({ top: window.scrollY + heading.getBoundingClientRect().top - margin + 4, behavior: 'instant' });
-    });
+    await headings.nth(index).evaluate(heading => heading.scrollIntoView({ block: 'start' }));
+    await pane.evaluate(element => element.scrollBy(0, 4));
     await expect(active).toHaveAttribute('href', (await links.nth(index).getAttribute('href'))!);
     expect(new URL(page.url()).hash).toBe('');
-    evidence.push({ section: index, url: await active.getAttribute('href'), scrollY: await page.evaluate(() => window.scrollY) });
+    evidence.push({ section: index, url: await active.getAttribute('href'), scrollTop: await pane.evaluate(element => element.scrollTop) });
   }
-  await headings.nth(2).evaluate(heading => {
-    const margin = parseFloat(getComputedStyle(heading).scrollMarginTop);
-    window.scrollTo({ top: window.scrollY + heading.getBoundingClientRect().top - margin - 40, behavior: 'instant' });
-  });
+  await headings.nth(2).evaluate(heading => heading.scrollIntoView({ block: 'start' }));
+  await pane.evaluate(element => element.scrollBy(0, -40));
   await expect(active).toHaveAttribute('href', (await links.nth(1).getAttribute('href'))!);
   await links.nth(3).click();
   await expect(active).toHaveAttribute('href', (await links.nth(3).getAttribute('href'))!);
@@ -297,12 +305,11 @@ test('lesson outline follows reading without changing the URL or page position',
   expect(style.height).toBe('3px');
   await capture(page, 'lesson-outline-current-section');
   await page.setViewportSize({ width: 1440, height: 160 });
-  await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
+  await pane.evaluate(element => element.scrollTo(0, element.scrollHeight));
   await expect(active).toHaveAttribute('href', (await links.last().getAttribute('href'))!);
   await expect(active).toBeInViewport();
   expect(await toc.evaluate(element => element.scrollTop)).toBeGreaterThan(0);
-  const pageBottom = await page.evaluate(() => window.scrollY);
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(pageBottom);
+  expect(await pane.evaluate(element => element.scrollHeight - element.clientHeight - element.scrollTop)).toBeLessThanOrEqual(1);
   await capture(page, 'lesson-outline-short-viewport');
   await test.info().attach('Active section evidence', { body: JSON.stringify({ reading: evidence, style }, null, 2), contentType: 'application/json' });
 });

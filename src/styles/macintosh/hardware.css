@@ -1,0 +1,18 @@
+@layer components {
+  .pixel-macintosh { display: block; width: 100%; height: auto; }
+  .pixel-screen-readout {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    overflow: hidden;
+    color: #b6f9bc;
+    text-align: center;
+  }
+  .pixel-screen-title { @apply font-pixel text-diagram-label leading-heading; max-width: 100%; overflow-wrap: anywhere; text-wrap: balance; }
+  .pixel-screen-status { @apply text-diagram-caption leading-heading; color: #accfab; text-wrap: balance; }
+  @media (max-width: 721px) { .pixel-screen-status { display: none; } }
+}

@@ -36,12 +36,11 @@ export function JimmyNoteAnchor({ id, noteNumber, variant = 'text', children, cl
     <Popover.Portal>
       <Popover.Content data-slot="jimmy-note-popover" aria-label={t('jimmyNote')} aria-describedby={`jimmy-note-number-${id}`} side="bottom" align="end" sideOffset={8} collisionPadding={16}
         onInteractOutside={event => {
-          const qr = document.querySelector('[data-slot="note-wechat-popover"]');
-          if (event.target instanceof Node && qr?.contains(event.target)) event.preventDefault();
+          if (event.target instanceof Element && event.target.closest('[data-author-dialog], .author-window-overlay')) event.preventDefault();
         }}
         className="not-prose z-40 w-84 max-w-[calc(100vw-2rem)] rounded-sm outline-none [--note-max-height:var(--radix-popover-content-available-height)] has-[[data-note-variant=embed]]:bg-background has-[[data-note-variant=embed]]:pt-12 has-[[data-note-variant=embed]]:[--note-max-height:calc(var(--radix-popover-content-available-height)-3rem)]">
         <Popover.Close asChild>
-          <Button variant="ghost" size="icon-touch" aria-label={t('close')} className="absolute top-3 right-3 z-20 size-6 rounded-sm text-muted-foreground before:-inset-2.5">
+          <Button variant="ghost" size="icon-touch" aria-label={t('close')} className="absolute top-3 right-3 z-20 size-6 rounded-sm text-brand/85 before:-inset-2.5 hover:bg-brand-soft hover:text-brand focus-visible:outline-brand">
             <XIcon size={16} aria-hidden />
           </Button>
         </Popover.Close>

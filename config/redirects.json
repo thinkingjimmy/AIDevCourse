@@ -6,5 +6,21 @@
   {
     "source": "/zh/courses/llm-101/how-to-use-ai-artifacts",
     "destination": "/zh/courses/llm-101/ai-chat-tips"
+  },
+  {
+    "source": "/zh/courses/ai-coding",
+    "destination": "/zh/courses/getting-started"
+  },
+  {
+    "source": "/zh/courses/ai-coding/what-to-learn-in-the-ai-era",
+    "destination": "/zh/courses/getting-started/what-to-learn-in-the-ai-era"
+  },
+  {
+    "source": "/zh/courses/ai-coding/what-to-do-when-anxious",
+    "destination": "/zh/courses/getting-started/what-to-do-when-anxious"
+  },
+  {
+    "source": "/zh/courses/ai-coding/about-this-course",
+    "destination": "/zh/courses/getting-started/about-this-course"
   }
 ]

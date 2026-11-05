@@ -25,6 +25,9 @@ async function measureConnection(card: Locator) {
     context.fillStyle = stroke.stroke;
     context.fillRect(0, 0, 1, 1);
     const rgb = [...context.getImageData(0, 0, 1, 1).data].slice(0, 3);
+    context.fillStyle = style.getPropertyValue('--color-brand').trim();
+    context.fillRect(0, 0, 1, 1);
+    const brandRgb = [...context.getImageData(0, 0, 1, 1).data].slice(0, 3);
     const rectangles: DOMRect[] = [];
     const article = anchor.closest('article')!;
     const walker = document.createTreeWalker(article, NodeFilter.SHOW_TEXT);
@@ -50,7 +53,7 @@ async function measureConnection(card: Locator) {
       dotError: Math.hypot(start.x - point.x, start.y - point.y),
       tailRise: Math.abs(end.y - tail.y), length, textIntersections, pointIntersections,
       borderWidth, strokeWidth: parseFloat(stroke.strokeWidth), border: style.borderLeftColor,
-      stroke: stroke.stroke, radius: style.borderRadius, rootFontSize: parseFloat(getComputedStyle(document.documentElement).fontSize), shadow: style.boxShadow, rgb,
+      stroke: stroke.stroke, pointFill: getComputedStyle(dot).fill, radius: style.borderRadius, rootFontSize: parseFloat(getComputedStyle(document.documentElement).fontSize), shadow: style.boxShadow, rgb, brandRgb,
     };
   });
 }
@@ -79,7 +82,8 @@ export async function verifyConnection(card: Locator) {
       expect(geometry.stroke).toBe(geometry.border);
       expect(geometry.radius).toBe(`${geometry.rootFontSize / 4}px`);
       expect(geometry.shadow).not.toBe('none');
-      for (const [index, channel] of [243, 134, 24].entries()) expect(Math.abs(geometry.rgb[index] - channel)).toBeLessThanOrEqual(2);
+      expect(geometry.rgb).toEqual(geometry.brandRgb);
+      expect(geometry.pointFill).toBe(geometry.stroke);
     }).toPass({ timeout: 5000 });
   } catch (error) {
     await test.info().attach('failed connection geometry', { body: JSON.stringify(geometry, null, 2), contentType: 'application/json' });

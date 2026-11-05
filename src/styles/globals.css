@@ -8,6 +8,11 @@
 @import './prose.css';
 @import './illustrations.css';
 @import './mobile-navigation.css';
+@import './macintosh/hardware.css';
+@import './macintosh/home.css';
+@import './macintosh/screen-zoom.css';
+@import './macintosh/course.css';
+@import './macintosh/author.css';
 @source '../';
 @source '../../node_modules/fumadocs-ui/dist/**/*.js';
 

@@ -70,7 +70,14 @@
     "navHandbook": "Manual",
     "footerLead": "aidevcourse.com · Gratis, código abierto, sin rastreo",
     "footerMeta": "© 2026 Jimmy Wong",
-    "browseCourses": "Ver cursos"
+    "browseCourses": "Ver cursos",
+    "heroIntro": "Del código a los modelos y agentes. Una pieza, una lección.",
+    "openingCourse": "Abriendo el curso…",
+    "cancelOpening": "Cancelar",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "pagination": "Páginas de cursos",
+    "gettingStarted": "Primeros pasos"
   },
   "Course": {
     "emptyTitle": "Aún no hay cursos en este idioma",
@@ -137,6 +144,7 @@
     "viewAll": "Ver todos los logros"
   },
   "Author": {
+    "about": "Sobre el autor",
     "website": "Sitio personal",
     "label": "Autor y enlaces para seguirlo",
     "role": "Autor del curso",
