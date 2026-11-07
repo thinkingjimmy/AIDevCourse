@@ -1,0 +1,100 @@
+---
+courseId: llm-101
+lessonId: how-models-calculate-token-probabilities
+title: How does a model calculate token probabilities?
+description: Use simple formulas, candidate scores, and softmax to understand how a model produces a token probability distribution.
+---
+
+In the previous lesson, we looked at how a model [selects a token](/courses/llm-101/why-model-answers-vary) from a probability distribution. This time, I want to explain <JimmyNoteAnchor id="token-probabilities">how the model produces that distribution</JimmyNoteAnchor>.
+
+<JimmyNote anchor="token-probabilities">
+  This lesson involves mathematics that may seem dry or difficult. I hope the analogy helps you understand the principle. It may not explain every detail perfectly, but I prefer to give you the overall framework first. For a more precise and detailed explanation, consult other tutorials or relevant books.
+</JimmyNote>
+
+## 1. Understand input and parameters with one formula
+
+Start with a very simple formula:
+
+$$
+y = ax + b
+$$
+
+x is the input, y is the output, and a and b are parameters. Their values determine how the formula processes the input.
+
+## 2. Substitute the input to calculate candidate scores
+
+Return to the third lesson’s example about what to bring when it is raining. I want to explain it from a different angle. Set aside complex probability theory and use basic multiplication and addition.
+
+Suppose the output is “umbrella”, but the input varies: “It is sunny today. Remember your…” and “It is raining today. Remember your…”.
+
+The difference is “sunny” versus “raining”. Simplify this to 0 for sun and 1 for rain. In other words, x(rain) = 1 and x(sun) = 0. Suppose training has also given us the parameters a = 2 and b = 1.
+
+Substitute these into the formula to get the score for “umbrella”:
+
+| Weather | Input | Calculation | Umbrella score |
+| --- | --- | --- | ---: |
+| Rain | `x = 1` | `2 × 1 + 1` | **3** |
+| Sun | `x = 0` | `2 × 0 + 1` | **1** |
+
+For now, think of the score as a rough analogy for probability. When the input says “raining”, “umbrella” is more likely to follow “Remember your”.
+
+If “umbrella” has a score formula, y(umbrella) = a(umbrella)x + b(umbrella), other tokens, such as “raincoat” and “hat”, can have their own formulas. Only their a and b values differ.
+
+| Candidate | a | b | Substitution | Score |
+| --- | --- | --- | --- | ---: |
+| umbrella | 2 | 1 | `2 × 1 + 1` | **3** |
+| raincoat | 1 | 1 | `1 × 1 + 1` | **2** |
+| hat | -2 | 3 | `-2 × 1 + 3` | **1** |
+
+## 3. Convert scores to probabilities
+
+One input and several calculations give us three numbers. A mathematical conversion called [softmax](https://en.wikipedia.org/wiki/Softmax_function) turns them into probabilities that add up to 100%. You do not need the mathematical details here. Candidates with higher scores receive higher probabilities.
+
+| Candidate | Calculated score | Converted probability |
+| --- | ---: | ---: |
+| umbrella | 3 | about **66.5%** |
+| raincoat | 2 | about **24.5%** |
+| hat | 1 | about **9.0%** |
+
+## 4. From a simple analogy to a real model
+
+Actual calculations are far more complex. I am using the simplest arithmetic to explain how a model obtains probabilities for a set of tokens.
+
+You can picture an LLM’s next-token prediction like this:
+
+<TokenProbabilityDiagram />
+
+## 5. Why is this useful?
+
+**First, input affects the probabilities the model calculates.**
+
+With the same parameters, changing “sunny” to “raining” changes the score for “umbrella”. In practice, the context, requirements, and examples you provide also enter the model’s calculations and affect subsequent token probabilities.
+
+As I explained in [How does a large language model generate an answer?](/courses/llm-101/what-a-language-model-does), good results require enough information and correct information. Even with today’s models, clearly stating your goal, context, and requirements has a noticeable effect.
+
+**Second, a token’s probability is not the probability that an answer is correct.**
+
+The 66.5% probability for “umbrella” describes its chance of being chosen as the next token in this simplified example. It does not mean “the advice to bring an umbrella has a 66.5% chance of being correct.” Nor does it measure the model’s confidence in the whole answer.
+
+A passage can be fluent and sound certain while still containing errors. Check sources when you need to confirm facts. Asking the model to sound more confident does not make its facts more reliable.
+
+## 6. Achievement challenge
+
+<Achievement
+  id="token-probability-not-truth"
+  title="Separate probability from correctness"
+  question="In the simplified example, softmax gives ‘umbrella’ a probability of about 66.5%. What does this number mean?"
+  answer="next-token"
+  explanation="These probabilities describe the chances of selecting the next token for a given input. When sampling from this distribution, ‘umbrella’ has about a 66.5% chance of selection. This does not measure the correctness of the advice or the reliability of the whole answer."
+  takeaway="Token probability describes the chance of selecting the next token, not the correctness of the answer. Check sources when facts need confirmation."
+>
+  <AchievementOption value="advice-correctness">
+    The advice ‘you should bring an umbrella’ has a 66.5% chance of being correct.
+  </AchievementOption>
+  <AchievementOption value="next-token">
+    When sampling from this distribution, ‘umbrella’ has about a 66.5% chance of being selected as the next token.
+  </AchievementOption>
+  <AchievementOption value="answer-confidence">
+    The model is 66.5% confident that the entire answer is correct.
+  </AchievementOption>
+</Achievement>

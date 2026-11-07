@@ -1,0 +1,131 @@
+---
+courseId: llm-101
+lessonId: how-language-models-are-trained-part-1
+title: How is a model pretrained?
+description: Understand training data, model parameters, and knowledge cutoffs, and why generated answers still need verification.
+---
+
+We have seen how a model uses its input and parameters to calculate token probabilities. In this lesson, simple examples show how pretraining produces those parameters. You do not need to learn the training algorithms.
+
+## 1. An overview of pretraining
+
+Pretraining lets a model learn patterns in language from large amounts of text. In simple terms, it has three steps:
+
+<LLMPretrainingOverview />
+
+## <JimmyNoteAnchor id="how-to-pretrain">2. How does pretraining work?</JimmyNoteAnchor>
+
+<JimmyNote anchor="how-to-pretrain">
+  For a more detailed explanation, watch this video:
+  <YouTube
+  url="https://www.youtube.com/watch?v=LPZh9BOjkQs"
+  title="Large Language Models explained briefly"
+/>
+</JimmyNote>
+
+The process works roughly like this.
+
+**Step 0: Initialize the parameters.**
+
+We will continue using the earlier formula: `score = a × input + b`.
+
+At the start of training, a and b have not yet been learned, so we assign initial values. Each candidate has its own a and b. For example, “umbrella” starts with a = 0.50 and b = 1.10. This step only initializes the parameters. It does not yet calculate scores or probabilities from an input.
+
+**Step 1: Read some text and predict the next token.**
+
+Using these initial parameters, the model reads a passage and predicts the next token. For example, the input is “It is raining today. Remember your…”.
+
+In this simplified example, rain becomes the input x = 1. All three candidates use the same input, but their parameters differ, so their scores differ.
+
+Softmax then converts the scores into probabilities that add up to 100%.
+
+| Candidate | Score calculation | Score | Softmax probability |
+| ---- | -------- | ---: | -----------: |
+| umbrella | `0.50 × 1 + 1.10` | 1.60 | about 24.78% |
+| raincoat | `1.00 × 1 + 1.08` | 2.08 | about 40.05% |
+| hat | `0.80 × 1 + 1.15` | 1.95 | about 35.17% |
+
+**Step 2: Check the correct answer.**
+
+The model checks the original text in the training data: “It is raining today. Remember your umbrella”. The correct answer is “umbrella”.
+
+**Step 3: Adjust the parameters.**
+
+After seeing the correct answer, the model adjusts its parameters.
+
+The earlier prediction gave “raincoat” the highest probability, about 40%. But the correct answer, “umbrella”, received only about 25%. That is a substantial gap. The training program measures this gap against the correct answer, then adjusts the parameters to raise the probability of “umbrella” for this input.
+
+For example, it changes the parameters for “umbrella” to a = 0.60 and b = 1.20, while also adjusting the other candidates. The input remains x = 1, producing these scores and probabilities:
+
+| Candidate | Score calculation | Score | Softmax probability |
+| ---- | -------- | ---: | -----------: |
+| umbrella | `0.60 × 1 + 1.20` | 1.80 | about 44.95% |
+| raincoat | `0.40 × 1 + 1.00` | 1.40 | about 30.13% |
+| hat | `0.30 × 1 + 0.91` | 1.21 | about 24.92% |
+
+The input has not changed. The parameters and candidate scores have. After this adjustment, the predicted probability of “umbrella” rises from about 25% to about 45%.
+
+Here is a demonstration of the full process:
+
+<LLMSingleRoundTrainingDemo />
+
+**Step 4: Repeat prediction, comparison, and parameter updates.**
+
+Initialization happens only once, at the start of training. After that, the program repeatedly predicts, compares with the source text, and adjusts the parameters based on the gap. It does not reset the initial values each round.
+
+This adjustment does not happen all at once. It [must be repeated many times](https://arxiv.org/abs/2203.15556). The next demonstration keeps the same input so you can see how the probability of “umbrella” changes across training rounds.
+
+<LLMMultiRoundTrainingDemo />
+
+After many rounds of training, the model has learned statistical patterns in language and can generate grammatical, coherent text. It can understand the meaning of text and generate text that follows grammar and logic. This gives us a <JimmyNoteAnchor id="base-model">base model</JimmyNoteAnchor>.
+
+<JimmyNote anchor="base-model">
+  Pretraining gradually builds language ability. But being good at continuing text does not mean being good at answering a user's request. Chat models usually undergo further training. For this course, you only need to distinguish base models from chat models; we will not expand on those later training methods here.
+</JimmyNote>
+
+## 3. Why is this useful?
+
+There is an important concept to remember: **a model's training data has a time cutoff.**
+
+In other words, the model can only answer questions about information from before its training cutoff. Without [other tools (简体中文)](/zh/courses/llm-101/what-is-a-tool), it cannot obtain information outside its training data. For example, GPT-6's training data ends in April 2026, so it cannot know what happened after April.
+
+<Achievement
+  id="generation-vs-verification"
+  title="Separate generation from verification"
+  question="Without access to weather data, a model answers, “Today in Guangzhou, it is sunny and 28 ℃.” Which interpretation is more accurate?"
+  answer="verify"
+  explanation="As discussed above, a model's training data has a time cutoff. It cannot obtain information from after that cutoff. Without a weather data connection, it cannot know today's weather in Guangzhou. Its answer is a prediction based on training data, not a report of the actual weather."
+  takeaway="Training data has a time cutoff, and the model cannot obtain later information from it. Without a weather data connection, it cannot know today's weather in Guangzhou."
+>
+  <AchievementOption value="specific">
+    The answer is so specific that it must know the actual weather in Guangzhou.
+  </AchievementOption>
+  <AchievementOption value="verify">
+    It generated a weather forecast, but the answer may not describe the actual weather and still needs verification.
+  </AchievementOption>
+</Achievement>
+
+A second important concept is that **the “correct answer” during training is not necessarily factually correct.**
+
+Earlier, we said that the model checks the correct answer. Here, that answer is the next token in the training text. The text can contain errors, bias, or fiction. Predicting the source correctly does not mean that everything learned from it is factual.
+
+For example, if all the training data says “a week has six days”, the model will think that a week has six days.
+
+<Achievement
+  id="training-target-not-truth"
+  title="Separate training targets from facts"
+  question="A training passage contains a factual error, but the model correctly predicts its next token. What does this show?"
+  answer="matches-source"
+  explanation="The training target here is the next token in the source text. Matching that text does not mean the text is factual. Training data can contain errors, bias, or fiction, so a correct prediction does not establish that a fact has been verified."
+  takeaway="The training “answer” is the next token in the source. Predicting it correctly does not establish factual accuracy. Check important facts when using model output."
+>
+  <AchievementOption value="verified-fact">
+    A correct prediction means the model has verified the source and its contents are factual.
+  </AchievementOption>
+  <AchievementOption value="matches-source">
+    The prediction matches the source, but this does not establish that the source is factual.
+  </AchievementOption>
+  <AchievementOption value="corrected-source">
+    A correct prediction means training has automatically corrected the factual error in the source.
+  </AchievementOption>
+</Achievement>

@@ -275,9 +275,9 @@ test.describe('What a language model does lesson demos', () => {
         body: await page.screenshot({ clip: { x: frame.x - 8, y: frame.y - 16, width: frame.width + 16, height: frame.height + 24 }, animations: 'disabled' }),
         contentType: 'image/png',
       });
-      await native.selectOption('菜单 B');
+      await native.selectOption({ label: '菜单 B' });
       await expect(native).toHaveAttribute('aria-label', /已选择 菜单 B/);
-      await expect(native).toHaveValue('菜单 B');
+      await expect(native).toHaveValue('B');
       const trigger = menus.getByRole('button', { name: /打开 shadcn 菜单，请点击/ });
       await expect(trigger).toHaveCSS('color', 'rgb(49, 86, 75)');
       await expect(menus.locator('figcaption')).toHaveCSS('color', 'rgb(49, 86, 75)');
@@ -287,7 +287,7 @@ test.describe('What a language model does lesson demos', () => {
       await expect(trigger).toHaveAttribute('aria-label', /已选择 菜单 C/);
       await expect(trigger).toHaveText('请点击');
       await expect(native).toHaveAttribute('aria-label', /已选择 菜单 B/);
-      await expect(native).toHaveValue('菜单 B');
+      await expect(native).toHaveValue('B');
       await expect(trigger).toBeFocused();
       await trigger.press('ArrowDown');
       await expect(page.getByRole('menuitem', { name: '菜单 A' })).toBeFocused();
@@ -325,17 +325,20 @@ test.describe('What a language model does lesson demos', () => {
       await expect(page.getByRole('figure', { name: '两种菜单对比', exact: true }).locator('figcaption')).toHaveText('🧪 试一试');
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await test.info().attach('what-a-language-model-does-no-js', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
-      await page.locator('noscript > details > summary').filter({ hasText: '课程目录' }).click();
-      const nativeFooter = page.locator('noscript > details [data-sidebar="footer"]');
-      await expect(nativeFooter.getByRole('link', { name: '关于', exact: true })).toBeVisible();
-      await nativeFooter.locator('.language-picker summary').click();
-      const english = nativeFooter.locator('.language-options a[hreflang="en"]');
+      const nativeMenu = page.locator('[data-slot="mobile-native-menu"]');
+      await nativeMenu.getByRole('button', { name: '课程目录', exact: true }).click();
+      await expect(nativeMenu.locator('a[href="/zh/courses/llm-101/what-a-language-model-does"]')).toBeVisible();
+      await nativeMenu.getByRole('button', { name: '课程目录', exact: true }).click();
+      await expect(page.locator('[data-slot="mobile-course-navigation"] noscript a[target="_blank"]')).toBeVisible();
+      const languagePicker = page.locator('.language-picker').first();
+      await languagePicker.locator('summary').click();
+      const english = languagePicker.locator('.language-options a[hreflang="en"]');
       await expect(english).toBeInViewport();
       await english.click();
       await expect(page).toHaveURL(/\/courses\/llm-101\/what-a-language-model-does$/);
       await page.goto('/zh/courses/llm-101/why-model-answers-vary');
       await expect(page.locator('article h1')).toHaveText('为什么同样的问题，模型的回答会不同？');
-      await expect(page.locator('article h2')).toHaveCount(6);
+      await expect(page.locator('article h2')).toHaveCount(7);
       await expect(page.locator('article table')).toHaveCount(5);
       await expect(page.locator('article')).toContainText('所以使用大语言模型时，永远不要认为每次都能得到完全相同的答案。');
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

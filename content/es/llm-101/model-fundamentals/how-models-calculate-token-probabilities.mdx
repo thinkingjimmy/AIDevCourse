@@ -1,0 +1,100 @@
+---
+courseId: llm-101
+lessonId: how-models-calculate-token-probabilities
+title: ¿Cómo calcula el modelo las probabilidades de los tokens?
+description: Usa fórmulas sencillas, puntuaciones de candidatos y Softmax para entender cómo se obtiene una distribución de probabilidad.
+---
+
+En la lección anterior vimos cómo el modelo [elige un token](/es/courses/llm-101/why-model-answers-vary) de una distribución de probabilidad. Ahora quiero explicar <JimmyNoteAnchor id="token-probabilities">cómo produce esa distribución</JimmyNoteAnchor>.
+
+<JimmyNote anchor="token-probabilities">
+  Esta lección incluye matemáticas que pueden parecer áridas o difíciles. Espero que la analogía te ayude a entender el principio. Quizá no explique cada detalle a la perfección, pero prefiero mostrar primero la estructura general. Si buscas más precisión y detalle, consulta otros tutoriales o libros sobre el tema.
+</JimmyNote>
+
+## 1. Entender la entrada y los parámetros con una fórmula
+
+Empecemos con una fórmula muy sencilla.
+
+$$
+y = ax + b
+$$
+
+x es la entrada, y es la salida, y a y b son los parámetros. Sus valores determinan cómo procesa la fórmula la entrada.
+
+## 2. Sustituir la entrada para calcular puntuaciones
+
+Volvamos al ejemplo de la tercera lección: «Hoy llueve. Al salir, recuerda llevar un…». Quiero explicarlo desde otro ángulo. Dejemos a un lado la probabilidad compleja y usemos solo multiplicación y suma.
+
+Supongamos que la salida es «paraguas», pero la entrada cambia: «Hoy hace sol. Al salir, recuerda llevar un…» y «Hoy llueve. Al salir, recuerda llevar un…».
+
+La diferencia es el sol o la lluvia. Podemos simplificarla: lluvia vale 1 y sol vale 0. Es decir, x(lluvia) = 1 y x(sol) = 0. Supongamos también que el entrenamiento dio los parámetros a = 2 y b = 1.
+
+Al sustituir los valores en la fórmula, la puntuación de «paraguas» es:
+
+| Situación | Entrada | Cálculo | Puntuación de «paraguas» |
+| --- | --- | --- | ---: |
+| Lluvia | `x = 1` | `2 × 1 + 1` | **3** |
+| Sol | `x = 0` | `2 × 0 + 1` | **1** |
+
+Puedes entender la puntuación como una analogía sencilla de la probabilidad. Si la entrada dice «llueve», es más probable que «paraguas» continúe «recuerda llevar un».
+
+Si existe la fórmula y(paraguas) = a(paraguas)x + b(paraguas), otros tokens, como «impermeable» o «sombrero», también pueden tener sus fórmulas. Solo cambian a y b.
+
+| Candidato | a | b | Sustitución | Puntuación |
+| --- | --- | --- | --- | ---: |
+| paraguas | 2 | 1 | `2 × 1 + 1` | **3** |
+| impermeable | 1 | 1 | `1 × 1 + 1` | **2** |
+| sombrero | -2 | 3 | `-2 × 1 + 3` | **1** |
+
+## 3. Convertir las puntuaciones en probabilidades
+
+Una entrada y varios cálculos nos dan tres números. Una transformación matemática llamada [Softmax](https://en.wikipedia.org/wiki/Softmax_function) los convierte en probabilidades que suman el 100 %. No hace falta estudiar aquí los detalles. Los candidatos con mayor puntuación reciben mayor probabilidad.
+
+| Candidato | Puntuación calculada | Probabilidad resultante |
+| --- | ---: | ---: |
+| paraguas | 3 | aprox. **66,5 %** |
+| impermeable | 2 | aprox. **24,5 %** |
+| sombrero | 1 | aprox. **9,0 %** |
+
+## 4. De la analogía sencilla al modelo real
+
+Los cálculos reales son mucho más complejos. Solo quiero explicar, con la aritmética más sencilla, cómo obtiene el modelo las probabilidades de varios tokens.
+
+Puedes imaginar la predicción del siguiente token así:
+
+<TokenProbabilityDiagram />
+
+## 5. ¿Para qué sirve entender este concepto?
+
+**Primero, la entrada afecta a las probabilidades que calcula el modelo.**
+
+Con los mismos parámetros, cambiar «hace sol» por «llueve» modifica la puntuación de «paraguas». En la práctica, el contexto, los requisitos y los ejemplos que añades también participan en el cálculo y afectan a las probabilidades de los siguientes tokens.
+
+Como expliqué en [¿Cómo genera una respuesta un modelo de lenguaje grande?](/es/courses/llm-101/what-a-language-model-does), los buenos resultados requieren información suficiente y correcta. Incluso con los modelos actuales, expresar con claridad el objetivo, el contexto y los requisitos tiene un efecto notable.
+
+**Segundo, la probabilidad de un token no es la probabilidad de que una respuesta sea correcta.**
+
+El 66,5 % de «paraguas» representa su probabilidad de ser el siguiente token en este ejemplo simplificado. No significa que el consejo de llevar paraguas tenga un 66,5 % de posibilidades de ser correcto, ni mide la confianza del modelo en toda la respuesta.
+
+Un texto fluido y seguro puede contener errores. Si necesitas confirmar hechos, comprueba las fuentes. Pedir al modelo que hable con más seguridad no hace que los hechos sean más fiables.
+
+## 6. Reto de logro
+
+<Achievement
+  id="token-probability-not-truth"
+  title="Distingue probabilidad y exactitud"
+  question="En el ejemplo simplificado, Softmax da a «paraguas» una probabilidad de alrededor del 66,5 %. ¿Qué significa ese número?"
+  answer="next-token"
+  explanation="Estas probabilidades describen las oportunidades de elegir el siguiente token para una entrada determinada. Al muestrear esa distribución, «paraguas» tiene alrededor de un 66,5 % de posibilidades de salir. Esto no mide si el consejo es correcto ni la fiabilidad de toda la respuesta."
+  takeaway="La probabilidad del token describe su oportunidad de ser elegido a continuación, no la exactitud de la respuesta. Comprueba las fuentes cuando necesites confirmar hechos."
+>
+  <AchievementOption value="advice-correctness">
+    El consejo «deberías llevar paraguas» tiene un 66,5 % de posibilidades de ser correcto.
+  </AchievementOption>
+  <AchievementOption value="next-token">
+    Al muestrear esta distribución, «paraguas» tiene alrededor de un 66,5 % de posibilidades de ser el siguiente token.
+  </AchievementOption>
+  <AchievementOption value="answer-confidence">
+    El modelo tiene un 66,5 % de confianza en que toda la respuesta sea correcta.
+  </AchievementOption>
+</Achievement>

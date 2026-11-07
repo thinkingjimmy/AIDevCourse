@@ -1,10 +1,99 @@
 ---
 courseId: llm-101
 lessonId: what-a-language-model-does
-title: What a language model does
-description: La primera lección de LLM 101.
+title: ¿Cómo genera una respuesta un modelo de lenguaje grande?
+description: Entiende los modelos de lenguaje como sistemas que continúan texto de forma automática y descubre por qué tu entrada afecta a su salida.
 ---
 
-Hello, world!
+Seguro que últimamente has visto u oído el término «modelo de lenguaje grande», o LLM, por Large Language Model. Mucha gente lo llama «inteligencia artificial». ¿Es correcto? ¿Qué es en realidad? ¿Por qué parece la inteligencia artificial de las películas de ciencia ficción?
 
-Te damos la bienvenida a LLM 101. El contenido de la primera lección se añadirá aquí.
+## 1. Un sistema que continúa texto de forma automática
+
+Como analogía sencilla, puedes imaginar un LLM como un [sistema que continúa texto de forma automática](https://jalammar.github.io/illustrated-gpt2/). Por ejemplo, supongamos que preguntas a un LLM, como DeepSeek o ChatGPT:
+
+<Chat>
+  <ChatMessage from="user">¿Qué tiempo hace hoy en Guangzhou?</ChatMessage>
+  <ChatMessage from="assistant" state="thinking" />
+</Chat>
+
+El modelo realiza una serie de cálculos. Pero el proceso puede ser distinto de lo que imaginas. No <JimmyNoteAnchor id="thinking">«piensa»</JimmyNoteAnchor>. Mediante diversos [cálculos](https://arxiv.org/abs/1706.03762), **predice qué «carácter» tiene más probabilidades de aparecer después de esa pregunta.**
+
+<JimmyNote anchor="thinking">
+  Muchos productos muestran un estado Thinking, o de razonamiento, después de enviar una pregunta. Sin embargo, el modelo no piensa como una persona. Más adelante lo explicaré con detalle.
+</JimmyNote>
+
+Para «¿Qué tiempo hace hoy en Guangzhou?», una generación podría producir «H» como siguiente carácter.
+
+<JimmyNoteAnchor id="next-character-credits" variant="image">
+
+![La pregunta entra en el modelo, que calcula las probabilidades de candidatos como H, E y L. En esta generación se elige y se produce H.](/images/courses/what-a-language-model-does/es/next-character.webp)
+
+</JimmyNoteAnchor>
+
+<JimmyNote anchor="next-character-credits">
+  Esta imagen se generó con el skill [ian-xiaohei-illustrations](https://github.com/helloianneo/ian-xiaohei-illustrations). Gracias a Ian por crearlo.
+</JimmyNote>
+
+Tras producir «H», el modelo usa «¿Qué tiempo hace hoy en Guangzhou?H» como nueva entrada. Vuelve a calcular el siguiente carácter, obtiene «o» y llega a «¿Qué tiempo hace hoy en Guangzhou?Ho». Continúa calculando hasta obtener el resultado final.
+
+El proceso es, aproximadamente, así:
+
+<LLMGenerationDemo />
+
+Al final, en el producto verás una respuesta como esta:
+
+<Chat>
+  <ChatMessage from="user">¿Qué tiempo hace hoy en Guangzhou?</ChatMessage>
+  <ChatMessage from="assistant">Hoy en Guangzhou hace sol y la temperatura es de 28 ℃.</ChatMessage>
+</Chat>
+
+Este principio ayuda a entender por qué los productos con LLM muestran las respuestas <JimmyNoteAnchor id="streaming-answer">carácter a carácter</JimmyNoteAnchor>.
+
+<JimmyNote anchor="streaming-answer">
+  En un producto, la respuesta puede aparecer carácter a carácter o en bloques. Depende de la velocidad de generación y de cómo el producto muestra el resultado. Por detrás, el modelo sigue generando un carácter cada vez.
+</JimmyNote>
+
+## 2. ¿Para qué sirve entender este concepto?
+
+Este principio sencillo explica por qué surgieron tantas técnicas de prompt engineering, o ingeniería de instrucciones, en los primeros productos con LLM, por ejemplo en la época de GPT-3.5.
+
+En una traducción, antes del texto en inglés puedes añadir: «Eres especialista en traducción entre inglés y chino. Traduce el siguiente texto en inglés…». Estas instrucciones, o prompts, buscan [aumentar la probabilidad de que el LLM produzca una respuesta satisfactoria](https://arxiv.org/abs/2201.11903).
+
+<KeyTakeaway>
+  Incluso con los modelos actuales, la calidad de la entrada tiene un efecto importante en la salida. Por mucho que mejoren los productos y los modelos, todavía necesitas aprender para obtener buenos resultados con un LLM.
+</KeyTakeaway>
+
+¿Por qué?
+
+Para interactuar con la IA, debes expresar por escrito lo que quieres. Si no conoces los conceptos relacionados, resulta difícil explicar los requisitos con claridad. En otras palabras, cuesta hacer una pregunta útil o dar instrucciones adecuadas. Si son confusas o incorrectas, la respuesta puede ser mediocre o errónea.
+
+Prueba los dos botones de abajo. Ambos abren un menú con los mismos elementos, pero su aspecto es muy distinto. ¿Cuál ofrece una mejor experiencia?
+
+<MenuComparisonDemo />
+
+Sin conocimientos de programación o de producto, quizá dependas de una sola frase: «Al hacer clic en el botón, muestra un menú con tres botones: Menú A, B y C».
+
+Lo más probable es que el modelo entregue el resultado **estadísticamente más probable**, o uno **corriente**. Si conoces los conceptos adecuados, puedes darle instrucciones concretas para mejorar la salida.
+
+Eso es lo que este curso quiere enseñarte.
+
+## 3. Reto de logro
+
+<Achievement
+  id="input-shapes-output"
+  title="Expresa los requisitos con claridad"
+  question="Pides al modelo que cree un menú, pero el resultado no cumple tus expectativas. Según esta lección, ¿qué opción sería más útil?"
+  answer="clarify-requirements"
+  explanation="El modelo predice lo que sigue a partir de la entrada disponible. Si solo dices «crea un menú», le falta información sobre el resultado que buscas. Añadir el contexto de uso, los requisitos de interacción y ejemplos aumenta la probabilidad de obtener un resultado adecuado, pero no lo garantiza siempre."
+  takeaway="La entrada influye en la salida. Explica el objetivo, el contexto y los requisitos para obtener resultados más cercanos a tus expectativas. Los conocimientos del tema te ayudan a expresarlos con mayor precisión."
+>
+  <AchievementOption value="repeat-request">
+    Repetir «hazlo más bonito» y dejar que el modelo decida todos los detalles.
+  </AchievementOption>
+  <AchievementOption value="clarify-requirements">
+    Añadir el contexto de uso, la forma de abrir el menú y los requisitos visuales, con ejemplos si hace falta.
+  </AchievementOption>
+  <AchievementOption value="guarantee-result">
+    Añadir «eres un diseñador de primera» para garantizar un menú satisfactorio.
+  </AchievementOption>
+</Achievement>

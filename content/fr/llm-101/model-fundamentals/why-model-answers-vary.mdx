@@ -1,0 +1,139 @@
+---
+courseId: llm-101
+lessonId: why-model-answers-vary
+title: Pourquoi le modèle répond-il différemment à une même question ?
+description: Comprendre le hasard à travers la sélection gloutonne et l’échantillonnage, ainsi que le rôle de Temperature, Top-p et Top-k.
+---
+
+<JimmyNote anchor="next-token-selection">
+  Cette leçon est un peu plus aride. Avec les progrès des modèles, ces notions ont aussi moins d’importance pratique. Vous pouvez la considérer comme un complément avancé et la parcourir sans rien mémoriser. Retenez surtout les conclusions de la dernière section sur l’utilité de ces notions.
+</JimmyNote>
+
+La leçon précédente présentait la [tokenisation](/fr/courses/llm-101/what-is-a-token). Nous allons maintenant examiner <JimmyNoteAnchor id="next-token-selection">comment le modèle choisit réellement le prochain token</JimmyNoteAnchor>.
+
+## 1. Sélection gloutonne et échantillonnage : choisir le prochain token
+
+L’exemple météo de la leçon précédente servait à expliquer les tokens et leurs identifiants. J’avais donc simplifié la partie concernant la sortie du modèle.
+
+En réalité, le modèle ne produit pas directement un seul token ID. Il y a deux étapes :
+
+- D’abord, produire une distribution de probabilités sur plusieurs token ID.
+- Ensuite, sélectionner un token ID dans cette distribution.
+
+Prenons un exemple plus ouvert. Le modèle doit poursuivre « Il pleut aujourd’hui. Pensez à emporter un… ». Il commence par calculer la [distribution de probabilités](/fr/courses/llm-101/how-models-calculate-token-probabilities) du prochain token. Pour simplifier, nous utiliserons le texte des tokens plutôt que leurs identifiants. Les résultats possibles sont :
+
+- parapluie : 50 %
+- imperméable : 30 %
+- manteau : 15 %
+- chapeau : 5 %
+
+Le modèle choisit ensuite un candidat. Deux règles sont courantes : la sélection gloutonne (Greedy) et l’échantillonnage (Sampling).
+
+- Sélection gloutonne : choisir chaque fois le candidat le plus probable.
+- Échantillonnage : choisir selon les probabilités. Chaque candidat a une chance.
+
+Avec la sélection gloutonne, le modèle choisit « parapluie » et produit « Il pleut aujourd’hui. Pensez à emporter un parapluie ». Avec l’échantillonnage, il peut choisir « parapluie », mais aussi « imperméable » ou « manteau ». Le résultat peut donc varier à chaque génération.
+
+L’échantillonnage est assez fréquent dans les réglages recommandés et les configurations d’évaluation publiées pour les principaux modèles. Trois paramètres permettent généralement de l’ajuster.
+
+## 2. Temperature : ajuster les probabilités des candidats
+
+Une température basse favorise les candidats déjà les plus probables. Une température élevée réduit l’écart entre leurs chances.
+
+| Réglage | Explication simple |
+| --- | --- |
+| **Bas, par exemple `0.2`** | Les candidats favoris prennent davantage d’avance ; les choix se concentrent |
+| **`1.0`** | La température ne modifie pas la distribution initiale ; le tirage peut rester aléatoire |
+| **Élevé, par exemple `1.5`** | Les candidats peu probables ont plus de chances ; les choix se dispersent |
+
+Reprenons les probabilités de départ :
+
+- parapluie : 50 %
+- imperméable : 30 %
+- manteau : 15 %
+- chapeau : 5 %
+
+Imaginez un tirage au sort. Temperature ajuste le nombre de billets attribués à chaque candidat avant le tirage.
+
+| Candidat | Basse : `0.5` | Inchangée : `1.0` | Élevée : `2.0` |
+| --- | ---: | ---: | ---: |
+| **parapluie** | **environ 68 %** | **50 %** | **environ 38 %** |
+| imperméable | environ 25 % | 30 % | environ 29 % |
+| manteau | environ 6 % | 15 % | environ 21 % |
+| chapeau | environ 1 % | 5 % | environ 12 % |
+
+À 0,5, « parapluie » passe de 50 % à environ 68 %, tandis que « chapeau », déjà peu probable, devient encore plus rare. À 2,0, « parapluie » descend à environ 38 % et « chapeau » monte à environ 12 %. L’avantage du parapluie diminue. **Mais « parapluie » reste premier : les candidats ne deviennent pas équiprobables.** Pour une température supérieure à zéro, modifier uniquement la température change la distribution, pas le classement des candidats.
+
+## 3. Top-p : filtrer par probabilité cumulée
+
+Top-p ne conserve que les candidats dont la probabilité cumulée atteint p. Il limite le choix et réduit les occasions de sélectionner des candidats peu probables.
+
+Avec le même exemple :
+
+| Réglage | Candidats conservés | Pourquoi ? |
+| --- | --- | --- |
+| **`top_p = 0.8`** | parapluie, imperméable | 50 % + 30 % = 80 % |
+| **`top_p = 0.9`** | parapluie, imperméable, manteau | Les deux premiers ne suffisent pas ; le troisième porte le total à 95 % |
+| **`top_p = 1.0`** | Tous | |
+
+## 4. Top-k : filtrer par nombre
+
+Top-k ne conserve que les k candidats les plus probables. C’est la différence avec Top-p : Top-k garde un nombre fixe de candidats, tandis que Top-p garde le plus petit ensemble dont la probabilité cumulée atteint p. Les deux limitent le choix.
+
+| Réglage | Candidats conservés | Pourquoi ? |
+| --- | --- | --- |
+| **`top_k = 1`** | parapluie | Garder le candidat classé **1er** |
+| **`top_k = 2`** | parapluie, imperméable | Garder les **2** premiers |
+| **`top_k = 3`** | parapluie, imperméable, manteau | Garder les **3** premiers |
+| **`top_k = 4`** | Tous | Cet exemple ne comporte que **4** candidats |
+
+## 5. Comprendre les trois paramètres avec un tirage au sort
+
+Voici le résumé de cette analogie :
+
+| Paramètre | Ce qu’il contrôle | Analogie du tirage |
+| --- | --- | --- |
+| **`temperature`** | La concentration ou la dispersion des probabilités | Ajuster le nombre de billets de chaque candidat |
+| **`top_k`** | Conserver les k candidats les plus probables | **N’admettre que les k premiers** |
+| **`top_p`** | Conserver le plus petit ensemble atteignant la probabilité cumulée p | **Partir du premier et s’arrêter dès que le total suffit** |
+
+## 6. À quoi servent ces notions ?
+
+De plus en plus de modèles fermés ne permettent plus de régler ces paramètres. Les modèles ouverts fournissent souvent des réglages recommandés. En général, vous n’avez donc plus besoin de les modifier. Connaître ces paramètres ne suffit pas à obtenir de meilleurs résultats.
+
+En revanche, comprendre les probabilités explique pourquoi la sortie du modèle n’est pas forcément identique à chaque fois.
+
+Elle comporte une part de hasard. Cela diffère des logiciels traditionnels, qui exécutent généralement des règles fixes. Les LLM échantillonnent par défaut selon des probabilités : une même entrée peut donc plus facilement produire des résultats différents.
+
+<KeyTakeaway>
+  Ne supposez jamais qu’un grand modèle de langage donnera exactement la même réponse à chaque fois. Il ne possède pas de pensée : il choisit le prochain caractère ou mot selon des probabilités. Sa sortie est une prédiction fondée sur les données d’entraînement et l’entrée, plutôt que sur la compréhension ou la réflexion.
+</KeyTakeaway>
+
+Ce mode de génération entraîne aussi un autre problème : l’hallucination. Quand le modèle ignore quelque chose, il ne répond pas toujours « je ne sais pas ». Il peut sélectionner une réponse probable, qui sera fausse ou entièrement inventée.
+
+Si vous demandez « Quel temps fait-il à Guangzhou aujourd’hui ? » sans appel d’outil supplémentaire, il peut répondre « Aujourd’hui à Guangzhou, il fait beau et 28 ℃. ». Pourtant, il peut pleuvoir en réalité. Le modèle ne se rend pas compte de son erreur : il a simplement choisi une réponse probable.
+
+<KeyTakeaway>
+  Ne faites pas entièrement confiance à la sortie d’un grand modèle de langage. Il génère parfois des réponses fausses.
+</KeyTakeaway>
+
+## 7. Défi de réussite
+
+<Achievement
+  id="sampling-can-vary"
+  title="Comprendre la variation des réponses"
+  question="Pour la même entrée « Il pleut aujourd’hui. Pensez à emporter un… », le modèle choisit d’abord « parapluie », puis « imperméable ». S’il échantillonne selon les probabilités, quelle interprétation est la plus exacte ?"
+  answer="sampling"
+  explanation="L’échantillonnage ne choisit pas toujours le candidat le plus probable. « Parapluie » est favori, mais « imperméable » conserve une chance s’il reste parmi les candidats avec une probabilité supérieure à zéro. Deux sorties différentes ne prouvent ni une panne ni une mise à jour des paramètres entre les réponses."
+  takeaway="Une même entrée peut produire des réponses différentes. Le candidat le plus probable a davantage de chances d’être choisi, sans garantie de l’être à chaque fois."
+>
+  <AchievementOption value="always-highest">
+    « Parapluie » est le plus probable : le modèle doit toujours le choisir. « Imperméable » indique une panne.
+  </AchievementOption>
+  <AchievementOption value="sampling">
+    « Parapluie » est plus probable, mais « imperméable » a aussi une chance. Les résultats peuvent donc différer.
+  </AchievementOption>
+  <AchievementOption value="parameters-changed">
+    La réponse a changé : le modèle a forcément mis à jour ses paramètres internes entre les deux réponses.
+  </AchievementOption>
+</Achievement>

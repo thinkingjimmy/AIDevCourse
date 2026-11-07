@@ -241,6 +241,18 @@ pnpm build
 
 原文更新后由作者核对译文。站点不显示译文版本提示；修改正文不重置阅读记录或成就。
 
+LLM 101 第一模块的四节课已完整提供五语版本。`LLMGenerationDemo`、`MenuComparisonDemo`、`TokenizationDiagram` 和 `TokenProbabilityDiagram` 从当前语言字典读取界面、演示文字、无障碍标签和无 JavaScript 说明。生成演示按各语言的固定天气回答逐字播放；所有版本保留相同的采样规则。Chat 的进行中状态和思考标题也使用语言字典，中文保留原有 Thinking / Thought 文案。
+
+Token 图解使用各语言实际输入的编码结果，不能只翻译词元文字而保留中文 ID。`src/components/mdx/tokenization/model.ts` 保存用 `tiktoken` 0.14.0 的 `o200k_base` 核对过的数据；英语、日语、法语、西班牙语输入分别为 8、12、9、7 个 Token。复核时使用 `tiktoken.get_encoding("o200k_base").encode(text)`，逐个 ID 用 `decode_single_token_bytes` 读取文本，并保留空格。中文示例及训练课引用的中文数据保持不变。
+
+第一课的四张语言配图沿用 [ian-xiaohei-illustrations](https://github.com/helloianneo/ian-xiaohei-illustrations) skill 和内置 image_gen，以中文原图为参考分别生成。发布图片放在 `public/images/courses/what-a-language-model-does/<locale>/next-character.webp`，PNG 和提示词保存在本地 `assets/what-a-language-model-does-illustrations/<locale>/`。新增语言时需同步图片中的问题、候选字符、输出字符及 alt。原图不覆盖。
+
+第二模块的五节课也已完整提供五语版本。`LLMPretrainingOverview`、`LLMSingleRoundTrainingDemo` 和 `LLMMultiRoundTrainingDemo` 使用 `Pretraining`、`Training` 字典，包括候选词、按钮、状态提示、读屏文本、放大图片对话框及无 JavaScript 说明。数值模型只保存稳定候选 ID 和教学参数，各语言共用同一组分数与概率；中文手写旁注保持原样，外语旁注使用站点字体并参与正常排版。
+
+第二模块有三张预训练配图和两张多模态配图，各提供英、日、法、西语版本。图片沿用相同 skill，以对应中文原图为参考生成；WebP 位于 `public/images/courses/<article>/<locale>/`，PNG 与完整提示词位于本地 `assets/<article>-illustrations/<locale>/`。分词图复用上一模块各语言的实际输入和 Token ID。视觉图的输入按钮与回答必须一致；音频图区分文字转写和直接接收音频特征。验收位于 `tests/e2e/course/training/localization.spec.ts`，覆盖五课阅读、目录与搜索、练习、图片字节、训练交互、窄屏、读屏标签及无 JavaScript 阅读。
+
+第一模块的浏览器验收位于 `tests/e2e/course/fundamentals/localization.spec.ts`，覆盖四语正文、目录、成就共享、播放控制、菜单键盘操作、窄屏放大文字及无 JavaScript 阅读。报告保存在 `.artifacts/e2e/public/`。
+
 ## 发布、下架与改 URL
 
 课程文件列入对应 `meta.json` 后即公开。检查 meta 完整，执行 check / build / 生产 E2E。请按 [部署指南](./deployment.md) 发布通过检查的提交。
@@ -308,7 +320,7 @@ pnpm build
 
 ## LLM 101 的课程范围
 
-LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程介绍、十四节中文正文与其他语言的第一课欢迎占位文档。课程介绍位于 `content/<lang>/llm-101/index.mdx`，已有课时按下面三个模块组织。
+LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程介绍、十四节中文正文，以及前两个模块全部九节课的英、日、法、西语译文。课程介绍位于 `content/<lang>/llm-101/index.mdx`，已有课时按下面三个模块组织。
 
 | 模块目录 | 模块名称 | 已发布课时 |
 | --- | --- | --- |
@@ -316,9 +328,9 @@ LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程
 | `model-training` | 模型的训练与能力 | 2.1 模型是如何预训练的；2.2 模型的「深度思考」是怎么回事；2.3 模型是如何看图和听声音的；2.4 开源模型、参数量与本地运行；2.5 如何选择适合自己的大语言模型 |
 | `ai-applications` | AI 应用的工作原理 | 3.1 AI Chat 是如何工作的；3.2 Tool 是什么；3.3 使用 AI Chat 的几个建议；3.4 AI Chat 实用技巧；3.5 什么是 Agent |
 
-02 用五篇文章连接预训练、深度思考、多模态输入、开源模型与本地运行和模型选择，不安排后训练、强化学习或训练算法的深入教程。2.2 通过预算题的教学草稿解释推理、展示摘要和计算成本，并声明草稿不是实际模型的 Thinking 记录；补充固定网络层数与中间 Token 带来的计算轮次，介绍 test-time scaling 的串行推导、候选筛选与过度思考限制。2.3 通过编码器类比解释图像特征、语音转写与音频理解，区分输入和输出能力。两篇都保留实际用途与独立成就，稳定 ID 分别为 thinking-is-not-verification、distinguish-audio-inputs。2.4 将原选型课中关于开源与闭源、参数量、MoE 和本地运行的问题独立成课，保留原文、公式与批注；2.5 保留模型评测、选型与练习，原 slug 与成就 ID 不变。
+02 用五篇文章连接预训练、深度思考、多模态输入、开源模型与本地运行和模型选择。2.2 用预算题介绍计算草稿、SFT、强化学习、结果评分与过程评分，并解释深度思考开关和 effort 的用途与成本，不展开训练算法。2.3 通过编码器类比解释图像特征、语音转写与音频理解，区分输入和输出能力。当前练习位于 2.1（generation-vs-verification、training-target-not-truth）及 2.3（distinguish-audio-inputs）；2.2、2.4 和 2.5 没有练习。2.4 保留开源与闭源、参数量、MoE 和本地运行的问题、公式与旁注；2.5 介绍模型评测、个人选型和使用成本。译文以已 Review 的中文为准，不额外修订事实主张。
 
-所有模块用自己的 `meta.json` 排序。其他语言已有的第一课同步放入 `model-fundamentals`，保持译文路径与中文原文一致；没有译文的模块不创建空目录。公开 URL 不包含模块目录。各课保留稳定的 `lessonId`、slug 和成就 ID；仅移动模块不需要重定向，也不改变学习记录。首页「马上学习」仍按 `meta.json` 的顺序进入第一课。`tests/fixtures` 中的 `ai-coding` 只用于工程验证，不属于公开课程。
+所有模块用自己的 `meta.json` 排序。其他语言第一模块的四节译文放入 `model-fundamentals`，第二模块的五节译文放入 `model-training`，保持译文路径与中文原文一致；没有译文的模块不创建空目录。公开 URL 不包含模块目录。各课保留稳定的 `lessonId`、slug 和成就 ID；仅移动模块不需要重定向，也不改变学习记录。首页「马上学习」仍按 `meta.json` 的顺序进入第一课。`tests/fixtures` 中的 `ai-coding` 只用于工程验证，不属于公开课程。
 
 ### 03 的后续写作方向
 

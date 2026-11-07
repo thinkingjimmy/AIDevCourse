@@ -1,0 +1,79 @@
+---
+courseId: llm-101
+lessonId: what-is-a-token
+title: Qu’est-ce qu’un token ?
+description: Comprendre la définition des tokens, leur rôle, leur comptage et les facteurs qui influencent leur nombre.
+---
+
+## 1. La tokenisation
+
+Dans la première leçon, nous avons présenté le LLM comme un [système de continuation automatique du texte](/fr/courses/llm-101/what-a-language-model-does), à l’aide d’une question sur la météo.
+
+Cette description était une version simplifiée du processus.
+
+<KeyTakeaway>
+  Un grand modèle de langage est, au fond, une fonction mathématique complexe comportant de nombreux paramètres appris pendant l’entraînement. Il effectue des opérations matricielles. Il reçoit des nombres et produit des nombres.
+</KeyTakeaway>
+
+Quand vous envoyez « Quel temps fait-il à Guangzhou aujourd’hui ? » à un LLM, la question passe d’abord par un outil appelé tokenizer. Il découpe le texte en tokens et associe chaque token à un identifiant, le token ID. Ce processus est aussi appelé encodage.
+
+Les modèles peuvent utiliser des tokenizers différents, mais leur fonctionnement est globalement similaire. Par exemple, le [tokenizer](https://platform.openai.com/tokenizer) de ChatGPT-5x découpe le texte saisi, ponctuation comprise, puis associe les morceaux à des nombres. Le découpage et les identifiants peuvent varier selon le tokenizer. L’exemple français ci-dessous utilise l’encodage `o200k_base`.
+
+« Quel temps fait-il à Guangzhou aujourd’hui ? » est découpé en 9 tokens, chacun associé à un identifiant. Après les calculs du modèle, le résultat sort sous forme de token ID. Le tokenizer le décode en texte, qui est ensuite présenté à l’utilisateur. Ici, le token de sortie est « Aujourd », le début d’« Aujourd’hui ».
+
+<TokenizationDiagram />
+
+Le résultat renvoyé par le LLM dans la première leçon <JimmyNoteAnchor id="token-boundaries">n’est donc pas forcément un seul caractère : il peut être un mot</JimmyNoteAnchor>.
+
+<JimmyNote anchor="token-boundaries">
+  Un token ne correspond pas toujours à un mot entier. Dans l’exemple chinois original, 今天 (« aujourd’hui ») forme un token, tandis que 预报 (« prévision »), dans 天气预报, peut se séparer en 预 et 报. Cela existe aussi dans d’autres langues : indivisible peut se découper en indiv et isible. En règle générale, un token représente environ trois quarts d’un mot anglais ou 1,5 caractère chinois. Dans certains cas, le chinois peut donc utiliser moins de tokens.
+</JimmyNote>
+
+## 2. À quoi sert cette notion ?
+
+**Premièrement, les tokens mesurent ce que le modèle lit et génère.**
+
+Les instructions que vous donnez au modèle correspondent aux ==tokens d’entrée==. Le contenu généré correspond aux ==tokens de sortie==.
+
+Les API facturées au token calculent les frais à partir de l’entrée, de la sortie et d’autres usages. Dans la documentation officielle de DeepSeek, la [grille tarifaire](https://api-docs.deepseek.com/quick_start/pricing/) indique, en novembre 2026, un prix de sortie de 4 CNY par million de tokens en heures creuses. Autrement dit, produire un million de tokens avec V4 flash pendant ces heures coûte 4 yuans.
+
+Vous trouverez aussi un tarif d’entrée en heures creuses pour les requêtes sans correspondance dans le cache. Comment calculer ces frais ?
+
+Reprenons la météo. L’utilisateur demande « Quel temps fait-il à Guangzhou aujourd’hui ? », et le modèle répond « Aujourd’hui à Guangzhou, il fait beau et 28 ℃. ». Pour simplifier le calcul, supposons 10 tokens en entrée et 20 en sortie.
+
+- Entrée = 10 ÷ 1 000 000 × 1 = 0,00001 CNY
+- Sortie = 20 ÷ 1 000 000 × 4 = 0,00008 CNY
+- Total = 0,00001 + 0,00008 = 0,00009 CNY
+
+Pour 10 000 questions similaires envoyées séparément, sans conversation continue, cela représente environ 0,9 yuan.
+
+**Deuxièmement, les tokens mesurent la quantité de contenu traitable en une fois.**
+
+Tous les grands modèles de langage actuels ont une fenêtre de contexte, ou context window. Celle de DeepSeek V4 est de 1M tokens, soit un million. Celle de V3.1 est de 128K tokens, soit 128 000.
+
+C’est la quantité de texte que le modèle peut traiter à la fois. Imaginez la taille de son bureau de travail : combien de documents écrits peut-il y poser en même temps ? Cette quantité se mesure généralement en tokens.
+
+Les modèles plus anciens peuvent traiter moins de texte. Demander à V3.1 d’écrire, en une fois, un roman d’un million de caractères chinois est donc pratiquement impossible.
+
+Dans un certain sens, ==une fenêtre de contexte plus grande donne davantage de « capacité » au modèle==.
+
+## 3. Défi de réussite
+
+<Achievement
+  id="token-boundaries"
+  title="Comprendre les limites des tokens"
+  question="Quelle affirmation sur les tokens est la plus exacte ?"
+  answer="text-pieces"
+  explanation="Un token peut correspondre à plusieurs caractères, comme 今天 en chinois, ou à une partie de mot, comme Aujourd. Les tokenizers peuvent aussi employer des découpages et des identifiants différents. Le nombre de caractères ou de mots ne remplace donc pas directement le nombre de tokens."
+  takeaway="Les tokens ne sont ni des caractères ni des mots. Pour comparer les fenêtres de contexte ou calculer les coûts, utilisez le tokenizer réellement employé par le modèle."
+>
+  <AchievementOption value="whole-words">
+    Un token correspond toujours à un caractère ou à un mot entier.
+  </AchievementOption>
+  <AchievementOption value="text-pieces">
+    Un token est un fragment de texte : caractère, mot ou partie de mot.
+  </AchievementOption>
+  <AchievementOption value="same-tokenizer">
+    Tous les modèles découpent un même texte en tokens et identifiants identiques.
+  </AchievementOption>
+</Achievement>

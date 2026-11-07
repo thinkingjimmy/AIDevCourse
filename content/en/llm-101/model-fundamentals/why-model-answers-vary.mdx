@@ -1,0 +1,139 @@
+---
+courseId: llm-101
+lessonId: why-model-answers-vary
+title: Why can a model give different answers to the same question?
+description: Understand randomness through greedy selection and sampling, and learn what temperature, top-p, and top-k do.
+---
+
+<JimmyNote anchor="next-token-selection">
+  This lesson is a little more technical. As models improve, these details also have less practical importance. You can treat this as advanced reading: skim it to understand the concepts, without memorizing them. Remember the conclusions in the final section about why these concepts matter.
+</JimmyNote>
+
+The previous lesson introduced [tokenization](/courses/llm-101/what-is-a-token). This time, we will look more closely at <JimmyNoteAnchor id="next-token-selection">how a model actually selects the next token</JimmyNoteAnchor>.
+
+## 1. Greedy selection and sampling: choosing the next token
+
+The weather example in the previous lesson helped explain tokens and token IDs. To keep it simple, I left out some details of the model’s output.
+
+The model does not directly produce one token ID. There are two steps:
+
+- First, produce a probability distribution over multiple token IDs.
+- Then, select one token ID from that distribution.
+
+Consider a more open question. Suppose the model is continuing “It is raining today. Remember your…”. First, it calculates a [probability distribution](/courses/llm-101/how-models-calculate-token-probabilities) for the next token. To keep the explanation simple, we will use token text instead of IDs. Possible results are:
+
+- umbrella: 50%
+- raincoat: 30%
+- coat: 15%
+- hat: 5%
+
+The model then selects one candidate from this distribution. Two common selection rules are greedy selection and sampling.
+
+- Greedy selection: always choose the candidate with the highest probability.
+- Sampling: choose according to the probabilities. Each candidate has a chance.
+
+With greedy selection, the model chooses “umbrella”, the highest-probability candidate, and produces “It is raining today. Remember your umbrella.” With sampling, it chooses by probability. It might choose “umbrella”, “raincoat”, or “coat”. The result can therefore differ each time.
+
+Sampling is relatively common in the published recommended settings and evaluation configurations of mainstream models. Three parameters are often provided to adjust it.
+
+## 2. Temperature: adjusting candidate probabilities
+
+A lower temperature favors candidates that already have high probabilities. A higher temperature reduces the gap between candidates’ chances.
+
+| Setting | Simple interpretation |
+| --- | --- |
+| **Low, such as `0.2`** | Likely candidates gain a larger advantage; choices are more concentrated |
+| **`1.0`** | Temperature does not change the original distribution; random sampling is still possible |
+| **High, such as `1.5`** | Less likely candidates get more chances; choices are more spread out |
+
+Return to the rain example. Suppose the original probabilities are:
+
+- umbrella: 50%
+- raincoat: 30%
+- coat: 15%
+- hat: 5%
+
+Think of drawing tickets. Temperature adjusts how many tickets each candidate has before the draw.
+
+| Candidate | Low: `0.5` | Unchanged: `1.0` | High: `2.0` |
+| --- | ---: | ---: | ---: |
+| **umbrella** | **about 68%** | **50%** | **about 38%** |
+| raincoat | about 25% | 30% | about 29% |
+| coat | about 6% | 15% | about 21% |
+| hat | about 1% | 5% | about 12% |
+
+At a temperature of 0.5, “umbrella” rises from 50% to about 68%. The already unlikely “hat” becomes even less likely. At 2.0, “umbrella” falls from 50% to about 38%, while “hat” rises to about 12%. The umbrella’s advantage shrinks, and the hat gets more chances. **But “umbrella” still ranks first. The candidates do not become equally likely.** For temperatures above zero, changing temperature alone changes the probability distribution, not the candidates’ ranking.
+
+## 3. Top-p: filtering by cumulative probability
+
+Top-p selects only from candidates whose cumulative probability reaches p. It limits the candidate pool and reduces the chance of selecting unlikely candidates.
+
+Using the same rain example:
+
+| Setting | Candidates kept | Why? |
+| --- | --- | --- |
+| **`top_p = 0.8`** | umbrella, raincoat | Their probabilities add up to 50% + 30% = 80% |
+| **`top_p = 0.9`** | umbrella, raincoat, coat | The first two are not enough; the third brings the total to 95% |
+| **`top_p = 1.0`** | All candidates | |
+
+## 4. Top-k: filtering by count
+
+Top-k selects only from the k most likely candidates. Unlike top-p, it keeps a fixed number: the top k candidates. Top-p keeps the smallest set whose cumulative probability reaches p. Both limit the candidate pool.
+
+| Setting | Candidates kept | Why? |
+| --- | --- | --- |
+| **`top_k = 1`** | umbrella | Keep only the **1** most likely candidate |
+| **`top_k = 2`** | umbrella, raincoat | Keep the **2** most likely candidates |
+| **`top_k = 3`** | umbrella, raincoat, coat | Keep the **3** most likely candidates |
+| **`top_k = 4`** | All candidates | This example has only **4** candidates |
+
+## 5. Understand the three parameters through a ticket draw
+
+Here is a summary using the ticket analogy:
+
+| Parameter | What does it control? | Ticket analogy |
+| --- | --- | --- |
+| **`temperature`** | How concentrated or spread out the probabilities are | Adjust each candidate’s number of tickets |
+| **`top_k`** | Keep the k most likely candidates | **Admit only the top k candidates** |
+| **`top_p`** | Keep the smallest set reaching cumulative probability p | **Start with the most likely and stop when the total reaches p** |
+
+## 6. Why are these concepts useful?
+
+More closed models no longer let you set these parameters. Open models often provide recommended settings. In most cases, you do not need to change them. Knowing these parameters does not directly help you get better results.
+
+But understanding probability helps you see why a model does not necessarily produce the same output each time.
+
+There is some randomness in its output. This differs greatly from traditional software. Most traditional programs follow fixed rules. LLMs sample by probability by default, so the same input is more likely to produce different results.
+
+<KeyTakeaway>
+  Never assume that a large language model will give exactly the same answer every time. It does not have thoughts; it selects the next character or word according to probabilities. Its output is a probabilistic prediction based on training data and input, rather than understanding or thought.
+</KeyTakeaway>
+
+This generation method also creates another problem: hallucination. When a model does not know something, it does not always say “I don’t know.” It may select a likely answer based on probabilities. The result can be wrong or entirely made up.
+
+For example, if you ask “How is the weather in Guangzhou today?” without additional tool calls, the model might answer “Today in Guangzhou, it is sunny and 28 ℃.” In reality, it might be raining. The model does not realize that its answer is wrong. It has simply selected a likely answer by probability.
+
+<KeyTakeaway>
+  Do not fully trust a large language model’s output. It sometimes generates incorrect answers.
+</KeyTakeaway>
+
+## 7. Achievement challenge
+
+<Achievement
+  id="sampling-can-vary"
+  title="Understand variation in answers"
+  question="For the same input about what to bring on a rainy day, the model first chooses ‘umbrella’ and then ‘raincoat’. If it samples by probability, which interpretation is more accurate?"
+  answer="sampling"
+  explanation="Sampling chooses candidates by probability. It does not always pick the most likely one. ‘Umbrella’ has a higher probability, but ‘raincoat’ still has a chance if it remains in the candidate pool with a probability above zero. Different outputs do not prove that the model malfunctioned or updated its parameters between answers."
+  takeaway="The same input can produce different answers. When sampling by probability, the most likely candidate has a greater chance, but is not guaranteed to be selected every time."
+>
+  <AchievementOption value="always-highest">
+    ‘Umbrella’ has the highest probability, so the model must always choose it. Choosing ‘raincoat’ means a malfunction.
+  </AchievementOption>
+  <AchievementOption value="sampling">
+    ‘Umbrella’ is more likely to be selected, but ‘raincoat’ also has a chance. The two results can differ.
+  </AchievementOption>
+  <AchievementOption value="parameters-changed">
+    A changed answer proves that the model updated its internal parameters between the two responses.
+  </AchievementOption>
+</Achievement>

@@ -1,10 +1,99 @@
 ---
 courseId: llm-101
 lessonId: what-a-language-model-does
-title: What a language model does
-description: La première leçon d’LLM 101.
+title: Comment un grand modèle de langage génère-t-il une réponse ?
+description: Comprendre les grands modèles de langage comme des systèmes de continuation automatique du texte, et voir pourquoi votre entrée influence leur sortie.
 ---
 
-Hello, world!
+Vous avez sans doute souvent entendu l’expression « grand modèle de langage », ou LLM, pour Large Language Model. Beaucoup parlent d’« intelligence artificielle ». Est-ce juste ? De quoi s’agit-il vraiment ? Pourquoi cela ressemble-t-il à l’intelligence artificielle des films de science-fiction ?
 
-Bienvenue dans LLM 101. Le contenu de la première leçon sera ajouté ici.
+## 1. Un système de continuation automatique du texte
+
+Pour faire simple, imaginez un LLM comme un [système de continuation automatique du texte](https://jalammar.github.io/illustrated-gpt2/). Par exemple, vous posez cette question à un LLM, comme DeepSeek ou ChatGPT :
+
+<Chat>
+  <ChatMessage from="user">Quel temps fait-il à Guangzhou aujourd’hui ?</ChatMessage>
+  <ChatMessage from="assistant" state="thinking" />
+</Chat>
+
+Le modèle effectue une série de calculs. Mais son fonctionnement diffère peut-être de ce que vous imaginez. Il ne <JimmyNoteAnchor id="thinking">« réfléchit »</JimmyNoteAnchor> pas. Il utilise des [calculs](https://arxiv.org/abs/1706.03762) pour **prédire le « caractère » le plus probable après cette question.**
+
+<JimmyNote anchor="thinking">
+  De nombreux produits affichent un état Thinking, ou de réflexion, après l’envoi d’une question. Pourtant, le modèle ne réfléchit pas comme une personne. J’expliquerai cela plus en détail par la suite.
+</JimmyNote>
+
+Pour « Quel temps fait-il à Guangzhou aujourd’hui ? », une génération peut, par exemple, produire « A » comme prochain caractère.
+
+<JimmyNoteAnchor id="next-character-credits" variant="image">
+
+![La question entre dans le modèle, qui calcule les probabilités de candidats comme A, I et L. Cette génération sélectionne et produit A.](/images/courses/what-a-language-model-does/fr/next-character.webp)
+
+</JimmyNoteAnchor>
+
+<JimmyNote anchor="next-character-credits">
+  Cette illustration a été générée avec le skill [ian-xiaohei-illustrations](https://github.com/helloianneo/ian-xiaohei-illustrations). Merci à Ian, son créateur.
+</JimmyNote>
+
+Après avoir produit « A », le modèle utilise « Quel temps fait-il à Guangzhou aujourd’hui ?A » comme nouvelle entrée. Il calcule le prochain caractère, obtient « u », puis « Quel temps fait-il à Guangzhou aujourd’hui ?Au ». Il poursuit ces calculs jusqu’au résultat final.
+
+Voici, en gros, le déroulement :
+
+<LLMGenerationDemo />
+
+Dans le produit, vous voyez finalement une réponse de ce type :
+
+<Chat>
+  <ChatMessage from="user">Quel temps fait-il à Guangzhou aujourd’hui ?</ChatMessage>
+  <ChatMessage from="assistant">Aujourd’hui à Guangzhou, il fait beau et 28 ℃.</ChatMessage>
+</Chat>
+
+Ce principe explique pourquoi les produits utilisant un LLM affichent les réponses <JimmyNoteAnchor id="streaming-answer">caractère par caractère</JimmyNoteAnchor>.
+
+<JimmyNote anchor="streaming-answer">
+  Dans un produit, la réponse peut apparaître caractère par caractère ou par blocs. Cela dépend de la vitesse de génération du modèle et du mode d’affichage du produit. En arrière-plan, le modèle continue de générer les caractères un à un.
+</JimmyNote>
+
+## 2. À quoi sert cette notion ?
+
+Ce principe simple aide à comprendre pourquoi tant de techniques de prompt engineering sont apparues au début des produits LLM, notamment à l’époque de GPT-3.5.
+
+Pour une traduction, par exemple, vous pouvez faire précéder le texte anglais d’une instruction comme : « Vous êtes spécialiste de la traduction entre l’anglais et le chinois. Traduisez le texte anglais suivant… ». Ces instructions, ou prompts, visent à [augmenter la probabilité d’obtenir une réponse satisfaisante](https://arxiv.org/abs/2201.11903).
+
+<KeyTakeaway>
+  Même avec les modèles actuels, la qualité de l’entrée joue un rôle majeur dans le résultat. Quels que soient les progrès des produits et des modèles, obtenir de bons résultats avec un LLM demande encore d’apprendre.
+</KeyTakeaway>
+
+Pourquoi ?
+
+Pour interagir avec l’IA, il faut exprimer sa demande par écrit. Sans connaître les notions concernées, il est difficile de formuler des exigences claires. Autrement dit, il est difficile de poser une bonne question ou de donner des instructions adaptées. Des consignes vagues ou erronées produisent naturellement des réponses médiocres, voire fausses.
+
+Cliquez sur chacun des deux boutons ci-dessous. Ils ouvrent des menus contenant les mêmes éléments, mais leur apparence est très différente. Lequel offre la meilleure expérience ?
+
+<MenuComparisonDemo />
+
+Sans connaissances en programmation ou en conception de produit, vous pourriez vous limiter à cette phrase : « Quand on clique sur le bouton, afficher un menu avec trois boutons : Menu A, B et C. »
+
+Le modèle produira probablement le résultat **statistiquement le plus probable**, qui risque d’être **banal**. Avec les connaissances adaptées, vous pouvez lui donner des instructions précises pour améliorer sa sortie.
+
+C’est ce que ce cours veut vous apprendre.
+
+## 3. Défi de réussite
+
+<Achievement
+  id="input-shapes-output"
+  title="Formuler des exigences claires"
+  question="Vous demandez au modèle de créer un menu, mais le résultat ne répond pas à vos attentes. Selon cette leçon, quelle démarche est la plus utile ?"
+  answer="clarify-requirements"
+  explanation="Le modèle prédit la suite à partir de l’entrée disponible. Si vous dites seulement « créer un menu », il manque d’informations sur l’effet recherché. Préciser le contexte d’utilisation, les interactions et des exemples de référence augmente les chances d’obtenir un résultat adapté, sans le garantir à chaque fois."
+  takeaway="L’entrée influence la sortie du modèle. Précisez l’objectif, le contexte et les exigences pour obtenir un résultat plus proche de vos attentes. Les connaissances du domaine vous aident à mieux exprimer vos besoins."
+>
+  <AchievementOption value="repeat-request">
+    Répéter seulement « rends-le plus joli » et laisser le modèle décider de tous les détails.
+  </AchievementOption>
+  <AchievementOption value="clarify-requirements">
+    Préciser l’usage du menu, son mode d’ouverture et les exigences visuelles, avec des exemples si nécessaire.
+  </AchievementOption>
+  <AchievementOption value="guarantee-result">
+    Ajouter « vous êtes un excellent designer » pour garantir un menu satisfaisant.
+  </AchievementOption>
+</Achievement>

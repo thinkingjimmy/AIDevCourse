@@ -1,0 +1,167 @@
+---
+courseId: llm-101
+lessonId: how-model-thinking-works
+title: ¿Qué significa el «pensamiento profundo» de un modelo?
+description: Entiende Thinking con la analogía de un borrador, distingue el razonamiento de su resumen visible y decide cuándo conviene razonar más.
+---
+
+Al usar un producto de chat con IA, quizá hayas visto un botón de «pensamiento profundo». O el producto muestra «Thinking» después de enviar una pregunta, en lugar de responder de inmediato.
+
+En las lecciones anteriores dijimos que un modelo predice el siguiente token a partir de la entrada. ¿Por qué ahora «piensa»?
+
+Primero usaremos la analogía de una hoja de cálculos para entender el proceso. Después compararemos el razonamiento profundo con una respuesta normal.
+
+## 1. Hacer los cálculos antes de responder
+
+Supón que organizas un evento y necesitas resolver este problema:
+
+> El presupuesto total es de 1000 yuanes. El local cuesta 450 yuanes, los materiales 230 yuanes y la comida 25 yuanes por persona. ¿Cuál es el número máximo de asistentes?
+
+Es fácil equivocarse al calcular mentalmente, porque los números no siempre se dividen de forma exacta. Resulta más fiable escribir los pasos:
+
+1. **Restar los costes fijos:** 1000 − 450 − 230 = 320 yuanes.
+2. **Calcular las personas:** 320 ÷ 25 = 12,8. No puedes dividir a alguien en 0,8 personas, así que el máximo es 12.
+3. **Comprobar el resultado:** 450 + 230 + 12 × 25 = 980 yuanes. ¡Está dentro del presupuesto!
+
+El «pensamiento profundo» de un modelo, o Thinking, sigue un proceso parecido.
+
+Ya en 2022, antes de modelos especializados en razonamiento como [OpenAI o1](https://arxiv.org/abs/2412.16720) y DeepSeek-R1, las investigaciones sobre los primeros LLM, como los de la época de GPT-3.5 / GPT-4, encontraron que podía ayudar añadir esta instrucción al prompt:
+
+> [«Pensemos paso a paso» (« Let's think step by step »)](https://arxiv.org/abs/2201.11903)
+
+El modelo podía <JimmyNoteAnchor id="reasoning-steps">seguir la instrucción y escribir los pasos</JimmyNoteAnchor>, mejorando la exactitud de su respuesta final.
+
+<JimmyNote anchor="reasoning-steps">
+  La IA cambia tan rápido que a veces se bromea: «Si aprendo lo bastante despacio, ya no tendré que aprender». El conocimiento puede quedar obsoleto enseguida. Pero ¿es así realmente? Este ejemplo muestra que los primeros estudios sobre prompts ya habían identificado una idea útil: los pasos intermedios ayudan al modelo a resolver una tarea. El entrenamiento posterior de modelos de razonamiento exploró cómo utilizarlos mejor.
+</JimmyNote>
+
+## 2. ¿Basta con añadir un prompt?
+
+Las primeras [investigaciones](https://arxiv.org/abs/2205.11916) sobre ingeniería de prompts mejoraron la exactitud, pero no resolvieron de raíz el problema de la capacidad de razonamiento. Un prompt no garantiza que el modelo elija siempre el método adecuado, encuentre un error y repita el cálculo de otra manera. Puede escribir todos los pasos y equivocarse en el primero. También puede repetir «Voy a comprobarlo» sin detectar el problema.
+
+Es decir, queremos que el modelo genere más pasos intermedios y los utilice para seguir calculando hasta dar una respuesta final. El proceso de generación no cambia: sigue produciendo un token cada vez. Solo le pedimos más pasos intermedios.
+
+Un prompt puede indicar cómo responder esta vez, pero no cambia realmente las reglas de funcionamiento del modelo. Por eso, los investigadores se plantearon enseñarle a usar un borrador mediante entrenamiento.
+
+## 3. El postentrenamiento
+
+La lección anterior mencionaba dos etapas: [preentrenamiento](/es/courses/llm-101/how-language-models-are-trained) y postentrenamiento. Todavía no hemos explicado la segunda.
+
+El postentrenamiento sigue ajustando un modelo preentrenado para que realice mejor ciertas tareas. Imagina a alguien que ha leído muchos libros y empieza a practicar con ejercicios específicos.
+
+Los métodos principales también se parecen al aprendizaje humano: estudiar ejemplos o resolver problemas por cuenta propia.
+
+**Primero: observar cómo lo hace otra persona.**
+
+Un método prepara pares de «pregunta + respuesta de ejemplo» y entrena al modelo con esas demostraciones. Se suele llamar ajuste fino supervisado, o SFT.
+
+Para el problema del presupuesto, se ofrecen tanto la pregunta como una respuesta modelo:
+
+> Pregunta: El presupuesto total es de 1000 yuanes. El local cuesta 450 yuanes, los materiales 230 yuanes y la comida 25 yuanes por persona. ¿Cuál es el máximo de personas? \
+> Respuesta: Restamos los costes fijos: 1000 − 450 − 230 = 320 yuanes. Calculamos las personas: 320 ÷ 25 = 12,8. No se puede dividir a alguien en 0,8 personas, así que el máximo es 12. Sustituimos en la fórmula: 450 + 230 + 12 × 25 = 980 yuanes. No se supera el presupuesto.
+
+Durante el entrenamiento, el modelo sigue prediciendo el siguiente token de la respuesta de ejemplo y ajusta sus parámetros respecto a ella. Muchos ejemplos hacen más probable una forma adecuada de responder. Es como un profesor que demuestra: «Así se aborda este tipo de pregunta».
+
+**Segundo: intentarlo y mejorar a partir del resultado.**
+
+Otro método deja que el modelo intente una tarea, puntúa su actuación y usa esa puntuación para ajustar los parámetros.
+
+Se llama aprendizaje por refuerzo, o RL. A diferencia de estudiar una demostración, el modelo debe generar su propia respuesta antes de recibir comentarios.
+
+Seguiremos con el problema del presupuesto para explicar este método.
+
+## 4. Aprendizaje por refuerzo
+
+**Paso 1: dejar que el modelo lo intente.**
+
+Durante el entrenamiento, el modelo puede generar varias respuestas a la misma pregunta. La aleatoriedad de la generación puede producir resultados distintos.
+
+En este ejemplo simplificado, primero pedimos un formato de «borrador + respuesta final». La primera parte puede contener cálculos y comprobaciones; la segunda da la respuesta. Esta separación se utilizó en la [investigación publicada sobre DeepSeek-R1-Zero](https://arxiv.org/html/2501.12948v1).
+
+| Intento | Ejemplo de trabajo intermedio | Respuesta final |
+|---|---|---|
+| A | Quedan 320 yuanes. 320 ÷ 25 = 12,8. Redondeamos a 13. | Como máximo, 13 personas. |
+| B | Una persona cabe seguro en el presupuesto, así que elijo una. | Como máximo, 1 persona. |
+| C | Quedan 320 yuanes. 320 ÷ 25 = 12,8. Para no superar el presupuesto, redondeamos hacia abajo a 12. Comprobación: 12 personas cuestan 980 yuanes; 13 cuestan 1005 yuanes y superan el presupuesto. | Como máximo, 12 personas. |
+| D | Quedan 320 yuanes para comida, suficientes para 12 personas. | Como máximo, 12 personas. |
+
+**Paso 2: dar una puntuación.**
+
+La respuesta se puede comprobar con el cálculo: como máximo, 12 personas. Por tanto, podemos usar una regla sencilla: 1 punto si la respuesta final es «como máximo, 12 personas» y 0 para cualquier otra cifra.
+
+| Intento | Puntuación | Motivo |
+|---|---:|---|
+| A | 0 | 13 personas cuestan 1005 yuanes y superan el presupuesto |
+| B | 0 | Una persona cabe en el presupuesto, pero no es el máximo |
+| C | 1 | La respuesta final es correcta |
+| D | 1 | La respuesta final es correcta |
+
+C y D reciben la misma puntuación porque se recompensa resolver el problema, no escribir un borrador largo. Con esta regla, incluso una respuesta correcta sin cálculos escritos debería recibir 1 punto. Es un ejemplo simplificado de recompensa por el resultado. El entrenamiento real también puede premiar el formato u otros criterios, pero aquí no nos centraremos en ellos. Esta visión general basta para el curso; puedes leer [el artículo](https://arxiv.org/html/2501.12948v1) para ampliar.
+
+También existen métodos que puntúan el proceso. En 2023, OpenAI publicó [investigación sobre supervisión del proceso](https://openai.com/index/improving-mathematical-reasoning-with-process-supervision/). Entrenó un modelo de recompensa con comentarios sobre pasos intermedios y lo utilizó para seleccionar soluciones candidatas a problemas matemáticos.
+
+Puntuar el proceso significa evaluar la calidad de los pasos, lo que permite dar puntuaciones más detalladas. En nuestro ejemplo, C recibiría más puntos. DeepSeek-R1 no utilizó este método entonces, no porque los pasos carecieran de importancia, sino porque DeepSeek consideró más difícil y costoso puntuarlos. Fue una decisión de entrenamiento, no una afirmación de que evaluar el proceso no funciona.
+
+**Paso 3: ajustar los parámetros según las puntuaciones.**
+
+A lo largo de muchas rondas de aprendizaje, se ajustan gradualmente los parámetros del modelo.
+
+La clave es que el aprendizaje por refuerzo utiliza muchas preguntas, no solo una. Aunque puntuar el resultado dé la misma nota a algunos intentos, con suficientes preguntas aparecerán diferencias. Si determinadas formas de dividir, comprobar y corregir un problema llevan de manera más constante a respuestas correctas, esos patrones de generación pueden reforzarse. El objetivo es mejorar cómo resuelve problemas el modelo.
+
+<KeyTakeaway>
+  Da al modelo un borrador y utiliza los comentarios sobre sus intentos para que aprenda a usarlo bien. El objetivo no es que le guste escribir cálculos largos, sino que los utilice mejor para completar las tareas.
+</KeyTakeaway>
+
+## 5. Pensamiento profundo frente a una respuesta normal
+
+Razonar más puede ser útil. Pero para algo sencillo como «¿Cuánto es 1 + 1?» puede resultar excesivo. Esperas más y se consumen más tokens. ¿Recuerdas los precios de tokens de entrada y salida de [¿Qué es un token?](/es/courses/llm-101/what-is-a-token)? Usar un borrador implica usar más tokens.
+
+Por eso, la mayoría de los productos ofrece un interruptor para activar o desactivar el razonamiento profundo. DeepSeek, por ejemplo, tiene un botón «Deep Thinking».
+
+No todos lo hacen así. ChatGPT ofrece un ajuste de esfuerzo, con niveles como Light y Medium.
+
+Quiero ampliar dos puntos.
+
+<KeyTakeaway>
+  Activar el pensamiento profundo no implica necesariamente cambiar de modelo ni instalar un módulo adicional de razonamiento. Se elige cómo usar un modelo ya entrenado. Imagina a la misma persona que sabe matemáticas: ¿esta vez responde directamente o calcula primero en papel? No usar el borrador no elimina su capacidad matemática. Del mismo modo, desactivar el pensamiento profundo no elimina toda capacidad de razonamiento.
+</KeyTakeaway>
+
+El esfuerzo ajusta los recursos dedicados al razonamiento y suele afectar al uso de tokens de razonamiento. No fija una longitud de pensamiento ni pide una respuesta final más larga. Un esfuerzo alto permite más cálculo y un análisis más completo. En la analogía humana, permite trabajar con más cuidado, sin exigir un borrador de 1000 palabras.
+
+Veamos «¿Cuánto es 37 × 48?». Con esfuerzo bajo, la respuesta podría ser:
+
+<Chat>
+  <ChatMessage from="user">¿Cuánto es 37 × 48?</ChatMessage>
+  <ChatMessage from="assistant">1776</ChatMessage>
+</Chat>
+
+Con esfuerzo alto:
+
+<Chat>
+  <ChatMessage from="user">¿Cuánto es 37 × 48?</ChatMessage>
+  <ChatMessage from="assistant">
+    <ChatThinking>
+    Primero, descomponemos:\
+    37 × 48
+    = 37 × (50 − 2)
+    = 1850 − 74
+    = 1776 \
+    Comprobamos con otro método:\
+    48 × (40 − 3)
+    = 1920 − 144
+    = 1776
+    </ChatThinking>
+
+    Respuesta final: 1776
+</ChatMessage>
+</Chat>
+
+El objetivo no es alargar la respuesta. **Ambas respuestas finales pueden ser solo «1776». La diferencia es si se calcula más antes de responder.** Los modelos de razonamiento pueden usar tokens adicionales para dividir un problema y considerar distintos métodos. Esos tokens no son la respuesta final.
+
+En general, Low permite menos cálculo y un análisis más sencillo. Usa menos tokens y es más rápido. High suele usar más tokens y tardar más. Pero no es una regla absoluta. Algunos modelos, como los de ChatGPT, también adaptan el razonamiento a la dificultad. Incluso con un esfuerzo alto, una pregunta sencilla puede consumir pocos tokens.
+
+## 6. ¿Para qué sirve saberlo?
+
+Entender el razonamiento profundo y sus niveles de esfuerzo permite decidir si usarlo y qué nivel conviene para cada tarea. No todas las preguntas lo necesitan, y un esfuerzo mayor no garantiza una respuesta mejor.
+
+Sobre todo cuando suben los precios de los modelos, elige estos ajustes con cuidado para evitar gastos innecesarios.

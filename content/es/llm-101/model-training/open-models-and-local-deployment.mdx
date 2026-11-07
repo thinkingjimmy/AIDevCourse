@@ -1,0 +1,102 @@
+---
+courseId: llm-101
+lessonId: open-models-and-local-deployment
+title: Modelos de código abierto, parámetros y uso local
+description: Comprende los modelos abiertos y cerrados, el número de parámetros y MoE, y estima el hardware necesario para ejecutar un modelo localmente.
+---
+
+Después del preentrenamiento, veamos algunas preguntas habituales:
+
+- ¿Qué significa «modelo de código abierto» en las noticias?
+- ¿Qué significa «60B» en el nombre de un modelo?
+- ¿Puedo ejecutar un modelo abierto en mi ordenador?
+
+## P1: ¿qué son los modelos abiertos y cerrados?
+
+[Antes](/es/courses/llm-101/how-language-models-are-trained) explicamos que el entrenamiento ajusta los parámetros internos de un modelo. Al terminar, se guardan sus valores. Normalmente se llaman **pesos** del modelo.
+
+Tanto los abiertos como los cerrados son grandes modelos de lenguaje. Una diferencia clave es si sus pesos son públicos.
+
+- Los modelos abiertos publican sus pesos para que cualquiera pueda descargarlos y ejecutarlos en un ordenador o servidor. Como los pesos están disponibles, también puedes modificarlos.
+- Los modelos cerrados mantienen sus pesos privados. No puedes descargarlos; solo puedes usar el modelo mediante el producto de chat o la API del proveedor.
+
+Como analogía, piensa en un modelo abierto como un programa gratuito. Puedes descargarlo y usarlo sin pagar. Además de ejecutarlo, puedes cambiar su código según tus necesidades. Un modelo cerrado se parece más a un programa de pago, normalmente con un coste adicional, aunque algunos proveedores ofrecen acceso gratuito para atraer usuarios. No puedes modificar su código y <JimmyNoteAnchor id="001">solo funciona dentro de los límites establecidos por sus desarrolladores</JimmyNoteAnchor>.
+
+<JimmyNote anchor="001">
+  La ciberseguridad es un ejemplo habitual. Algunos proveedores de modelos cerrados imponen restricciones para impedir su uso en ataques informáticos. Si el modelo detecta esa intención, puede negarse a responder o mostrar una advertencia. Los modelos abiertos generalmente no tienen esa restricción, aunque podrían aparecer límites similares en el futuro.
+</JimmyNote>
+
+## P2: ¿cuáles son las diferencias?
+
+Además de la disponibilidad de los pesos, veo tres diferencias principales.
+
+**Primera: ¿puedes modificar los pesos y ajustar el modelo?**
+
+Los modelos cerrados no permiten modificar sus pesos. Por tanto, las afirmaciones sobre ajustar Claude Opus 5.5 o GPT-6 suelen ser incorrectas. Los modelos principales de Claude y GPT no son abiertos, así que las personas ajenas a esas empresas no pueden obtener sus pesos para ajustarlos. Estos proveedores sí ofrecieron antes algunos servicios oficiales de ajuste fino, pero los han ido cerrando.
+
+**Segunda: ¿puedes usar el modelo gratis?**
+
+Conviene aclarar qué significa «gratis». Proveedores como OpenAI mantienen sus modelos cerrados, pero ofrecen pruebas gratuitas. Tras consumir cierta cantidad, empiezan a cobrar.
+
+Con un modelo abierto, puedes instalarlo en tu ordenador o servidor y usarlo todo el tiempo que quieras sin una tarifa adicional por el modelo. Sigues pagando hardware, electricidad, mantenimiento y, quizá, alquiler del servidor. Pero esos costes no los cobra <JimmyNoteAnchor id="002">el proveedor del modelo abierto</JimmyNoteAnchor>.
+
+<JimmyNote anchor="002">
+  Algunos proveedores de modelos abiertos también ofrecen servicios de pago. Esos servicios tienen cargos adicionales.
+</JimmyNote>
+
+**Tercera: ¿llegan tus datos al proveedor del modelo?**
+
+Si ejecutas el modelo localmente, los datos se quedan allí y no se envían a su proveedor. Si usas un servicio alojado, pueden enviarse al proveedor de la nube.
+
+<KeyTakeaway>
+  Que un modelo sea abierto no significa que ejecutarlo sea completamente gratis. Necesita recursos de cálculo. El uso local puede requerir un ordenador o servidor adecuado. Un servicio alojado evita comprar un servidor, pero añade tarifas de servicio.
+</KeyTakeaway>
+
+## P3: ¿qué significa B en el nombre de un modelo?
+
+Quizá hayas visto nombres con 7B, 32B, 60B o 70B. B significa **billion en inglés, es decir, mil millones**. Por ejemplo, DeepSeek-V4.1-Flash es un modelo 552B.
+
+Ese número no cuenta los caracteres del texto de entrenamiento, los hechos almacenados ni la ventana de contexto. Cuenta los parámetros. Un modelo 552B tiene unos **552 mil millones de parámetros**.
+
+¿Más parámetros significan un modelo más potente?
+
+No puedes decidirlo solo con esa cifra.
+
+Imagina el tamaño de una cocina. Una cocina grande admite más equipamiento, pero la calidad de la comida también depende de los ingredientes, los métodos y la formación. La superficie no basta para saber qué restaurante cocina mejor.
+
+Un modelo pequeño, con un entrenamiento más completo o adaptado a una tarea concreta, puede superar a uno grande en esa tarea. **[El número de parámetros describe la escala. Comprueba la capacidad con tareas reales.](https://arxiv.org/abs/2203.15556)**
+
+La próxima lección explicará las evaluaciones de los principales modelos para ayudarte a elegir.
+
+## P4: ¿qué es un modelo de mezcla de expertos?
+
+Quizá hayas oído que DeepSeek-V4.1-Flash es un modelo de mezcla de expertos, o MoE.
+
+¿Qué significa?
+
+Como analogía sencilla, imagina un equipo de 552 mil millones de expertos. Un modelo sin MoE enviaría el problema a todos antes de producir un resultado. Un modelo MoE como DeepSeek-V4.1-Flash asigna expertos según la situación:
+
+- Cuando el usuario hace una pregunta, el modelo activa solo 8B de parámetros para entenderla. Estos 8 mil millones de expertos se especializan en comprender preguntas y saber quién debe responderlas, en lugar de responder directamente.
+- Cuando necesita producir la respuesta, llama a 16B de parámetros. Los primeros 8B expertos pasan la pregunta al equipo adecuado, que genera la respuesta.
+
+Este diseño aporta una ventaja de rendimiento. Un problema que antes necesitaba a los 552B expertos ahora puede pasar solo por los grupos de 8B y 16B. Es más rápido y usa menos recursos de cálculo, con una factura eléctrica mucho menor, al menos 😆.
+
+## P5: ¿puede mi ordenador ejecutar DeepSeek-V4.1-Flash?
+
+Si un modelo abierto puede funcionar localmente, ¿puede tu ordenador ejecutar DeepSeek-V4.1-Flash?
+
+Depende del hardware. Una estimación habitual de la memoria GPU necesaria utiliza la «regla de 1,2×»:
+
+$$
+\text{Memoria GPU necesaria (GB)} \approx X \times \text{Bits de cuantización (Bits)} \,/\, 8 \times 1.2
+$$
+
+Todavía no necesitas entender los bits de cuantización. Para usarlo sin perder precisión, el valor es aproximadamente 16. Con x = 552, la fórmula da unos 1325 GB de memoria GPU.
+
+Es memoria GPU, no RAM del sistema. Con tarjetas gráficas 4090, necesitarías unas 1325 GB ÷ 24 = 55,2 tarjetas.
+
+Los chips de Apple ofrecen memoria unificada, así que los usuarios de Mac también pueden ejecutar el modelo con chips de la serie M. He consultado el precio: un Mac con 512 GB de memoria unificada cuesta actualmente unos 170 000 yuanes, y harían falta alrededor de tres para este modelo. Incluso con INT4 / Q4_K_M, términos que aún no necesitas entender, se necesitan unos 359 GB de memoria.
+
+Es decir, ejecutar este modelo reciente en tu propio ordenador en 2026 cuesta unos 170 000 yuanes.
+
+Son cálculos y estimaciones sencillos. Los requisitos reales también dependen de la versión del modelo, la cuantización y otros detalles.

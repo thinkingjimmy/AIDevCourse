@@ -1,0 +1,94 @@
+---
+courseId: llm-101
+lessonId: how-models-see-and-hear
+title: ¿Cómo ven imágenes y oyen sonidos los modelos?
+description: Entiende los modelos multimodales mediante representaciones numéricas y codificadores. Distingue imágenes, lectura, transcripción y comprensión de audio, y aprende a comprobar los resultados.
+---
+
+Hasta ahora hemos hablado de texto: introduces texto y el modelo genera texto. Pero algunos productos de IA ya permiten subir capturas de pantalla, fotos o grabaciones y hacer preguntas sobre ellas.
+
+Quizá te preguntes: el texto pasa por un tokenizador y se convierte en números que el modelo puede procesar. ¿Cómo entra una foto o una grabación en el modelo?
+
+Partimos de la misma idea: **convertir distintas formas de información en representaciones numéricas con las que el modelo puede calcular.**
+
+## 1. ¿Qué significa multimodal?
+
+Una modalidad es una forma de información. El texto, las imágenes y el audio son modalidades diferentes. Un **modelo multimodal** puede trabajar con más de una. Por ejemplo, puede recibir una imagen junto con texto y generar una respuesta escrita.
+
+| Función visible | Capacidad implicada |
+| --- | --- |
+| Subir una foto y preguntar qué contiene | Entrada de imagen y salida de texto |
+| Subir una grabación y resumir lo hablado | Reconocimiento de voz, o comprensión de audio y salida de texto |
+| Introducir texto y hacer que el producto lo lea en voz alta | Generación de voz |
+| Subir una foto y pedir otra imagen | Comprensión de imágenes, más generación o edición de imágenes |
+
+Estas capacidades pueden pertenecer a un modelo o a varios que colaboran dentro del producto. Por ejemplo, una función de entrada de voz puede transcribir primero la grabación y enviar ese texto al modelo de lenguaje.
+
+Que exista una función de voz no demuestra por sí solo que el modelo de lenguaje procese sonido directamente.
+
+## 2. ¿Cómo ve una imagen un modelo?
+
+Supón que subes una captura y preguntas: «¿Qué dice el botón de la esquina inferior derecha?». El proceso tiene tres pasos:
+
+![La imagen se divide en fragmentos conservando sus posiciones. Un codificador visual los convierte en características numéricas, que entran en el modelo de lenguaje junto con la pregunta escrita para generar una respuesta.](/images/courses/how-models-see-and-hear/es/vision-pipeline.webp)
+
+**Paso 1: procesar la imagen y dividirla en regiones adecuadas.**
+
+Primero, el modelo divide la captura en pequeños fragmentos, o parches. También registra sus posiciones: por ejemplo, el primero está arriba a la izquierda y el segundo arriba a la derecha. Los parches son una analogía para explicar el proceso; no todos los modelos dividen las imágenes igual.
+
+**Paso 2: convertir la imagen en representaciones numéricas mediante un codificador visual.**
+
+Como el tokenizador para el texto, el codificador visual convierte colores, bordes, formas y otra información visual en <JimmyNoteAnchor id="visual-features">[características numéricas que el modelo puede comprender](https://arxiv.org/abs/2103.00020)</JimmyNoteAnchor>.
+
+**Paso 3: seguir prediciendo lo que viene después.**
+
+Tras recibir la imagen y el texto tokenizado, el modelo vuelve a predecir el siguiente token probable.
+
+<JimmyNote anchor="visual-features">
+  Piensa en el codificador visual como un módulo que convierte una imagen en características numéricas. No tiene por qué consultar un vocabulario para obtener ID de tokens, como ocurre con el texto. Muchos métodos usan una secuencia de vectores de características de imagen: grupos de valores numéricos.
+</JimmyNote>
+
+## 3. ¿Cómo oye un sonido un modelo?
+
+**Igual que una imagen, el sonido puede pasar por un codificador y convertirse en grupos de valores que el modelo puede procesar.**
+
+Pero las funciones de voz habituales pueden seguir caminos distintos.
+
+![Dos caminos para la misma grabación. El superior genera primero una transcripción: una alarma omitida del texto no llega al modelo de lenguaje. El inferior codifica el audio en características numéricas y las envía, junto con una instrucción escrita, a un modelo que acepta audio.](/images/courses/how-models-see-and-hear/es/audio-paths.webp)
+
+### Camino 1: transcribir la voz y dejar que responda el modelo de lenguaje
+
+El proceso es sencillo. Una tecnología o un modelo especializado [convierte las palabras habladas en texto](https://arxiv.org/abs/2212.04356) y envía ese texto al gran modelo de lenguaje.
+
+Aquí, el modelo solo recibe la transcripción. Puede perderse otra información, como los sonidos de fondo, las pausas, el tono o los cambios de emoción.
+
+### Camino 2: permitir que el modelo reciba características de audio
+
+Otro método pasa el audio por un codificador y envía sus características junto con una instrucción escrita al modelo. Este puede procesar el habla y, según sus capacidades, también los sonidos de fondo o la música.
+
+Recibir características de audio no significa automáticamente que el modelo pueda generar voz. Comprender sonidos y producirlos pueden ser funciones de modelos distintos.
+
+<KeyTakeaway>
+  La transcripción de voz, la comprensión de audio y la generación de voz pueden utilizar modelos diferentes.
+</KeyTakeaway>
+
+## 4. Reto de comprensión
+
+<Achievement
+  id="distinguish-audio-inputs"
+  title="Distinguir el sonido de la transcripción"
+  question="Un producto de notas de voz transcribe una grabación y solo envía el texto al modelo de lenguaje. La grabación contiene una alarma, pero la transcripción la omite. ¿Qué afirmación es más precisa?"
+  answer="missing-audio"
+  explanation="El modelo de lenguaje solo recibe la transcripción. No puede utilizar directamente una alarma ausente de su entrada. Que el producto acepte grabaciones no significa que el modelo reciba el audio original o sus características. Comprueba que existe la capacidad de comprensión de audio necesaria cuando esa información sea relevante."
+  takeaway="Comprueba primero qué recibe realmente el modelo. Transcribir voz, comprender audio y generar voz son capacidades distintas."
+>
+  <AchievementOption value="microphone-means-hearing">
+    El producto acepta grabaciones, así que el modelo de lenguaje debe haber oído todos los sonidos.
+  </AchievementOption>
+  <AchievementOption value="missing-audio">
+    El modelo solo recibe texto y no puede analizar directamente una alarma ausente de ese texto.
+  </AchievementOption>
+  <AchievementOption value="longer-thinking">
+    Si el modelo piensa más tiempo, puede reconstruir la alarma que falta en su entrada.
+  </AchievementOption>
+</Achievement>

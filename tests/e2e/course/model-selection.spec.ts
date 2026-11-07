@@ -73,13 +73,13 @@ test('follow model basics into selection and preserve authored exercises', async
 test('split model basics keeps its desktop notes and mobile popovers', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1536, height: 960 });
   await page.goto(modelBasics);
-  for (const id of ['002', '003']) {
+  for (const id of ['001', '002']) {
     await expect(page.locator(`[data-jimmy-note-card="${id}"]`)).toBeVisible();
     await expect(page.locator(`[data-note-connector="${id}"]`)).toHaveAttribute('d', /^M /);
   }
   await testInfo.attach('model-basics-desktop-notes', { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
   await page.setViewportSize({ width: 390, height: 844 });
-  for (const id of ['002', '003']) {
+  for (const id of ['001', '002']) {
     await page.locator(`[data-note-trigger-for="${id}"]`).click();
     const dialog = page.getByRole('dialog', { name: 'Jimmy 的批注', exact: true });
     await expect(dialog.getByRole('note', { name: 'Jimmy', exact: true })).toBeVisible();
@@ -137,7 +137,9 @@ test('thinking, multimodal, and model basics lessons are searchable', async ({ p
   ]) {
     await page.goto('/zh');
     await page.keyboard.press('Control+k');
-    await page.getByRole('textbox', { name: '搜索课时' }).fill(entry.query);
+    const search = page.getByRole('textbox', { name: '搜索课时' });
+    await expect(search).toBeFocused();
+    await search.fill(entry.query);
     const result = page.locator(`.search-result[href="${course}/${entry.slug}"]`).first();
     await expect(result).toBeVisible();
     await result.click();
@@ -154,13 +156,14 @@ test('the relocated first lesson keeps language switching and its public URLs', 
   ];
   for (const { url, title } of translations) {
     expect((await page.goto(url))?.status()).toBe(200);
-    await expect(page.locator('[data-slot="sidebar-container"] [data-sidebar="menu-button"]')).toHaveText(`01 ${title}`);
-    await expect(page.locator('article h1')).toHaveText('What a language model does');
+    await expect(page.locator('[data-slot="sidebar-container"] [data-sidebar="menu-button"]').first()).toHaveText(`01 ${title}`);
+    await expect(page.locator('[data-slot="sidebar-container"] [data-sidebar="menu-button"]')).toHaveCount(2);
+    await expect(page.locator('article h1')).toHaveText(contentDocument(url).data.title);
   }
   await page.goto(`${course}/what-a-language-model-does`);
-  await page.getByRole('button', { name: '更多', exact: true }).click();
-  await page.getByRole('menuitem', { name: '修改语言', exact: true }).click();
-  const english = page.locator('.language-options a[href="/courses/llm-101/what-a-language-model-does"]');
+  const picker = page.locator('.language-picker').first();
+  await picker.locator('summary').click();
+  const english = picker.getByRole('link', { name: 'English', exact: true });
   await expect(english).not.toContainText('此课暂无译文');
   await english.click();
   await expect(page).toHaveURL('/courses/llm-101/what-a-language-model-does');
@@ -173,17 +176,17 @@ test('read both split lessons on a narrow screen without JavaScript', async ({ b
     const page = await context.newPage();
     for (const entry of [
       { url: modelBasics, name: 'model-basics', questions: 5 },
-      { url: lesson, name: 'model-selection', questions: 2 },
+      { url: lesson, name: 'model-selection', questions: 3 },
     ]) {
       expect((await page.goto(entry.url))?.status()).toBe(200);
-      await expect(page.locator('article h2').filter({ hasText: /^Q[1-4][:：]/ })).toHaveCount(entry.questions);
+      await expect(page.locator('article h2')).toHaveCount(entry.questions);
       if (entry.url === modelBasics) {
         await expect(page.locator('article .katex')).toHaveCount(1);
         await expect(page.locator('article > .prose')).toContainText('1325 GB');
         await expect(page.locator('[data-achievement]')).toHaveCount(0);
       } else {
-        await expect(page.locator('[data-achievement] legend')).toBeVisible();
-        await expect(page.locator('[data-achievement] input[type="radio"]').first()).toBeDisabled();
+        await expect(page.locator('[data-achievement]')).toHaveCount(0);
+        await expect(page.locator('[data-embed="x"]').getByRole('link')).toBeVisible();
       }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await testInfo.attach(`${entry.name}-narrow-no-js`, { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });

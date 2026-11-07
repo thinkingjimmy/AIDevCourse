@@ -1,4 +1,9 @@
 {
   "title": "大規模言語モデルの仕組み",
-  "pages": ["what-a-language-model-does"]
+  "pages": [
+    "what-a-language-model-does",
+    "what-is-a-token",
+    "why-model-answers-vary",
+    "how-models-calculate-token-probabilities"
+  ]
 }

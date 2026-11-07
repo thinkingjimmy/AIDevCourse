@@ -1,0 +1,167 @@
+---
+courseId: llm-101
+lessonId: how-model-thinking-works
+title: Que signifie la « réflexion approfondie » d’un modèle ?
+description: Comprendre Thinking avec l’analogie du brouillon, distinguer le raisonnement de son résumé affiché et choisir quand approfondir la réflexion.
+---
+
+En utilisant un produit de conversation avec une IA, vous avez peut-être vu un bouton de « réflexion approfondie ». Ou le produit affiche « Thinking » après votre question, au lieu de répondre immédiatement.
+
+Dans les leçons précédentes, nous avons expliqué qu’un modèle prédit le prochain token à partir de son entrée. Pourquoi se met-il à « réfléchir » ?
+
+Nous allons utiliser l’analogie du brouillon pour comprendre ce processus, puis le comparer à une réponse ordinaire.
+
+## 1. Faire les calculs avant de répondre
+
+Supposons que vous organisiez un événement et deviez résoudre ce problème :
+
+> Le budget total est de 1 000 yuans. La salle coûte 450 yuans, le matériel 230 yuans et le repas 25 yuans par personne. Combien de personnes pouvez-vous accueillir au maximum ?
+
+Le calcul mental peut facilement conduire à une erreur, car la division ne tombe pas toujours juste. Il est plus fiable de poser les étapes sur papier :
+
+1. **Soustraire les frais fixes :** 1 000 − 450 − 230 = 320 yuans.
+2. **Calculer le nombre de personnes :** 320 ÷ 25 = 12,8. Impossible de découper une personne en 0,8 personne : le maximum est donc 12.
+3. **Vérifier le résultat :** 450 + 230 + 12 × 25 = 980 yuans. Le budget est respecté !
+
+La « réflexion approfondie » d’un modèle, ou Thinking, suit un processus similaire.
+
+Dès 2022, avant l’apparition de modèles spécialisés dans le raisonnement comme [OpenAI o1](https://arxiv.org/abs/2412.16720) et DeepSeek-R1, des recherches sur les premiers LLM, notamment ceux de l’époque GPT-3.5 / GPT-4, avaient relevé l’intérêt d’ajouter cette consigne au prompt :
+
+> [« Réfléchissons étape par étape » (« Let's think step by step »)](https://arxiv.org/abs/2201.11903)
+
+Le modèle pouvait <JimmyNoteAnchor id="reasoning-steps">suivre la consigne et écrire les étapes</JimmyNoteAnchor>, ce qui améliorait l’exactitude de la réponse finale.
+
+<JimmyNote anchor="reasoning-steps">
+  L’IA évolue si vite qu’on plaisante parfois : « Si j’apprends assez lentement, je n’aurai plus besoin d’apprendre. » Les connaissances risquent de devenir vite obsolètes. Mais est-ce vraiment le cas ? Cet exemple montre que les premières recherches sur les prompts avaient déjà trouvé une idée utile : les étapes intermédiaires aident un modèle à résoudre une tâche. L’entraînement ultérieur des modèles de raisonnement a cherché à rendre leur utilisation plus efficace.
+</JimmyNote>
+
+## 2. Suffit-il d’ajouter un prompt ?
+
+Les premières [recherches](https://arxiv.org/abs/2205.11916) sur les prompts ont amélioré l’exactitude, sans résoudre fondamentalement le problème des capacités de raisonnement. Un prompt ne garantit pas que le modèle choisira toujours la bonne méthode, repérera une erreur et refera le calcul autrement. Il peut détailler toutes les étapes en se trompant dès la première. Il peut aussi répéter « Je vais vérifier » sans trouver le problème.
+
+Nous voulons donc que le modèle génère davantage d’étapes intermédiaires, puis s’en serve pour poursuivre les calculs et donner une réponse finale. Le processus de génération ne change pas : il produit toujours un token à la fois. Nous lui demandons simplement de produire plus d’étapes intermédiaires.
+
+Un prompt indique comment répondre cette fois-ci, mais ne change pas réellement les règles de fonctionnement du modèle. Les chercheurs ont donc envisagé de lui apprendre à utiliser un brouillon par l’entraînement.
+
+## 3. Le post-entraînement
+
+La leçon précédente mentionnait deux phases : le [préentraînement](/fr/courses/llm-101/how-language-models-are-trained) et le post-entraînement. Nous n’avons pas encore expliqué la seconde.
+
+Le post-entraînement continue à ajuster un modèle préentraîné pour l’améliorer sur certaines tâches. Imaginez quelqu’un qui a lu beaucoup de livres et commence maintenant des exercices ciblés.
+
+Les principales méthodes ressemblent aussi à l’apprentissage humain : étudier des exemples ou résoudre soi-même des problèmes.
+
+**Première méthode : regarder comment font les autres.**
+
+On prépare des paires « question + exemple de réponse », puis on entraîne le modèle sur ces démonstrations. C’est généralement ce qu’on appelle le fine-tuning supervisé, ou SFT.
+
+Pour le problème de budget, on fournit la question et une réponse modèle :
+
+> Question : Le budget total est de 1 000 yuans. La salle coûte 450 yuans, le matériel 230 yuans et le repas 25 yuans par personne. Quel est le nombre maximal de personnes ? \
+> Réponse : Soustrayons les frais fixes : 1 000 − 450 − 230 = 320 yuans. Calculons le nombre de personnes : 320 ÷ 25 = 12,8. Une personne ne peut pas être divisée en 0,8 personne : le maximum est donc 12. Remplaçons dans la formule : 450 + 230 + 12 × 25 = 980 yuans. Le budget n’est pas dépassé.
+
+Pendant l’entraînement, le modèle prédit toujours le prochain token de l’exemple de réponse, puis ses paramètres sont ajustés par comparaison avec cet exemple. De nombreux exemples rendent une méthode de réponse adaptée plus probable. C’est comme un professeur qui montre : « Voici comment aborder ce type de question. »
+
+**Deuxième méthode : essayer, puis progresser grâce au résultat.**
+
+Une autre méthode laisse le modèle tenter une tâche, attribue un score à sa performance et utilise ce score pour ajuster les paramètres.
+
+C’est l’apprentissage par renforcement, ou RL. Contrairement à l’étude d’une démonstration, le modèle doit produire sa propre réponse avant de recevoir un retour.
+
+Reprenons le problème du budget pour expliquer cette méthode.
+
+## 4. L’apprentissage par renforcement
+
+**Étape 1 : laisser le modèle essayer.**
+
+Pendant l’entraînement, le modèle peut produire plusieurs réponses à une même question. Le caractère aléatoire de la génération peut donner des résultats différents.
+
+Dans cet exemple simplifié, on demande d’abord un format « brouillon + réponse finale ». La première partie contient les calculs et vérifications ; la seconde donne la réponse. Cette séparation a été utilisée dans les [travaux publiés sur DeepSeek-R1-Zero](https://arxiv.org/html/2501.12948v1).
+
+| Essai | Exemple de travail intermédiaire | Réponse finale |
+|---|---|---|
+| A | Il reste 320 yuans. 320 ÷ 25 = 12,8. Arrondissons à 13. | Au maximum 13 personnes. |
+| B | Une personne entre forcément dans le budget, choisissons donc une personne. | Au maximum 1 personne. |
+| C | Il reste 320 yuans. 320 ÷ 25 = 12,8. Pour respecter le budget, arrondissons à l’entier inférieur : 12. Vérification : 12 personnes coûtent 980 yuans ; 13 coûtent 1 005 yuans, ce qui dépasse le budget. | Au maximum 12 personnes. |
+| D | Il reste 320 yuans pour les repas, soit assez pour 12 personnes. | Au maximum 12 personnes. |
+
+**Étape 2 : attribuer un score.**
+
+Le calcul permet de vérifier la réponse : au maximum 12 personnes. On peut donc appliquer une règle simple : 1 point si la réponse finale est « au maximum 12 personnes », et 0 pour tout autre nombre.
+
+| Essai | Score | Motif |
+|---|---:|---|
+| A | 0 | 13 personnes coûtent 1 005 yuans, au-delà du budget |
+| B | 0 | Une personne respecte le budget, mais ce n’est pas le maximum |
+| C | 1 | La réponse finale est correcte |
+| D | 1 | La réponse finale est correcte |
+
+C et D reçoivent le même score, car on récompense la résolution du problème, pas la longueur du brouillon. Selon cette règle, même une bonne réponse sans calcul écrit doit obtenir 1 point. C’est un exemple simplifié de récompense du résultat. L’entraînement réel peut aussi récompenser le format ou d’autres critères, mais ce n’est pas notre sujet ici. Cette vue d’ensemble suffit pour le cours ; consultez [l’article](https://arxiv.org/html/2501.12948v1) pour approfondir.
+
+Il existe aussi des méthodes qui évaluent le processus. En 2023, OpenAI a publié des [travaux sur la supervision du processus](https://openai.com/index/improving-mathematical-reasoning-with-process-supervision/). Un modèle de récompense a été entraîné à partir de retours sur les étapes intermédiaires, puis utilisé pour sélectionner des solutions candidates à des problèmes mathématiques.
+
+Évaluer le processus consiste à juger la qualité des étapes, ce qui permet une notation plus détaillée. Dans notre exemple, C obtiendrait un meilleur score. DeepSeek-R1 n’avait pas retenu cette approche à l’époque, non parce que les étapes étaient sans importance, mais parce que DeepSeek jugeait leur notation plus difficile et coûteuse. C’était un choix d’entraînement, pas l’affirmation que cette méthode ne pouvait pas fonctionner.
+
+**Étape 3 : ajuster les paramètres à partir des scores.**
+
+Au fil de nombreux tours d’apprentissage, les paramètres du modèle sont progressivement ajustés.
+
+L’essentiel est que l’apprentissage par renforcement utilise de nombreuses questions, pas une seule. Même si la notation du résultat donne parfois des scores identiques, un ensemble suffisant de questions produit des différences. Si certaines manières de décomposer, vérifier et corriger un problème conduisent plus régulièrement à une bonne réponse, ces modes de génération peuvent être renforcés. Le but est d’améliorer la façon de résoudre les problèmes.
+
+<KeyTakeaway>
+  Donnez un brouillon au modèle, puis utilisez les retours sur ses essais pour lui apprendre à bien s’en servir. L’objectif n’est pas qu’il aime écrire de longs calculs, mais qu’il utilise ce travail plus efficacement pour accomplir les tâches.
+</KeyTakeaway>
+
+## 5. Réflexion approfondie et réponse ordinaire
+
+Un raisonnement plus poussé peut être utile. Mais pour une question simple comme « Combien font 1 + 1 ? », il peut sembler excessif. Il faut attendre davantage et consommer plus de tokens. Vous rappelez-vous les prix des tokens d’entrée et de sortie dans [Qu’est-ce qu’un token ?](/fr/courses/llm-101/what-is-a-token) ? Utiliser un brouillon consomme plus de tokens.
+
+La plupart des produits proposent donc un interrupteur pour choisir d’activer ou non ce raisonnement. DeepSeek, par exemple, dispose d’un bouton « Deep Thinking ».
+
+Tous ne procèdent pas ainsi. ChatGPT propose plutôt un réglage d’effort, avec des niveaux comme Light et Medium.
+
+Je souhaite préciser deux points.
+
+<KeyTakeaway>
+  Le bouton de réflexion approfondie ne remplace pas nécessairement le modèle et n’ajoute pas un module de raisonnement. Il choisit comment utiliser un modèle déjà entraîné. Imaginez la même personne, qui a appris les mathématiques : va-t-elle répondre directement ou poser ses calculs sur papier ? Ne pas utiliser de brouillon ne supprime pas ses connaissances. De même, désactiver la réflexion approfondie ne supprime pas toute capacité de raisonnement.
+</KeyTakeaway>
+
+L’effort règle les ressources consacrées au raisonnement et influe généralement sur le nombre de tokens de raisonnement. Il ne fixe pas une longueur de réflexion et ne demande pas une réponse finale plus longue. Un effort élevé autorise davantage de calcul et une analyse plus complète. Dans l’analogie humaine, on permet un travail plus soigneux, sans exiger un brouillon de 1 000 mots.
+
+Prenons « Combien font 37 × 48 ? ». Avec un effort faible, la réponse pourrait être :
+
+<Chat>
+  <ChatMessage from="user">Combien font 37 × 48 ?</ChatMessage>
+  <ChatMessage from="assistant">1776</ChatMessage>
+</Chat>
+
+Avec un effort élevé :
+
+<Chat>
+  <ChatMessage from="user">Combien font 37 × 48 ?</ChatMessage>
+  <ChatMessage from="assistant">
+    <ChatThinking>
+    Décomposons d’abord :\
+    37 × 48
+    = 37 × (50 − 2)
+    = 1850 − 74
+    = 1776 \
+    Vérifions avec une autre méthode :\
+    48 × (40 − 3)
+    = 1920 − 144
+    = 1776
+    </ChatThinking>
+
+    Réponse finale : 1776
+</ChatMessage>
+</Chat>
+
+Le but n’est pas d’allonger la réponse. **Les deux réponses finales peuvent se limiter à « 1776 ». La différence est le calcul effectué avant de répondre.** Les modèles de raisonnement peuvent utiliser des tokens supplémentaires pour décomposer un problème et examiner plusieurs méthodes. Ces tokens ne constituent pas la réponse finale.
+
+En général, Low permet moins de calcul et une analyse plus simple. Il consomme moins de tokens et répond plus vite. High utilise généralement plus de tokens et prend plus de temps. Mais ce n’est pas absolu. Certains modèles, comme ceux de ChatGPT, adaptent aussi le raisonnement à la difficulté. Même avec un effort élevé, une question simple peut utiliser peu de tokens.
+
+## 6. À quoi cela sert-il ?
+
+Comprendre le raisonnement approfondi et ses niveaux d’effort permet de choisir quand l’utiliser et quel niveau convient. Toutes les questions n’en ont pas besoin, et un effort plus élevé ne garantit pas une meilleure réponse.
+
+Avec la hausse des prix des modèles, choisissez ces réglages avec soin pour éviter le gaspillage.

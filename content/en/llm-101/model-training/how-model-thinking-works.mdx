@@ -1,0 +1,167 @@
+---
+courseId: llm-101
+lessonId: how-model-thinking-works
+title: What does a model's “deep thinking” mean?
+description: Use a scratchpad analogy to understand Thinking, distinguish reasoning from its displayed summary, and decide when deeper reasoning is useful.
+---
+
+When using an AI chat product, you may have seen a “deep thinking” button. Or the product may show “Thinking” after you submit a question, instead of answering immediately.
+
+In earlier lessons, we said that a model predicts the next token from its input. Why is it now “thinking”?
+
+We will first use a scratchpad analogy to understand this process, then compare deeper reasoning with an ordinary answer.
+
+## 1. Work it out before giving the answer
+
+Suppose you are organizing an event and need to solve this problem:
+
+> The total budget is CNY 1,000. The venue costs CNY 450, materials cost CNY 230, and food costs CNY 25 per person. What is the maximum number of people you can accommodate?
+
+It is easy to make a mistake when answering mentally, because the numbers do not always divide evenly. A more reliable method is to work through the steps on paper:
+
+1. **Subtract the fixed costs:** 1,000 − 450 − 230 = CNY 320.
+2. **Calculate the number of people:** 320 ÷ 25 = 12.8. You cannot split a person into 0.8 of a person, so the maximum is 12.
+3. **Check the result:** 450 + 230 + 12 × 25 = CNY 980. That is within the budget!
+
+A model's “deep thinking”, or Thinking, follows a similar process.
+
+As early as 2022, before specialized reasoning models such as [OpenAI o1](https://arxiv.org/abs/2412.16720) and DeepSeek-R1 appeared, research on earlier LLMs, such as those from the GPT-3.5 / GPT-4 era, found that adding this instruction to a prompt could help:
+
+> ["Let's think step by step"](https://arxiv.org/abs/2201.11903)
+
+The model could <JimmyNoteAnchor id="reasoning-steps">follow the instruction and write out the steps</JimmyNoteAnchor>, improving the accuracy of its final answer.
+
+<JimmyNote anchor="reasoning-steps">
+  AI changes so quickly that people sometimes joke, “If I learn slowly enough, I won't need to learn it at all.” The knowledge might soon become outdated. But is that really true? This example shows that early prompt research had already identified a useful idea: intermediate steps can help a model reason through a task. Later reasoning-model training explored how models could use those steps more effectively.
+</JimmyNote>
+
+## 2. Is deep thinking just an extra prompt?
+
+Early prompt engineering [research](https://arxiv.org/abs/2205.11916) improved accuracy, but it did not fundamentally solve the problem of reasoning ability. A prompt cannot guarantee that the model will choose the right method, find an error, and recalculate with another method every time. The model may write every step while making a mistake in the first one. It may also keep saying “Let me check” without finding the problem.
+
+In other words, we need the model to generate additional intermediate steps, then use those steps to continue calculating and give a final answer. The generation process has not changed: it still produces one token at a time. We are simply asking it to produce more intermediate steps.
+
+A prompt can tell a model how to answer this time, but it cannot truly change the model's operating rules. Researchers therefore considered whether training could teach a model to use a scratchpad.
+
+## 3. Post-training
+
+The previous lesson mentioned two training stages: [pretraining](/courses/llm-101/how-language-models-are-trained) and post-training. We have not yet covered the latter.
+
+Post-training continues to adjust a pretrained model so that it can perform certain tasks better. Imagine someone who has read many books and now starts doing targeted exercises.
+
+The main post-training methods also resemble human learning: one involves studying examples; the other involves solving problems.
+
+**First: Watch how someone else does it.**
+
+One method prepares “question + example answer” pairs and trains the model on those demonstrations. This is usually called supervised fine-tuning, or SFT.
+
+For the budget problem, training provides both the question and a model answer:
+
+> Question: The total budget is CNY 1,000. The venue costs CNY 450, materials cost CNY 230, and food costs CNY 25 per person. What is the maximum number of people? \
+> Answer: Subtract the fixed costs: 1,000 − 450 − 230 = CNY 320. Calculate the number of people: 320 ÷ 25 = 12.8. A person cannot be divided into 0.8 of a person, so the maximum is 12. Substitute 12 into the formula: 450 + 230 + 12 × 25 = CNY 980. The budget is not exceeded.
+
+During training, the model still predicts the next token in the example answer, then adjusts its parameters against that example. Many examples make it more likely to use an appropriate response method. Think of a teacher demonstrating, “This is how to approach this kind of question.”
+
+**Second: Try it, then improve from the result.**
+
+Another method lets the model attempt a task, gives its performance a score, and uses that score to adjust the parameters.
+
+This is called reinforcement learning, or RL. Unlike studying a demonstration, the model must generate its own answer before it receives feedback.
+
+We will keep using the budget problem to explain reinforcement learning.
+
+## 4. Reinforcement learning
+
+**Step 1: Let the model try.**
+
+During training, the model can generate several answers to the same question. Randomness in generation can produce different results.
+
+In this simplified example, we first ask for a “scratchpad + final answer” format. The first part can contain calculations and checks; the second gives the answer. This separation of reasoning and answers was used in the [published DeepSeek-R1-Zero research](https://arxiv.org/html/2501.12948v1).
+
+| Attempt | Intermediate working, for illustration | Final answer |
+|---|---|---|
+| A | CNY 320 remains. 320 ÷ 25 = 12.8. Round to 13. | At most 13 people. |
+| B | One person will definitely fit the budget, so choose one. | At most 1 person. |
+| C | CNY 320 remains. 320 ÷ 25 = 12.8. To stay within budget, round down to 12. Check: 12 people cost CNY 980; 13 cost CNY 1,005, which exceeds the budget. | At most 12 people. |
+| D | CNY 320 remains for food, enough for 12 people. | At most 12 people. |
+
+**Step 2: Give a score.**
+
+The answer can be checked by calculation: at most 12 people. We can therefore use a simple scoring rule. Award 1 point for the correct final answer, “at most 12 people”, and 0 for any other number.
+
+| Attempt | Score | Reason |
+|---|---:|---|
+| A | 0 | 13 people cost CNY 1,005, exceeding the budget |
+| B | 0 | One person is within budget, but is not the maximum |
+| C | 1 | The final answer is correct |
+| D | 1 | The final answer is correct |
+
+C and D receive the same score because we reward solving the problem, not writing a long scratchpad. Under this rule, even a correct answer with no written working should receive 1 point. This is a simplified example of rewarding a correct outcome. Real training may also use rewards for format and other criteria, but those are not the focus here. This overview is enough for the course; read [the paper](https://arxiv.org/html/2501.12948v1) if you want more detail.
+
+There are also methods that score the process. In 2023, OpenAI published [research on process supervision](https://openai.com/index/improving-mathematical-reasoning-with-process-supervision/). It trained a reward model with feedback on intermediate steps, then used that model to select candidate solutions to mathematical problems.
+
+Scoring the process means assessing the quality of the steps, which allows more detailed scores. In our example, C would receive a higher score. DeepSeek-R1 did not use this approach at the time, not because intermediate steps are unimportant, but because DeepSeek considered scoring them more difficult and expensive. That was a training tradeoff, not a claim that process scoring cannot work.
+
+**Step 3: Adjust the parameters from the scores.**
+
+Over many learning rounds, the model gradually adjusts its parameters.
+
+The key is that reinforcement learning uses many questions, not just one. Even if outcome scoring gives some attempts equal scores, enough questions will produce different results. If certain ways of breaking down, checking, and correcting a problem lead more consistently to correct answers, those generation patterns can gradually be reinforced. The aim is to improve how the model solves problems.
+
+<KeyTakeaway>
+  Give the model a scratchpad, then use feedback from its attempts to help it learn how to use that scratchpad well. The aim is not a model that loves writing long working notes, but one that uses them more effectively to complete tasks.
+</KeyTakeaway>
+
+## 5. Deep thinking versus an ordinary answer
+
+Deeper reasoning can be useful. But for a simple question such as “What is 1 + 1?”, it can feel excessive. You wait longer while the model works it out, and it consumes more tokens. Remember the input and output token pricing discussed in [What is a token?](/courses/llm-101/what-is-a-token)? Using a scratchpad means using more tokens.
+
+Most products therefore provide a switch so that users can choose whether to enable deeper reasoning. DeepSeek, for example, provides a “Deep Thinking” switch.
+
+Not every product does this. ChatGPT instead provides an effort setting, with levels such as Light and Medium.
+
+I want to expand on two points.
+
+<KeyTakeaway>
+  A deep-thinking switch does not necessarily replace the model or install an extra reasoning module. It selects how to use an already trained model. Imagine the same person who has learned mathematics: this time, will they answer directly or work it out on paper first? Skipping the scratchpad does not remove their mathematical ability. Likewise, turning off deeper thinking does not remove all reasoning ability.
+</KeyTakeaway>
+
+Effort adjusts the resources devoted to reasoning and usually affects reasoning-token usage. It does not specify a fixed length of thought or ask for a longer final answer. High effort allows more computation and a fuller analysis. In the human analogy, it allows more careful working, rather than requiring a 1,000-word draft.
+
+Consider the question “What is 37 × 48?” At low effort, the answer might be:
+
+<Chat>
+  <ChatMessage from="user">What is 37 × 48?</ChatMessage>
+  <ChatMessage from="assistant">1776</ChatMessage>
+</Chat>
+
+At high effort, it might be:
+
+<Chat>
+  <ChatMessage from="user">What is 37 × 48?</ChatMessage>
+  <ChatMessage from="assistant">
+    <ChatThinking>
+    Break it down first:\
+    37 × 48
+    = 37 × (50 − 2)
+    = 1850 − 74
+    = 1776 \
+    Check with another method:\
+    48 × (40 − 3)
+    = 1920 − 144
+    = 1776
+    </ChatThinking>
+
+    Final answer: 1776
+</ChatMessage>
+</Chat>
+
+The point is not to make the answer longer. **Both final answers can be just “1776”. The difference is whether more computation happens before the answer.** Reasoning models can use extra reasoning tokens to break down a problem and consider different methods. Those tokens are not the final answer.
+
+In general, Low allows less computation and a simpler analysis. It uses fewer tokens and runs faster. High usually uses more tokens and takes longer. But this is not absolute. Some models, such as those in ChatGPT, also adjust reasoning to the task's difficulty. Even with higher effort, a simple question may use few tokens.
+
+## 6. Why is this useful?
+
+Once you understand deeper reasoning and its effort levels, you can decide whether to use it and which level suits your task. Not every question needs it, and higher effort does not guarantee a better answer.
+
+Especially as model prices rise, use deeper reasoning and effort settings carefully to avoid waste.

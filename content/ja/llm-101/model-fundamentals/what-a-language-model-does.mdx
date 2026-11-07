@@ -1,10 +1,99 @@
 ---
 courseId: llm-101
 lessonId: what-a-language-model-does
-title: What a language model does
-description: LLM 101 の最初のレッスン。
+title: 大規模言語モデルはどうやって回答を生成するのか？
+description: 自動で文章の続きを作る仕組みから大規模言語モデルを理解し、入力が出力に影響する理由を学びます。
 ---
 
-Hello, world!
+最近、「大規模言語モデル」（Large Language Model）という言葉をよく見聞きすると思います。LLM と略されることもあります。多くの人はこれを「人工知能」と呼びますが、それは正しいのでしょうか。実際には何で、なぜ SF 映画の人工知能のように見えるのでしょうか。
 
-LLM 101 へようこそ。最初のレッスンの内容は、ここに追加されます。
+## 1. 全自動で文章の続きを作る仕組み
+
+簡単にたとえると、LLM は[全自動で文章の続きを作る仕組み](https://jalammar.github.io/illustrated-gpt2/)です。例えば、DeepSeek や ChatGPT などの LLM に、次のように質問したとします。
+
+<Chat>
+  <ChatMessage from="user">今日の広州の天気はどうですか？</ChatMessage>
+  <ChatMessage from="assistant" state="thinking" />
+</Chat>
+
+モデルは一連の計算を行います。ただし、想像している仕組みとは違うかもしれません。モデルは<JimmyNoteAnchor id="thinking">「考える」</JimmyNoteAnchor>のではなく、さまざまな[計算](https://arxiv.org/abs/1706.03762)によって、**この質問の次に来る確率が最も高い「文字」を予測します。**
+
+<JimmyNote anchor="thinking">
+  質問を送ると、多くの製品は Thinking などの状態を表示します。ただし、モデルが人間と同じように考えているわけではありません。これについては後で詳しく説明します。
+</JimmyNote>
+
+例えば「今日の広州の天気はどうですか？」に対して、ある生成では、次の文字として「今」が得られるかもしれません。
+
+<JimmyNoteAnchor id="next-character-credits" variant="image">
+
+![「今日の広州の天気はどうですか？」を入力すると、モデルが「今」「広」「明」などの候補の確率を計算し、今回は「今」を選んで出力します。](/images/courses/what-a-language-model-does/ja/next-character.webp)
+
+</JimmyNoteAnchor>
+
+<JimmyNote anchor="next-character-credits">
+  この画像は [ian-xiaohei-illustrations](https://github.com/helloianneo/ian-xiaohei-illustrations) skill で生成しました。作成者の Ian さんに感謝します。
+</JimmyNote>
+
+「今」が得られると、モデルは「今日の広州の天気はどうですか？今」を新しい入力として、次の文字をもう一度計算します。次が「日」なら、「今日の広州の天気はどうですか？今日」になります。この処理を繰り返し、最終的な結果を作ります。
+
+全体の流れは、おおよそ次のようになります。
+
+<LLMGenerationDemo />
+
+最終的に、製品には次のような回答が表示されます。
+
+<Chat>
+  <ChatMessage from="user">今日の広州の天気はどうですか？</ChatMessage>
+  <ChatMessage from="assistant">今日の広州は晴れで、気温は28 ℃です。</ChatMessage>
+</Chat>
+
+この原理が分かると、LLM を使う製品で回答が<JimmyNoteAnchor id="streaming-answer">一文字ずつ表示される</JimmyNoteAnchor>理由も理解できると思います。
+
+<JimmyNote anchor="streaming-answer">
+  実際の製品では、一文字ずつ表示される場合も、まとまった文章が表示される場合もあります。これはモデルの生成速度と製品の表示方法によります。裏側では、モデルはやはり一文字ずつ生成しています。
+</JimmyNote>
+
+## 2. この概念を知ると何に役立つのか？
+
+この簡単な原理が分かると、GPT-3.5 の頃など、LLM 製品の初期にプロンプトエンジニアリングのさまざまな技法が登場した理由も分かるはずです。
+
+例えば翻訳では、英語の原文の前に「あなたは英語と中国語の翻訳に精通した専門家です。次の英文を翻訳してください……」といった指示を追加できます。このような指示、つまりプロンプトを加える目的は、[LLM が満足できる回答を出す確率を高めること](https://arxiv.org/abs/2201.11903)です。
+
+<KeyTakeaway>
+  モデルが進歩した現在でも、入力の質は出力に大きな影響を与えます。製品やモデルがどれだけ改善されても、LLM から良い結果を得るには学習が必要です。
+</KeyTakeaway>
+
+なぜでしょうか。
+
+AI とやり取りするには、求めることを文章で書く必要があります。関連する概念を知らなければ、要件を明確に伝えることは困難です。つまり、LLM に適切な質問や指示を出しにくくなります。指示が曖昧だったり説明が間違っていたりすれば、回答の質が低くなり、誤った回答になることもあります。
+
+下の 2 つのボタンを、それぞれ押してみてください。同じ項目を持つメニューが表示されますが、見た目は大きく異なります。どちらの操作体験がよいと感じますか。
+
+<MenuComparisonDemo />
+
+プログラミングやプロダクトに関する概念を知らなければ、「ボタンを押すと、メニュー A、B、C の 3 つのボタンがあるメニューを表示して」という一文だけに頼るかもしれません。
+
+その場合、モデルは**確率的に最もありそうな結果**、言い換えると**平凡な結果**を出す可能性が高くなります。関連する知識があれば、改善のための具体的な指示を LLM に出し、出力をよりよくできます。
+
+このコースで伝えたいのは、そうした知識です。
+
+## 3. 実績チャレンジ
+
+<Achievement
+  id="input-shapes-output"
+  title="要件を明確に伝える"
+  question="モデルにメニューの作成を頼みましたが、期待した結果になりませんでした。このレッスンの原理に基づくと、どの対応がより役立ちますか？"
+  answer="clarify-requirements"
+  explanation="モデルは既存の入力を基に続きを予測します。入力が「メニューを作って」だけでは、どのような結果を求めているか判断する情報が足りません。利用場面、操作の要件、参考例を追加すると期待に合う確率は高まりますが、毎回満足できるとは限りません。"
+  takeaway="入力はモデルの出力に影響します。期待に近い結果を得るには、目的、背景、要件を明確に伝えましょう。関連する知識は、要件を正確に表現する助けになります。"
+>
+  <AchievementOption value="repeat-request">
+    「もっと見た目をよくして」とだけ繰り返し、すべての細部をモデルに任せる。
+  </AchievementOption>
+  <AchievementOption value="clarify-requirements">
+    メニューの利用場面、開き方、見た目の要件を補足し、必要なら参考例を示す。
+  </AchievementOption>
+  <AchievementOption value="guarantee-result">
+    「あなたは一流のデザイナーです」と加えれば、満足できるメニューが必ず得られる。
+  </AchievementOption>
+</Achievement>

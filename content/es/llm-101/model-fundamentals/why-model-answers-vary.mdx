@@ -1,0 +1,139 @@
+---
+courseId: llm-101
+lessonId: why-model-answers-vary
+title: ¿Por qué puede el modelo responder distinto a la misma pregunta?
+description: Entiende la aleatoriedad con la selección voraz y el muestreo, y conoce la función de Temperature, Top-p y Top-k.
+---
+
+<JimmyNote anchor="next-token-selection">
+  Esta lección puede resultar algo más árida. Además, con el avance de los modelos, estas nociones tienen menos importancia práctica. Puedes tratarla como contenido avanzado y leerla para entender los conceptos, sin memorizarlos. Basta con recordar las conclusiones de la última sección sobre su utilidad.
+</JimmyNote>
+
+En la lección anterior vimos la [tokenización](/es/courses/llm-101/what-is-a-token). Ahora veremos con más detalle <JimmyNoteAnchor id="next-token-selection">cómo elige el modelo el siguiente token</JimmyNoteAnchor>.
+
+## 1. Selección voraz y muestreo: elegir el siguiente token
+
+El ejemplo del tiempo de la lección anterior servía para explicar los tokens y sus identificadores. Por eso simplifiqué la salida del modelo.
+
+En realidad, el modelo no produce directamente un único token ID. El proceso tiene dos pasos:
+
+- Primero, producir una distribución de probabilidad sobre varios token ID.
+- Después, elegir un token ID de esa distribución.
+
+Veamos un ejemplo más abierto. El modelo debe continuar «Hoy llueve. Al salir, recuerda llevar un…». Primero calcula la [distribución de probabilidad](/es/courses/llm-101/how-models-calculate-token-probabilities) del siguiente token. Para simplificar, usaremos el texto de los tokens en lugar de sus identificadores. Los posibles resultados son:
+
+- paraguas: 50 %
+- impermeable: 30 %
+- abrigo: 15 %
+- sombrero: 5 %
+
+Después, el modelo elige uno de esos candidatos. Hay dos reglas habituales: selección voraz (Greedy) y muestreo (Sampling).
+
+- Selección voraz: elegir siempre el candidato con mayor probabilidad.
+- Muestreo: elegir según las probabilidades. Cada candidato tiene alguna oportunidad.
+
+Con selección voraz, el modelo elige «paraguas» y genera «Hoy llueve. Al salir, recuerda llevar un paraguas». Con muestreo, puede elegir «paraguas», pero también «impermeable» o «abrigo». Por eso el resultado puede cambiar cada vez.
+
+El muestreo es relativamente habitual en los ajustes recomendados y las configuraciones de evaluación que publican los principales modelos. Suelen ofrecer tres parámetros para modificarlo.
+
+## 2. Temperature: ajustar las probabilidades
+
+Una temperatura baja favorece a los candidatos que ya tienen una probabilidad alta. Una temperatura alta reduce la diferencia entre las oportunidades de los candidatos.
+
+| Ajuste | Explicación sencilla |
+| --- | --- |
+| **Bajo, por ejemplo `0.2`** | Los candidatos más probables ganan ventaja; la selección se concentra |
+| **`1.0`** | La temperatura no cambia la distribución original; el muestreo puede seguir siendo aleatorio |
+| **Alto, por ejemplo `1.5`** | Los candidatos menos probables reciben más oportunidades; la selección se dispersa |
+
+Volvamos a las probabilidades originales:
+
+- paraguas: 50 %
+- impermeable: 30 %
+- abrigo: 15 %
+- sombrero: 5 %
+
+Imagina un sorteo. Temperature ajusta cuántas papeletas tiene cada candidato antes de sacar una.
+
+| Candidato | Baja: `0.5` | Sin cambios: `1.0` | Alta: `2.0` |
+| --- | ---: | ---: | ---: |
+| **paraguas** | **aprox. 68 %** | **50 %** | **aprox. 38 %** |
+| impermeable | aprox. 25 % | 30 % | aprox. 29 % |
+| abrigo | aprox. 6 % | 15 % | aprox. 21 % |
+| sombrero | aprox. 1 % | 5 % | aprox. 12 % |
+
+A 0,5, «paraguas» sube del 50 % a cerca del 68 %, mientras que «sombrero», que ya era poco probable, lo es aún menos. A 2,0, «paraguas» baja a cerca del 38 % y «sombrero» sube a cerca del 12 %. La ventaja del paraguas se reduce. **Pero «paraguas» sigue en primer lugar: los candidatos no pasan a tener las mismas probabilidades.** Con temperaturas mayores que cero, cambiar solo la temperatura modifica la distribución, pero no el orden de los candidatos.
+
+## 3. Top-p: filtrar por probabilidad acumulada
+
+Top-p limita la selección a los candidatos cuya probabilidad acumulada alcanza p. Reduce el conjunto de candidatos y las oportunidades de elegir los menos probables.
+
+Con el mismo ejemplo:
+
+| Ajuste | Candidatos que se conservan | ¿Por qué? |
+| --- | --- | --- |
+| **`top_p = 0.8`** | paraguas, impermeable | Sus probabilidades suman 50 % + 30 % = 80 % |
+| **`top_p = 0.9`** | paraguas, impermeable, abrigo | Los dos primeros no bastan; con el tercero se llega al 95 % |
+| **`top_p = 1.0`** | Todos | |
+
+## 4. Top-k: filtrar por cantidad
+
+Top-k conserva solo los k candidatos más probables. Esa es la diferencia con Top-p: Top-k mantiene una cantidad fija, mientras que Top-p mantiene el conjunto mínimo cuya probabilidad acumulada alcanza p. Ambos limitan los candidatos.
+
+| Ajuste | Candidatos que se conservan | ¿Por qué? |
+| --- | --- | --- |
+| **`top_k = 1`** | paraguas | Solo se conserva **1**, el más probable |
+| **`top_k = 2`** | paraguas, impermeable | Se conservan los **2** más probables |
+| **`top_k = 3`** | paraguas, impermeable, abrigo | Se conservan los **3** más probables |
+| **`top_k = 4`** | Todos | Este ejemplo solo tiene **4** candidatos |
+
+## 5. Entender los tres parámetros con un sorteo
+
+Este es el resumen de la analogía:
+
+| Parámetro | ¿Qué controla? | Analogía del sorteo |
+| --- | --- | --- |
+| **`temperature`** | La concentración o dispersión de las probabilidades | Ajustar cuántas papeletas tiene cada candidato |
+| **`top_k`** | Conservar los k candidatos más probables | **Solo entran los k primeros** |
+| **`top_p`** | Conservar el conjunto mínimo que alcanza la probabilidad acumulada p | **Empezar por el primero y parar al alcanzar el total necesario** |
+
+## 6. ¿Para qué sirve entender estos conceptos?
+
+Cada vez más modelos cerrados dejan de permitir estos ajustes. Los modelos abiertos suelen ofrecer configuraciones recomendadas. En general, ya no hace falta modificarlos. Conocerlos no te ayuda de forma directa a obtener mejores resultados.
+
+Pero entender las probabilidades permite ver que el modelo no tiene por qué producir la misma salida cada vez.
+
+Su salida tiene cierto grado de aleatoriedad. Esto difiere del software tradicional, que suele ejecutar reglas fijas. Por defecto, los LLM muestrean según probabilidades, por lo que una misma entrada puede producir resultados distintos con más facilidad.
+
+<KeyTakeaway>
+  Nunca supongas que un modelo de lenguaje dará exactamente la misma respuesta cada vez. No tiene pensamiento: selecciona el siguiente carácter o palabra según probabilidades. Su salida es una predicción basada en los datos de entrenamiento y en la entrada, no en la comprensión o el pensamiento.
+</KeyTakeaway>
+
+Esta forma de generar también produce otro problema: la alucinación. Cuando el modelo no sabe algo, no siempre responde «no lo sé». Puede elegir una respuesta probable, aunque sea errónea o completamente inventada.
+
+Si preguntas «¿Qué tiempo hace hoy en Guangzhou?» sin llamadas adicionales a herramientas, el modelo puede responder «Hoy en Guangzhou hace sol y la temperatura es de 28 ℃.». Sin embargo, puede estar lloviendo. El modelo no es consciente de que se equivoca: solo ha elegido una respuesta probable.
+
+<KeyTakeaway>
+  No confíes por completo en la salida de un modelo de lenguaje. A veces genera respuestas incorrectas.
+</KeyTakeaway>
+
+## 7. Reto de logro
+
+<Achievement
+  id="sampling-can-vary"
+  title="Entiende la variación de las respuestas"
+  question="Con la misma entrada «Hoy llueve. Al salir, recuerda llevar un…», el modelo elige primero «paraguas» y después «impermeable». Si muestrea según las probabilidades, ¿qué interpretación es más precisa?"
+  answer="sampling"
+  explanation="El muestreo no elige siempre el candidato más probable. «Paraguas» tiene mayor probabilidad, pero «impermeable» también puede salir si sigue entre los candidatos y su probabilidad es mayor que cero. Dos salidas diferentes no demuestran un fallo ni una actualización de los parámetros entre respuestas."
+  takeaway="La misma entrada puede producir respuestas diferentes. El candidato más probable tiene más oportunidades, pero no está garantizado que se elija siempre."
+>
+  <AchievementOption value="always-highest">
+    «Paraguas» es el más probable, así que siempre debe salir. Elegir «impermeable» indica un fallo.
+  </AchievementOption>
+  <AchievementOption value="sampling">
+    «Paraguas» tiene más oportunidades, pero «impermeable» también puede salir. Los resultados pueden ser distintos.
+  </AchievementOption>
+  <AchievementOption value="parameters-changed">
+    La respuesta cambió, así que el modelo tuvo que actualizar sus parámetros internos entre ambas respuestas.
+  </AchievementOption>
+</Achievement>

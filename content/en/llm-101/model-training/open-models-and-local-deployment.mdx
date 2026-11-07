@@ -1,0 +1,102 @@
+---
+courseId: llm-101
+lessonId: open-models-and-local-deployment
+title: Open-source models, parameter counts, and local use
+description: Understand open and closed models, parameter counts, and MoE, and estimate the hardware needed to run a model locally.
+---
+
+After discussing pretraining, let us consider a few common questions:
+
+- What does “open-source model” mean in the news?
+- What does “60B” in a model name mean?
+- Can I run an open-source model on my own computer?
+
+## Q1: What are open-source and closed-source models?
+
+[Earlier](/courses/llm-101/how-language-models-are-trained), we explained that training adjusts a model's internal parameters. After training, their values are saved. These are usually called the model's **weights**.
+
+Open-source and closed-source models are both large language models. One key difference is whether their weights are public.
+
+- Open-source models publish their weights so that anyone can download them and run the model on a computer or server. Because the weights are available, you can also modify them.
+- Closed-source models keep their weights private. You cannot download them and can use the model only through the provider's chat product or API.
+
+As an analogy, think of an open-source model as free computer software. You can download and use it without charge. Beyond running it, you can change its code to suit your needs. A closed-source model is more like paid software, usually with an extra charge, although some providers offer free access to attract users. You cannot modify its code, and <JimmyNoteAnchor id="001">the model operates only within limits set by its developers</JimmyNoteAnchor>.
+
+<JimmyNote anchor="001">
+  Cybersecurity is a common example. Some closed-source model providers set restrictions to prevent people from using their models for hacking. If a model detects that intent, it may decline to answer or return a warning. Open-source models generally do not have this restriction, although similar restrictions could appear in the future.
+</JimmyNote>
+
+## Q2: What are the differences?
+
+Beyond the availability of weights, I see three main differences.
+
+**First: Can you modify the weights and fine-tune the model?**
+
+Closed-source models do not allow you to modify their weights. Claims about fine-tuning Claude Opus 5.5 or GPT-6 are therefore generally wrong. The core Claude and GPT models are not open-source, so people outside those companies cannot obtain their weights to fine-tune them. These providers did offer some official fine-tuning services earlier, but have gradually closed them.
+
+**Second: Can you use the model for free?**
+
+We need to clarify what “free” means. Providers such as OpenAI keep their models closed but offer free trials. After you use a certain allowance, they start charging.
+
+With an open-source model, you can install it on your own computer or server and use it for as long as you want without an extra model fee. You still pay for hardware, electricity, maintenance, and possibly server rental. But those fees are not charged by <JimmyNoteAnchor id="002">the open-source model provider</JimmyNoteAnchor>.
+
+<JimmyNote anchor="002">
+  Some open-source model providers also offer paid services. Those services have additional charges.
+</JimmyNote>
+
+**Third: Does your data reach the model provider?**
+
+If you run the model locally, your data stays locally and is not sent to the model provider. If you use a hosted service, however, your data may be sent to the cloud provider.
+
+<KeyTakeaway>
+  Open-source does not mean that running the model is entirely free. It still needs computing resources. Local use may require a suitable computer or server. A hosted service avoids buying a server, but adds service fees.
+</KeyTakeaway>
+
+## Q3: What does B mean in a model name?
+
+You may have seen names containing 7B, 32B, 60B, or 70B. B means **billion**. For example, DeepSeek-V4.1-Flash is a 552B model.
+
+This number does not count training-text characters, stored facts, or the context window. It counts parameters. A 552B model has about **552 billion parameters**.
+
+Does a larger parameter count mean a stronger model?
+
+You cannot judge from that number alone.
+
+Imagine the size of a kitchen. A bigger kitchen has room for more equipment, but the quality of the food also depends on ingredients, methods, and training. Floor area alone cannot tell you which restaurant serves better food.
+
+A smaller model with more thorough training or optimization for a particular task may therefore outperform a larger one on that task. **[Parameter count describes scale. Test actual ability on real tasks.](https://arxiv.org/abs/2203.15556)**
+
+The next lesson will discuss evaluations of leading models to help you choose one.
+
+## Q4: What is a mixture-of-experts model?
+
+You may have heard DeepSeek-V4.1-Flash described as a mixture-of-experts, or MoE, model.
+
+What does that mean?
+
+As a simple analogy, imagine DeepSeek-V4.1-Flash as a team of 552 billion experts. A non-MoE model would send a problem to every expert before producing a result. An MoE model such as DeepSeek-V4.1-Flash instead assigns experts according to the situation:
+
+- When a user submits a question, the model activates only 8B parameters to understand it. Think of these 8B experts as specialists in understanding questions and knowing who should answer them, rather than in answering them directly.
+- When it needs to produce the answer, the model calls on 16B parameters. The first 8B experts pass the question to the relevant answering team, which generates the response.
+
+This design naturally offers a performance advantage. A problem that previously needed all 552B experts can now go through just the 8B and 16B groups. It is faster and uses fewer computing resources, with a much smaller electricity bill, at least 😆.
+
+## Q5: Can my computer run DeepSeek-V4.1-Flash?
+
+If an open-source model can run locally, can your computer run DeepSeek-V4.1-Flash?
+
+That depends on its hardware. A common rough estimate for required GPU memory is the “1.2× rule”:
+
+$$
+\text{Required GPU memory (GB)} \approx X \times \text{Quantization bits (Bits)} \,/\, 8 \times 1.2
+$$
+
+You do not need to understand quantization bits yet. For use without losing precision, the value is roughly 16. With x = 552, the formula gives about 1,325 GB of GPU memory.
+
+This is GPU memory, not system RAM. With 4090 graphics cards, you would need about 1,325 GB ÷ 24 = 55.2 cards.
+
+Apple chips offer unified memory, so Mac users can also run the model with M-series chips. I checked the price: a Mac with 512 GB of unified memory currently costs about CNY 170,000, and you would need around three of them to run this model. Even with INT4 / Q4_K_M, which you do not need to understand yet, the model needs roughly 359 GB of memory.
+
+In other words, running this latest model on your own computer in 2026 costs about CNY 170,000.
+
+These are simple calculations and estimates. Actual requirements also depend on the model version, quantization, and other details.

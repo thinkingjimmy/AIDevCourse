@@ -19,7 +19,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   const messages = await getMessages({ locale: lang });
   const ui = await getTranslations({ locale: lang, namespace: 'Ui' });
   const home = await getTranslations({ locale: lang, namespace: 'Home' });
-  const clientMessages = Object.fromEntries(['Ui', 'Language', 'Search', 'Course', 'Achievement', 'Author'].map((namespace) => [namespace, messages[namespace]]));
+  const clientMessages = Object.fromEntries(['Ui', 'Language', 'Search', 'Course', 'Achievement', 'Author', 'Generation', 'MenuComparison', 'Training', 'Pretraining'].map((namespace) => [namespace, messages[namespace]]));
   const lessonPaths = getCourses(lang).flatMap((course) => course.lessons.map((lesson) => lesson.url));
   // Translation extensions can add root attributes before React hydrates.
   return <html lang={htmlLanguages[lang]} className="light" suppressHydrationWarning><body>

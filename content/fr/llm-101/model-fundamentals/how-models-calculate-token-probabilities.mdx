@@ -1,0 +1,100 @@
+---
+courseId: llm-101
+lessonId: how-models-calculate-token-probabilities
+title: Comment le modèle calcule-t-il les probabilités des tokens ?
+description: Comprendre la distribution de probabilités des tokens à l’aide de formules simples, de scores et de Softmax.
+---
+
+La leçon précédente expliquait comment le modèle [sélectionne un token](/fr/courses/llm-101/why-model-answers-vary) dans une distribution de probabilités. Je vais maintenant expliquer <JimmyNoteAnchor id="token-probabilities">comment il produit cette distribution</JimmyNoteAnchor>.
+
+<JimmyNote anchor="token-probabilities">
+  Cette leçon contient des mathématiques qui peuvent sembler difficiles ou arides. J’espère que l’analogie rendra le principe clair. L’explication ne sera peut-être pas parfaite, mais je préfère transmettre le cadre général plutôt que m’attarder sur les détails. Pour plus de précision, consultez d’autres tutoriels ou des ouvrages sur le sujet.
+</JimmyNote>
+
+## 1. Comprendre l’entrée et les paramètres avec une formule
+
+Partons d’une formule très simple.
+
+$$
+y = ax + b
+$$
+
+x est l’entrée, y la sortie, et a et b les paramètres. Leurs valeurs déterminent comment la formule traite l’entrée.
+
+## 2. Remplacer l’entrée pour calculer les scores
+
+Reprenons l’exemple de la troisième leçon : « Il pleut aujourd’hui. Pensez à emporter un… ». Je veux l’expliquer sous un autre angle. Laissons de côté les probabilités complexes et utilisons seulement la multiplication et l’addition.
+
+Supposons que la sortie soit « parapluie », mais que l’entrée change : « Il fait soleil aujourd’hui. Pensez à emporter un… » ou « Il pleut aujourd’hui. Pensez à emporter un… ».
+
+La différence est le soleil ou la pluie. Simplifions : la pluie vaut 1, le soleil vaut 0. Donc x(pluie) = 1 et x(soleil) = 0. Supposons aussi que l’entraînement ait donné a = 2 et b = 1.
+
+En remplaçant ces valeurs dans la formule, on obtient le score de « parapluie » :
+
+| Situation | Entrée | Calcul | Score de « parapluie » |
+| --- | --- | --- | ---: |
+| Pluie | `x = 1` | `2 × 1 + 1` | **3** |
+| Soleil | `x = 0` | `2 × 0 + 1` | **1** |
+
+Vous pouvez voir ce score comme une analogie simple de la probabilité. Quand l’entrée parle de pluie, « parapluie » est plus susceptible de suivre « Pensez à emporter un ».
+
+Si « parapluie » a une formule y(parapluie) = a(parapluie)x + b(parapluie), les autres tokens, comme « imperméable » et « chapeau », ont aussi leur formule. Seules les valeurs de a et de b changent.
+
+| Candidat | a | b | Remplacement | Score |
+| --- | --- | --- | --- | ---: |
+| parapluie | 2 | 1 | `2 × 1 + 1` | **3** |
+| imperméable | 1 | 1 | `1 × 1 + 1` | **2** |
+| chapeau | -2 | 3 | `-2 × 1 + 3` | **1** |
+
+## 3. Convertir les scores en probabilités
+
+Une entrée et plusieurs calculs produisent trois nombres. La transformation mathématique [Softmax](https://en.wikipedia.org/wiki/Softmax_function) les convertit en probabilités dont la somme vaut 100 %. Inutile d’en étudier tous les détails ici. Les candidats ayant un score plus élevé reçoivent une probabilité plus élevée.
+
+| Candidat | Score calculé | Probabilité obtenue |
+| --- | ---: | ---: |
+| parapluie | 3 | environ **66,5 %** |
+| imperméable | 2 | environ **24,5 %** |
+| chapeau | 1 | environ **9,0 %** |
+
+## 4. De l’analogie simple au modèle réel
+
+Les calculs réels sont bien plus complexes. Je veux seulement expliquer, avec l’arithmétique la plus simple, comment le modèle obtient les probabilités d’un ensemble de tokens.
+
+On peut représenter la prédiction du prochain token par un LLM ainsi :
+
+<TokenProbabilityDiagram />
+
+## 5. À quoi sert cette notion ?
+
+**Premièrement, l’entrée influence les probabilités calculées.**
+
+Avec les mêmes paramètres, passer du soleil à la pluie change le score de « parapluie ». Dans la pratique, le contexte, les exigences et les exemples que vous ajoutez entrent aussi dans les calculs et influencent les probabilités des tokens suivants.
+
+Comme expliqué dans [Comment un grand modèle de langage génère-t-il une réponse ?](/fr/courses/llm-101/what-a-language-model-does), il faut fournir assez d’informations, et des informations justes, pour obtenir un bon résultat. Même avec les modèles actuels, préciser l’objectif, le contexte et les exigences a un effet net.
+
+**Deuxièmement, la probabilité d’un token n’est pas celle que la réponse soit correcte.**
+
+Les 66,5 % de « parapluie » représentent sa chance d’être choisi comme prochain token dans cet exemple simplifié. Cela ne signifie pas que le conseil d’emporter un parapluie a 66,5 % de chances d’être juste, ni que le modèle a ce niveau de confiance dans sa réponse entière.
+
+Un texte fluide et affirmatif peut donc contenir des erreurs. Pour confirmer des faits, vérifiez les sources. Demander au modèle de s’exprimer avec plus d’assurance ne rend pas les faits plus fiables.
+
+## 6. Défi de réussite
+
+<Achievement
+  id="token-probability-not-truth"
+  title="Distinguer probabilité et exactitude"
+  question="Dans l’exemple simplifié, Softmax attribue à « parapluie » une probabilité d’environ 66,5 %. Que signifie ce nombre ?"
+  answer="next-token"
+  explanation="Ces probabilités décrivent les chances de choisir le prochain token pour une entrée donnée. En échantillonnant cette distribution, « parapluie » a environ 66,5 % de chances d’être sélectionné. Cela ne mesure ni l’exactitude du conseil ni la fiabilité de la réponse entière."
+  takeaway="La probabilité d’un token décrit sa chance d’être choisi ensuite, pas l’exactitude de la réponse. Vérifiez les sources pour confirmer les faits."
+>
+  <AchievementOption value="advice-correctness">
+    Le conseil « il faut emporter un parapluie » a 66,5 % de chances d’être juste.
+  </AchievementOption>
+  <AchievementOption value="next-token">
+    En échantillonnant cette distribution, « parapluie » a environ 66,5 % de chances d’être le prochain token.
+  </AchievementOption>
+  <AchievementOption value="answer-confidence">
+    Le modèle est sûr à 66,5 % que la réponse entière est correcte.
+  </AchievementOption>
+</Achievement>

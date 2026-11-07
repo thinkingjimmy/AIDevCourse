@@ -1,0 +1,94 @@
+---
+courseId: llm-101
+lessonId: how-models-see-and-hear
+title: Comment les modèles voient-ils les images et entendent-ils les sons ?
+description: Comprendre les modèles multimodaux grâce aux représentations numériques et aux encodeurs. Distinguer vision, lecture, transcription et compréhension audio, puis vérifier les résultats.
+---
+
+Jusqu’ici, nous avons parlé de texte : vous entrez du texte et le modèle en génère. Mais certains produits d’IA permettent maintenant d’envoyer des captures d’écran, des photos ou des enregistrements, puis de poser des questions à leur sujet.
+
+Vous vous demandez peut-être : le texte passe par un tokenizer et devient des nombres que le modèle peut traiter. Comment une photo ou un enregistrement entre-t-il dans le modèle ?
+
+Le point de départ est le même : **transformer différentes formes d’information en représentations numériques sur lesquelles le modèle peut calculer.**
+
+## 1. Que signifie multimodal ?
+
+Une modalité est une forme d’information. Le texte, l’image et l’audio sont des modalités différentes. Un **modèle multimodal** peut en traiter plusieurs. Il peut, par exemple, recevoir une image avec du texte et produire une réponse écrite.
+
+| Fonction visible | Capacité concernée |
+| --- | --- |
+| Envoyer une photo et demander ce qu’elle contient | Entrée image et sortie texte |
+| Envoyer un enregistrement et résumer les paroles | Reconnaissance vocale, ou compréhension audio et sortie texte |
+| Saisir un texte et le faire lire à voix haute | Génération vocale |
+| Envoyer une photo et demander une autre image | Compréhension d’image, puis génération ou retouche d’image |
+
+Ces capacités peuvent venir d’un seul modèle ou de plusieurs modèles qui coopèrent dans le produit. Par exemple, une fonction de saisie vocale peut d’abord transcrire l’enregistrement, puis transmettre le texte au modèle de langage.
+
+La présence d’une saisie vocale ne prouve donc pas que le modèle de langage traite directement les sons.
+
+## 2. Comment un modèle voit-il une image ?
+
+Supposons que vous envoyiez une capture d’écran avec la question : « Que dit le bouton en bas à droite ? » Le processus comporte trois étapes :
+
+![L’image est divisée en fragments dont les positions sont conservées. Un encodeur visuel les transforme en caractéristiques numériques, transmises avec la question écrite au modèle de langage pour produire une réponse.](/images/courses/how-models-see-and-hear/fr/vision-pipeline.webp)
+
+**Étape 1 : traiter l’image et la diviser en régions adaptées.**
+
+Le modèle découpe d’abord la capture en petits fragments, ou patches. Il conserve aussi leur position : par exemple, le premier est en haut à gauche et le deuxième en haut à droite. Ces fragments servent d’analogie pour comprendre le processus ; tous les modèles ne découpent pas les images de la même façon.
+
+**Étape 2 : convertir l’image en représentations numériques avec un encodeur visuel.**
+
+Comme le tokenizer pour le texte, l’encodeur visuel convertit les couleurs, contours, formes et autres informations visuelles en <JimmyNoteAnchor id="visual-features">[caractéristiques numériques que le modèle peut comprendre](https://arxiv.org/abs/2103.00020)</JimmyNoteAnchor>.
+
+**Étape 3 : continuer à prédire la suite.**
+
+Après avoir reçu l’image et le texte tokenisé, le modèle prédit à nouveau le prochain token probable.
+
+<JimmyNote anchor="visual-features">
+  Pensez à l’encodeur visuel comme à un module qui transforme une image en caractéristiques numériques. Il ne consulte pas nécessairement un vocabulaire pour obtenir des ID de tokens, comme pour le texte. De nombreuses méthodes utilisent une suite de vecteurs de caractéristiques visuelles, c’est-à-dire des groupes de valeurs numériques.
+</JimmyNote>
+
+## 3. Comment un modèle entend-il un son ?
+
+**Comme une image, le son peut passer par un encodeur et devenir des groupes de valeurs que le modèle peut traiter.**
+
+Mais les fonctions vocales courantes peuvent suivre des chemins différents.
+
+![Deux chemins pour un même enregistrement. En haut, une transcription est produite : une alarme absente du texte n’atteint donc jamais le modèle de langage. En bas, l’audio est encodé en caractéristiques numériques et transmis avec une consigne écrite à un modèle acceptant l’audio.](/images/courses/how-models-see-and-hear/fr/audio-paths.webp)
+
+### Chemin 1 : transcrire la parole, puis faire répondre le modèle de langage
+
+Le processus est simple. Une technologie ou un modèle spécialisé [convertit les paroles en texte](https://arxiv.org/abs/2212.04356), puis transmet ce texte au grand modèle de langage.
+
+Celui-ci reçoit uniquement la transcription. D’autres informations peuvent disparaître : bruits de fond, pauses, ton ou variations d’émotion.
+
+### Chemin 2 : transmettre les caractéristiques audio au modèle
+
+Une autre méthode fait passer l’audio par un encodeur, puis transmet ses caractéristiques et une consigne écrite au modèle. Celui-ci peut traiter les paroles et, selon ses capacités, les bruits de fond ou la musique.
+
+Recevoir des caractéristiques audio ne signifie pas automatiquement savoir générer de la parole. La compréhension et la production du son peuvent relever de modèles différents.
+
+<KeyTakeaway>
+  La transcription vocale, la compréhension audio et la génération vocale peuvent utiliser des modèles différents.
+</KeyTakeaway>
+
+## 4. Défi de compréhension
+
+<Achievement
+  id="distinguish-audio-inputs"
+  title="Distinguer son et transcription"
+  question="Un produit de notes vocales transcrit un enregistrement et transmet uniquement le texte au modèle de langage. L’enregistrement contient une alarme, absente de la transcription. Quelle affirmation est la plus juste ?"
+  answer="missing-audio"
+  explanation="Le modèle de langage reçoit uniquement la transcription. Il ne peut pas exploiter directement une alarme absente de son entrée. Accepter des enregistrements ne signifie pas que le produit transmet l’audio brut ou ses caractéristiques au modèle de langage. Vérifiez la présence de la capacité de compréhension audio nécessaire lorsque cette information compte."
+  takeaway="Vérifiez d’abord ce que reçoit réellement le modèle. Transcription vocale, compréhension audio et génération vocale sont des capacités différentes."
+>
+  <AchievementOption value="microphone-means-hearing">
+    Le produit accepte les enregistrements, donc le modèle de langage a forcément entendu tous les sons.
+  </AchievementOption>
+  <AchievementOption value="missing-audio">
+    Le modèle reçoit uniquement du texte et ne peut pas analyser directement une alarme absente de ce texte.
+  </AchievementOption>
+  <AchievementOption value="longer-thinking">
+    En réfléchissant plus longtemps, le modèle peut reconstituer l’alarme absente de son entrée.
+  </AchievementOption>
+</Achievement>

@@ -1,0 +1,94 @@
+---
+courseId: llm-101
+lessonId: how-models-see-and-hear
+title: How do models see images and hear sounds?
+description: Understand multimodal models through numerical representations and encoders. Distinguish image understanding, reading text, transcription, and audio understanding, and learn to check recognition results.
+---
+
+So far, we have discussed text: you enter text, and the model generates text. But some AI products now let you upload screenshots, photos, or recordings and ask questions about them.
+
+You may wonder: text passes through a tokenizer and becomes numbers a model can process. How does a photo or a sound recording enter the model?
+
+We will start with the same idea: **turn different forms of information into numerical representations that a model can calculate with.**
+
+## 1. What does multimodal mean?
+
+A modality is a form of information. Text, images, and audio are different modalities. A **multimodal model** can handle more than one form. For example, it can receive an image and text together, then generate a text answer.
+
+| Feature you see | Ability involved |
+| --- | --- |
+| Upload a photo and ask what is in it | Image input and text output |
+| Upload a recording and summarize the speech | Speech recognition, or audio understanding and text output |
+| Enter text and have the product read it aloud | Speech generation |
+| Upload a photo and ask for another image | Image understanding, plus image generation or editing |
+
+One model may provide these abilities, or several models in a product may work together. For example, a product can offer voice input by first transcribing a recording, then sending that text to a language model.
+
+A voice-input feature alone does not prove that the underlying language model can process sound directly.
+
+## 2. How does a model see an image?
+
+Suppose you upload a screenshot and ask, “What does the button at the bottom right say?” The process has three steps:
+
+![The image is divided into patches while retaining their positions. A visual encoder converts them into numerical features, which enter a language model together with the written question to generate an answer.](/images/courses/how-models-see-and-hear/en/vision-pipeline.webp)
+
+**Step 1: Process the image and divide it into suitable regions.**
+
+First, the model divides the screenshot into smaller patches. It also records information about their positions, such as the first patch being at the top left and the second at the top right. These patches are an analogy to help explain the process; not every model divides images in the same way.
+
+**Step 2: Use a visual encoder to turn the image into numerical representations.**
+
+Like a tokenizer for text, a visual encoder converts colors, edges, shapes, and other visual information into <JimmyNoteAnchor id="visual-features">[numerical features the model can understand](https://arxiv.org/abs/2103.00020)</JimmyNoteAnchor>.
+
+**Step 3: Continue predicting what comes next.**
+
+After receiving the image and tokenized text data, the model again predicts the next likely token.
+
+<JimmyNote anchor="visual-features">
+  Think of a visual encoder as a module that turns an image into numerical features. It does not necessarily use the text-tokenization method of looking up a vocabulary and obtaining token IDs. Many approaches use a sequence of image feature vectors: groups of numerical values.
+</JimmyNote>
+
+## 3. How does a model hear sound?
+
+**Like an image, sound can pass through an encoder and become groups of values that a model can process.**
+
+But common voice features in products may follow different paths.
+
+![Two paths for the same recording. The upper path first produces a transcript, so an alarm omitted from that transcript never reaches the language model. The lower path encodes audio into numerical features and sends them with a written instruction to a model that accepts audio input.](/images/courses/how-models-see-and-hear/en/audio-paths.webp)
+
+### Path 1: Transcribe speech, then let the language model answer
+
+This process is straightforward. A specialized speech-to-text technology or model [converts the spoken words into text](https://arxiv.org/abs/2212.04356), then sends that text to the large language model.
+
+Here, the language model receives only the transcript. Other information can be lost, such as background sounds, pauses, tone, or changes in emotion.
+
+### Path 2: Let the model receive audio features
+
+Another approach passes the audio through an encoder, then sends its features and a written instruction to the model. The model can process speech and may also process background sounds or music, depending on its abilities.
+
+Receiving audio features does not automatically mean that a model can generate speech. Different models may handle understanding sound and producing sound.
+
+<KeyTakeaway>
+  Speech transcription, audio understanding, and speech generation may use different models.
+</KeyTakeaway>
+
+## 4. Achievement challenge
+
+<Achievement
+  id="distinguish-audio-inputs"
+  title="Distinguish sound from a transcript"
+  question="A voice-notes product transcribes a recording and sends only the text to a language model. The recording contains an alarm, but the transcript omits it. Which statement is more accurate?"
+  answer="missing-audio"
+  explanation="The language model receives only the transcript. It cannot directly use an alarm that was not included in its input. A product accepting recordings does not mean the language model receives raw audio or audio features. Check that the product provides the relevant audio-understanding ability when you need this information."
+  takeaway="First check what the model actually receives. Speech transcription, audio understanding, and speech generation are different abilities."
+>
+  <AchievementOption value="microphone-means-hearing">
+    The product accepts recordings, so the language model must have heard every sound.
+  </AchievementOption>
+  <AchievementOption value="missing-audio">
+    The language model receives only text and cannot directly analyze an alarm missing from that text.
+  </AchievementOption>
+  <AchievementOption value="longer-thinking">
+    If the language model thinks longer, it can reconstruct the alarm missing from its input.
+  </AchievementOption>
+</Achievement>

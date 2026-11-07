@@ -1,6 +1,8 @@
-import { answer, answerParts, generationFrame, pendingClass, placeholderClass, question, symbol, totalDuration, wordClass, type GenerationFrame } from './model';
+import { pendingClass, placeholderClass, wordClass, type GenerationFrame, type GenerationModel } from './model';
 
-export function animateGeneration(root: HTMLElement) {
+export function animateGeneration(root: HTMLElement, model: GenerationModel, t: (key: string, values?: Record<string, string | number>) => string) {
+  const { answer, answerParts, generationFrame, question, totalDuration } = model;
+  const symbol = (character: string) => character === ' ' ? t('space') : character;
   const find = <T extends HTMLElement = HTMLElement>(selector: string) => root.querySelector<T>(selector)!;
   const paper = find('[data-paper]');
   const sheet = find('[data-sheet]');
@@ -86,7 +88,7 @@ export function animateGeneration(root: HTMLElement) {
     if (frame.complete) playing = false;
     if (root.dataset.playing !== String(playing)) root.dataset.playing = String(playing);
     if (pause.hidden !== frame.complete) pause.hidden = frame.complete;
-    const pauseLabel = playing ? '暂停' : '继续播放';
+    const pauseLabel = playing ? t('pause') : t('resume');
     if (pause.textContent !== pauseLabel) pause.textContent = pauseLabel;
     const key = `${frame.index}:${frame.phase}:${frame.copied}`;
     if (key !== lastKey) {
@@ -97,15 +99,15 @@ export function animateGeneration(root: HTMLElement) {
       root.dataset.generated = String(frame.index + (frame.dropped ? 1 : 0));
       previous.style.visibility = frame.index > 0 ? 'visible' : 'hidden';
       writePrefix(find('[data-previous-prefix]'), answer.slice(0, Math.max(0, frame.index - 1)).join(''));
-      find('[data-previous-round]').textContent = `第 ${frame.index} 轮`;
+      find('[data-previous-round]').textContent = t('round', { number: frame.index });
       find('[data-previous-short]').textContent = String(frame.index).padStart(2, '0');
       writePrefix(currentPrefix, frame.prefix, true);
-      find('[data-current-round]').textContent = `第 ${frame.index + 1} 轮`;
+      find('[data-current-round]').textContent = t('round', { number: frame.index + 1 });
       find('[data-current-short]').textContent = String(frame.index + 1).padStart(2, '0');
       writePrefix(draftPrefix, frame.nextPrefix);
       draft.style.visibility = frame.copied ? 'visible' : 'hidden';
-      find('[data-draft-round]').textContent = frame.complete ? '回答' : `第 ${frame.index + 2} 轮`;
-      find('[data-draft-short]').textContent = frame.complete ? '答' : String(frame.index + 2).padStart(2, '0');
+      find('[data-draft-round]').textContent = frame.complete ? t('answerLabel') : t('round', { number: frame.index + 2 });
+      find('[data-draft-short]').textContent = frame.complete ? t('answerShort') : String(frame.index + 2).padStart(2, '0');
       candidates.forEach((element, index) => {
         const candidate = frame.candidates[index];
         const letter = element.querySelector<HTMLElement>('[data-letter]')!;
@@ -118,7 +120,7 @@ export function animateGeneration(root: HTMLElement) {
       });
       candidateGroup.hidden = frame.dropped;
       calculation.hidden = frame.dropped;
-      announcement.textContent = frame.complete ? `演示完成。回答：${answer.join('')}` : '';
+      announcement.textContent = frame.complete ? t('complete', { answer: answer.join('') }) : '';
       dirty = true;
     }
     if (dirty) measure();

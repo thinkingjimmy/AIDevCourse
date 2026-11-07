@@ -1,0 +1,79 @@
+---
+courseId: llm-101
+lessonId: what-is-a-token
+title: What is a token?
+description: Learn what tokens are, what they do, how they are counted, and what affects them.
+---
+
+## 1. Tokenization
+
+In the first lesson, we described an LLM as an [automatic text continuation system](/courses/llm-101/what-a-language-model-does). We used a question about the weather to explain it.
+
+That explanation was a simplified version of the process.
+
+<KeyTakeaway>
+  A large language model is, at its core, a complex mathematical function with many parameters learned through training. The model performs matrix operations. It receives numbers and produces numbers.
+</KeyTakeaway>
+
+When you submit “How is the weather in Guangzhou today?” to an LLM, the question first passes through a tool called a tokenizer. It splits the text into tokens and maps each token to a token ID. This process is also called encoding.
+
+Different models use different tokenizers, but they work in broadly similar ways. For example, the [tokenizer](https://platform.openai.com/tokenizer) for ChatGPT-5x first splits your text, including punctuation, and then maps the pieces to numbers. The splits and IDs can differ between tokenizers. The English example below uses the `o200k_base` encoding.
+
+“How is the weather in Guangzhou today?” becomes 8 tokens, each with an ID. After the model performs its calculations, its result is output as a token ID. The tokenizer decodes that ID back into a token, which is then shown to the user. In this example, the output ID represents “Today”.
+
+<TokenizationDiagram />
+
+So the result returned by the LLM in the first lesson <JimmyNoteAnchor id="token-boundaries">is not necessarily a single character. It can be a word</JimmyNoteAnchor>.
+
+<JimmyNote anchor="token-boundaries">
+  A token does not always match a whole word. In the original Chinese weather example, 今天 (“today”) is one token, but 预报 (“forecast”) in 天气预报 can split into 预 and 报. This can also happen in other languages: indivisible can split into indiv and isible. As a general estimate, one token is about three quarters of an English word or 1.5 Chinese characters. In some cases, Chinese can therefore use fewer tokens.
+</JimmyNote>
+
+## 2. Why is this useful?
+
+**First, tokens measure how much a model reads and generates.**
+
+The instructions you give a large language model correspond to ==input tokens==. The content it generates corresponds to ==output tokens==.
+
+Model APIs that charge by token calculate fees from input, output, and other usage. In DeepSeek’s official API documentation, the [pricing table](https://api-docs.deepseek.com/quick_start/pricing/) lists an off-peak output price of CNY 4 per million tokens as of November 2026. In other words, generating one million output tokens with V4 flash during off-peak hours costs CNY 4.
+
+You will also see an off-peak input price for cache misses. How does that pricing work?
+
+Return to the weather example. The user asks “How is the weather in Guangzhou today?”, and the model answers “Today in Guangzhou, it is sunny and 28 ℃.” For easy calculation, assume 10 input tokens and 20 output tokens.
+
+- Input fee = 10 ÷ 1,000,000 × 1 = CNY 0.00001
+- Output fee = 20 ÷ 1,000,000 × 4 = CNY 0.00008
+- Total fee = 0.00001 + 0.00008 = CNY 0.00009
+
+If you ask 10,000 similar questions as separate requests, the total is about CNY 0.9.
+
+**Second, tokens measure how much content a model can process at once.**
+
+All large language models currently on the market have a context window. For example, DeepSeek V4 has a context window of 1M tokens, or one million tokens. V3.1 has a context window of 128K tokens, or 128,000 tokens.
+
+This is the amount of text the model can process at one time. Think of it as the size of the model’s current desk: how much written material can fit on it at once? This is usually measured in tokens.
+
+Older models can process less text. Asking V3.1 to write a novel of one million Chinese characters in a single response is therefore not practical.
+
+In a sense, ==a larger context window gives the model greater “capability”==.
+
+## 3. Achievement challenge
+
+<Achievement
+  id="token-boundaries"
+  title="Understand token boundaries"
+  question="Which statement about tokens is more accurate?"
+  answer="text-pieces"
+  explanation="A token can represent a word such as ‘Today’, or just part of a word. Different tokenizers can also use different splits and IDs. Character counts and word counts cannot directly replace token counts."
+  takeaway="Tokens are not the same as characters or words. Use the model’s actual tokenizer when comparing context windows or calculating costs."
+>
+  <AchievementOption value="whole-words">
+    A token always represents a whole character or word.
+  </AchievementOption>
+  <AchievementOption value="text-pieces">
+    A token is a piece of text. It may be a character, a word, or part of a word.
+  </AchievementOption>
+  <AchievementOption value="same-tokenizer">
+    Different models always split the same text into the same tokens and IDs.
+  </AchievementOption>
+</Achievement>

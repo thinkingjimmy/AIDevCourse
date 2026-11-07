@@ -96,7 +96,7 @@ test.describe('Prediction training demos', () => {
       const history = [await historySnapshot(multiple, 0)];
       await capture(multiple, `multiple-initial-${scenario.name}`);
       for (const figure of [single, multiple]) {
-        await expect(figure).toHaveAttribute('lang', 'zh-CN');
+        await expect(figure).toHaveAttribute('lang', 'zh-Hans');
         await expect(figure.locator('figcaption')).toHaveCount(0);
         await expect(figure).not.toContainText('训练原文');
         await expect(figure).not.toContainText('均为示意');

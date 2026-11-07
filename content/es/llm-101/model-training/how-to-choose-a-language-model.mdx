@@ -1,0 +1,58 @@
+---
+courseId: llm-101
+lessonId: how-to-choose-a-language-model
+title: ¿Cómo elegir un modelo de lenguaje adecuado para ti?
+description: Utiliza las evaluaciones para elegir un modelo según tus tareas, presupuesto y requisitos sobre los datos.
+---
+
+Después de las preguntas habituales sobre modelos abiertos, veamos cómo elegir un gran modelo de lenguaje adecuado para ti.
+
+## P1: ¿cómo saber qué modelo es más potente?
+
+Primero, la capacidad es relativa. En noviembre de 2026, no he visto ningún modelo perfecto en todos los aspectos.
+
+Escribir bien en chino no implica corregir bien el código. Un modelo que programa bien puede costar más. ¿Cómo compararlos?
+
+Hay dos tipos habituales de evaluación pública:
+
+- **Pruebas de referencia o benchmarks:** los modelos realizan una serie de tareas y reciben puntuaciones según reglas fijas. Pueden incluir preguntas de conocimiento, matemáticas o correcciones de código. Permiten comparar el rendimiento en tareas concretas. Algunos ejemplos son [DeepSWE](https://deepswe.datacurve.ai/) y [TerminalBench](https://www.tbench.ai/), además de pruebas especializadas como [Android Bench](https://developer.android.com/bench) para desarrollar aplicaciones Android. Si sabes qué tarea necesitas, busca primero una evaluación relevante.
+- **Evaluaciones de preferencias humanas:** distintos modelos responden a la misma pregunta y las personas eligen su respuesta preferida sin conocer la identidad del modelo. Esto muestra sus preferencias, pero «preferido» y «más exacto en los hechos» son criterios distintos. Por ejemplo, las evaluaciones frontend de [Arena AI](https://arena.ai/) preguntan qué interfaz generada tiene mejor aspecto y cumple mejor la petición. La estética es relativamente subjetiva.
+
+Ambos tipos son una referencia, no algo en lo que confiar por completo. Los puntos fuertes son relativos y las tareas evaluadas pueden no coincidir con tus necesidades reales.
+
+Si no sabes cuál elegir, visita mi otro sitio, [Vibe Coding Navigator](https://vibecodingnav.com). Reúne evaluaciones de los principales modelos para orientar tu elección.
+
+## P2: ¿qué modelos recomiendas?
+
+Sinceramente, creo que los modelos ya tienen mucha capacidad. Los principales límites son ahora la imaginación humana y el <JimmyNoteAnchor id="001">entorno y las herramientas del modelo</JimmyNoteAnchor>.
+
+<JimmyNote anchor="001">
+  Hablaremos de esto en el próximo módulo.
+</JimmyNote>
+
+En noviembre de 2026, estas son mis elecciones de modelos y herramientas:
+
+- Grok Bot: este producto dirige las solicitudes automáticamente, a veces al modelo Grok de X y otras a Claude. Lo elijo como Personal Agent por su buena experiencia de producto. Explicaremos los Personal Agents en próximas lecciones.
+- Claude Code: para programar, uso Claude Code con Opus 5.5. Codex es mi alternativa cuando agoto el cupo de Claude Code. Pero para computer use, como controlar una aplicación o un navegador, elijo Codex.
+- Gemini: no valoro los modelos de Google lo suficiente para elegirlos al programar, pero Gemini escribe bastante bien.
+- DeepSeek: lo uso relativamente poco, igual que otros modelos chinos. Si puedes acceder a un modelo más potente y pagarlo, probablemente no elegirás uno más débil.
+
+## P3: ChatGPT y Claude son caros. ¿Hay alternativas?
+
+Quiero explicar cómo entiendo los precios de los modelos. Ya compartí esta idea en X:
+
+<XEmbed url="https://x.com/thinkingjimmy/status/2114977301247209703?a=ovCfeRNkS1z0hf7Dk9E&s=20" />
+
+Voy a ampliarla.
+
+Una lista de precios no permite conocer el coste real de usar un modelo. Un precio anunciado bajo no implica un coste total bajo.
+
+Supongamos que el modelo A cuesta 1 dólar estadounidense por millón de tokens y el modelo B, 5 dólares. Si A necesita 10 millones de tokens para completar una tarea y B solo un millón, A resulta más caro.
+
+Eso tampoco incluye el tiempo necesario para corregir problemas. Si usas A para escribir código y su menor capacidad produce errores que tardas más en reparar, el coste en dinero y tiempo puede superar al de B.
+
+Muchos proveedores también ofrecen suscripciones con límites por periodos, como cinco horas o una semana. Normalmente no publican el cupo exacto de tokens y pueden ajustarlo según el mercado.
+
+En 2026, las suscripciones de Claude Code y Codex siguen ofreciendo la mejor relación entre coste y uso. Los tokens disponibles costarían mucho más a precio de API que la cuota. Si tu presupuesto lo permite, sigo recomendando una suscripción a un modelo de primer nivel antes que elegir uno más barato solo por ahorrar.
+
+Si solo quieres usar IA para tareas relativamente sencillas, DeepSeek puede ser una buena opción. Por desgracia, no ofrece suscripción, así que debes comprar uso de API según lo necesites.

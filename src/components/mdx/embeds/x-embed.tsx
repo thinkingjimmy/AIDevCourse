@@ -68,7 +68,7 @@ function PostEmbed({ id, source, title, locale }: { id: string; source: string; 
   return <figure data-embed="x" data-state={state} aria-label={title} className="not-prose mx-auto my-8 w-full min-w-0 max-w-[550px]">
     <div aria-busy={state === 'pending' || state === 'loading'} className="grid min-h-[250px] w-full [@media(scripting:none)]:hidden">
       <div ref={host} className="min-w-0 [grid-area:1/1] [&_iframe]:max-w-full [&_.twitter-tweet]:my-0!" />
-      {state !== 'ready' && <p role="status" className="m-0 flex min-h-[250px] items-center justify-center rounded-sm border border-border bg-muted p-6 text-center text-sm leading-body text-muted-foreground [grid-area:1/1]">
+      {state !== 'ready' && <p role="status" className="m-0 flex min-h-[250px] items-center justify-center rounded-sm border border-border bg-muted p-6 text-center text-sm leading-body text-reading [grid-area:1/1]">
         {state === 'unavailable' ? t('embedUnavailable') : t('embedLoading')}
       </p>}
     </div>

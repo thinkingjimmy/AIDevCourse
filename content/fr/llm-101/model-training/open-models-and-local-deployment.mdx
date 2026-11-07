@@ -1,0 +1,102 @@
+---
+courseId: llm-101
+lessonId: open-models-and-local-deployment
+title: Modèles open source, nombre de paramètres et utilisation locale
+description: Comprendre les modèles ouverts et fermés, les paramètres et le MoE, puis estimer le matériel nécessaire pour exécuter un modèle localement.
+---
+
+Après le préentraînement, examinons quelques questions fréquentes :
+
+- Que signifie « modèle open source » dans l’actualité ?
+- Que veut dire « 60B » dans un nom de modèle ?
+- Puis-je exécuter un modèle open source sur mon ordinateur ?
+
+## Q1 : que sont les modèles open source et fermés ?
+
+[Précédemment](/fr/courses/llm-101/how-language-models-are-trained), nous avons expliqué que l’entraînement ajuste les paramètres internes du modèle. Une fois l’entraînement terminé, leurs valeurs sont enregistrées. On les appelle généralement les **poids** du modèle.
+
+Les modèles open source et fermés sont tous des grands modèles de langage. Une différence essentielle est la publication de leurs poids.
+
+- Les modèles open source publient leurs poids. Tout le monde peut les télécharger et exécuter le modèle sur un ordinateur ou un serveur. Puisque les poids sont disponibles, on peut aussi les modifier.
+- Les modèles fermés gardent leurs poids privés. On ne peut pas les télécharger : on utilise le modèle par le produit de conversation ou l’API du fournisseur.
+
+Par analogie, un modèle open source ressemble à un logiciel gratuit. Vous pouvez le télécharger et l’utiliser sans frais. Vous pouvez aussi modifier son code selon vos besoins. Un modèle fermé ressemble davantage à un logiciel payant, avec généralement des frais supplémentaires, même si certains fournisseurs offrent un accès gratuit pour attirer des utilisateurs. Vous ne pouvez pas modifier son code et <JimmyNoteAnchor id="001">il fonctionne uniquement dans les limites fixées par ses développeurs</JimmyNoteAnchor>.
+
+<JimmyNote anchor="001">
+  La cybersécurité est un exemple courant. Certains fournisseurs de modèles fermés imposent des restrictions pour empêcher leur utilisation à des fins de piratage. Si le modèle détecte cette intention, il peut refuser de répondre ou afficher un avertissement. Les modèles open source n’ont généralement pas cette restriction, même si des limites similaires pourraient apparaître à l’avenir.
+</JimmyNote>
+
+## Q2 : quelles sont les différences ?
+
+Au-delà de la disponibilité des poids, je vois trois différences principales.
+
+**Premièrement : peut-on modifier les poids et affiner le modèle ?**
+
+Les modèles fermés ne permettent pas de modifier leurs poids. Les affirmations sur le fine-tuning de Claude Opus 5.5 ou GPT-6 sont donc généralement erronées. Les modèles principaux de Claude et GPT ne sont pas open source : les personnes extérieures à ces entreprises ne peuvent pas obtenir leurs poids pour les affiner. Ces fournisseurs proposaient auparavant certains services officiels de fine-tuning, mais les ont progressivement fermés.
+
+**Deuxièmement : peut-on utiliser le modèle gratuitement ?**
+
+Précisons ce que signifie « gratuit ». Des fournisseurs comme OpenAI gardent leurs modèles fermés, mais proposent des essais gratuits. Après une certaine consommation, l’utilisation devient payante.
+
+Avec un modèle open source, vous pouvez l’installer sur votre ordinateur ou serveur et l’utiliser aussi longtemps que vous le souhaitez, sans frais supplémentaires pour le modèle. Il reste les coûts du matériel, de l’électricité, de la maintenance et, éventuellement, de la location d’un serveur. Mais ils ne sont pas facturés par <JimmyNoteAnchor id="002">le fournisseur du modèle open source</JimmyNoteAnchor>.
+
+<JimmyNote anchor="002">
+  Certains fournisseurs de modèles open source proposent aussi des services payants. Ces services entraînent des frais supplémentaires.
+</JimmyNote>
+
+**Troisièmement : vos données parviennent-elles au fournisseur du modèle ?**
+
+Si vous exécutez le modèle localement, vos données restent locales et ne sont pas envoyées au fournisseur du modèle. Avec un service hébergé, elles peuvent en revanche être transmises au fournisseur cloud.
+
+<KeyTakeaway>
+  Open source ne signifie pas que l’exécution est entièrement gratuite. Il faut des ressources de calcul. L’utilisation locale peut nécessiter un ordinateur ou un serveur adapté. Un service hébergé évite l’achat d’un serveur, mais ajoute des frais de service.
+</KeyTakeaway>
+
+## Q3 : que signifie B dans le nom d’un modèle ?
+
+Vous avez peut-être vu 7B, 32B, 60B ou 70B dans des noms de modèles. B signifie **billion en anglais, soit milliard**. DeepSeek-V4.1-Flash est, par exemple, un modèle 552B.
+
+Ce nombre ne désigne ni les caractères du texte d’entraînement, ni les faits stockés, ni la fenêtre de contexte. Il compte les paramètres. Un modèle 552B possède environ **552 milliards de paramètres**.
+
+Plus de paramètres signifie-t-il un modèle plus puissant ?
+
+Ce nombre seul ne suffit pas à le savoir.
+
+Imaginez la taille d’une cuisine. Une grande cuisine peut accueillir plus d’équipements, mais la qualité des plats dépend aussi des ingrédients, des méthodes et de la formation. La surface seule ne permet pas de choisir le meilleur restaurant.
+
+Un petit modèle mieux entraîné ou optimisé pour une tâche peut donc dépasser un modèle plus grand sur cette tâche. **[Le nombre de paramètres décrit l’échelle. Testez les capacités sur des tâches réelles.](https://arxiv.org/abs/2203.15556)**
+
+La prochaine leçon présentera les évaluations des principaux modèles pour vous aider à choisir.
+
+## Q4 : qu’est-ce qu’un modèle à mélange d’experts ?
+
+Vous avez peut-être entendu dire que DeepSeek-V4.1-Flash est un modèle à mélange d’experts, ou MoE.
+
+Que signifie ce terme ?
+
+Pour simplifier, imaginez une équipe de 552 milliards d’experts. Un modèle sans MoE ferait examiner le problème par tous les experts avant de produire un résultat. Un modèle MoE comme DeepSeek-V4.1-Flash répartit plutôt le travail selon la situation :
+
+- Quand l’utilisateur pose une question, le modèle n’active que 8B de paramètres pour la comprendre. Ces 8 milliards d’experts sont spécialisés dans la compréhension des questions et le choix des personnes capables d’y répondre, plutôt que dans les réponses elles-mêmes.
+- Pour produire la réponse, le modèle fait appel à 16B de paramètres. Les premiers 8B experts transmettent la question à l’équipe compétente, qui génère la réponse.
+
+Cette conception apporte naturellement un gain de performance. Un problème qui mobilisait les 552B experts peut désormais passer par les groupes de 8B et de 16B. C’est plus rapide, avec moins de ressources de calcul et, au moins, une facture d’électricité bien plus faible 😆.
+
+## Q5 : mon ordinateur peut-il exécuter DeepSeek-V4.1-Flash ?
+
+Puisqu’un modèle open source peut fonctionner localement, votre ordinateur peut-il exécuter DeepSeek-V4.1-Flash ?
+
+Cela dépend du matériel. Une estimation courante de la mémoire GPU nécessaire utilise la « règle des 1,2× » :
+
+$$
+\text{Mémoire GPU requise (Go)} \approx X \times \text{Bits de quantification (Bits)} \,/\, 8 \times 1.2
+$$
+
+Inutile de comprendre les bits de quantification pour l’instant. Pour une utilisation sans perte de précision, la valeur est d’environ 16. Avec x = 552, la formule donne environ 1 325 Go de mémoire GPU.
+
+Il s’agit de mémoire GPU, pas de RAM système. Avec des cartes graphiques 4090, il faudrait environ 1 325 Go ÷ 24 = 55,2 cartes.
+
+Les puces Apple disposent d’une mémoire unifiée : les utilisateurs de Mac peuvent donc aussi utiliser les puces de série M. J’ai vérifié le prix : un Mac avec 512 Go de mémoire unifiée coûte actuellement environ 170 000 yuans, et il en faudrait environ trois pour ce modèle. Même en INT4 / Q4_K_M, termes que vous n’avez pas encore besoin de comprendre, il faut environ 359 Go de mémoire.
+
+Autrement dit, exécuter ce modèle récent sur votre propre ordinateur en 2026 coûte environ 170 000 yuans.
+
+Ce sont des calculs et des estimations simples. Les besoins réels dépendent aussi de la version du modèle, de la quantification et d’autres détails.

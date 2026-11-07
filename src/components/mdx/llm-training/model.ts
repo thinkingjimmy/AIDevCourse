@@ -1,8 +1,7 @@
-export const trainingCandidates = ['伞', '雨衣', '帽子'] as const;
-export const trainingTarget = '伞';
+export const trainingCandidates = ['umbrella', 'raincoat', 'hat'] as const;
+export const trainingTarget = 'umbrella';
 export const trainingTargetIndex = trainingCandidates.indexOf(trainingTarget);
-export const trainingInput = '今天雨天，出门记得带';
-export const trainingSteps = ['初始化', '预测', '对照', '调参数'] as const;
+export const trainingSteps = ['initialize', 'predict', 'compare', 'update'] as const;
 export const trainingFormulaInput = 1;
 
 export type TrainingFormulaCandidate = {
@@ -34,7 +33,3 @@ export const trainingProbabilities: readonly (readonly number[])[] = [
   [60, 22, 18],
   [72, 16, 12],
 ];
-
-export function probabilitySummary(probabilities: readonly number[]) {
-  return trainingCandidates.map((candidate, index) => `${candidate} ${probabilities[index]}%`).join('，');
-}

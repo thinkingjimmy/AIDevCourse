@@ -2,6 +2,7 @@
   "title": "LLM 101",
   "pages": [
     "index",
-    "model-fundamentals"
+    "model-fundamentals",
+    "model-training"
   ]
 }

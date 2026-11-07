@@ -1,10 +1,99 @@
 ---
 courseId: llm-101
 lessonId: what-a-language-model-does
-title: What a language model does
-description: The first lesson of LLM 101.
+title: How does a large language model generate an answer?
+description: Understand large language models as automatic text continuation systems, and learn why your input affects their output.
 ---
 
-Hello, world!
+You have probably seen or heard the term “large language model” recently. People often shorten it to LLM. Many call it “artificial intelligence.” Is that accurate? What is it, and why does it seem like the artificial intelligence in science fiction?
 
-Welcome to LLM 101. The first lesson's content will be added here.
+## 1. An automatic text continuation system
+
+As a simple analogy, think of an LLM as an [automatic text continuation system](https://jalammar.github.io/illustrated-gpt2/). For example, suppose you ask an LLM, such as DeepSeek or ChatGPT:
+
+<Chat>
+  <ChatMessage from="user">How is the weather in Guangzhou today?</ChatMessage>
+  <ChatMessage from="assistant" state="thinking" />
+</Chat>
+
+The model performs a series of calculations. But the process differs from what you might imagine. It does not <JimmyNoteAnchor id="thinking">“think”</JimmyNoteAnchor>. It uses [calculations](https://arxiv.org/abs/1706.03762) to **predict which “character” is most likely to come after this question.**
+
+<JimmyNote anchor="thinking">
+  Many products display a Thinking status after you send a question. However, the model does not think in the same way that a person does. I will explain this in more detail later.
+</JimmyNote>
+
+For “How is the weather in Guangzhou today?”, one generation might produce “T” as the next character.
+
+<JimmyNoteAnchor id="next-character-credits" variant="image">
+
+![The question enters the model, which calculates candidate probabilities for T, I, and W. This generation selects and outputs T.](/images/courses/what-a-language-model-does/en/next-character.webp)
+
+</JimmyNoteAnchor>
+
+<JimmyNote anchor="next-character-credits">
+  This illustration was generated with the [ian-xiaohei-illustrations](https://github.com/helloianneo/ian-xiaohei-illustrations) skill. Thanks to Ian for creating it.
+</JimmyNote>
+
+After generating “T”, the model uses “How is the weather in Guangzhou today?T” as its new input. It calculates the next character again, produces “o”, and gets “How is the weather in Guangzhou today?To”. It continues calculating the next character until it reaches the final result.
+
+The process looks roughly like this:
+
+<LLMGenerationDemo />
+
+In the product, you eventually see an answer like this:
+
+<Chat>
+  <ChatMessage from="user">How is the weather in Guangzhou today?</ChatMessage>
+  <ChatMessage from="assistant">Today in Guangzhou, it is sunny and 28 ℃.</ChatMessage>
+</Chat>
+
+Once you understand this principle, you can see why LLM products <JimmyNoteAnchor id="streaming-answer">display answers one character at a time</JimmyNoteAnchor>.
+
+<JimmyNote anchor="streaming-answer">
+  In a product, the answer may appear character by character or in larger chunks. This depends on the model’s generation speed and how the product displays the result. Behind the scenes, the model still generates it one character at a time.
+</JimmyNote>
+
+## 2. Why is this useful?
+
+This simple principle helps explain why so many prompt engineering techniques appeared in early LLM products, such as those based on GPT-3.5.
+
+For example, before entering English text to translate, you might add an instruction such as “You are an expert in translation between English and Chinese. Please translate the following English text…”. These instructions, or prompts, aim to [increase the probability that the LLM produces a satisfactory answer](https://arxiv.org/abs/2201.11903).
+
+<KeyTakeaway>
+  Even with today’s models, input quality still has a major effect on the output. However much products and models improve, you still need to learn if you want good results from an LLM.
+</KeyTakeaway>
+
+Why?
+
+To interact with AI, you must express what you want in writing. Without the relevant concepts, it is hard to make your requirements clear. In other words, it is hard to ask an LLM a useful question or give it suitable instructions. If those instructions are unclear or incorrect, the answer can be poor or wrong.
+
+Try clicking each of the two buttons below. Each opens a menu with the same items. But the menus look very different. Which gives you a better experience?
+
+<MenuComparisonDemo />
+
+If you know nothing about programming or product design, you might rely on a single sentence: “When I click the button, show a menu with three buttons: Menu A, B, and C.”
+
+The model will probably give you the **statistically most likely** result, which may be **ordinary**. With the relevant knowledge, you can give the LLM specific instructions to improve its output.
+
+That is what this course aims to teach you.
+
+## 3. Achievement challenge
+
+<Achievement
+  id="input-shapes-output"
+  title="Make your requirements clear"
+  question="You ask the model to create a menu, but the result does not meet your expectations. Based on this lesson, which approach is more helpful?"
+  answer="clarify-requirements"
+  explanation="The model predicts what comes next from the input it has. If that input is only ‘make a menu’, it lacks information about the result you want. Adding the use case, interaction requirements, and reference examples can increase the chance of a suitable result, but cannot guarantee satisfaction every time."
+  takeaway="Input affects the model’s output. State your goal, context, and requirements clearly to get results closer to your expectations. Relevant knowledge helps you express those requirements more precisely."
+>
+  <AchievementOption value="repeat-request">
+    Keep saying ‘make it look better’ and let the model decide every detail.
+  </AchievementOption>
+  <AchievementOption value="clarify-requirements">
+    Add the menu’s use case, opening behavior, and visual requirements. Provide reference examples if needed.
+  </AchievementOption>
+  <AchievementOption value="guarantee-result">
+    Add ‘you are a top designer’ to guarantee a satisfactory menu.
+  </AchievementOption>
+</Achievement>
