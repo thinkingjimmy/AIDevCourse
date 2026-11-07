@@ -145,6 +145,16 @@ npm run build
 
 这会先编译 Tailwind CSS，再用 esbuild 打包 `client.js`。esbuild 来自本仓库依赖。
 
+### 为什么不直接 import 站点里的 shadcn 组件
+
+插件是 DSH 的客户端 IIFE，必须复用 Host 注入的 React 实例；而站点里的
+`src/components/ui/*.tsx` 使用 `@/` 路径别名、`radix-ui` 和站点自己的 Tailwind
+token（`bg-background`、`text-ui` 等）。直接 import 会把站点构建、Radix 和另一个
+React 实例带进插件，并让插件依赖站点源码。
+
+所以 `src/ui.js` 按 shadcn 的组件结构、`data-slot`、variants 和组成方式实现，
+但渲染函数使用 Host 的 React；Tailwind 仍然照常编译。这样插件可以独立安装、升级。
+
 Host 侧 `index.js` 是普通 ESM，不需要构建。改 Host 逻辑后需要让 DSH 重新加载该插件
 （使用插件管理器关闭再开启，或重启 DSH）；只改批注 JSON 不需要。
 

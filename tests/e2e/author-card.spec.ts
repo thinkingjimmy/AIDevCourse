@@ -301,7 +301,7 @@ test('lesson outline follows reading without changing the URL or page position',
     const css = getComputedStyle(element);
     return { color: css.backgroundColor, height: css.height };
   });
-  expect(style.color).toBe('rgb(9, 9, 11)');
+  expect(style.color).toBe('rgb(49, 86, 75)');
   expect(style.height).toBe('3px');
   await capture(page, 'lesson-outline-current-section');
   await page.setViewportSize({ width: 1440, height: 160 });

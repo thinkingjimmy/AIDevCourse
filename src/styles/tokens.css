@@ -17,6 +17,8 @@
   --color-foreground: #09090b;
   --color-brand: #31564b;
   --color-brand-soft: color-mix(in oklab, var(--color-brand) 14%, var(--color-background));
+  --color-scrollbar-track: color-mix(in oklab, var(--color-brand) 6%, var(--color-background));
+  --color-scrollbar-thumb: color-mix(in oklab, var(--color-brand) 72%, var(--color-background));
   --color-primary: #09090b;
   --color-primary-foreground: #fafafa;
   --color-secondary: #f4f4f5;

@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { locales } from '../../../src/lib/i18n/config';
 import { localePath } from '../../../src/lib/i18n/routing';
+import { readdirSync } from 'node:fs';
 
 for (const scenario of [
   { name: 'desktop', width: 1440, javaScriptEnabled: true },
@@ -36,11 +37,11 @@ for (const scenario of [
           const hero = element.getBoundingClientRect();
           const logo = element.querySelector('.site-header-logo')!.getBoundingClientRect();
           const title = element.querySelector('h1')!.getBoundingClientRect();
-          return { width: hero.width, logoLeft: logo.left, contentLeft: hero.left,
+          return { width: hero.width, viewportWidth: document.documentElement.clientWidth, logoLeft: logo.left, contentLeft: hero.left,
             logoTitleGap: title.top - logo.bottom, overflow: document.documentElement.scrollWidth > innerWidth };
         });
         const padding = scenario.width < 359 ? 32 : scenario.width <= 721 ? 40 : 56;
-        expect(metrics.width).toBeCloseTo(Math.min(1024, scenario.width) - padding, 1);
+        expect(metrics.width).toBeCloseTo(Math.min(1024, metrics.viewportWidth) - padding, 1);
         expect(metrics.logoLeft).toBeCloseTo(metrics.contentLeft, 1);
         expect(metrics.logoTitleGap).toBeGreaterThanOrEqual(8);
         expect(metrics.logoTitleGap).toBeLessThanOrEqual(14);
@@ -73,7 +74,7 @@ for (const scenario of [
   });
 }
 
-test('the four disk styles stay consistent from the catalog to each course', async ({ page }, testInfo) => {
+test('disk styles are distinct and stay consistent from the catalog to each course', async ({ page }, testInfo) => {
   test.skip(process.env.CONTENT_TEST === '1', 'Uses the published disk catalog.');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/zh');
@@ -81,14 +82,49 @@ test('the four disk styles stay consistent from the catalog to each course', asy
     href: link.getAttribute('href')!,
     artwork: getComputedStyle(link.querySelector('.course-disk')!).borderImageSource,
   })));
-  expect(new Set(catalog.map(course => course.artwork)).size).toBe(4);
+  const allArtwork = await page.locator('.course-disk-link .course-disk').evaluateAll(disks =>
+    disks.map(disk => getComputedStyle(disk).borderImageSource));
+  expect(new Set(allArtwork).size).toBe(allArtwork.length);
   for (const course of catalog) {
     await page.goto(course.href);
     await expect(page.locator('.course-disk-cover .course-disk')).toHaveCSS('border-image-source', course.artwork);
   }
   await page.goto('/zh');
-  expect(await page.locator('.course-disk').evaluateAll(disks => disks.map(disk => getComputedStyle(disk).borderImageSource)))
+  expect(await page.locator('[data-course-disk] .course-disk').evaluateAll(disks => disks.map(disk => getComputedStyle(disk).borderImageSource)))
     .toEqual(catalog.map(course => course.artwork));
   await testInfo.attach('Course disk artwork', { body: JSON.stringify(catalog), contentType: 'application/json' });
   await testInfo.attach('Pixel disk catalog', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
+});
+
+test('the pixel disk collection has continuous side rails and opaque labels', async ({ page }, testInfo) => {
+  await page.goto('/zh');
+  const assets = readdirSync('public/images/home/disks').filter(file => file.endsWith('.svg'));
+  const evidence = await page.evaluate(async files => Promise.all(files.map(async file => {
+    const image = new Image();
+    await new Promise<void>((resolve, reject) => {
+      image.onload = () => resolve();
+      image.onerror = () => reject(new Error(`Cannot load ${file}`));
+      image.src = `/images/home/disks/${file}`;
+    });
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
+    const context = canvas.getContext('2d')!;
+    context.drawImage(image, 0, 0);
+    const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
+    const missingSidePixels: number[][] = [], labelHoles: number[][] = [];
+    for (let y = 8; y < canvas.height - 6; y++) for (const x of [0, canvas.width - 1]) {
+      if (data[(y * canvas.width + x) * 4 + 3] !== 255) missingSidePixels.push([x, y]);
+    }
+    for (let y = 38; y < canvas.height - 10; y++) for (let x = 8; x < canvas.width - 8; x++) {
+      if (data[(y * canvas.width + x) * 4 + 3] !== 255) labelHoles.push([x, y]);
+    }
+    return { file, missingSidePixels, labelHoles };
+  })), assets);
+  for (const asset of evidence) {
+    expect(asset.missingSidePixels, `${asset.file} has a broken side rail`).toEqual([]);
+    expect(asset.labelHoles, `${asset.file} has holes behind the text`).toEqual([]);
+  }
+  await testInfo.attach('Rendered SVG outlines and labels', {
+    body: JSON.stringify(evidence, null, 2), contentType: 'application/json',
+  });
 });

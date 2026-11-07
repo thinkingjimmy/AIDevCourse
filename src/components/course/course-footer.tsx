@@ -1,5 +1,5 @@
 'use client';
-import { SidebarFooter } from './sidebar';
+import { SidebarFooter } from '@/components/navigation/sidebar';
 import { AchievementGallery } from '@/components/progress/achievement-gallery';
 
 export function CourseFooter() {

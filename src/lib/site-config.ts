@@ -1,9 +1,10 @@
+import { resolveSiteEnvironment } from '../../config/site-environment.mjs';
+
 export const site = {
   name: 'AIDevCourse',
   logo: '/images/brand/logo.svg',
   wordmark: '/images/brand/wordmark.svg',
-  origin: process.env.SITE_URL ?? 'http://localhost:3000',
-  indexable: process.env.VERCEL_ENV === 'production',
+  ...resolveSiteEnvironment(),
 };
 
 export const author = {

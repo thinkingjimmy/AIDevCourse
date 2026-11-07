@@ -3,8 +3,8 @@ import { useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } fr
 import Link from 'next/link';
 import { ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
-import { CourseCard, type DiskCourse } from '@/components/course/course-card';
-import { AuthorDialog } from '@/components/course/author-card';
+import { DiskLink, type GalleryItem } from './disk';
+import { AuthorDialog } from '@/components/author/author-card';
 import { HeroPrimaryAction } from '@/components/layout/page-primitives';
 import { useHomeHeader } from '@/components/layout/site-frame';
 import type { Locale } from '@/lib/i18n/config';
@@ -13,11 +13,11 @@ import { Macintosh } from './macintosh';
 import { canAnimateNavigation, useCourseTransition } from './course-transition';
 
 export type GalleryLabels = {
-  title: string; intro: string; start: string; opening: string; updating: string;
+  title: string; intro: string; start: string; opening: string;
   previous: string; next: string; pagination: string; levels: Record<string, string>;
 };
-export function HomeGallery({ courses, locale, page, labels, startUrl, children }: {
-  courses: (DiskCourse & { countLabel: string })[]; locale: Locale; page: number; labels: GalleryLabels; startUrl: string; children?: ReactNode;
+export function HomeGallery({ items, locale, page, labels, startUrl, children }: {
+  items: GalleryItem[]; locale: Locale; page: number; labels: GalleryLabels; startUrl: string; children?: ReactNode;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const masthead = useRef<HTMLElement>(null);
@@ -36,17 +36,17 @@ export function HomeGallery({ courses, locale, page, labels, startUrl, children 
       document.documentElement.style.removeProperty('--home-masthead-height');
     };
   }, []);
-  const pages = Math.max(1, Math.ceil(courses.length / 9));
-  const visible = courses.slice((page - 1) * 9, page * 9);
-  const groups = ['introduction', 'beginner', 'intermediate', 'advanced'].map(section => ({
-    section, courses: visible.filter(course => (course.section ?? course.level) === section),
-  })).filter(group => group.courses.length);
-  const navigate = (event: MouseEvent<HTMLAnchorElement>, course: DiskCourse) => {
+  const pages = Math.max(1, Math.ceil(items.length / 9));
+  const visible = items.slice((page - 1) * 9, page * 9);
+  const groups = ['resources', 'beginner', 'intermediate', 'advanced'].map(section => ({
+    section, items: visible.filter(item => item.group === section),
+  })).filter(group => group.items.length);
+  const navigate = (event: MouseEvent<HTMLAnchorElement>, item: GalleryItem) => {
     const home = root.current;
     if (!home || !canAnimateNavigation(event)) return;
     event.preventDefault();
-    setSelected(course.title);
-    void openCourse({ home, source: event.currentTarget, url: course.url });
+    setSelected(item.title);
+    void openCourse({ home, source: event.currentTarget, url: item.url });
   };
   const pageUrl = (number: number) => `${localePath(locale)}${number > 1 ? `?page=${number}` : ''}`;
   return <div ref={root} className="home-gallery" data-disk-phase={phase}>
@@ -71,14 +71,13 @@ export function HomeGallery({ courses, locale, page, labels, startUrl, children 
         {children}
         {groups.map(group => <section className="disk-group" key={group.section} aria-labelledby={`courses-${group.section}`}>
           <h2 id={`courses-${group.section}`} className="disk-group-title">{labels.levels[group.section]}</h2>
-          <div data-slot="course-grid" className="disk-grid">{group.courses.map(course => <CourseCard key={course.id} course={course}
-            labels={{ level: labels.levels[course.section ?? course.level], status: course.lessonCount ? course.countLabel : labels.updating }}
-            onClick={event => navigate(event, course)}
-            onPointerEnter={event => { if (event.pointerType === 'mouse' && phase === 'idle') setSelected(course.title); }}
+          <div data-slot="course-grid" className="disk-grid">{group.items.map(item => <DiskLink key={item.id} item={item}
+            onClick={event => navigate(event, item)}
+            onPointerEnter={event => { if (event.pointerType === 'mouse' && phase === 'idle') setSelected(item.title); }}
             onPointerLeave={() => { if (phase === 'idle') setSelected(undefined); }}
             onFocus={event => {
               if (phase !== 'idle') return;
-              setSelected(course.title);
+              setSelected(item.title);
               if (event.currentTarget.matches(':focus-visible')) {
                 const obscured = event.currentTarget.getBoundingClientRect().top < (masthead.current?.getBoundingClientRect().bottom ?? 0) + 12;
                 event.currentTarget.scrollIntoView({ block: obscured ? 'start' : 'nearest', behavior: 'instant' });

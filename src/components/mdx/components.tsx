@@ -29,6 +29,7 @@ import { LinkPreview } from './link-preview/link-preview';
 import { XEmbed } from './embeds/x-embed';
 import { YouTube } from './embeds/youtube';
 import { getAchievementComponents } from './achievement/components';
+import { ResourceDisks } from '@/components/home/resources';
 import type { AchievementDefinition } from '@/lib/content/model';
 import type { MDXComponents } from 'mdx/types';
 function Callout({ title, type = 'info', children }: { title?: ReactNode; type?: string; children?: ReactNode }) {
@@ -46,7 +47,7 @@ function StrongText({ className, ...props }: ComponentProps<'strong'>) {
 }
 export function getMDXComponents(achievements: readonly AchievementDefinition[] = []): MDXComponents {
   return {
-    ...defaults, Steps, Step, Callout, JimmyNote, JimmyNoteAnchor, KeyTakeaway, Chat, ChatMessage, ChatThinking, ChatToolCall, InlineCitation, ChatMessageSequence, XEmbed, YouTube, LLMGenerationDemo, MenuComparisonDemo, NewtonSecondLawDemo, AnimationDemo, TokenizationDiagram, TokenProbabilityDiagram, LLMPretrainingOverview, LLMSingleRoundTrainingDemo, LLMMultiRoundTrainingDemo, MermaidDiagram, ...getAchievementComponents(achievements), pre: LocalizedCodeBlock,
+    ...defaults, Steps, Step, Callout, JimmyNote, JimmyNoteAnchor, KeyTakeaway, ResourceDisks, Chat, ChatMessage, ChatThinking, ChatToolCall, InlineCitation, ChatMessageSequence, XEmbed, YouTube, LLMGenerationDemo, MenuComparisonDemo, NewtonSecondLawDemo, AnimationDemo, TokenizationDiagram, TokenProbabilityDiagram, LLMPretrainingOverview, LLMSingleRoundTrainingDemo, LLMMultiRoundTrainingDemo, MermaidDiagram, ...getAchievementComponents(achievements), pre: LocalizedCodeBlock,
     a: LinkPreview, mark: HighlightedText, strong: StrongText, table: MarkdownTable, thead: TableHeader, tbody: TableBody, tfoot: TableFooter,
     tr: TableRow, th: TableHead, td: TableCell, caption: TableCaption,
     h1: (props) => <Heading as="h1" {...props} />,

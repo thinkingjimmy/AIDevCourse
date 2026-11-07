@@ -1,0 +1,27 @@
+name: Question / 提问
+description: Ask about a lesson or the project / 课程或项目提问
+title: "[Question] "
+labels: [question]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Questions are welcome in Chinese or English. Search [existing questions](https://github.com/thinkingjimmy/aidevcourse/issues?q=is%3Aissue%20label%3Aquestion) first.
+        欢迎用中文或英文提问。提交前，请先搜索已有问题。
+  - type: input
+    id: page
+    attributes:
+      label: Lesson or page / 课程或页面
+      description: Add a page link, title, or file path if your question concerns a specific page. / 如果问题与某个页面有关，请提供链接、标题或文件路径。
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question / 你的问题
+      description: What would you like to understand? / 你想了解什么？
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: What you have tried / 已有尝试
+      description: Optional. Share what you have read or tried, or add a screenshot. / 选填。可以补充读过的内容、尝试过的方法或截图。

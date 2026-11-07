@@ -79,9 +79,9 @@ test('highlight authoring CLI keeps heading links aligned and rejects raw mark H
   test.skip(browserName !== 'chromium', 'The CLI has no browser-specific behavior.');
   const root = mkdtempSync(join(tmpdir(), 'aidevcourse-highlights-'));
   try {
-    cpSync('tests/fixtures', join(root, 'content'), { recursive: true });
+    cpSync('tests/fixtures', join(root, 'tests/fixtures'), { recursive: true });
     cpSync('public', join(root, 'public'), { recursive: true });
-    const file = join(root, 'content/en/ai-coding/foundations/first-change.mdx');
+    const file = join(root, 'tests/fixtures/en/ai-coding/foundations/first-change.mdx');
     const original = readFileSync(file, 'utf8');
     const cases = [
       { name: 'highlighted heading and link', body: '\n## ==Highlighted heading==\n\n==[Jump to highlighted heading](#highlighted-heading)==\n', valid: true },
@@ -90,8 +90,8 @@ test('highlight authoring CLI keeps heading links aligned and rejects raw mark H
     const evidence = [];
     for (const example of cases) {
       writeFileSync(file, original + example.body);
-      const result = spawnSync(process.execPath, ['--import', import.meta.resolve('tsx'), join(process.cwd(), 'scripts/check-content.ts')], {
-        cwd: root, env: { ...process.env, CONTENT_TEST: '0' }, encoding: 'utf8', timeout: 15000,
+      const result = spawnSync(process.execPath, ['--import', import.meta.resolve('tsx'), join(process.cwd(), 'scripts/content/check.ts')], {
+        cwd: root, env: { ...process.env, CONTENT_TEST: '1' }, encoding: 'utf8', timeout: 15000,
       });
       const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
       expect(result.error).toBeUndefined();

@@ -1,0 +1,287 @@
+{
+  "title": "Dictionnaire du design",
+  "description": "Explorez la typographie et la couleur avec des exemples interactifs. Ajustez le texte, mélangez les couleurs et comparez les résultats.",
+  "resources": "Ressources",
+  "tool": "Outil",
+  "termCount": "{count} termes",
+  "typography": "Typographie",
+  "typographySections": {
+    "interface": {
+      "title": "Lecture et interfaces"
+    },
+    "letterforms": {
+      "title": "Lettres et mots",
+      "description": "Espacement des lettres, métriques, ligatures et césure."
+    }
+  },
+  "search": "Rechercher un terme",
+  "searchPlaceholder": "Terme français ou anglais",
+  "clearSearch": "Effacer la recherche",
+  "noResults": "Aucun terme trouvé. Essayez un autre mot.",
+  "resultsCount": "{count} résultats",
+  "loadMore": "Afficher la suite",
+  "openDirectory": "Ouvrir le sommaire",
+  "closeDirectory": "Fermer le sommaire",
+  "source": "Référence des termes : Index",
+  "on": "Activé",
+  "off": "Désactivé",
+  "original": "Original",
+  "apply": "Ajusté",
+  "font": "Police",
+  "spacing": "Espacement",
+  "lineHeight": "Hauteur de ligne",
+  "ratio": "Rapport de taille",
+  "containerWidth": "Largeur du texte",
+  "weight": "Graisse",
+  "wrap": "Retour à la ligne",
+  "ellipsis": "Points de suspension",
+  "balance": "Équilibrer les lignes",
+  "firstPage": "Page 1",
+  "secondPage": "Page 2",
+  "sans": "Sans",
+  "serif": "Sérif",
+  "mono": "Mono",
+  "amount": "Montant",
+  "profile": "Profil",
+  "security": "Sécurité",
+  "notifications": "Notifications",
+  "account": "Compte",
+  "headline": "Donner forme aux idées.",
+  "subheading": "Commencez par un petit pas.",
+  "bodyLabel": "Texte courant",
+  "readingText": "Une bonne typographie laisse respirer les idées. La distance entre les lignes et leur longueur donnent un rythme à la lecture. Modifiez un réglage pour observer comment les mêmes mots prennent une autre forme.",
+  "longTitle": "Un petit guide pour créer avec attention",
+  "baseline": "Ligne de base",
+  "heightLabel": "Hauteur du glyphe : {value}px",
+  "metricsNote": "Même taille de police. Les repères suivent la hauteur du x ou du H mesurée dans le navigateur.",
+  "kerningNote": "Seules les paires AI et vC changent. Les autres espacements restent identiques.",
+  "opticalNote": "La ligne du haut sert de référence. Un seul réglage applique le préréglage optique au mot entier en dessous ; plusieurs écarts changent ensemble, avec des différences amplifiées.",
+  "smoothingNote": "L’effet dépend du navigateur et de l’écran. Il peut être invisible sur certains systèmes.",
+  "terms": {
+    "kerning": {
+      "title": "Crénage",
+      "description": "Réglage de l’espace entre une paire précise de caractères. Il corrige un écart local, contrairement à l’approche qui agit sur toute la chaîne."
+    },
+    "tracking": {
+      "title": "Approche",
+      "description": "Espacement uniforme dans un mot ou un passage. Les libellés en capitales gagnent souvent à être légèrement espacés."
+    },
+    "leading": {
+      "title": "Interligne",
+      "description": "Distance verticale entre les lignes. Trop serrées, elles se confondent ; trop éloignées, elles perdent l’unité du paragraphe."
+    },
+    "optical-kerning": {
+      "title": "Crénage optique",
+      "description": "Espacement guidé par la forme des lettres et leur équilibre visuel, au-delà des seules données de crénage de la police."
+    },
+    "tabular-nums": {
+      "title": "Chiffres tabulaires",
+      "description": "Fonction donnant la même largeur aux chiffres. Elle maintient l’alignement des prix, statistiques et colonnes de valeurs qui changent."
+    },
+    "type-scale": {
+      "title": "Échelle typographique",
+      "description": "Ensemble prédéfini de tailles, souvent lié par un rapport. Il assure une hiérarchie cohérente entre titres et texte courant."
+    },
+    "weight": {
+      "title": "Graisse",
+      "description": "Épaisseur des traits, utilisée pour l’accentuation et la hiérarchie. Modifiez la graisse du titre et comparez-la au texte courant normal."
+    },
+    "x-height": {
+      "title": "Hauteur d’x",
+      "description": "Hauteur d’une minuscule comme x, par rapport à celle des capitales. Une hauteur d’x élevée fait paraître une police plus grande à taille égale : deux polices en 16px peuvent donc sembler très différentes."
+    },
+    "cap-height": {
+      "title": "Hauteur des capitales",
+      "description": "Hauteur des capitales au-dessus de la ligne de base. Avec la hauteur d’x, elle aide à associer des polices et choisir des alternatives."
+    },
+    "ligature": {
+      "title": "Ligature",
+      "description": "Glyphe réunissant des caractères comme fi ou fl pour éviter des collisions. Les ligatures décoratives conviennent davantage aux titres."
+    },
+    "font-smoothing": {
+      "title": "Lissage des caractères",
+      "description": "Rendu des contours du texte. Sur macOS, antialiased peut sembler plus fin ; l’effet dépend du navigateur et de l’écran."
+    },
+    "text-overflow": {
+      "title": "Débordement du texte",
+      "description": "Texte dépassant son cadre. Une ellipse (…) signale une coupure ; le retour à la ligne préserve le contenu si la place le permet."
+    },
+    "hyphenation": {
+      "title": "Césure",
+      "description": "Division d’un mot entre deux lignes par un trait d’union. Utile en colonnes étroites ou en texte justifié ; l’automatisme dépend de la langue et du navigateur."
+    },
+    "clamp": {
+      "title": "Taille fluide bornée",
+      "description": "Taille fluide définie par un minimum, une valeur souhaitée et un maximum. Le texte suit l’espace disponible sans règle à chaque point de rupture."
+    },
+    "widow": {
+      "title": "Veuve",
+      "description": "Un mot laissé seul sur la dernière ligne d’un paragraphe. text-wrap: balance peut le corriger automatiquement."
+    },
+    "orphan": {
+      "title": "Orpheline",
+      "description": "Première ligne d’un paragraphe isolée en bas d’une page ou colonne. La garder avec les suivantes préserve la continuité de lecture."
+    },
+    "font-stack": {
+      "title": "Pile de polices",
+      "description": "Liste ordonnée de polices préférées et de remplacement. Des proportions proches limitent les changements de lignes lors du remplacement."
+    },
+    "line-length": {
+      "title": "Longueur de ligne",
+      "description": "Largeur d’une colonne de texte. En alphabet latin, environ 65 caractères par ligne est un point de départ à adapter à la langue et à la police."
+    },
+    "variable-font": {
+      "title": "Police variable",
+      "description": "Un fichier proposant des axes réglables, comme la graisse et la largeur. Il peut remplacer plusieurs fichiers statiques et offrir des variations continues."
+    },
+    "superscript": {
+      "title": "Exposant",
+      "description": "Caractères surélevés pour puissances ou appels de note. Régler leur taille et leur position évite de perturber l’interligne."
+    },
+    "subscript": {
+      "title": "Indice",
+      "description": "Caractères abaissés pour formules chimiques ou notation. Leur taille et leur position doivent préserver le rythme des lignes voisines."
+    },
+    "srgb": {
+      "title": "sRGB",
+      "description": "L’espace colorimétrique standard utilisé par la plupart des écrans depuis des décennies. Toutes les valeurs hexadécimales y appartiennent. Son gamut est limité : un écran moderne peut afficher des couleurs que sRGB ne peut pas décrire."
+    },
+    "p3": {
+      "title": "P3",
+      "description": "Un espace colorimétrique plus large, pris en charge par la plupart des écrans modernes. Il permet des couleurs plus vives, notamment des verts et des rouges que sRGB ne peut pas atteindre."
+    },
+    "oklch": {
+      "title": "OKLCH",
+      "description": "Un espace colorimétrique qui correspond à notre perception de la luminosité. Contrairement à HSL, deux couleurs ayant la même valeur de clarté paraissent réellement aussi lumineuses. Utile pour créer des palettes et des mélanges de couleurs accessibles."
+    },
+    "alpha": {
+      "title": "Alpha",
+      "description": "La composante de transparence d’une couleur, de totalement opaque à totalement invisible. Une bordure avec alpha se fond dans la surface située dessous. Une couleur hexadécimale opaque reste posée dessus. La différence est subtile, mais toujours perceptible."
+    },
+    "semantic-token": {
+      "title": "Jeton sémantique",
+      "description": "Une variable de couleur nommée selon sa fonction plutôt que sa valeur. --color-border-subtle au lieu de #e0e0e0. Quand la valeur change, tout ce qui utilise ce jeton est mis à jour."
+    },
+    "contrast-ratio": {
+      "title": "Rapport de contraste",
+      "description": "La différence de luminance entre une couleur de premier plan et une couleur de fond. Les WCAG exigent 4,5:1 pour le texte courant, et 3:1 pour le grand texte et les composants d’interface."
+    },
+    "tinted-neutral": {
+      "title": "Gris teinté",
+      "description": "Un gris avec une légère dominante de teinte. Le gris pur #808080 ressemble à une couleur provisoire. Un gris teinté donne l’impression d’avoir été choisi."
+    },
+    "saturation": {
+      "title": "Saturation",
+      "description": "Le caractère vif ou atténué d’une couleur. En mode sombre, les couleurs de marque à saturation maximale peuvent sembler vibrer hors de l’écran. Une réduction de 20 à 30 % les apaise."
+    },
+    "chroma": {
+      "title": "Chroma",
+      "description": "L’équivalent de la saturation dans OKLCH, mais précis sur le plan perceptuel. Réduire le chroma pour obtenir une teinte claire conserve la vitalité de la couleur. Réduire l’opacité produit aussi une teinte claire, mais la rend grise et terne."
+    },
+    "gradient": {
+      "title": "Dégradé",
+      "description": "Une transition entre deux couleurs ou plus. En HSL ou en sRGB, le milieu devient souvent gris. Construire les dégradés dans OKLCH permet de conserver des couleurs vives sur toute la transition."
+    },
+    "opacity-vs-visibility": {
+      "title": "Opacité et visibilité",
+      "description": "Deux façons de masquer un élément. Une opacité nulle conserve sa place et les événements de pointeur. visibility: hidden supprime les interactions, mais conserve la place. Il faut savoir laquelle choisir."
+    },
+    "dark-mode": {
+      "title": "Mode sombre",
+      "description": "Une interface construite sur des surfaces sombres. La surface la plus claire doit se trouver au sommet de la hiérarchie des couches. Les jetons du mode clair se transposent rarement directement ; chaque choix de couleur doit donc être revérifié."
+    },
+    "blending": {
+      "title": "Fusion",
+      "description": "La façon dont un calque interagit avec ce qui se trouve dessous. Produit assombrit, Écran éclaircit, et Incrustation fait les deux selon la couleur de base. Utile pour intégrer des images à des surfaces colorées et donner de la profondeur aux illustrations."
+    }
+  },
+  "scaleTitle": "Titre",
+  "scaleSubtitle": "Sous-titre",
+  "weightNote": "Le curseur modifie seulement la graisse du titre. Le texte courant reste à 400 pour comparer.",
+  "weightPreview": {
+    "label": "Actualité du projet",
+    "title": "Le projet avance",
+    "body": "Découvrez le travail terminé cette semaine et la prochaine étape du projet."
+  },
+  "receipt": {
+    "title": "Détail des coûts",
+    "item": "Poste {number}",
+    "total": "Total"
+  },
+  "widowProfile": {
+    "role": "Designer produit"
+  },
+  "clampPreview": {
+    "minimum": "Min",
+    "preferred": "Souhaité",
+    "maximum": "Max",
+    "actual": "Taille",
+    "minimumState": "Au minimum : réduire la largeur ne réduit plus le texte",
+    "preferredState": "La taille suit la largeur du cadre",
+    "maximumState": "Au maximum : élargir ne grossit plus le texte"
+  },
+  "lookHere": "Regardez ici",
+  "overflowProfile": {
+    "name": "Alexandra Kim",
+    "role": "Designer produit · Systèmes de design et expérience utilisateur",
+    "bio": "Transformer les idées complexes en produits clairs et utiles, avec des interactions pensées pour le quotidien."
+  },
+  "color": "Couleur",
+  "colorPreview": {
+    "red": "Rouge",
+    "green": "Vert",
+    "blue": "Bleu",
+    "sampleColor": "Couleur du modèle",
+    "lightness": "Clarté",
+    "chroma": "Chroma",
+    "alpha": "Alpha",
+    "inProgress": "En cours",
+    "project": "Une nouvelle idée",
+    "continue": "Continuer",
+    "textLightness": "Niveau de gris du texte",
+    "bodyText": "AA texte",
+    "largeText": "AA grand texte",
+    "pass": "Conforme",
+    "fail": "Insuffisant",
+    "neutralTone": "Ton du gris",
+    "warm": "Chaud",
+    "cool": "Froid",
+    "saturation": "Saturation",
+    "interpolation": "Espace d’interpolation",
+    "start": "Début",
+    "middle": "Milieu",
+    "end": "Fin",
+    "hideMethod": "Méthode de masquage",
+    "tryArea": "Essayez la zone en pointillés.",
+    "tryButton": "Tester le bouton invisible",
+    "clickCount": "Clics : {count}",
+    "theme": "Thème",
+    "light": "Clair",
+    "dark": "Sombre",
+    "canvas": "Fond",
+    "surface": "Surface",
+    "raised": "Relief",
+    "blendMode": "Mode de fusion",
+    "multiply": "Produit",
+    "screen": "Écran",
+    "overlay": "Incrustation",
+    "p3Note": "P3 exige un écran et un navigateur compatibles. Sinon, les deux cercles affichent la couleur de repli sRGB.",
+    "tokenNote": "Modifiez --color-border-subtle pour changer les trois bordures ensemble.",
+    "contrastNote": "WCAG AA : 4,5:1 pour le texte courant ; 3:1 pour le grand texte et les composants d’interface.",
+    "saturationNote": "Essayez une saturation de 70 à 80 % sur le fond sombre. La teinte et la luminosité HSL restent fixes.",
+    "chromaNote": "À gauche : clarté accrue et chroma réduit. À droite : alpha réduit. Le fond gris reste identique.",
+    "gradientNote": "Les couleurs aux extrémités restent fixes. Comparez le milieu.",
+    "alphaNote": "Comparez une bordure avec alpha et une bordure opaque #808080 sur différents fonds.",
+    "visibilityNote": "Les deux conservent leur place. Seule opacity: 0 reçoit encore les clics et le focus clavier.",
+    "darkNote": "Dans la palette sombre, les surfaces en relief deviennent plus claires.",
+    "blendNote": "Les couleurs restent fixes. Le mode de fusion change leur chevauchement.",
+    "oklchNote": "Chaque couleur d’une ligne partage la même valeur L. Comparez les variations de luminosité dans chaque ligne.",
+    "tinted": "Teinté",
+    "borderColor": "Couleur de bordure",
+    "subtle": "Discrète",
+    "strong": "Marquée",
+    "projectName": "Nom du projet",
+    "uiComponent": "AA interface",
+    "tintAmount": "Éclaircissement"
+  }
+}

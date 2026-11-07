@@ -1,0 +1,9 @@
+{
+  "title": "前端：搭出导航站",
+  "pages": [
+    "plan-pages-and-technical-requirements",
+    "tailwind-layout-and-responsive-design",
+    "assemble-ui-components",
+    "data-driven-pages"
+  ]
+}

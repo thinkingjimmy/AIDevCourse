@@ -1,0 +1,287 @@
+{
+  "title": "设计词典",
+  "description": "通过可交互的案例，理解文字排版与色彩设计。调整文字、混合颜色，直观看到界面的变化。",
+  "resources": "学习资源",
+  "tool": "工具",
+  "termCount": "{count} 词条",
+  "typography": "文字排版",
+  "typographySections": {
+    "interface": {
+      "title": "中文界面常用"
+    },
+    "letterforms": {
+      "title": "字母与混排",
+      "description": "用于品牌名、外文单词与中西文混排。"
+    }
+  },
+  "search": "搜索词条",
+  "searchPlaceholder": "搜索词条，中英文均可",
+  "clearSearch": "清除搜索",
+  "noResults": "没有匹配的词条，试试其他关键词。",
+  "resultsCount": "{count} 个结果",
+  "loadMore": "加载更多",
+  "openDirectory": "打开词典目录",
+  "closeDirectory": "收起词典目录",
+  "source": "术语参考：Index",
+  "on": "开启",
+  "off": "关闭",
+  "original": "原始",
+  "apply": "调整后",
+  "font": "字体",
+  "spacing": "间距",
+  "lineHeight": "行高",
+  "ratio": "字号比例",
+  "containerWidth": "文本宽度",
+  "weight": "字重",
+  "wrap": "换行",
+  "ellipsis": "省略",
+  "balance": "平衡换行",
+  "firstPage": "第 1 页",
+  "secondPage": "第 2 页",
+  "sans": "无衬线",
+  "serif": "衬线",
+  "mono": "等宽",
+  "amount": "金额",
+  "profile": "个人资料",
+  "security": "安全设置",
+  "notifications": "通知",
+  "account": "账户",
+  "headline": "让想法成为作品。",
+  "subheading": "从一小步开始。",
+  "bodyLabel": "正文",
+  "readingText": "好的排版为每个想法留出空间。行与行之间的距离、每一行文字的长度，都会影响阅读的节奏。试着改变一个参数，看看同一段文字如何呈现出不同的感受。清晰的层次，让读者更容易找到重点。",
+  "longTitle": "关于如何把一个小想法变成作品的指南",
+  "baseline": "基线",
+  "heightLabel": "字形高度：{value}px",
+  "metricsNote": "字号相同。参考线跟随浏览器测得的 x 或 H 字形高度。",
+  "kerningNote": "只调整 AI 和 vC 这两组字偶，其余间距保持不变。",
+  "opticalNote": "上方保留原始间距，下方用预设演示整词的光学调整。开启后多组间距一起改变，示例放大了差异。",
+  "smoothingNote": "效果取决于浏览器和屏幕；部分设备上可能看不到差别。",
+  "terms": {
+    "kerning": {
+      "title": "字偶距",
+      "description": "对特定的一对字符单独调整间距，使视觉距离更均匀。与统一调整整段文字的字间距不同。"
+    },
+    "tracking": {
+      "title": "字间距",
+      "description": "统一调整一段文字中所有字符的间距。英文全大写标签通常适合稍微加宽，避免显得拥挤。"
+    },
+    "leading": {
+      "title": "行距",
+      "description": "文字行与行之间的垂直距离。太紧会挤在一起，太松会削弱段落的整体感。"
+    },
+    "optical-kerning": {
+      "title": "光学字偶距",
+      "description": "依据字形和视觉感受调整字偶间距，而非仅使用字体内置的间距数据。可用来修正默认字偶距留下的不均匀空隙。"
+    },
+    "tabular-nums": {
+      "title": "等宽数字",
+      "description": "让所有数字占用相同宽度的字体特性。适合价格、统计和动态更新的数值，让每一列始终对齐。"
+    },
+    "type-scale": {
+      "title": "字号阶梯",
+      "description": "预先设定的一组字号，通常按固定比例组织。持续从这组字号中选择，有助于保持标题与正文的层级一致。"
+    },
+    "weight": {
+      "title": "字重",
+      "description": "字体笔画的粗细，常用来强调内容和建立界面层级。改变标题字重，与常规字重的正文比较，观察视觉重点如何变化。"
+    },
+    "x-height": {
+      "title": "x 字高",
+      "description": "小写字母（如 x）相对于大写字高的高度。x 字高越高，字体在相同字号下看起来就越大；因此，两种同为 16px 的字体也可能显得大小很不一样。"
+    },
+    "cap-height": {
+      "title": "大写字高",
+      "description": "大写字母从基线到顶部的高度。结合 x 字高，可以比较字体的视觉大小，帮助搭配字体或选择后备字体。"
+    },
+    "ligature": {
+      "title": "连字",
+      "description": "把 f 和 i 等字符组合为一个字形，减少笔画碰撞。fi、fl 较常见；装饰性连字更适合标题等展示文字。"
+    },
+    "font-smoothing": {
+      "title": "字体平滑",
+      "description": "浏览器对文字边缘的平滑处理。macOS 上的 antialiased 可能让文字显得更细、更轻，实际效果取决于浏览器与屏幕。"
+    },
+    "text-overflow": {
+      "title": "文本溢出",
+      "description": "文字超出容器时的处理方式。省略号（…）可以提示后面还有内容；空间允许时，换行能保留更多信息。"
+    },
+    "hyphenation": {
+      "title": "断字",
+      "description": "用连字符把一个单词分到两行，适合窄栏和两端对齐的文本。自动断字需要正确的语言设置及浏览器支持。"
+    },
+    "clamp": {
+      "title": "弹性字号",
+      "description": "用最小值、理想值和最大值限定一个可变字号。让文字随可用空间平滑变化，减少逐个断点设置字号的需要。"
+    },
+    "widow": {
+      "title": "寡行",
+      "description": "段落最后一行只剩一个孤立的词。text-wrap: balance 可以自动修复这种情况。"
+    },
+    "orphan": {
+      "title": "孤行",
+      "description": "段落首行单独留在一页或一栏底部，与后续内容分离。可用 orphans 限制页底保留的行数，也可手动调整分页。"
+    },
+    "font-stack": {
+      "title": "字体栈",
+      "description": "浏览器按顺序尝试的字体列表。选择字形比例相近的后备字体，可以减轻字体替换时的换行变化与布局偏移。"
+    },
+    "line-length": {
+      "title": "行长",
+      "description": "文字栏的横向长度。拉丁文字可从每行约 65 个字符开始，结合语言与字体调整；过长会增加寻找下一行的负担。"
+    },
+    "variable-font": {
+      "title": "可变字体",
+      "description": "在一个字体文件内提供字重、字宽等可调轴。可以连续调整样式，并减少为多种字重分别加载文件的需要。"
+    },
+    "superscript": {
+      "title": "上标",
+      "description": "抬高的字符，常用于指数或脚注标记。需要配合字号与垂直位置设置，避免让正文行距发生不必要的变化。"
+    },
+    "subscript": {
+      "title": "下标",
+      "description": "下移的字符，常用于化学式或数学符号。同样要控制字号与垂直位置，让正文的行距和阅读节奏保持稳定。"
+    },
+    "srgb": {
+      "title": "sRGB",
+      "description": "大多数屏幕沿用了数十年的标准色彩空间。所有十六进制色值都属于这个空间。它的色域有限：现代屏幕能显示的一些颜色，sRGB 无法描述。"
+    },
+    "p3": {
+      "title": "P3 广色域",
+      "description": "大多数现代屏幕支持的更宽广的色彩空间。它能呈现 sRGB 无法达到的更鲜艳的颜色，尤其是绿色和红色。"
+    },
+    "oklch": {
+      "title": "OKLCH",
+      "description": "符合人类亮度感知方式的色彩空间。与 HSL 不同，明度值相同的两种颜色，看起来确实一样亮。适合生成调色板和满足无障碍需求的混色。"
+    },
+    "alpha": {
+      "title": "Alpha 透明通道",
+      "description": "颜色的透明度分量，从完全不透明到完全不可见。带 Alpha 透明度的边框会融入下方表面，实色十六进制颜色则浮在表面之上。这种差别很微妙，却始终能被感知。"
+    },
+    "semantic-token": {
+      "title": "语义化变量",
+      "description": "根据用途而非具体色值命名的颜色变量。例如 --color-border-subtle，而不是 #e0e0e0。这个值改变时，所有使用该变量的地方都会更新。"
+    },
+    "contrast-ratio": {
+      "title": "对比度",
+      "description": "前景色与背景色之间的亮度差异。WCAG 要求正文达到 4.5:1，大号文字和 UI 组件达到 3:1。"
+    },
+    "tinted-neutral": {
+      "title": "带色中性色",
+      "description": "带有少量色相倾向的灰色。纯 #808080 像是占位色，而带色的中性色则显得经过了选择。"
+    },
+    "saturation": {
+      "title": "饱和度",
+      "description": "颜色鲜艳或柔和的程度。深色模式中，饱和度全满的品牌色会显得刺眼，仿佛从屏幕中跳出。降低 20–30% 可以让它平静下来。"
+    },
+    "chroma": {
+      "title": "彩度",
+      "description": "OKLCH 中与饱和度对应的概念，但在感知上更准确。为了得到浅色调而降低彩度，可以让颜色保持活力。降低不透明度也能得到浅色调，却会让颜色灰暗、失去生气。"
+    },
+    "gradient": {
+      "title": "渐变",
+      "description": "在两个或更多颜色之间过渡。使用 HSL 或 sRGB 时，中点经常会变灰。在 OKLCH 中构建渐变，可以让整个过渡保持鲜艳。"
+    },
+    "opacity-vs-visibility": {
+      "title": "不透明度与可见性",
+      "description": "隐藏元素的两种方式。不透明度为零时，元素仍然占据空间并接收指针事件。visibility: hidden 会移除交互，但保留空间。要清楚你需要哪一种。"
+    },
+    "dark-mode": {
+      "title": "深色模式",
+      "description": "基于深色表面构建的界面。最亮的表面应位于层级最上方。浅色模式的变量很少能直接套用，因此每一个色彩决策都需要重新检查。"
+    },
+    "blending": {
+      "title": "颜色混合",
+      "description": "一个图层与其下方内容相互作用的方式。正片叠底让颜色变暗，滤色让颜色变亮，叠加则根据底色同时包含这两种效果。适合将图像融入带色表面，也能为插画增加深度。"
+    }
+  },
+  "scaleTitle": "标题",
+  "scaleSubtitle": "副标题",
+  "weightNote": "滑块只改变标题字重。正文保持 400，便于比较信息层级。",
+  "weightPreview": {
+    "label": "项目动态",
+    "title": "新的进展",
+    "body": "查看本周完成的内容，了解项目的下一步。"
+  },
+  "receipt": {
+    "title": "费用明细",
+    "item": "项目 {number}",
+    "total": "合计"
+  },
+  "widowProfile": {
+    "role": "产品设计师"
+  },
+  "clampPreview": {
+    "minimum": "最小",
+    "preferred": "理想",
+    "maximum": "最大",
+    "actual": "当前字号",
+    "minimumState": "已达到最小字号，继续缩窄也不会更小",
+    "preferredState": "字号正在随容器宽度变化",
+    "maximumState": "已达到最大字号，继续加宽也不会更大"
+  },
+  "lookHere": "请看这里",
+  "overflowProfile": {
+    "name": "Alexandra Kim",
+    "role": "产品设计师 · 设计系统与用户体验",
+    "bio": "把复杂问题变成清晰、易用又贴心的产品体验，让每一次交互更自然。"
+  },
+  "color": "色彩",
+  "colorPreview": {
+    "red": "红色",
+    "green": "绿色",
+    "blue": "蓝色",
+    "sampleColor": "示例颜色",
+    "lightness": "明度",
+    "chroma": "彩度",
+    "alpha": "不透明度",
+    "inProgress": "进行中",
+    "project": "一个新想法",
+    "continue": "继续",
+    "textLightness": "文字灰度",
+    "bodyText": "AA 正文",
+    "largeText": "AA 大字",
+    "pass": "通过",
+    "fail": "不足",
+    "neutralTone": "中性色调",
+    "warm": "暖灰",
+    "cool": "冷灰",
+    "saturation": "饱和度",
+    "interpolation": "插值色彩空间",
+    "start": "起点",
+    "middle": "中点",
+    "end": "终点",
+    "hideMethod": "隐藏方式",
+    "tryArea": "试着点击虚线区域。",
+    "tryButton": "测试不可见按钮",
+    "clickCount": "已点击 {count} 次",
+    "theme": "主题",
+    "light": "浅色",
+    "dark": "深色",
+    "canvas": "底层",
+    "surface": "表面",
+    "raised": "浮层",
+    "blendMode": "混合模式",
+    "multiply": "正片叠底",
+    "screen": "滤色",
+    "overlay": "叠加",
+    "p3Note": "P3 需要屏幕和浏览器支持。其他屏幕上的两个圆都使用 sRGB 备用色。",
+    "tokenNote": "修改 --color-border-subtle，三处边框一起更新。",
+    "contrastNote": "WCAG AA：正文至少 4.5:1，大号文字和 UI 组件至少 3:1。",
+    "saturationNote": "试着把深色背景上的饱和度调到 70–80%。色相与 HSL 明度保持不变。",
+    "chromaNote": "左侧提高明度、降低彩度，右侧降低不透明度。两侧的灰色底色相同。",
+    "gradientNote": "起点和终点不变，观察中间颜色的变化。",
+    "alphaNote": "切换底色，比较透明边框与实色 #808080 边框。",
+    "visibilityNote": "两种方式都保留空间。只有 opacity: 0 仍能接收点击和键盘焦点。",
+    "darkNote": "深色主题中，越靠上的表面越亮。",
+    "blendNote": "两个颜色不变，混合模式改变重叠区域的效果。",
+    "oklchNote": "同一行的颜色使用相同的 L 值。比较两行颜色的明暗起伏。",
+    "tinted": "带色",
+    "borderColor": "边框颜色",
+    "subtle": "浅边框",
+    "strong": "深边框",
+    "projectName": "项目名称",
+    "uiComponent": "AA 组件",
+    "tintAmount": "浅色程度"
+  }
+}

@@ -43,7 +43,7 @@ test.beforeAll(async ({}, workerInfo) => {
   for (const directory of ['src', 'config', 'content', 'public']) cpSync(join(root, directory), join(workspace, directory), { recursive: true });
   for (const file of ['package.json', 'pnpm-lock.yaml', 'tsconfig.json', 'next.config.mjs']) cpSync(join(root, file), join(workspace, file));
   symlinkSync(join(root, 'node_modules'), join(workspace, 'node_modules'), 'dir');
-  const file = join(workspace, 'content/zh/getting-started/about-this-website/about-this-course.mdx');
+  const file = join(workspace, 'content/zh/getting-started/before-you-start/about-this-course.mdx');
   const original = readFileSync(file, 'utf8');
   writeFileSync(file, `---${original.split('---')[1]}---\n${examples}`);
   const port = 4510 + workerInfo.workerIndex;
@@ -206,7 +206,7 @@ test('editing an embed-only note updates its author header without a server rest
   const header = card.locator('[data-slot="note-signature"]');
   await expect(card).toBeVisible();
   await expect(header).toHaveCount(0);
-  const file = join(workspace, 'content/zh/getting-started/about-this-website/about-this-course.mdx');
+  const file = join(workspace, 'content/zh/getting-started/before-you-start/about-this-course.mdx');
   const original = readFileSync(file, 'utf8');
   try {
     writeFileSync(file, original.replace('  <XEmbed', 'A personal observation.\n\n  <XEmbed'));

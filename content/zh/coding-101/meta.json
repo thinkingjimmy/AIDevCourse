@@ -2,8 +2,12 @@
   "title": "Coding 101",
   "pages": [
     "index",
-    "what-is-json",
-    "call-ai-with-json",
-    "animation-prompts"
+    "web-foundations",
+    "frontend",
+    "backend",
+    "database",
+    "delivery",
+    "extensions",
+    "additional-reading"
   ]
 }

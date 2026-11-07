@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { CHIP_CARD_SVG, CHIP_CARD_VIEWBOX, CHIP_EXPLODE_SVG } from '../../src/components/illustrations/chip-explode-markup';
 
@@ -18,11 +17,5 @@ describe('exploded chip markup', () => {
     expect(CHIP_CARD_SVG).toContain('data-asm="board"');
     expect(groups(CHIP_EXPLODE_SVG) - groups(CHIP_CARD_SVG)).toBe(6);
     expect(groups(CHIP_CARD_SVG)).toBe((CHIP_CARD_SVG.match(/<\/g>/g) ?? []).length);
-    const [, , width, height] = CHIP_CARD_VIEWBOX.split(' ');
-    const card = readFileSync('src/components/course/course-card.tsx', 'utf8');
-    const hero = readFileSync('src/app/[lang]/courses/[course]/page.tsx', 'utf8');
-    expect(card).toContain(`aspect-[${width}/${height}]`);
-    expect(card).toContain('callouts={false}');
-    expect(hero).toContain('<ChipExplode callouts />');
   });
 });

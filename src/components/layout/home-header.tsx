@@ -8,7 +8,7 @@ import { site } from '@/lib/site-config';
 import { lessonIndex } from '../search/lessons';
 import { HomeLanguageSwitcher, LanguageSwitcher } from './language-switcher';
 import { SearchShortcut } from '../search/search-shortcut';
-import { AuthorDialog } from '../course/author-card';
+import { AuthorDialog } from '../author/author-card';
 import { SiteHeader } from './site-header';
 export function SiteBar({ locale, homeLabel, navLabel, children }: {
   locale: Locale; homeLabel: string; navLabel: string; children?: ReactNode;
@@ -18,12 +18,14 @@ export function SiteBar({ locale, homeLabel, navLabel, children }: {
     <nav className="ml-auto flex shrink-0 items-center gap-2.5 text-caption text-muted-foreground" aria-label={navLabel}>{children}</nav>
   </PageContainer></header>;
 }
-export async function HomeHeader({ locale }: { locale: Locale }) {
+export async function HomeHeader({ locale, hero = false }: { locale: Locale; hero?: boolean }) {
   const t = await getTranslations({ locale, namespace: 'Home' });
   const ui = await getTranslations({ locale, namespace: 'Ui' });
+  const vocabulary = await getTranslations({ locale, namespace: 'Vocabulary' });
+  const animationVocabulary = await getTranslations({ locale, namespace: 'AnimationVocabulary' });
   const catalog = getCatalog();
-  return <SiteHeader locale={locale} courses={catalog.courses.filter(course => course.locale === locale).map(({ url, title }) => ({ url, title }))}
-    labels={{ home: ui('home'), navigation: t('navLabel') }}
+  return <SiteHeader locale={locale} hero={hero} courses={catalog.courses.filter(course => course.locale === locale).map(({ url, title }) => ({ url, title }))}
+    labels={{ home: ui('home'), navigation: t('navLabel'), vocabulary: { design: vocabulary('title'), animation: animationVocabulary('title') } }}
     shortcut={<SearchShortcut locale={locale} version={catalog.version} lessons={lessonIndex(catalog, locale)} />}>
     <AuthorDialog />
     <LanguageSwitcher locale={locale} translations={catalog.translations} />

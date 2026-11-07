@@ -1,0 +1,287 @@
+{
+  "title": "Design dictionary",
+  "description": "Explore typography and color through interactive examples. Adjust type, mix colors and compare interface treatments.",
+  "resources": "Learning resources",
+  "tool": "Tool",
+  "termCount": "{count} terms",
+  "typography": "Typography",
+  "typographySections": {
+    "interface": {
+      "title": "Reading and interfaces"
+    },
+    "letterforms": {
+      "title": "Letterforms and words",
+      "description": "Letter spacing, font metrics, ligatures, and word breaks."
+    }
+  },
+  "search": "Search terms",
+  "searchPlaceholder": "Search terms or English names",
+  "clearSearch": "Clear search",
+  "noResults": "No matching terms. Try another word.",
+  "resultsCount": "{count} results",
+  "loadMore": "Load more",
+  "openDirectory": "Open dictionary navigation",
+  "closeDirectory": "Collapse dictionary navigation",
+  "source": "Term reference: Index",
+  "on": "On",
+  "off": "Off",
+  "original": "Original",
+  "apply": "Adjusted",
+  "font": "Typeface",
+  "spacing": "Spacing",
+  "lineHeight": "Line height",
+  "ratio": "Scale ratio",
+  "containerWidth": "Text width",
+  "weight": "Weight",
+  "wrap": "Wrap",
+  "ellipsis": "Ellipsis",
+  "balance": "Balance lines",
+  "firstPage": "Page 1",
+  "secondPage": "Page 2",
+  "sans": "Sans serif",
+  "serif": "Serif",
+  "mono": "Mono",
+  "amount": "Amount",
+  "profile": "Profile",
+  "security": "Security",
+  "notifications": "Notifications",
+  "account": "Account",
+  "headline": "Ideas become things.",
+  "subheading": "Start with a small step.",
+  "bodyLabel": "Body text",
+  "readingText": "Good typography gives each idea room to breathe. The space between lines and the length of each line shape the rhythm of reading. Change one setting and notice how the same words feel different.",
+  "longTitle": "A small guide to making thoughtful things",
+  "baseline": "Baseline",
+  "heightLabel": "Glyph height: {value}px",
+  "metricsNote": "Same font size. The guides follow the measured x or H glyph in your browser.",
+  "kerningNote": "Only AI and vC move; the other gaps stay the same.",
+  "opticalNote": "The upper row is the reference. One toggle applies the whole-word optical preset below; multiple gaps change together, with exaggerated differences.",
+  "smoothingNote": "The effect depends on your browser and display. Some systems show no visible change.",
+  "terms": {
+    "kerning": {
+      "title": "Kerning",
+      "description": "Adjusting the spacing of a chosen character pair. It corrects uneven gaps without changing every gap, as tracking does."
+    },
+    "tracking": {
+      "title": "Tracking",
+      "description": "Uniform letter spacing across a word or passage. Uppercase labels often need more space to remain readable."
+    },
+    "leading": {
+      "title": "Leading",
+      "description": "The vertical distance between lines. Tight spacing crowds letters; excessive spacing breaks a paragraph’s visual flow."
+    },
+    "optical-kerning": {
+      "title": "Optical kerning",
+      "description": "Spacing guided by letter shapes and visual balance, instead of relying only on a font’s kerning metrics."
+    },
+    "tabular-nums": {
+      "title": "Tabular numerals",
+      "description": "A font feature that gives digits equal widths, keeping prices, statistics and changing numeric columns aligned."
+    },
+    "type-scale": {
+      "title": "Type scale",
+      "description": "A defined set of font sizes, often linked by a ratio, that keeps headings and body text in a consistent hierarchy."
+    },
+    "weight": {
+      "title": "Font weight",
+      "description": "The thickness of letter strokes, used for emphasis and interface hierarchy. Change the title weight and compare it with regular body text."
+    },
+    "x-height": {
+      "title": "X-height",
+      "description": "The height of a lowercase letter like x, relative to the cap height. A high x-height makes a font feel larger at the same point size, which is why two fonts at 16px can look very different in size."
+    },
+    "cap-height": {
+      "title": "Cap height",
+      "description": "The height of capitals above the baseline. Compare it with x-height when pairing typefaces or choosing fallback fonts."
+    },
+    "ligature": {
+      "title": "Ligature",
+      "description": "A glyph combining characters such as fi or fl to prevent collisions. Decorative ligatures are better suited to display text."
+    },
+    "font-smoothing": {
+      "title": "Font smoothing",
+      "description": "How text edges are rendered. On macOS, antialiased rendering may appear thinner; the result depends on the browser and display."
+    },
+    "text-overflow": {
+      "title": "Text overflow",
+      "description": "Text exceeding its container. An ellipsis (…) can signal clipped text; wrapping instead preserves content when additional lines are possible."
+    },
+    "hyphenation": {
+      "title": "Hyphenation",
+      "description": "Breaking words between lines with hyphens. It helps narrow or justified text; automatic break points depend on the language and browser."
+    },
+    "clamp": {
+      "title": "Clamp",
+      "description": "Fluid sizing bounded by minimum, preferred and maximum values. It lets text scale with space without separate rules at every breakpoint."
+    },
+    "widow": {
+      "title": "Widow",
+      "description": "A single word left alone on the last line of a paragraph. text-wrap: balance can fix it automatically."
+    },
+    "orphan": {
+      "title": "Orphan",
+      "description": "A paragraph’s first line isolated at a page or column’s bottom. Keep it with following lines to preserve reading continuity."
+    },
+    "font-stack": {
+      "title": "Font stack",
+      "description": "An ordered list of preferred and fallback fonts. Similar proportions reduce reflow when the browser swaps fonts."
+    },
+    "line-length": {
+      "title": "Line length",
+      "description": "The width of a text column. Around 65 characters is a starting point for Latin text; adjust for language and typeface."
+    },
+    "variable-font": {
+      "title": "Variable font",
+      "description": "One font file with adjustable axes such as weight and width. It can replace several static font files and support smooth variations."
+    },
+    "superscript": {
+      "title": "Superscript",
+      "description": "Raised characters for exponents or footnotes. Adjust size and vertical position carefully so the surrounding line spacing stays stable."
+    },
+    "subscript": {
+      "title": "Subscript",
+      "description": "Lowered characters for chemical formulas or notation. Size and vertical position should preserve the surrounding line’s rhythm."
+    },
+    "srgb": {
+      "title": "sRGB",
+      "description": "The standard color space most screens have used for decades. All hex values live here. Its gamut is limited: there are colors a modern display can show that sRGB cannot describe."
+    },
+    "p3": {
+      "title": "P3",
+      "description": "A wider color space supported by most modern screens. Allows more vivid colors, particularly greens and reds, that sRGB cannot reach."
+    },
+    "oklch": {
+      "title": "OKLCH",
+      "description": "A color space that matches how humans perceive brightness. Unlike HSL, two colors at the same lightness value actually look the same brightness. Useful for generating palettes and accessible color mixes."
+    },
+    "alpha": {
+      "title": "Alpha",
+      "description": "The transparency component of a color, from fully opaque to fully invisible. An alpha border recedes into the surface beneath it. A solid hex sits on top. The difference is subtle but consistently felt."
+    },
+    "semantic-token": {
+      "title": "Semantic token",
+      "description": "A color variable named for its purpose rather than its value. --color-border-subtle instead of #e0e0e0. When the value changes, everything using the token updates."
+    },
+    "contrast-ratio": {
+      "title": "Contrast ratio",
+      "description": "The luminance difference between a foreground and background color. WCAG requires 4.5:1 for body text, 3:1 for large text and UI components."
+    },
+    "tinted-neutral": {
+      "title": "Tinted neutral",
+      "description": "A grey with a slight hue bias. Pure #808080 looks like a placeholder. A tinted neutral feels chosen."
+    },
+    "saturation": {
+      "title": "Saturation",
+      "description": "How vivid or muted a color is. Brand colors at full saturation in dark mode can vibrate off the screen. Pulling back 20-30% settles them."
+    },
+    "chroma": {
+      "title": "Chroma",
+      "description": "The OKLCH equivalent of saturation, but perceptually accurate. Reducing chroma for a light tint keeps the color alive. Reducing opacity does the same but turns it grey and lifeless."
+    },
+    "gradient": {
+      "title": "Gradient",
+      "description": "A transition between two or more colors. In HSL or sRGB, the midpoint often goes grey. Building gradients in OKLCH keeps the colors vivid throughout."
+    },
+    "opacity-vs-visibility": {
+      "title": "Opacity vs visibility",
+      "description": "Two ways to hide an element. Opacity zero still occupies space and receives pointer events. Visibility hidden removes interaction but keeps the space. Worth knowing which you need."
+    },
+    "dark-mode": {
+      "title": "Dark mode",
+      "description": "An interface built on dark surfaces. The brightest surface should sit at the top of the layering hierarchy. Light mode tokens rarely translate directly, so every color decision needs rechecking."
+    },
+    "blending": {
+      "title": "Blending",
+      "description": "How a layer interacts with what’s beneath it. Multiply darkens, Screen lightens, Overlay does both depending on the base color. Useful for integrating images with colored surfaces and adding depth to illustrations."
+    }
+  },
+  "scaleTitle": "Title",
+  "scaleSubtitle": "Subtitle",
+  "weightNote": "The slider changes only the title weight. Body text stays at 400 for comparison.",
+  "weightPreview": {
+    "label": "Project update",
+    "title": "Making progress",
+    "body": "See this week’s completed work and the next step for the project."
+  },
+  "receipt": {
+    "title": "Cost breakdown",
+    "item": "Item {number}",
+    "total": "Total"
+  },
+  "widowProfile": {
+    "role": "Product designer"
+  },
+  "clampPreview": {
+    "minimum": "Min",
+    "preferred": "Preferred",
+    "maximum": "Max",
+    "actual": "Font size",
+    "minimumState": "At the minimum: narrower stays the same size",
+    "preferredState": "The type is scaling with its container",
+    "maximumState": "At the maximum: wider stays the same size"
+  },
+  "lookHere": "Look here",
+  "overflowProfile": {
+    "name": "Alexandra Kim",
+    "role": "Product designer · Design systems and user experience",
+    "bio": "Turning complex ideas into clear, useful products with thoughtful interactions for everyday life."
+  },
+  "color": "Color",
+  "colorPreview": {
+    "red": "Red",
+    "green": "Green",
+    "blue": "Blue",
+    "sampleColor": "Sample color",
+    "lightness": "Lightness",
+    "chroma": "Chroma",
+    "alpha": "Alpha",
+    "inProgress": "In progress",
+    "project": "A new idea",
+    "continue": "Continue",
+    "textLightness": "Text gray level",
+    "bodyText": "AA body",
+    "largeText": "AA large",
+    "pass": "Pass",
+    "fail": "Fail",
+    "neutralTone": "Neutral tone",
+    "warm": "Warm",
+    "cool": "Cool",
+    "saturation": "Saturation",
+    "interpolation": "Interpolation space",
+    "start": "Start",
+    "middle": "Middle",
+    "end": "End",
+    "hideMethod": "Hiding method",
+    "tryArea": "Try the dashed area.",
+    "tryButton": "Test the invisible button",
+    "clickCount": "Clicks: {count}",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "canvas": "Canvas",
+    "surface": "Surface",
+    "raised": "Raised",
+    "blendMode": "Blend mode",
+    "multiply": "Multiply",
+    "screen": "Screen",
+    "overlay": "Overlay",
+    "p3Note": "P3 needs a compatible display and browser. Other screens show the sRGB fallback in both circles.",
+    "tokenNote": "Change --color-border-subtle to update all three borders together.",
+    "contrastNote": "WCAG AA: 4.5:1 for body text; 3:1 for large text and UI components.",
+    "saturationNote": "Try 70–80% saturation on the dark surface. Hue and HSL lightness stay fixed.",
+    "chromaNote": "Left: raise lightness and lower chroma. Right: lower alpha. The gray background stays the same.",
+    "gradientNote": "The endpoints stay the same. Compare the color in the middle.",
+    "alphaNote": "Compare an alpha border with solid #808080 on different surfaces.",
+    "visibilityNote": "Both keep their space. Only opacity: 0 still accepts clicks and keyboard focus.",
+    "darkNote": "In the dark palette, each raised surface gets lighter.",
+    "blendNote": "The colors stay fixed. The blend mode changes their overlap.",
+    "oklchNote": "Every color in a row shares the same L value. Compare the changes in brightness across each row.",
+    "tinted": "Tinted",
+    "borderColor": "Border color",
+    "subtle": "Subtle",
+    "strong": "Stronger",
+    "projectName": "Project name",
+    "uiComponent": "AA UI",
+    "tintAmount": "Tint amount"
+  }
+}

@@ -3,10 +3,10 @@
 .site-header-logo [data-slot=brand-mark] { width: 32px; height: 32px; }
 .site-header-logo [data-slot=brand-wordmark] { height: 23px; }
 .site-header-tools { display: flex; flex-shrink: 0; align-items: center; gap: 8px; margin-left: auto; }
-.site-header[data-course] { position: static; height: 56px; border-bottom: 1px solid var(--color-brand); }
-.site-header[data-course] .site-header-inner { width: 100%; gap: 10px; padding: 0 12px; }
-.site-header[data-course] .site-header-logo [data-slot=brand-wordmark] { height: 19px; }
-.site-header[data-course] .site-header-logo [data-slot=brand-mark] { width: 28px; height: 28px; }
+.site-header:is([data-course],[data-vocabulary]) { position: static; height: 56px; border-bottom: 1px solid var(--color-brand); }
+.site-header:is([data-course],[data-vocabulary]) .site-header-inner { width: 100%; gap: 10px; padding: 0 12px; }
+.site-header:is([data-course],[data-vocabulary]) .site-header-logo [data-slot=brand-wordmark] { height: 19px; }
+.site-header:is([data-course],[data-vocabulary]) .site-header-logo [data-slot=brand-mark] { width: 28px; height: 28px; }
 .mac-window-heading { @apply text-caption font-medium text-brand; display: flex; flex: 1; min-width: 0; align-items: center; gap: 16px; padding: 0 14px; }
 .mac-window-heading::before, .mac-window-heading::after { content: ''; flex: 1; height: 19px; background: repeating-linear-gradient(to bottom,#31564b55 0 1px,transparent 1px 4px); }
 .mac-window-heading span { max-width: 50%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -46,7 +46,7 @@ body:has([data-slot=site-window]:is([data-variant=course],[data-variant=reading]
 [data-variant=reading] [data-slot=sidebar-menu-sub-button][data-active=true] { color: var(--color-brand); background: var(--color-sidebar-active); }
 [data-slot=course-overview-body] > footer > div { left: 0; width: min(56rem,100%); padding-right: 32px; padding-left: 32px; }
 @media (max-width: 841px) {
-  .site-header[data-course] .site-header-logo [data-slot=brand-wordmark] { display: none; }
+  .site-header:is([data-course],[data-vocabulary]) .site-header-logo [data-slot=brand-wordmark] { display: none; }
   .mac-window-heading { gap: 10px; padding: 0 4px; }
   .mac-window-heading span { max-width: 75%; }
   .course-overview-hero { gap: 24px; }
@@ -56,7 +56,7 @@ body:has([data-slot=site-window]:is([data-variant=course],[data-variant=reading]
   .site-header-logo [data-slot=brand-wordmark] { display: block; height: 19px; }
   .site-header-tools { gap: 4px; }
   body:has([data-slot=site-window]:is([data-variant=course],[data-variant=reading])) { --course-window-margin: 6px; }
-  .site-header[data-course] .site-header-inner { gap: 2px; padding: 0 4px; }
+  .site-header:is([data-course],[data-vocabulary]) .site-header-inner { gap: 2px; padding: 0 4px; }
   .mac-window-heading { @apply text-xs; padding: 0 4px; }
   .mac-window-heading::before { display: none; }
   .mac-window-heading span { max-width: 100%; }
@@ -68,7 +68,7 @@ body:has([data-slot=site-window]:is([data-variant=course],[data-variant=reading]
   [data-slot=course-overview-body] > footer > div { padding-right: 20px; padding-left: 20px; }
 }
 @media (max-width: 359px) {
-  .site-header:not([data-course]) .site-header-inner { padding-right: 16px; padding-left: 16px; }
-  .site-header:not([data-course]) .site-header-logo [data-slot=brand-wordmark] { height: 15px; }
+  .site-header:not([data-course],[data-vocabulary]) .site-header-inner { padding-right: 16px; padding-left: 16px; }
+  .site-header:not([data-course],[data-vocabulary]) .site-header-logo [data-slot=brand-wordmark] { height: 15px; }
   .gallery-heading .site-header-logo [data-slot=brand-wordmark] { height: 15px; }
 }

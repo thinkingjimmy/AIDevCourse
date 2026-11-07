@@ -102,9 +102,9 @@ test('formula authoring CLI validates LaTeX with original source positions', asy
   test.skip(browserName !== 'chromium', 'The CLI has no browser-specific behavior.');
   const root = mkdtempSync(join(tmpdir(), 'aidevcourse-math-'));
   try {
-    cpSync('tests/fixtures', join(root, 'content'), { recursive: true });
+    cpSync('tests/fixtures', join(root, 'tests/fixtures'), { recursive: true });
     cpSync('public', join(root, 'public'), { recursive: true });
-    const file = join(root, 'content/en/ai-coding/foundations/first-change.mdx');
+    const file = join(root, 'tests/fixtures/en/ai-coding/foundations/first-change.mdx');
     const original = readFileSync(file, 'utf8');
     const examples = [
       { name: 'inline and block with braces', body: '\nInline $y = ax + b$.\n\n$$\n\\frac{1}{n} \\sum_{i=1}^{n} x_i\n$$\n', valid: true },
@@ -117,8 +117,8 @@ test('formula authoring CLI validates LaTeX with original source positions', asy
     for (const example of examples) {
       const source = original + example.body;
       writeFileSync(file, source);
-      const result = spawnSync(process.execPath, ['--import', import.meta.resolve('tsx'), join(process.cwd(), 'scripts/check-content.ts')], {
-        cwd: root, env: { ...process.env, CONTENT_TEST: '0' }, encoding: 'utf8', timeout: 15000,
+      const result = spawnSync(process.execPath, ['--import', import.meta.resolve('tsx'), join(process.cwd(), 'scripts/content/check.ts')], {
+        cwd: root, env: { ...process.env, CONTENT_TEST: '1' }, encoding: 'utf8', timeout: 15000,
       });
       const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
       expect(result.error).toBeUndefined();

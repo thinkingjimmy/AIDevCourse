@@ -54,7 +54,7 @@ test('JimmyNote authoring rejects broken, empty, and ambiguous pairs', async ({ 
     const evidence = [];
     for (const example of cases) {
       writeFileSync(file, original + example.body);
-      const result = spawnSync(process.execPath, ['--import', import.meta.resolve('tsx'), join(process.cwd(), 'scripts/check-content.ts')], {
+      const result = spawnSync(process.execPath, ['--import', import.meta.resolve('tsx'), join(process.cwd(), 'scripts/content/check.ts')], {
         cwd: root, env: { ...process.env, CONTENT_TEST: '0' }, encoding: 'utf8', timeout: 15000,
       });
       const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;

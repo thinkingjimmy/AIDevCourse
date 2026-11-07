@@ -2,13 +2,9 @@ import { createMDX } from 'fumadocs-mdx/next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import { resolve } from 'node:path';
 import { contentMode, redirects } from './config/content-mode.mjs';
+import { resolveSiteEnvironment } from './config/site-environment.mjs';
 
-if (process.env.VERCEL_ENV === 'production') {
-  const url = new URL(process.env.SITE_URL || 'invalid');
-  if (url.protocol !== 'https:' || /localhost|example\.|\.example$|^127\.|^0\.0\.0\.0$|\[::1\]/.test(url.hostname) || url.pathname !== '/' || url.username || url.password || url.search || url.hash) {
-    throw new Error('Production requires a real HTTPS SITE_URL origin.');
-  }
-}
+const environment = resolveSiteEnvironment();
 const withMDX = createMDX({ configPath: 'config/source.config.ts', outDir: contentMode.generated });
 const withIntl = createNextIntlPlugin('./src/lib/i18n/request.ts');
 const aliases = {
@@ -37,7 +33,7 @@ export default withMDX(withIntl({
       { key: 'X-Frame-Options', value: 'DENY' },
       { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
       { key: 'Content-Security-Policy', value: "object-src 'none'; frame-src https://www.youtube-nocookie.com https://platform.twitter.com https://syndication.twitter.com https://platform.x.com https://syndication.x.com; base-uri 'self'; frame-ancestors 'none'" },
-      ...(process.env.VERCEL_ENV !== 'production' ? [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }] : []),
+      ...(!environment.indexable ? [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }] : []),
     ] }];
   },
 }));

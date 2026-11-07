@@ -13,6 +13,12 @@
 @import './macintosh/screen-zoom.css';
 @import './macintosh/course.css';
 @import './macintosh/author.css';
+@import './macintosh/scrollbars.css';
+@import './macintosh/missing.css';
+@import './vocabulary/layout.css';
+@import './vocabulary/demos.css';
+@import './vocabulary/color.css';
+@import './vocabulary/animation.css';
 @source '../';
 @source '../../node_modules/fumadocs-ui/dist/**/*.js';
 

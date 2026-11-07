@@ -35,7 +35,7 @@ test('discover the new lesson and copy all six complete prompts', async ({ page 
     });
   });
   await page.goto(course);
-  await expect(page.locator('#course-catalog').locator('..').getByRole('listitem')).toHaveCount(3);
+  await expect(page.locator('#course-catalog').locator('..').getByRole('listitem')).toHaveCount(27);
   await expect(page.locator(`#course-catalog`).locator('..').getByRole('link', { name: /让 AI 做出动效/ })).toHaveAttribute('href', lesson);
   await page.goto(`${course}/call-ai-with-json`);
   await page.getByRole('button', { name: '标记为已完成', exact: true }).click();

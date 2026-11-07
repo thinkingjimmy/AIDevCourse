@@ -27,7 +27,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
       <AchievementProvider courses={getAchievementCourses(lang)}>
         <a href="#main-content" className="fixed -top-[100px] left-4 z-[100] bg-foreground px-[18px] py-3 text-white focus:top-3">{ui('skip')}</a>
         <CourseTransitionProvider cancelLabel={home('cancelOpening')} openingLabel={home('openingCourse')}>
-          <SiteFrame lessonPaths={lessonPaths} header={<HomeHeader locale={lang} />} footer={<HomeFooter locale={lang} />} errorPage={<MissingPage locale={lang} />}>
+          <SiteFrame lessonPaths={lessonPaths} header={<HomeHeader locale={lang} />} homeHeader={<HomeHeader locale={lang} hero />} footer={<HomeFooter locale={lang} />} errorPage={<MissingPage locale={lang} />}>
             <noscript><p className="nojs-notice relative z-[2] border-b border-border bg-surface px-6 py-2 text-center text-sm">{ui('noJs')}</p></noscript>
             {children}
           </SiteFrame>

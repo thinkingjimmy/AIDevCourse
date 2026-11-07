@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { locales, languageNames, htmlLanguages, localeCookie, defaultLocale, type Locale } from '@/lib/i18n/config';
 import { canonicalPath, localePath, stripLocale } from '@/lib/i18n/routing';
 import type { Catalog } from '@/lib/content/model';
+import { isDictionaryTerm, vocabularyForPath } from '@/lib/vocabulary/collections';
 type LanguageProps = { locale: Locale; translations: Catalog['translations'] };
 const languageFlags: Record<Locale, string> = { en: '🇺🇸', zh: '🇨🇳', ja: '🇯🇵', fr: '🇫🇷', es: '🇪🇸' };
 export function HomeLanguageSwitcher(props: LanguageProps) {
@@ -32,7 +33,7 @@ export function LanguageSwitcher({ locale, translations, side = 'bottom' }: Lang
       ref.current.open = false; ref.current.querySelector('summary')?.focus();
     }
   }}>
-    <Button asChild variant="ghost" size="icon-touch" className="list-none text-lg [&::-webkit-details-marker]:hidden">
+    <Button asChild variant="ghost" size="icon" className="size-11 shrink-0 list-none rounded-sm text-lg hover:bg-brand-soft focus-visible:outline-brand [&::-webkit-details-marker]:hidden">
       <summary aria-label={t('label')} title={t('label')}><span aria-hidden>🌐</span></summary>
     </Button>
     <nav className={cn('language-options absolute right-0 z-[60] max-h-[75dvh] w-max max-w-[calc(100vw-32px)] overflow-auto border border-border bg-background p-1.5 text-ui leading-copy font-normal text-muted-foreground shadow-[4px_4px_0_var(--line)]', side === 'top' ? 'bottom-[calc(100%+10px)]' : 'top-[calc(100%+10px)]')} aria-label={t('label')}>
@@ -50,7 +51,8 @@ function LanguageLinks({ locale, translations }: LanguageProps) {
         const samePage = current?.[1].find((version) => version.locale === lang);
         const coursePage = current && translations[current[0].split(':')[0]]?.find((version) => version.locale === lang);
         const page = stripLocale(pathname);
-        const simple = page === '/' || page === '/about';
+        const vocabulary = vocabularyForPath(page);
+        const simple = page === '/' || page === '/about' || Boolean(vocabulary);
         const url = samePage?.url ?? (simple ? localePath(lang, page) : coursePage?.url ?? localePath(lang));
         const fallback = current && !samePage ? t(coursePage ? 'courseFallback' : 'listFallback') : undefined;
         // The root otherwise negotiates again, so native English-home links carry the explicit choice.
@@ -64,7 +66,10 @@ function LanguageLinks({ locale, translations }: LanguageProps) {
           event.currentTarget.href = saved ? url : href;
           const hash = window.location.hash;
           if (hash) {
-            try { if (samePage?.headings.includes(decodeURIComponent(hash.slice(1)))) event.currentTarget.href = `${url}${hash}`; }
+            try {
+              const id = decodeURIComponent(hash.slice(1));
+              if (samePage?.headings.includes(id) || (vocabulary && isDictionaryTerm(id, vocabulary.id))) event.currentTarget.href = `${url}${hash}`;
+            }
             catch { /* An invalid hash is safely discarded. */ }
           }
         }}><span className="min-w-0"><span lang={htmlLanguages[lang]}><span aria-hidden="true">{languageFlags[lang]} </span>{languageNames[lang]}</span>{fallback && <small className="mt-1 block max-w-40 text-xs leading-relaxed font-normal whitespace-normal">{fallback}</small>}</span><span className="size-4 shrink-0" aria-hidden>{lang === locale && <CheckIcon size={16} />}</span></a>;

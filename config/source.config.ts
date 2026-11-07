@@ -11,6 +11,7 @@ import { remarkMark } from 'remark-mark-highlight';
 import { remarkMath, remarkValidateMath, rehypeMath, mathOptions } from '../src/lib/content/math';
 import { remarkNumberJimmyNotes } from '../src/lib/content/note-numbers';
 import { remarkMermaid } from '../src/lib/content/mermaid/remark';
+import { vocabularyPaths } from '../src/lib/vocabulary/collections';
 const catalog = readCatalog();
 // Freeze the checked public boundary at build time; runtime routes need no filesystem access.
 mkdirSync(contentMode.generated, { recursive: true });
@@ -19,6 +20,7 @@ writeFileSync(`${contentMode.generated}/routes.json`, JSON.stringify([
   '/unavailable',
   ...locales.flatMap((locale) => [localePath(locale), localePath(locale, '/about'), localePath(locale, '/unavailable')]),
   ...catalog.documents.map((doc) => doc.url),
+  ...locales.flatMap(locale => vocabularyPaths.map(path => localePath(locale, path))),
   // Design and component previews remain outside the published course catalog.
   '/design', '/design/a', '/design/b', '/design/c', '/design/components',
 ]));

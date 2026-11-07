@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { defaultLocale, isLocale, localeCookie, negotiateLocale } from './lib/i18n/config';
 import { isNegotiatedPath, localePath, pathLocale, stripLocale } from './lib/i18n/routing';
 import publicRoutes from '@routes';
+import { vocabularyForPath } from './lib/vocabulary/collections';
 const paths = new Set(publicRoutes);
 const forwarded = ['accept', 'rsc', 'next-router-prefetch', 'next-router-segment-prefetch', 'next-router-state-tree', 'next-url'];
 const preserved = ['content-type', 'content-security-policy', 'x-content-type-options', 'referrer-policy', 'x-frame-options', 'permissions-policy', 'x-robots-tag'];
@@ -47,7 +48,7 @@ export async function proxy(request: NextRequest) {
     responseHeaders.set('cache-control', 'private, no-store');
     return new NextResponse(rendered.body, { status: 404, headers: responseHeaders });
   }
-  if (pathLocale(path) === defaultLocale && (path === '/about' || path.startsWith('/courses/'))) {
+  if (pathLocale(path) === defaultLocale && (path === '/about' || path.startsWith('/courses/') || vocabularyForPath(path))) {
     const target = new URL(request.url);
     target.pathname = `/en${path}`;
     return NextResponse.rewrite(target);

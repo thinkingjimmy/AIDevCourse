@@ -110,7 +110,9 @@ test('responsive bottom sheet fits narrow and short screens with a reachable foo
     await expect(footer).toBeInViewport();
     const achievements = footer.getByRole('button', { name: copy.Course.achievementsTitle, exact: true });
     await achievements.click();
-    await expect(page.getByRole('dialog', { name: copy.Course.achievementsTitle, exact: true })).toBeVisible();
+    const gallery = page.getByRole('dialog', { name: copy.Course.achievementsTitle, exact: true });
+    await expect(gallery).toBeVisible();
+    await expect(gallery.getByRole('button', { name: copy.Ui.close, exact: true })).toBeFocused();
     await page.keyboard.press('Escape');
     await expect(sheet).toBeVisible();
     await expect(achievements).toBeFocused();

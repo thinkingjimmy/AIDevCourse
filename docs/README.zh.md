@@ -1,80 +1,57 @@
+**简体中文** · [English](../README.md)
+
 # AIDevCourse
 
-本地写作、五语阅读的 AI 编程学习网站。
+一门面向初学者的大语言模型与 AI 编程课程。先理解基本概念，再尝试用 AI 做出简单的网页和应用。没有编程基础也可以开始。
 
-[English](../README.md) · **简体中文**
+课程开源，仍在持续更新。目前以中文内容为主；英文、日文、法文和西班牙文已有课程介绍，课时翻译尚不完整。
 
-Next.js 16.3.8 + React 19.3.0 + Fumadocs MDX 15.4.3 / Core & UI 16.15.13 + next-intl 4.14.6 + Tailwind CSS 4.3.3 + Glisse 0.5.0
+## 从哪里开始
 
-支持本地 Markdown / MDX 课程、当前语言搜索和浏览器成就与最近学习位置。无需账号、数据库、模型 API Key 或在线翻译服务。
+先读[「关于这门课」](../content/zh/getting-started/before-you-start/about-this-course.mdx)，了解课程适合谁，以及如何开始学习。
 
-**内容状态：**LLM 101 提供五语课程介绍。中文版十四篇教程分为「大语言模型的工作原理」（四篇）、「模型的训练与能力」（预训练、深度思考、多模态、开源模型与本地运行、模型选择五篇）、「AI 应用的工作原理」（AI Chat、工具调用、Chat 使用方法、Artifact 实操与 Agent 入门五篇）三个模块；其他语言保留第一课的欢迎占位文档。移动模块不改变公开链接或成就记录。LLM 101 保持入门难度，不安排后训练教程；Chat 使用方法随对应原理课讲解，Agent 101 已提供中文首页卡片和中级课程总览，课时内容更新中；「什么是 Agent？」放在 LLM 101 最后一课。中文首页先展示「起步」，包含「从想法到作品」的课程磁盘与独立详情页，课程分为「学前必看」和「关于本网站」两个模块。「关于这门课」放在第二个模块，介绍适合人群、学习路线和学习起点。「设计 101」已提供中文课程卡片与总览，课时内容更新中。其余课程按难度分组：LLM 101、Coding 101 与设计 101 放在「入门」，Agent 101 放在「中级」；没有课程的难度分组不显示。后续方向见[作者指南](./authoring.md#llm-101-的课程范围)。首页「马上学习」进入起步课程的独立详情页。Coding 101 提供三节中文入门课：用书包清单认识 JSON，用任务单理解 AI API 调用，再学习用具体名称描述动效；包含可选 curl 实操、两项成就，以及六个可重播的动效案例与可复制的 Prompt。工程样例与公开课程分开管理。
+| 课程 | 学习内容 | 当前进度 |
+| --- | --- | --- |
+| 从想法到作品 | 学习起点、方法与思考 | 已有内容，持续补充 |
+| LLM 101 | 语言模型、训练、Chat、工具调用与 Agent 入门 | 已有中文课时 |
+| Coding 101 | 用 AI 完成网站，从前端到部署 | 更新中，多数课时仍为占位文档 |
+| 设计 101 | 设计基础 | 课时准备中 |
+| Agent 101 | 在入门知识之上继续学习 Agent | 课时准备中 |
 
-## 快速启动
+网站提供交互示例、设计与动效词典，以及成就练习。学习进度保存在当前浏览器中。阅读无需注册账号，也无需模型 API Key。
 
-使用 Node **22.17.0 或更新的 22.x 补丁版本，或 24.x**、pnpm **10.30.3**。CI 和生产环境继续使用 Node 22.x。
+## 作者与更新
+
+作者是 [Jimmy](https://jimmywong.dev)。可以通过以下渠道关注课程更新，以及 AI 相关的分享：
+
+[X](https://x.com/thinkingjimmy) · [Bilibili](https://space.bilibili.com/1409205119) · [小红书](https://www.xiaohongshu.com/user/profile/6073d38d00000000010068a6)
+
+## 一起完善课程
+
+不写代码，也可以参与。欢迎用中文或英文提交 Issue。提交前，先搜索已有问题，避免重复。
+
+- **提问：**遇到不理解的概念，或对项目有疑问，可以[提交问题](https://github.com/thinkingjimmy/aidevcourse/issues/new?template=01-question.yml)，说明你想了解什么。也可以先[查看已有提问](https://github.com/thinkingjimmy/aidevcourse/issues?q=is%3Aissue%20label%3Aquestion)。
+- **纠错建议：**发现错别字或不准确的解释，可以[提交纠错建议](https://github.com/thinkingjimmy/aidevcourse/issues/new?template=02-correction.yml)。请附上页面位置和相关原文；有建议改法或参考资料，也欢迎补充。[查看已有纠错建议](https://github.com/thinkingjimmy/aidevcourse/issues?q=is%3Aissue%20label%3Acorrection)。
+
+其他建议或网站故障，可以[新建 Issue](https://github.com/thinkingjimmy/aidevcourse/issues/new/choose)。希望修改课程或代码，请先阅读[贡献指南](../.github/CONTRIBUTING.md)。
+
+## 本地运行
+
+在本地仓库中，使用 Node **24.x** 和 pnpm **10.30.3**：
 
 ```bash
 pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-打开 [localhost:3000/zh](http://localhost:3000/zh)。正文支持热更新。修改 frontmatter、成就声明、文件路径或 `meta.json` 排序后，重启开发服务。
+打开 [localhost:3000/zh](http://localhost:3000/zh)。无需配置数据库或第三方服务密钥。
 
-英文入口为 `/`，英文关于页和课程使用 `/about`、`/courses/...`；其他语言保留 `/zh`、`/ja`、`/fr`、`/es` 前缀。只有首页 `/` 根据已保存的选择、浏览器语言、默认英文的顺序识别语言。`/design` 提供设计稿，`/design/components` 提供正文组件预览。
+安装、命令与验证步骤见[贡献指南](../.github/CONTRIBUTING.md)。编写课程与翻译见[作者指南](./authoring.md)，实现细节见[架构说明](./architecture.md)，发布步骤见[部署指南](./deployment.md)。作者指南和部署指南使用中文。
 
-## 常用命令
+采用 [MIT 许可证](../LICENSES/MIT.txt)。
 
-| 命令 | 用途 |
-| --- | --- |
-| `pnpm dev` | 使用 Webpack 启动开发服务 |
-| `pnpm check` | 检查目录、lint、类型、内容、字典和现有单元测试 |
-| `pnpm audit --prod` | 查询生产依赖的当前安全公告 |
-| `pnpm build` | 校验并构建公开课程 |
-| `pnpm start` | 启动生产构建 |
-| `pnpm test:e2e tests/e2e/navigation.spec.ts --project=chromium` | 构建后验证受影响的导航模块 |
-| `pnpm test:e2e:report` | 打开公开构建的 HTML 测试报告 |
-| `pnpm measure:performance` | 测量 3200 端口的服务，从 sitemap 读取有效页面 |
+## 致谢
 
-首次执行 `pnpm exec playwright install chromium firefox webkit` 安装浏览器。开发时只运行受影响模块的 E2E。发布前运行完整矩阵：
+感谢 [Index 的设计词典](https://index.how/to/articulate)提供的术语参考，以及交互式排版和色彩案例灵感。
 
-```bash
-pnpm check
-pnpm build
-pnpm test:e2e
-CONTENT_TEST=1 pnpm build
-CONTENT_TEST=1 pnpm test:e2e
-```
-
-以上环境变量写法适用于 POSIX shell。PowerShell 使用 `$env:CONTENT_TEST = '1'`，完成后移除该变量。
-
-E2E 自动启动 **3310** 端口的服务；端口冲突时设置 `E2E_PORT`。样例构建位于 `.next-test`，不能部署到 Vercel。报告、trace、截图和性能数据统一位于 Git 忽略的 `.artifacts/`，正式内容与样例报告分别保存。
-
-## 目录地图
-
-| 目录 | 职责 |
-| --- | --- |
-| [`src/`](../src/) | 路由、组件、业务逻辑、字典和样式 |
-| [`content/`](../content/) | 按语言组织的公开课程 |
-| [`config/`](../config/) | MDX、lint、重定向和环境示例 |
-| [`tests/`](../tests/) | 浏览器测试、现有单元测试和隔离样例 |
-| [`scripts/`](../scripts/) | 内容、字典检查和性能测量 |
-| [`public/`](../public/) | 图标和课程图片 |
-| [`docs/`](./) | 当前需求、架构、写作、部署和模板 |
-| [`.github/`](../.github/) | CI 和贡献规范 |
-
-路由负责组合组件；内容与语言规则分别位于 `src/lib/content` 和 `src/lib/i18n`。较小的业务模块直接放在 `src/lib`。基础组件直接放在 `src/components/ui`，弹层放在 `overlays`。侧边栏属于课程模块。首页磁盘与详情页封面共用组件，插盘过渡采用浏览器原生动画。
-
-维护的源码文件不超过 800 行，每层目录不超过八个维护文件。
-
-## 贡献与部署
-
-先阅读 [贡献指南](../.github/CONTRIBUTING.md)。一般问题提交到 [GitHub issues](https://github.com/thinkingjimmy/aidevcourse/issues)，敏感问题按 [安全政策](../.github/SECURITY.md) 处理。
-
-[需求说明](./requirements.md) 定义当前行为，[架构说明](./architecture.md) 说明模块边界和数据流。[作者指南](./authoring.md) 说明课程 ID、翻译和 MDX 约束。[部署指南](./deployment.md) 说明 `SITE_URL`、发布检查和回滚。生产环境使用已确认的 HTTPS origin；环境示例位于 `config/.env.example`。Preview 使用 `noindex`。
-
-作者通过 MDX 的 Achievement 和 AchievementOption 声明题目与成就，系统自动收集课程成就清单。同一课程的译文通过稳定 ID 共享成就。缺译文时链接到有效课程或目标语言首页。存储失败时仍可阅读。
-
-采用 [MIT 许可证](../LICENSE)。
-
-首页采用左侧短文案、右侧麦金塔电脑的布局。课程磁盘按起步、入门、中级分组，每页最多九张；点击后插入电脑，再进入独立课程详情页。详情页和阅读页共用紧凑的 Mac 标题栏，阅读页保留左侧目录。键盘操作、减少动态效果和无 JavaScript 场景保持原生链接跳转。
+感谢 [Emil Kowalski 的动效词典](https://animations.dev/vocabulary#entrances-and-exits)提供的进入与退出动效术语。交互示例在本项目中独立实现。

@@ -1,0 +1,58 @@
+{
+  "url": "https://index.how/to/articulate#color",
+  "checked": "2026-11-07",
+  "terms": {
+    "srgb": {
+      "title": "sRGB",
+      "sha256": "a2f876a16fe15dcb325019839d58fd8ef7fc648af318d29445da7a236bea5be8"
+    },
+    "p3": {
+      "title": "P3",
+      "sha256": "c7b3a3ece170b331cfdc0e326ba58c77b57844cf374ee27512451c584ff3fdb4"
+    },
+    "oklch": {
+      "title": "OKLCH",
+      "sha256": "c46e7ad103c77acdb58845a569cc9be4aa9c56008cfb39f200a94c006c1ab9ba"
+    },
+    "alpha": {
+      "title": "Alpha",
+      "sha256": "2844088e916324961a53dfe43b23042174b540d2e27a2b55cb8cf78699e7a6e1"
+    },
+    "semantic-token": {
+      "title": "Semantic token",
+      "sha256": "47d4bab0f71240794ed692b80df0f6f0d4ac822672b1f36526fa3d70dc4cfa5b"
+    },
+    "contrast-ratio": {
+      "title": "Contrast ratio",
+      "sha256": "d38c1423a082685f4fbf54033646640fd66ab5f8d4693bc5906ec6b730bad21f"
+    },
+    "tinted-neutral": {
+      "title": "Tinted neutral",
+      "sha256": "99fd22843cd24840cb7e38eb13ff0b1fdf83df14a695214be3c3addb828ec47e"
+    },
+    "saturation": {
+      "title": "Saturation",
+      "sha256": "b225c1d037b2a7f24c42aaf5f257aa4afc70355c9cebc8da9f8bbeb5c571f422"
+    },
+    "chroma": {
+      "title": "Chroma",
+      "sha256": "2d45384c93506d102b35219e72b6af4c6b5dc5aa40b970bfc3ea34046dba77bf"
+    },
+    "gradient": {
+      "title": "Gradient",
+      "sha256": "018dc89962d5b1aa2779a0c85b01eaddf2304b0f7c455619fa311007ea41ffa7"
+    },
+    "opacity-vs-visibility": {
+      "title": "Opacity vs visibility",
+      "sha256": "c29c2d38bbc7e201e2fe81c0af46a5459564972385525f2742797eb41bbdcee7"
+    },
+    "dark-mode": {
+      "title": "Dark mode",
+      "sha256": "d3d2674f11d9c993caa09822448945b9d9bef21e0997897d6da13ee5fe895cb5"
+    },
+    "blending": {
+      "title": "Blending",
+      "sha256": "63e43d7728f5f6f7d651dc67d9d9395a6acb7c6731b610e8c5fa4e016efefa13"
+    }
+  }
+}

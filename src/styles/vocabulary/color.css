@@ -1,0 +1,55 @@
+.vocabulary-color [data-slot=tabs-list] { max-width: 100%; height: auto; min-height: 36px; flex-wrap: wrap; }
+.vocabulary-color [data-slot=tabs-trigger] { min-height: 30px; }
+.color-sample { display: grid; justify-items: center; gap: 18px; width: min(100%,260px); }
+.color-sample code,.color-pair code { @apply text-xs text-muted-foreground; max-width: 100%; overflow-wrap: anywhere; text-align: center; }
+.color-swatch { width: min(100%,180px); height: 120px; border-radius: 18px; box-shadow: inset 0 0 0 1px oklch(0 0 0 / 0.08); }
+.color-pair { @apply text-xs text-muted-foreground; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; width: min(100%,260px); text-align: center; }
+.color-pair > div { display: grid; justify-items: center; align-content: start; gap: 14px; min-width: 0; }
+.color-disc { width: 100%; max-width: 100px; aspect-ratio: 1; border-radius: 50%; box-shadow: inset 0 0 0 1px oklch(0 0 0 / 0.06); }
+.color-p3-standard,.color-p3-wide { background: var(--sample-srgb); }
+@media (color-gamut: p3) { .color-p3-wide { background: var(--sample-p3); } }
+.color-lightness-comparison { display: grid; gap: 24px; width: min(100%,260px); }
+.color-lightness-comparison code { @apply text-xs text-muted-foreground; display: block; margin-bottom: 10px; }
+.color-palette { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 6px; }
+.color-palette span { height: 64px; border-radius: 8px; }
+.color-border-comparison { width: min(100%,260px); }
+.color-border-pair { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; padding: 20px 16px; border-radius: 12px; background: oklch(1 0 0); color: oklch(0.25 0 0); }
+.color-border-comparison[data-surface=tinted] .color-border-pair { background: oklch(0.82 0.06 160); }
+.color-border-pair > span { @apply text-2xl font-medium; display: grid; place-items: center; height: 92px; border: 2px solid; border-radius: 8px; }
+.color-border-pair .color-solid-border { border-color: #808080; }
+.color-border-labels { @apply text-xs text-muted-foreground; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; padding: 12px 16px 0; text-align: center; }
+.color-token-preview { display: grid; gap: 18px; width: 100%; padding: 18px; border: 1px solid var(--color-border); border-radius: 12px; }
+.color-token-preview strong { @apply text-base font-semibold; }
+.color-token-border { border: 1px solid var(--color-border-subtle); }
+.color-token-status { @apply text-xs text-muted-foreground; justify-self: start; padding: 3px 8px; border-radius: 20px; }
+.color-token-field { @apply text-sm text-muted-foreground; padding: 8px 10px; border-radius: 6px; }
+.color-token-action { @apply text-sm font-medium; padding: 8px 12px; border-radius: 6px; text-align: center; }
+.color-contrast { display: grid; justify-items: center; gap: 12px; width: min(100%,240px); }
+.color-contrast-specimen { @apply text-5xl leading-none font-semibold; display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%; height: 108px; border: 1px solid var(--color-border); border-radius: 12px; background: oklch(1 0 0); }
+.color-contrast-component { @apply text-2xl; display: grid; place-items: center; width: 36px; height: 36px; border: 2px solid currentColor; border-radius: 6px; }
+.color-contrast-ratio { @apply font-mono text-xl font-medium; }
+.color-contrast-results { @apply text-xs text-muted-foreground; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; text-align: center; }
+.color-saturation-surface,.color-chroma-surface { display: grid; place-items: center; width: 100%; height: 128px; padding: 16px; border-radius: 12px; background: oklch(0.18 0.008 250); }
+.color-saturation-surface span,.color-chroma-surface span { width: 100%; aspect-ratio: 1; border-radius: 50%; }
+.color-chroma-surface { background: oklch(0.7 0 0); }
+.color-chroma-comparison > div { gap: 8px; }
+.color-gradient { width: 100%; height: 112px; border-radius: 12px; }
+.color-gradient-stops { @apply text-xs text-muted-foreground; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; width: 100%; text-align: center; }
+.color-gradient-stops > div { display: grid; justify-items: center; gap: 8px; }
+.color-gradient-stops > div > span:first-child { width: 24px; height: 24px; border-radius: 50%; }
+.color-visibility { @apply text-xs text-muted-foreground; display: grid; gap: 20px; width: min(100%,240px); text-align: center; }
+.color-visibility p { margin: 0; }
+.color-visibility-row { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 10px; }
+.color-visibility-row > span { @apply text-lg font-medium; display: grid; place-items: center; height: 60px; border: 1px solid var(--color-border); border-radius: 8px; }
+.color-hit-area { position: relative; min-height: 60px; border: 2px dashed var(--color-muted-foreground); border-radius: 8px; }
+.color-hit-area:focus-within { outline: 2px solid var(--color-brand); outline-offset: 4px; }
+.color-hidden-button { position: absolute; inset: 0; width: 100%; height: 100%; }
+.color-theme { --demo-canvas: oklch(0.94 0.008 250); --demo-surface: oklch(0.98 0.004 250); --demo-raised: oklch(1 0 0); --demo-ink: oklch(0.3 0.015 250); @apply text-xs; width: min(100%,260px); padding: 14px; border-radius: 12px; background: var(--demo-canvas); color: var(--demo-ink); }
+.color-theme[data-theme=dark] { --demo-canvas: oklch(0.18 0.008 250); --demo-surface: oklch(0.24 0.012 250); --demo-raised: oklch(0.32 0.015 250); --demo-ink: oklch(0.94 0.008 250); }
+.color-theme-surface { margin-top: 12px; padding: 14px; border-radius: 8px; background: var(--demo-surface); }
+.color-theme-raised { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; padding: 14px; border-radius: 6px; background: var(--demo-raised); }
+.color-theme-raised strong { @apply text-2xl font-semibold; }
+.color-blend { position: relative; isolation: isolate; width: min(100%,240px); aspect-ratio: 1.6; }
+.color-blend > div { position: absolute; top: 4%; width: 64%; aspect-ratio: 1; border-radius: 50%; }
+.color-blend-base { left: 0; background: oklch(0.83 0.14 85); }
+.color-blend-top { right: 0; background: oklch(0.65 0.12 240); }

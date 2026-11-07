@@ -1,0 +1,70 @@
+{
+  "title": "Animation vocabulary",
+  "description": "Explore how interfaces appear and disappear. Replay six examples, compare their motion, and describe an animation with the right term.",
+  "entrances-and-exits": "Entrances & Exits",
+  "source": "Term reference: animations.dev",
+  "search": "Search terms",
+  "searchPlaceholder": "Search terms or English names",
+  "clearSearch": "Clear search",
+  "noResults": "No matching terms. Try another word.",
+  "resultsCount": "{count} results",
+  "loadMore": "Load more",
+  "openDirectory": "Open dictionary navigation",
+  "closeDirectory": "Collapse dictionary navigation",
+  "demo": {
+    "replay": "Replay",
+    "fadeIn": "Fade in",
+    "fadeOut": "Fade out",
+    "add": "Add",
+    "remove": "Remove",
+    "slow": "Slow playback",
+    "direction": "Entry direction",
+    "left": "From left",
+    "right": "From right",
+    "top": "From top",
+    "bottom": "From bottom",
+    "visible": "Visible",
+    "hidden": "Hidden",
+    "entering": "Entering…",
+    "exiting": "Exiting…",
+    "reducedMotion": "Reduced motion is on. Changes appear immediately.",
+    "complete": "All done",
+    "newPerspective": "A new perspective",
+    "newIdea": "A new idea",
+    "newMessage": "New message",
+    "saved": "Changes saved",
+    "justNow": "Just now"
+  },
+  "terms": {
+    "fade": {
+      "title": "Fade in / Fade out",
+      "description": "Keep the same position and size while changing opacity. Try both directions to see the difference between appearing and disappearing.",
+      "note": "Watch the card become transparent without moving."
+    },
+    "slide-in": {
+      "title": "Slide in",
+      "description": "Bring content into view from an edge. The direction connects its arrival to a place on the screen.",
+      "note": "Choose an edge, then replay the entrance."
+    },
+    "scale-in": {
+      "title": "Scale in",
+      "description": "Grow a panel gently into its final size as it becomes visible. A small size change is often enough.",
+      "note": "The panel grows to its resting size without a bounce."
+    },
+    "pop-in": {
+      "title": "Pop in",
+      "description": "Go slightly beyond the final size, then settle back. That overshoot gives an arrival a playful emphasis.",
+      "note": "Use slow playback to see the overshoot and return."
+    },
+    "reveal": {
+      "title": "Reveal",
+      "description": "Uncover an existing surface by moving a clipping boundary. The content itself stays in place.",
+      "note": "Watch the left edge uncover the picture and caption together."
+    },
+    "enter-exit": {
+      "title": "Enter / Exit",
+      "description": "Animate the arrival and removal of an item. Keep it visible during its exit, then remove it when that motion finishes.",
+      "note": "Remove the notification, then add it again. The exit is shorter."
+    }
+  }
+}

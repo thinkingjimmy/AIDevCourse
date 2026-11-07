@@ -42,7 +42,7 @@ export function LessonToc({ items, label, hasNotes = false }: {
   )}>
     <Tooltip.Provider delayDuration={0} skipDelayDuration={0} disableHoverableContent>
       <nav ref={nav} data-slot="lesson-toc" aria-label={label}
-        className="pointer-events-auto min-h-0 overflow-x-hidden overflow-y-auto overscroll-contain py-1 pl-1 [--toc-expanded:0] [scrollbar-width:thin] @[10rem]/toc:[--toc-expanded:1] [&::-webkit-scrollbar]:w-2">
+        className="pointer-events-auto min-h-0 overflow-x-hidden overflow-y-auto overscroll-contain py-1 pl-1 [--toc-expanded:0] [--scrollbar-size:8px] @[10rem]/toc:[--toc-expanded:1]">
         {items.map((item, index) => {
           const distance = previewIndex === null ? 4 : Math.min(Math.abs(index - previewIndex), 4);
           return <Tooltip.Root key={item.url} open={previewIndex === index}

@@ -120,7 +120,7 @@ test('mobile glass respects reduced transparency and increased contrast', async 
   await page.goto(lesson);
   const glass = page.locator('.mobile-navigation-glass');
   await expect(glass).toHaveCSS('backdrop-filter', 'none');
-  await expect(glass).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(glass).toHaveCSS('background-color', 'rgb(253, 253, 252)');
   await expect(glass).toHaveCSS('outline-style', 'solid');
   await capture(page, 'glass-navigation-reduced-transparency');
   await session.detach();

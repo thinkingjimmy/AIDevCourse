@@ -1,0 +1,9 @@
+{
+  "title": "数据库：保存与管理资源",
+  "pages": [
+    "model-resources-categories-and-submissions",
+    "migrate-content-to-a-database",
+    "create-read-update-and-delete",
+    "authentication-permissions-and-moderation"
+  ]
+}

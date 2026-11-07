@@ -7,13 +7,27 @@ const apiUrl = `${courseUrl}/call-ai-with-json`;
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published Coding 101 course.');
 
-test('discover the course, complete the JSON exercises, and retain achievements', async ({ page }, testInfo) => {
+test('discover the curriculum, complete supplemental JSON exercises, and retain achievements', async ({ page }, testInfo) => {
   await page.goto('/zh');
   await page.getByRole('link', { name: 'Coding 101', exact: true }).click();
   await expect(page).toHaveURL(courseUrl);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Coding 101');
-  await expect(page.locator('#course-catalog').locator('..').getByRole('listitem')).toHaveCount(3);
+  const directory = page.locator('#course-catalog').locator('..');
+  await expect(directory.getByRole('listitem')).toHaveCount(27);
+  await expect(directory.getByRole('heading', { level: 3 })).toHaveText([
+    '01看懂一个网站', '02前端：搭出导航站', '03后端：处理用户请求',
+    '04数据库：保存与管理资源', '05把网站交付出去', '06拓展：做成自己的产品', '07补充阅读',
+  ]);
+  await testInfo.attach('coding-101-curriculum', { body: await directory.screenshot(), contentType: 'image/png' });
   await page.getByRole('link', { name: '开始第一课', exact: true }).click();
+  await expect(page).toHaveURL(`${courseUrl}/frontend-backend-and-database`);
+  await expect(page.locator('article h1')).toHaveText('前端、后端、数据库分别做什么');
+  await expect(page.locator('article > .prose')).toBeEmpty();
+  await page.getByRole('button', { name: '标记为已完成', exact: true }).click();
+  await expect(page).toHaveURL(`${courseUrl}/frameworks-components-and-apis`);
+  await expect(page.locator('article h1')).toHaveText('框架、组件库、API 是什么');
+  await page.goto(courseUrl);
+  await directory.getByRole('link', { name: /JSON 是什么/ }).click();
   const lesson = page;
   await expect(lesson).toHaveURL(basicsUrl);
   const bag = JSON.parse((await lesson.locator('pre').filter({ hasText: '"bag"' }).textContent())!);

@@ -6,7 +6,8 @@ import { cn } from '@/lib/utils';
 import { CourseFooter } from './course-footer';
 import { CourseOverviewLink, ModuleTree } from './navigation/module-tree';
 import { CourseMobileNavigation } from './navigation/mobile-navigation';
-import { Sidebar, SidebarContent, SidebarHeader, SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from '@/components/course/sidebar';
+import { DirectoryHeader } from '@/components/navigation/directory-presentation';
+import { Sidebar, SidebarContent, SidebarInset, SidebarProvider, useSidebar } from '@/components/navigation/sidebar';
 
 let sidebarOpen: boolean | undefined;
 const sidebarListeners = new Set<() => void>();
@@ -32,12 +33,8 @@ function CourseSidebar() {
   const { open, isMobile } = useSidebar();
   const toggleLabel = isMobile ? ui('close') : ui(open ? 'collapseSidebar' : 'expandSidebar');
   return <Sidebar label={ui('menu')}>
-    <SidebarHeader className="w-full p-2 max-[961px]:px-5 max-[961px]:pt-1">
-      <div className="flex min-h-11 items-center justify-between gap-3">
-        {isMobile ? <p className="m-0 text-xl font-semibold">{ui('menu')}</p> : <CourseOverviewLink className="flex-1 group-data-[collapsible=icon]:hidden" />}
-        <SidebarTrigger aria-label={toggleLabel} title={toggleLabel} className="max-[961px]:size-11 max-[961px]:rounded-full max-[961px]:bg-muted max-[961px]:before:inset-0" />
-      </div>
-    </SidebarHeader>
+    <DirectoryHeader toggleLabel={toggleLabel}
+      title={isMobile ? <p className="m-0 text-xl font-semibold">{ui('menu')}</p> : <CourseOverviewLink className="flex-1 group-data-[collapsible=icon]:hidden" />} />
     <SidebarContent className="w-full group-data-[collapsible=icon]:hidden">
       <ModuleTree showOverview={isMobile} />
     </SidebarContent>

@@ -8,4 +8,4 @@ List commands actually run. Include the affected E2E cases and relevant screensh
 
 ## Documentation
 
-Confirm that affected source headers and directory maps match the code.
+Confirm that affected setup, architecture, or authoring guidance matches the change.

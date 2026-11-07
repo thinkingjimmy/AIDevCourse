@@ -1,0 +1,70 @@
+{
+  "title": "Diccionario de animación",
+  "description": "Explora cómo aparecen y desaparecen los elementos de una interfaz. Repite seis ejemplos, reduce su velocidad y describe cada movimiento con el término adecuado.",
+  "entrances-and-exits": "Entradas y salidas",
+  "source": "Referencia de términos: animations.dev",
+  "search": "Buscar términos",
+  "searchPlaceholder": "Término en español o inglés",
+  "clearSearch": "Borrar búsqueda",
+  "noResults": "No hay coincidencias. Prueba otra palabra.",
+  "resultsCount": "{count} resultados",
+  "loadMore": "Cargar más",
+  "openDirectory": "Abrir índice",
+  "closeDirectory": "Cerrar índice",
+  "demo": {
+    "replay": "Repetir",
+    "fadeIn": "Aparecer",
+    "fadeOut": "Desvanecer",
+    "add": "Añadir",
+    "remove": "Quitar",
+    "slow": "Reproducción lenta",
+    "direction": "Dirección de entrada",
+    "left": "Desde la izquierda",
+    "right": "Desde la derecha",
+    "top": "Desde arriba",
+    "bottom": "Desde abajo",
+    "visible": "Visible",
+    "hidden": "Oculto",
+    "entering": "Entrando…",
+    "exiting": "Saliendo…",
+    "reducedMotion": "Se respeta tu ajuste de movimiento reducido. Los cambios se muestran al instante.",
+    "complete": "Completado",
+    "newPerspective": "Una nueva perspectiva",
+    "newIdea": "Una nueva idea",
+    "newMessage": "Nuevo mensaje",
+    "saved": "Cambios guardados",
+    "justNow": "Ahora mismo"
+  },
+  "terms": {
+    "fade": {
+      "title": "Fundido de entrada / salida",
+      "description": "Cambia la opacidad sin mover ni redimensionar el elemento. El fundido permite mostrar u ocultar contenido de forma sutil.",
+      "note": "La tarjeta se vuelve transparente sin moverse."
+    },
+    "slide-in": {
+      "title": "Entrada deslizante",
+      "description": "Introduce el contenido desde un borde. La dirección muestra de dónde viene.",
+      "note": "Elige un borde y repite la entrada."
+    },
+    "scale-in": {
+      "title": "Entrada con escala",
+      "description": "Amplía un panel desde un tamaño algo menor mientras aparece. Un cambio pequeño suele ser suficiente.",
+      "note": "El panel alcanza su tamaño final sin rebotar."
+    },
+    "pop-in": {
+      "title": "Entrada con rebote",
+      "description": "Supera ligeramente el tamaño final y vuelve a él. Ese rebote puede destacar una acción completada.",
+      "note": "Usa la reproducción lenta para ver cómo se pasa del tamaño final y vuelve."
+    },
+    "reveal": {
+      "title": "Revelado",
+      "description": "Mueve un límite de recorte para descubrir el contenido. Su posición y tamaño se mantienen.",
+      "note": "La imagen y el título se descubren juntos de izquierda a derecha."
+    },
+    "enter-exit": {
+      "title": "Entrada / Salida",
+      "description": "Anima la incorporación y la retirada de un elemento. Retíralo cuando termine su salida para mantener la continuidad.",
+      "note": "Quita la notificación y vuelve a añadirla. La salida es más corta."
+    }
+  }
+}

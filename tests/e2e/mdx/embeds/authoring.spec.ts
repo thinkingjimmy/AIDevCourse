@@ -10,9 +10,9 @@ test('embed authoring validates URLs, placement, and static attributes', async (
   const root = mkdtempSync(join(tmpdir(), 'aidevcourse-embeds-'));
   const evidence = [];
   try {
-    cpSync('tests/fixtures', join(root, 'content'), { recursive: true });
+    cpSync('tests/fixtures', join(root, 'tests/fixtures'), { recursive: true });
     cpSync('public', join(root, 'public'), { recursive: true });
-    const file = join(root, 'content/en/ai-coding/foundations/first-change.mdx');
+    const file = join(root, 'tests/fixtures/en/ai-coding/foundations/first-change.mdx');
     const original = readFileSync(file, 'utf8');
     const valid = [
       '<XEmbed url="https://x.com/TwitterDev/status/560070183650213889" />',
@@ -70,8 +70,8 @@ test('embed authoring validates URLs, placement, and static attributes', async (
     invalid.push(['<script src="https://platform.twitter.com/widgets.js" />', 'Unknown component']);
     for (const example of [...valid.map((body) => ({ body, valid: true, error: '' })), ...invalid.map(([body, error]) => ({ body, valid: false, error }))]) {
       writeFileSync(file, `${original}\n\n${example.body}\n`);
-      const result = spawnSync(process.execPath, ['--import', import.meta.resolve('tsx'), join(process.cwd(), 'scripts/check-content.ts')], {
-        cwd: root, env: { ...process.env, CONTENT_TEST: '0' }, encoding: 'utf8', timeout: 15000,
+      const result = spawnSync(process.execPath, ['--import', import.meta.resolve('tsx'), join(process.cwd(), 'scripts/content/check.ts')], {
+        cwd: root, env: { ...process.env, CONTENT_TEST: '1' }, encoding: 'utf8', timeout: 15000,
       });
       const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
       evidence.push({ ...example, status: result.status, output, processError: result.error?.message });

@@ -4,7 +4,7 @@
 
 ## 本地启动
 
-使用 Node 22.17.0 或更新的 22.x 补丁版本与 pnpm 10.30.3，执行 `pnpm install --frozen-lockfile`。`pnpm dev` 与部署展示同一份课程。新增文件、修改 frontmatter 或 meta 后重启开发服务以刷新公开清单；正文编辑支持热更新。
+使用 Node 24.x 与 pnpm 10.30.3，执行 `pnpm install --frozen-lockfile`。`pnpm dev` 与部署展示同一份课程。新增文件、修改 frontmatter 或 meta 后重启开发服务以刷新公开清单；正文编辑支持热更新。
 
 `CONTENT_TEST=1` 仅用于非公开工程验收，连接 Vercel 时会直接拒绝启动。
 
@@ -25,7 +25,7 @@
 }
 ```
 
-导读课程可在 frontmatter 中设置 `section: introduction`，首页会将其放入难度分组之前的「开始之前」。`level` 仍表示课程难度；未设置 `section` 的课程继续按难度分组。当前中文导读课程「从想法到作品」位于 `content/zh/getting-started/`，卡片和总览复用首页电脑拆解动图；「学前必看」的两课位于 `before-you-start/`，由该目录的 `meta.json` 排序。「关于本网站」下的「关于这门课」位于 `about-this-website/about-this-course.mdx`。课程根目录只放介绍和模块顺序，课时放入对应模块。公开路径使用 `getting-started`，稳定标识 `courseId: ai-coding` 用于关联已有学习记录，旧课程地址通过 `config/redirects.json` 跳转。
+导读课程可在 frontmatter 中设置 `section: introduction`，首页会将其放入难度分组之前的「开始之前」。`level` 仍表示课程难度；未设置 `section` 的课程继续按难度分组。当前中文导读课程「从想法到作品」位于 `content/zh/getting-started/`，卡片和总览复用首页电脑拆解动图；「学前必看」下的 1.1「关于这门课」位于 `before-you-start/about-this-course.mdx`，1.2「更新日志」位于 `before-you-start/changelog.mdx`，正文待补充。Changelog 的中文名称为「更新日志」，稳定 ID 与路径使用 `changelog`。「我的一些碎碎念」的三课位于 `musings/`，由该目录的 `meta.json` 排序；2.3「既然 AI 都能写好代码了，为何还要学习编程？」位于 `why-learn-programming-with-ai.mdx`，正文待补充。课程根目录只放介绍和模块顺序，课时放入对应模块。公开路径使用 `getting-started`，稳定标识 `courseId: ai-coding` 用于关联已有学习记录，旧课程地址通过 `config/redirects.json` 跳转。
 
 课程介绍不计入课时数量。课程可以先发布介绍，再逐步添加课时。没有课时的课程保留首页卡片和总览，显示「内容更新中」，不显示开始第一课或课时统计。完全没有课程的语言会显示本地化空状态。
 
@@ -73,7 +73,7 @@ X 接受 `x.com` 和 `twitter.com` 的帖子链接，包括移动端域名与 `/
 
 X 使用官方组件，在接近视口时加载，全页共用一次脚本。脚本加载最多等待 10 秒，单条帖子整体最多等待 15 秒；失败时显示本地化提示。YouTube 使用隐私增强播放器，延迟加载，不自动播放，支持全屏与移动端内联播放；窄屏保留至少 200px 高度。X 仅在加载失败或无 JavaScript 时显示原站链接；加载成功后使用帖子自带的查看入口。YouTube 始终保留原站链接。嵌入会直接连接相应平台，受平台隐私政策及可用性影响；隐私增强模式不表示完全没有网络请求或跟踪。构建不请求平台接口，也不需要 API 密钥。
 
-标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`JimmyNoteAnchor`、`KeyTakeaway`、`Chat`、`ChatMessage`、`ChatThinking`、`ChatToolCall`、`InlineCitation`、`ChatMessageSequence`、`XEmbed`、`YouTube`、`Steps`、`Step`、`LLMGenerationDemo`、`MenuComparisonDemo`、`AnimationDemo`、`TokenizationDiagram`、`TokenProbabilityDiagram`、`LLMPretrainingOverview`、`LLMSingleRoundTrainingDemo`、`LLMMultiRoundTrainingDemo`、`Achievement`、`AchievementOption`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
+标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`JimmyNoteAnchor`、`KeyTakeaway`、`ResourceDisks`、`Chat`、`ChatMessage`、`ChatThinking`、`ChatToolCall`、`InlineCitation`、`ChatMessageSequence`、`XEmbed`、`YouTube`、`Steps`、`Step`、`LLMGenerationDemo`、`MenuComparisonDemo`、`AnimationDemo`、`TokenizationDiagram`、`TokenProbabilityDiagram`、`LLMPretrainingOverview`、`LLMSingleRoundTrainingDemo`、`LLMMultiRoundTrainingDemo`、`Achievement`、`AchievementOption`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
 
 使用 `mermaid` 代码围栏绘制流程图、时序图等图表，无需 import。图表使用 [Pele](https://pele.run/) 在服务端生成 SVG，不向浏览器加载图表引擎。图表沿用站点字体与颜色；宽图保持文字大小，在图表区域内横向滚动，支持键盘操作、放大文字和无 JavaScript 阅读。通过 `accTitle` 与 `accDescr` 提供图表标题和说明。可在 [组件预览](http://localhost:3000/design/components#mermaid) 检查效果。
 
@@ -140,13 +140,15 @@ Thanks to [ian-xiaohei-illustrations](https://github.com/helloianneo/ian-xiaohei
 </JimmyNote>
 ```
 
-`KeyTakeaway` 用于「划重点」，突出读者需要记住的结论。它保留引用块的黑色直角外框、偏移阴影和完整正文宽度，上边框嵌入固定标签，标签随界面语言切换。正文支持多段文字、强调、高亮、列表、行内代码和链接，无需 import 或 JavaScript。组件必须独立成块且包含文字，不接受参数；不要把它放进行内文字中。可在 [划重点预览](http://localhost:3000/design/components#key-takeaways) 检查效果。
+`KeyTakeaway` 用于「划重点」，突出读者需要记住的结论。它保留引用块的黑色直角外框、偏移阴影和完整正文宽度，上边框嵌入固定标签，标签随界面语言切换。正文支持多段文字、强调、高亮、有序与无序列表、混合嵌套列表、行内代码和链接。列表保留缩进与项目标记，有序列表支持自定义起始编号，无需 import 或 JavaScript。组件必须独立成块且包含文字，不接受参数；不要把它放进行内文字中。可在 [划重点预览](http://localhost:3000/design/components#key-takeaways) 检查效果。
 
 ```mdx
 <KeyTakeaway>
 **Keep a source for claims that need to be accurate.**
 </KeyTakeaway>
 ```
+
+`ResourceDisks` 在正文中显示与首页一致的学习资源磁盘，当前包含「设计词典」。独立写一行 `<ResourceDisks />` 即可，不接受参数或子内容。磁盘名称、链接、样式和词条数量与首页共用配置；后续在 `src/components/home/resources.tsx` 的资源列表中增加条目，首页和正文会同时更新。多张磁盘会按正文宽度自动换行，支持键盘操作和无 JavaScript 导航。
 
 `ChatMessage` 用于文章里的静态对话示例，参考 [shadcn Message](https://ui.shadcn.com/docs/ai-elements/radix/message) 的布局。组件复用引用块的黑色直角边框和右下偏移阴影，并保留内边距；`from="user"` 显示右侧灰色气泡及圆形用户图标头像，`from="assistant"` 显示左侧浅色描边气泡及机器人头像。两种头像共用浅灰底和灰色图标。头像随消息角色自动显示，无需配置图片。正文支持多段 Markdown、强调和链接，无需 import 或 JavaScript。
 
@@ -345,9 +347,24 @@ Agent 101 是独立中级课程，已在 `content/zh/agent-101/` 发布课程介
 
 建议围绕 ReAct loop、运行状态与停止条件、Coding Agent 的代码阅读与修改、终端工具与 E2E 验证、上下文管理、失败恢复和权限边界展开，以完成可验证的任务为目标。ReAct loop 是推理与行动交替的模式，不是 React 前端框架。MCP 与 Skills 的基础概念留在 LLM 101，在 Agent 101 中讲如何把它们用于持续执行的工作流。
 
+## Coding 101 的课程结构
+
+Coding 101 以 VibeCodingNav 为贯穿项目，按以下顺序组织六个模块，每个模块包含四篇正文为空的课时文档。标题沿用已确定的大纲，`description` 暂为「内容待补充。」。
+
+| 目录 | 模块 |
+| --- | --- |
+| `web-foundations/` | 看懂一个网站 |
+| `frontend/` | 前端：搭出导航站 |
+| `backend/` | 后端：处理用户请求 |
+| `database/` | 数据库：保存与管理资源 |
+| `delivery/` | 把网站交付出去 |
+| `extensions/` | 拓展：做成自己的产品 |
+
+原有 JSON、AI API 和动效三篇教程按原顺序保存在 `additional-reading/`，显示为最后一个模块「补充阅读」。正文、稳定 ID、公开链接和成就保持不变。课程根目录只保留 `index.mdx` 和模块排序配置，各模块通过自己的 `meta.json` 声明课时顺序。
+
 ## Coding 101 的动效案例
 
-`animation-prompts` 是 Coding 101 的第三课。使用独立的 `<AnimationDemo type="stagger" />`，无需 import。`type` 必填，只接受 `stagger`、`spring`、`skeleton`、`count-up`、`typewriter`、`marquee` 六个静态字符串；不接受其他属性、子内容或行内声明。每种案例的说明与可复制 Prompt 保留在 MDX 正文中。
+`animation-prompts` 是 Coding 101「补充阅读」模块的第三课。使用独立的 `<AnimationDemo type="stagger" />`，无需 import。`type` 必填，只接受 `stagger`、`spring`、`skeleton`、`count-up`、`typewriter`、`marquee` 六个静态字符串；不接受其他属性、子内容或行内声明。每种案例的说明与可复制 Prompt 保留在 MDX 正文中。
 
 案例默认静止，点击后播放；有限动画可重播，Skeleton 与 Marquee 可暂停和继续。离屏或进入后台时暂停，返回后由读者继续。系统开启减少动态效果时展示静态结果，并隐藏播放控件；播放途中切换该设置也会停止。无 JavaScript 时仍展示静态案例与 Prompt。Spring 使用 CSS 关键帧模拟回弹；数字与文字使用原生 JavaScript 更新，不增加动画依赖。重复 logo 不进入辅助技术的阅读顺序。
 

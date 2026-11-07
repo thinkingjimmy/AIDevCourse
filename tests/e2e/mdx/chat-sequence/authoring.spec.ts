@@ -8,9 +8,9 @@ test('chat sequence accepts only standalone parameterless authoring', async ({ b
   test.skip(browserName !== 'chromium', 'Content validation is independent of the browser.');
   const root = mkdtempSync(join(tmpdir(), 'aidevcourse-chat-sequence-'));
   try {
-    cpSync('tests/fixtures', join(root, 'content'), { recursive: true });
+    cpSync('tests/fixtures', join(root, 'tests/fixtures'), { recursive: true });
     cpSync('public', join(root, 'public'), { recursive: true });
-    const file = join(root, 'content/en/ai-coding/foundations/first-change.mdx');
+    const file = join(root, 'tests/fixtures/en/ai-coding/foundations/first-change.mdx');
     const original = readFileSync(file, 'utf8');
     const evidence = [];
     for (const example of [
@@ -20,7 +20,7 @@ test('chat sequence accepts only standalone parameterless authoring', async ({ b
       { body: '\n<ChatMessageSequence>\nHidden text\n</ChatMessageSequence>\n', valid: false, error: 'does not accept children' },
     ]) {
       writeFileSync(file, original + example.body);
-      const result = spawnSync(process.execPath, ['--import', import.meta.resolve('tsx'), join(process.cwd(), 'scripts/check-content.ts')], { cwd: root, env: { ...process.env, CONTENT_TEST: '0' }, encoding: 'utf8', timeout: 15000 });
+      const result = spawnSync(process.execPath, ['--import', import.meta.resolve('tsx'), join(process.cwd(), 'scripts/content/check.ts')], { cwd: root, env: { ...process.env, CONTENT_TEST: '1' }, encoding: 'utf8', timeout: 15000 });
       const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
       expect(result.error).toBeUndefined();
       expect(result.status === 0, output).toBe(example.valid);

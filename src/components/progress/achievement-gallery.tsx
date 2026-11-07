@@ -15,7 +15,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, D
 import { Button } from '@/components/ui/button';
 import { useAchievements } from './achievement-provider';
 import { cn } from '@/lib/utils';
-import { useSidebar } from '@/components/course/sidebar';
+import { useSidebar } from '@/components/navigation/sidebar';
 
 const medalIcons = {
   'input-shapes-output': ChatTextIcon,

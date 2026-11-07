@@ -20,12 +20,12 @@ test('animation authoring validates types and rejects malformed declarations', a
   try {
     cpSync('content', join(root, 'content'), { recursive: true });
     cpSync('public', join(root, 'public'), { recursive: true });
-    const file = join(root, 'content/zh/coding-101/animation-prompts.mdx');
+    const file = join(root, 'content/zh/coding-101/additional-reading/animation-prompts.mdx');
     const original = readFileSync(file, 'utf8');
     const evidence = [];
     for (const example of examples) {
       writeFileSync(file, original + example.body);
-      const result = spawnSync(process.execPath, ['--import', import.meta.resolve('tsx'), join(process.cwd(), 'scripts/check-content.ts')], { cwd: root, env: { ...process.env, CONTENT_TEST: '0' }, encoding: 'utf8', timeout: 15000 });
+      const result = spawnSync(process.execPath, ['--import', import.meta.resolve('tsx'), join(process.cwd(), 'scripts/content/check.ts')], { cwd: root, env: { ...process.env, CONTENT_TEST: '0' }, encoding: 'utf8', timeout: 15000 });
       const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
       expect(result.error).toBeUndefined();
       expect(result.status === 0, output).toBe(!example.error);

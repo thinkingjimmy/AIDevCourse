@@ -1,0 +1,70 @@
+{
+  "title": "Dictionnaire d’animation",
+  "description": "Explorez l’apparition et la disparition des éléments d’interface. Rejouez six exemples, ralentissez le mouvement et trouvez le terme adapté.",
+  "entrances-and-exits": "Entrées et sorties",
+  "source": "Référence des termes : animations.dev",
+  "search": "Rechercher un terme",
+  "searchPlaceholder": "Terme français ou anglais",
+  "clearSearch": "Effacer la recherche",
+  "noResults": "Aucun terme trouvé. Essayez un autre mot.",
+  "resultsCount": "{count} résultats",
+  "loadMore": "Afficher la suite",
+  "openDirectory": "Ouvrir le sommaire",
+  "closeDirectory": "Fermer le sommaire",
+  "demo": {
+    "replay": "Rejouer",
+    "fadeIn": "Apparaître",
+    "fadeOut": "Disparaître",
+    "add": "Ajouter",
+    "remove": "Retirer",
+    "slow": "Lecture au ralenti",
+    "direction": "Direction d’entrée",
+    "left": "De gauche",
+    "right": "De droite",
+    "top": "Du haut",
+    "bottom": "Du bas",
+    "visible": "Visible",
+    "hidden": "Masqué",
+    "entering": "Entrée…",
+    "exiting": "Sortie…",
+    "reducedMotion": "Les animations sont réduites selon vos réglages. Le résultat apparaît immédiatement.",
+    "complete": "Terminé",
+    "newPerspective": "Un nouveau regard",
+    "newIdea": "Une nouvelle idée",
+    "newMessage": "Nouveau message",
+    "saved": "Modifications enregistrées",
+    "justNow": "À l’instant"
+  },
+  "terms": {
+    "fade": {
+      "title": "Fondu en entrée / en sortie",
+      "description": "Faites varier l’opacité sans changer la position ni la taille. Le fondu accompagne discrètement une apparition ou une disparition.",
+      "note": "La carte devient transparente sans bouger."
+    },
+    "slide-in": {
+      "title": "Entrée par glissement",
+      "description": "Faites entrer le contenu depuis un bord. La direction indique d’où il vient.",
+      "note": "Choisissez un bord, puis rejouez l’entrée."
+    },
+    "scale-in": {
+      "title": "Entrée par agrandissement",
+      "description": "Agrandissez légèrement un panneau tout en le faisant apparaître. Une petite variation de taille suffit souvent.",
+      "note": "Le panneau atteint sa taille finale sans rebondir."
+    },
+    "pop-in": {
+      "title": "Entrée avec rebond",
+      "description": "Dépassez légèrement la taille finale, puis revenez à cette taille. Ce rebond peut souligner une réussite.",
+      "note": "Au ralenti, observez le dépassement puis le retour."
+    },
+    "reveal": {
+      "title": "Révélation",
+      "description": "Déplacez une limite de découpe pour dévoiler le contenu. Celui-ci conserve sa position et sa taille.",
+      "note": "L’image et sa légende se dévoilent ensemble, de gauche à droite."
+    },
+    "enter-exit": {
+      "title": "Entrée / Sortie",
+      "description": "Animez l’ajout et le retrait d’un élément. Attendez la fin de sa sortie avant de le retirer pour préserver la continuité.",
+      "note": "Retirez la notification, puis ajoutez-la. La sortie est plus courte."
+    }
+  }
+}

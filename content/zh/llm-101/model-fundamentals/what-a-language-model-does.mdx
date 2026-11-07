@@ -5,24 +5,24 @@ title: 大语言模型是如何生成回答的？
 description: 从全自动文字接龙系统理解大语言模型，以及为什么你的输入会影响它的输出。
 ---
 
-你最近应该经常看到或听到一个术语 ——「大语言模型」（Large Language Model），也有人会简称它为大模型或者 LLM。很多人称其所谓的「人工智能」，这对吗？它实际是什么？它为何看起来像科幻片里的「人工智能」？
+你最近应该经常看到或听到一个术语 ——「大语言模型」（Large Language Model），也有人会简称它为大模型或者 LLM。很多人称其为「人工智能」，这对吗？它实际是什么？它为何看起来像科幻片里的「人工智能」？
 
 ## 一、全自动文字接龙系统
 
-简单类比的话，你可以将 LLM 看成一个「全自动文字接龙系统」。举个简单的例子，如果你向 LLM（比如 DeepSeek、ChatGPT）提问：
+简单类比的话，你可以将 LLM 看成一个[「全自动文字接龙系统」](https://jalammar.github.io/illustrated-gpt2/)。举个简单的例子，如果你向 LLM（比如 DeepSeek、ChatGPT）提问：
 
 <Chat>
   <ChatMessage from="user">今天广州的天气如何？</ChatMessage>
   <ChatMessage from="assistant" state="thinking" />
 </Chat>
 
-模型就会进行一系列的运算，但它跟你想象中的不通，它并不会进行<JimmyNoteAnchor id="thinking">「思考」</JimmyNoteAnchor>，它实际是通过各种计算，**预测这个问题的下一个概率最高的「字」是什么。**
+模型就会进行一系列的运算，但它跟你想象中的不同，它并不会进行<JimmyNoteAnchor id="thinking">「思考」</JimmyNoteAnchor>，它实际是通过各种[计算](https://arxiv.org/abs/1706.03762)，**预测这个问题的下一个概率最高的「字」是什么。**
 
 <JimmyNote anchor="thinking">
-  注意，很多产品在你发送完问题后，会显示一个 Thinkging 状态，但实际上，模型并不会进行任何的思考。后面我会详细解释。
+  注意，很多产品在你发送完问题后，会显示一个 Thinking 状态，但实际上，模型并不会进行类似人类那样的思考。后面我会详细解释。
 </JimmyNote>
 
-比如「今天广州的天气如何？」，下一个字可能在模型的某次生成中，运算出来的的结果是「今」。
+比如「今天广州的天气如何？」，下一个字可能在模型的某次生成中，运算出来的结果是「今」。
 
 <JimmyNoteAnchor id="next-character-credits" variant="image">
 
@@ -31,7 +31,7 @@ description: 从全自动文字接龙系统理解大语言模型，以及为什�
 </JimmyNoteAnchor>
 
 <JimmyNote anchor="next-character-credits">
-  本图片使用感谢 [ian-xiaohei-illustrations](https://github.com/helloianneo/ian-xiaohei-illustrations) skill 生成。感谢作者 Ian 提供的这个 skill。
+  本图片使用 [ian-xiaohei-illustrations](https://github.com/helloianneo/ian-xiaohei-illustrations) skill 生成。感谢作者 Ian 提供的这个 skill。
 </JimmyNote>
 
 当计算出「今」之后，模型会将「今天广州的天气如何？今」作为新的输入，再重新计算下一个字，算出下一个字是「天」，得到最新结果「今天广州的天气如何？今天」。接着模型会继续计算下一个字，直到得到最终结果。
@@ -57,7 +57,7 @@ description: 从全自动文字接龙系统理解大语言模型，以及为什�
 
 懂得了这个简单原理之后，你应该就能理解，为何在 LLM 产品的早期，比如 GPT-3.5 的时候，会有众多所谓的 Prompt Engineering（提示词工程）技巧了吧。
 
-比如在翻译场景下，你可以在输入要翻译的英文前增加一段「你是个精通中英文翻译的专家，请你翻译如下英文...」，这类指令（Prompt）。本质上来说添加这些指令，就是为了提高 LLM 输出满意答案的概率。
+比如在翻译场景下，你可以在输入要翻译的英文前增加一段「你是个精通中英文翻译的专家，请你翻译如下英文...」，这类指令（Prompt）。本质上来说，添加这些指令，就是为了[提高 LLM 输出满意答案的概率](https://arxiv.org/abs/2201.11903)。
 
 <KeyTakeaway>
   即使模型发展到现在，输入质量依然对 LLM
@@ -67,7 +67,7 @@ description: 从全自动文字接龙系统理解大语言模型，以及为什�
 
 为什么呢？
 
-因为受限于文字这种交互形式，你如果不懂某些概念，你就很难向 LLM 提出问题，或者给它合适的指令。最后如果指令不清晰，或者描述有误，自然就会得出不够好，甚至错误的回答。
+因为与 AI 进行交互，必须使用文字来写出来，不懂相关概念就难以把要求说清楚。换句话来说，不懂相关概念就很难向 LLM 提出问题，或者给它合适的指令。最后如果指令不清晰，或者描述有误，自然就会得到不够好，甚至错误的回答。
 
 就拿下方这两个按钮为例，请你分别点击试试。当你点击后，你会看到一个菜单。菜单上有同样内容。但你会发现两个菜单的样式完全不一样。你觉得哪个体验更好？
 

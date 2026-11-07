@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { AuthorDialog } from '@/components/course/author-card';
+import { AuthorDialog } from '@/components/author/author-card';
 import { Button } from '@/components/ui/button';
 import { author } from '@/lib/site-config';
 

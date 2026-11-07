@@ -10,8 +10,8 @@ import { useAchievements } from '@/components/progress/achievement-provider';
 import type { Locale } from '@/lib/i18n/config';
 import { localePath } from '@/lib/i18n/routing';
 import { author } from '@/lib/site-config';
-import { AuthorDialog } from '../author-card';
-import { useSidebar } from '../sidebar';
+import { AuthorDialog } from '@/components/author/author-card';
+import { useSidebar } from '@/components/navigation/sidebar';
 import { ModuleTree } from './module-tree';
 
 export function CourseMobileNavigation({ locale }: { locale: Locale }) {

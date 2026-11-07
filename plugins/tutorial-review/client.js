@@ -28562,6 +28562,9 @@
   function createUi(h) {
     function Button({ className, variant = "ghost", size = "sm", type = "button", ...props }) {
       return h("button", {
+        "data-slot": "button",
+        "data-variant": variant,
+        "data-size": size,
         type,
         className: cn(BUTTON_BASE, BUTTON_VARIANTS[variant] || BUTTON_VARIANTS.ghost, BUTTON_SIZES[size] || BUTTON_SIZES.sm, className),
         ...props
@@ -28569,27 +28572,31 @@
     }
     function Badge({ className, variant = "outline", ...props }) {
       return h("span", {
+        "data-slot": "badge",
+        "data-variant": variant,
         className: cn(BADGE_BASE, BADGE_VARIANTS[variant] || BADGE_VARIANTS.outline, className),
         ...props
       });
     }
     function Card({ className, ...props }) {
       return h("div", {
+        "data-slot": "card",
         className: cn("flex min-w-0 flex-col rounded-card border border-tr-border bg-tr-bg text-tr-fg shadow-sm", className),
         ...props
       });
     }
     function CardHeader({ className, ...props }) {
-      return h("div", { className: cn("flex items-center gap-2 px-3 pt-2.5 pb-1.5", className), ...props });
+      return h("div", { "data-slot": "card-header", className: cn("flex items-center gap-2 px-3 pt-2.5 pb-1.5", className), ...props });
     }
     function CardContent({ className, ...props }) {
-      return h("div", { className: cn("px-3 pb-2.5", className), ...props });
+      return h("div", { "data-slot": "card-content", className: cn("px-3 pb-2.5", className), ...props });
     }
     function CardFooter({ className, ...props }) {
-      return h("div", { className: cn("flex items-center justify-end gap-1 px-3 pb-2.5", className), ...props });
+      return h("div", { "data-slot": "card-footer", className: cn("flex items-center justify-end gap-1 px-3 pb-2.5", className), ...props });
     }
     function Input({ className, ...props }) {
       return h("input", {
+        "data-slot": "input",
         className: cn(
           "h-8 w-full min-w-0 rounded-md border border-tr-border bg-tr-bg px-2.5 text-[11px] text-tr-fg outline-none transition placeholder:text-tr-tertiary focus:border-tr-accent focus:ring-2 focus:ring-tr-accent/15",
           className
@@ -28598,10 +28605,10 @@
       });
     }
     function Separator({ className, ...props }) {
-      return h("div", { className: cn("h-px w-full shrink-0 bg-tr-border", className), ...props });
+      return h("div", { "data-slot": "separator", className: cn("h-px w-full shrink-0 bg-tr-border", className), ...props });
     }
     function Skeleton({ className, ...props }) {
-      return h("div", { className: cn("animate-pulse rounded-md bg-tr-muted", className), ...props });
+      return h("div", { "data-slot": "skeleton", className: cn("animate-pulse rounded-md bg-tr-muted", className), ...props });
     }
     return {
       cn,

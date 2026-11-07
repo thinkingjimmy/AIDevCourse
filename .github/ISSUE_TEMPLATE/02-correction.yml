@@ -1,0 +1,44 @@
+name: Correction / 纠错建议
+description: Report a typo or inaccurate content / 错别字或不准确的内容
+title: "[Correction] "
+labels: [correction]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Corrections are welcome in Chinese or English. Search [existing corrections](https://github.com/thinkingjimmy/aidevcourse/issues?q=is%3Aissue%20label%3Acorrection) first.
+        欢迎用中文或英文提交纠错建议。提交前，请先搜索已有建议。
+  - type: input
+    id: page
+    attributes:
+      label: Page location / 页面位置
+      description: Add the page link, title, or file path. / 请提供页面链接、标题或文件路径。
+    validations:
+      required: true
+  - type: dropdown
+    id: correction-type
+    attributes:
+      label: Correction type / 纠错类型
+      options:
+        - Typo / 错别字
+        - Inaccurate content / 内容不准确
+        - Other correction / 其他纠错
+    validations:
+      required: true
+  - type: textarea
+    id: original
+    attributes:
+      label: Passage and issue / 相关原文与问题
+      description: Quote the relevant passage and explain the issue. / 请引用相关原文，并说明问题。
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested correction / 建议改法
+      description: Optional. You can report a problem even if you are unsure how to fix it. / 选填。不确定如何修改，也可以提交问题。
+  - type: textarea
+    id: reference
+    attributes:
+      label: Supporting reference / 参考资料
+      description: Optional. Add a source or explanation that supports the correction. / 选填。可以补充支持该建议的资料或说明。

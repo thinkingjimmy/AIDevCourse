@@ -240,10 +240,11 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       const messages = JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
       await page.goto(localePath(locale));
       await page.evaluate(() => document.fonts.ready);
-      const groups = ['introduction', 'beginner', 'intermediate', 'advanced'].filter(section => courses.some(course => (course.section ?? course.level) === section));
-      await expect(page.locator('#catalog h2')).toHaveText(groups.map(section => section === 'introduction' ? messages.Home.gettingStarted : messages.Ui[section]));
-      await expect(page.locator('[data-course-disk]')).toHaveCount(Math.min(9, courses.length));
-      for (const course of courses.slice(0, 9)) {
+      const vocabulary = JSON.parse(readFileSync(`src/messages/vocabulary/${locale}.json`, 'utf8'));
+      const groups = ['beginner', 'intermediate', 'advanced'].filter(section => courses.some(course => !course.section && course.level === section));
+      await expect(page.locator('#catalog h2')).toHaveText([vocabulary.resources, ...groups.map(section => messages.Ui[section])]);
+      await expect(page.locator('[data-course-disk]')).toHaveCount(Math.min(8, courses.length));
+      for (const course of courses.slice(0, 8)) {
         const disk = page.getByRole('link', { name: course.title, exact: true });
         await expect(disk).toHaveAttribute('href', course.url);
         await expect(disk).toHaveAccessibleDescription(course.description);

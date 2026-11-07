@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -21,12 +21,35 @@ for (const scenario of [
       if (scenario.name === 'enlarged') await page.evaluate(() => { document.documentElement.style.fontSize = '24px'; });
       const section = page.locator('#key-takeaways');
       const notes = section.getByRole('note', { name: '划重点', exact: true });
-      await expect(notes).toHaveCount(2);
+      await expect(notes).toHaveCount(3);
       await expect(notes.first().locator('[data-slot="alert-description"] strong')).toHaveText('模型生成的是下一个 Token，而不是一次性生成整段回答。');
       await expect(notes.first().locator('[data-slot="alert-description"] strong')).toHaveCSS('color', 'rgb(49, 86, 75)');
       await expect(notes.nth(1).locator('mark')).toHaveText('生成答案不等于核实事实');
       await expect(notes.nth(1).getByRole('listitem')).toHaveCount(2);
       await expect(notes.nth(1).locator('[data-slot="alert-description"] code')).toHaveText('Token');
+      const lists = notes.nth(2).locator('ul, ol');
+      await expect(lists).toHaveCount(4);
+      await expect(notes.nth(2).getByRole('listitem')).toHaveCount(8);
+      await expect(notes.nth(2).locator('[data-slot="alert-description"] > ol')).toHaveAttribute('start', '3');
+      const listEvidence = [];
+      for (const list of await lists.all()) {
+        const metrics = await list.evaluate(element => {
+          const style = getComputedStyle(element);
+          const bounds = element.getBoundingClientRect();
+          const first = element.firstElementChild!.getBoundingClientRect();
+          const parent = element.parentElement!.getBoundingClientRect();
+          return { tag: element.tagName, marker: style.listStyleType, position: style.listStylePosition,
+            padding: parseFloat(style.paddingInlineStart), firstItemInset: first.left - bounds.left,
+            nested: element.parentElement!.tagName === 'LI', parentLeft: parent.left, left: bounds.left,
+            itemLeft: first.left, rootSize: parseFloat(getComputedStyle(document.documentElement).fontSize) };
+        });
+        expect(metrics.marker).toBe(metrics.tag === 'UL' ? 'disc' : 'decimal');
+        expect(metrics.position).toBe('outside');
+        expect(metrics.padding).toBeGreaterThanOrEqual(metrics.rootSize * 1.25);
+        expect(metrics.firstItemInset).toBeCloseTo(metrics.padding, 1);
+        if (metrics.nested) expect(metrics.itemLeft - metrics.parentLeft).toBeGreaterThanOrEqual(metrics.rootSize * 1.25);
+        listEvidence.push(metrics);
+      }
       await expect(notes.locator('img')).toHaveCount(0);
       const frameStyle = (element: Element) => {
         const style = getComputedStyle(element);
@@ -65,7 +88,7 @@ for (const scenario of [
       const screenshot = test.info().outputPath(`key-takeaway-${scenario.name}.png`);
       await section.screenshot({ path: screenshot, animations: 'disabled', style: 'header, a[href="#main"] { visibility: hidden !important; }' });
       await test.info().attach('Key takeaway preview', { path: screenshot, contentType: 'image/png' });
-      await test.info().attach('Key takeaway layout', { body: JSON.stringify({ reference, notes: evidence }, null, 2), contentType: 'application/json' });
+      await test.info().attach('Key takeaway layout', { body: JSON.stringify({ reference, notes: evidence, lists: listEvidence }, null, 2), contentType: 'application/json' });
       await notes.nth(1).getByRole('link', { name: '写作说明' }).click();
       await expect(page).toHaveURL(/#authoring$/);
       await expect(page.locator('#authoring')).toBeInViewport();
@@ -77,9 +100,10 @@ test('KeyTakeaway authoring accepts memory blocks and rejects invalid declaratio
   test.skip(browserName !== 'chromium', 'The authoring CLI is independent of the browser.');
   const root = mkdtempSync(join(tmpdir(), 'aidevcourse-key-takeaway-'));
   try {
-    cpSync('tests/fixtures', join(root, 'content'), { recursive: true });
+    mkdirSync(join(root, 'tests'));
+    cpSync('tests/fixtures', join(root, 'tests/fixtures'), { recursive: true });
     cpSync('public', join(root, 'public'), { recursive: true });
-    const file = join(root, 'content/en/ai-coding/foundations/first-change.mdx');
+    const file = join(root, 'tests/fixtures/en/ai-coding/foundations/first-change.mdx');
     const original = readFileSync(file, 'utf8');
     const examples = [
       { name: 'rich memory block', body: '\n<KeyTakeaway>\n**Remember** the `input`.\n\n- Keep a source.\n- Verify a claim.\n</KeyTakeaway>\n', valid: true },
@@ -91,8 +115,8 @@ test('KeyTakeaway authoring accepts memory blocks and rejects invalid declaratio
     const evidence = [];
     for (const example of examples) {
       writeFileSync(file, original + example.body);
-      const result = spawnSync(process.execPath, ['--import', import.meta.resolve('tsx'), join(process.cwd(), 'scripts/check-content.ts')], {
-        cwd: root, env: { ...process.env, CONTENT_TEST: '0' }, encoding: 'utf8', timeout: 15000,
+      const result = spawnSync(process.execPath, ['--import', import.meta.resolve('tsx'), join(process.cwd(), 'scripts/content/check.ts')], {
+        cwd: root, env: { ...process.env, CONTENT_TEST: '1' }, encoding: 'utf8', timeout: 15000,
       });
       const output = `${result.stdout ?? ''}${result.stderr ?? ''}`;
       expect(result.error).toBeUndefined();

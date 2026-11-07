@@ -1,0 +1,287 @@
+{
+  "title": "Diccionario de diseño",
+  "description": "Explora la tipografía y el color con ejemplos interactivos. Ajusta el texto, mezcla colores y compara los resultados.",
+  "resources": "Recursos de aprendizaje",
+  "tool": "Herramienta",
+  "termCount": "{count} términos",
+  "typography": "Tipografía",
+  "typographySections": {
+    "interface": {
+      "title": "Lectura e interfaces"
+    },
+    "letterforms": {
+      "title": "Letras y palabras",
+      "description": "Espaciado de letras, métricas, ligaduras y división de palabras."
+    }
+  },
+  "search": "Buscar términos",
+  "searchPlaceholder": "Término en español o inglés",
+  "clearSearch": "Borrar búsqueda",
+  "noResults": "No hay coincidencias. Prueba otra palabra.",
+  "resultsCount": "{count} resultados",
+  "loadMore": "Cargar más",
+  "openDirectory": "Abrir índice",
+  "closeDirectory": "Cerrar índice",
+  "source": "Referencia de términos: Index",
+  "on": "Activado",
+  "off": "Desactivado",
+  "original": "Original",
+  "apply": "Ajustado",
+  "font": "Fuente",
+  "spacing": "Espaciado",
+  "lineHeight": "Altura de línea",
+  "ratio": "Proporción de tamaños",
+  "containerWidth": "Ancho del texto",
+  "weight": "Peso",
+  "wrap": "Ajustar líneas",
+  "ellipsis": "Puntos suspensivos",
+  "balance": "Equilibrar líneas",
+  "firstPage": "Página 1",
+  "secondPage": "Página 2",
+  "sans": "Sans",
+  "serif": "Serif",
+  "mono": "Mono",
+  "amount": "Importe",
+  "profile": "Perfil",
+  "security": "Seguridad",
+  "notifications": "Notificaciones",
+  "account": "Cuenta",
+  "headline": "Da forma a tus ideas.",
+  "subheading": "Empieza con un pequeño paso.",
+  "bodyLabel": "Texto principal",
+  "readingText": "La buena tipografía deja espacio a cada idea. La distancia entre líneas y su longitud marcan el ritmo de lectura. Cambia un ajuste y observa cómo las mismas palabras producen una impresión diferente.",
+  "longTitle": "Una pequeña guía para crear con intención",
+  "baseline": "Línea base",
+  "heightLabel": "Altura del glifo: {value}px",
+  "metricsNote": "Mismo tamaño de fuente. Las guías siguen la altura de x o H medida en el navegador.",
+  "kerningNote": "Solo cambian los pares AI y vC. Los demás espacios se mantienen.",
+  "opticalNote": "La fila superior sirve de referencia. Un interruptor aplica el ajuste óptico a toda la palabra inferior; varios espacios cambian juntos con diferencias ampliadas.",
+  "smoothingNote": "El efecto depende del navegador y la pantalla. En algunos sistemas no se aprecia ningún cambio.",
+  "terms": {
+    "kerning": {
+      "title": "Ajuste de pares",
+      "description": "Ajuste del espacio de un par concreto de caracteres. Corrige huecos locales, a diferencia del espaciado aplicado a toda la secuencia."
+    },
+    "tracking": {
+      "title": "Espaciado entre letras",
+      "description": "Espaciado uniforme en una palabra o un texto. Los rótulos en mayúsculas suelen necesitar algo más de espacio para facilitar la lectura."
+    },
+    "leading": {
+      "title": "Interlineado",
+      "description": "Distancia vertical entre líneas. Si es escasa, el texto se amontona; si es excesiva, el párrafo pierde unidad visual."
+    },
+    "optical-kerning": {
+      "title": "Ajuste óptico",
+      "description": "Espaciado guiado por la forma de las letras y el equilibrio visual, más allá de los datos de ajuste incluidos en la fuente."
+    },
+    "tabular-nums": {
+      "title": "Números tabulares",
+      "description": "Función que da el mismo ancho a los dígitos. Mantiene alineados precios, estadísticas y columnas con valores que cambian."
+    },
+    "type-scale": {
+      "title": "Escala tipográfica",
+      "description": "Conjunto definido de tamaños, a menudo relacionados por una proporción. Mantiene una jerarquía coherente entre títulos y texto principal."
+    },
+    "weight": {
+      "title": "Peso tipográfico",
+      "description": "Grosor de los trazos, usado para destacar contenido y crear jerarquía. Cambia el peso del título y compáralo con el texto normal."
+    },
+    "x-height": {
+      "title": "Altura de la x",
+      "description": "La altura de una minúscula como la x, en relación con la altura de las mayúsculas. Una altura de x mayor hace que una fuente parezca más grande al mismo tamaño; por eso, dos fuentes de 16px pueden verse muy distintas."
+    },
+    "cap-height": {
+      "title": "Altura de mayúsculas",
+      "description": "Altura de las mayúsculas desde la línea base. Junto con la altura de la x, ayuda a combinar fuentes y elegir alternativas."
+    },
+    "ligature": {
+      "title": "Ligadura",
+      "description": "Glifo que une caracteres como fi o fl para evitar choques. Las ligaduras decorativas son más adecuadas para títulos."
+    },
+    "font-smoothing": {
+      "title": "Suavizado de fuentes",
+      "description": "Forma de dibujar los bordes del texto. En macOS, antialiased puede verse más fino; el resultado depende del navegador y la pantalla."
+    },
+    "text-overflow": {
+      "title": "Desbordamiento de texto",
+      "description": "Texto que supera su contenedor. Los puntos suspensivos (…) indican un recorte; el salto de línea conserva contenido cuando hay espacio."
+    },
+    "hyphenation": {
+      "title": "División de palabras",
+      "description": "División de palabras entre líneas mediante guiones. Ayuda en columnas estrechas o texto justificado; los cortes automáticos dependen de la lengua y el navegador."
+    },
+    "clamp": {
+      "title": "Tamaño fluido limitado",
+      "description": "Tamaño fluido con valores mínimo, preferido y máximo. Permite adaptar el texto al espacio sin una regla por cada punto de ruptura."
+    },
+    "widow": {
+      "title": "Viuda",
+      "description": "Una palabra que queda sola en la última línea de un párrafo. text-wrap: balance puede corregirlo automáticamente."
+    },
+    "orphan": {
+      "title": "Huérfana",
+      "description": "Primera línea de un párrafo aislada al final de una página o columna. Mantenerla con las siguientes conserva la continuidad de lectura."
+    },
+    "font-stack": {
+      "title": "Lista de fuentes",
+      "description": "Lista ordenada de fuentes preferidas y alternativas. Unas proporciones similares reducen los cambios de líneas cuando el navegador sustituye una fuente."
+    },
+    "line-length": {
+      "title": "Longitud de línea",
+      "description": "Ancho de una columna de texto. En escritura latina, unas 65 letras y espacios por línea son un punto de partida que debe adaptarse."
+    },
+    "variable-font": {
+      "title": "Fuente variable",
+      "description": "Un archivo con ejes ajustables, como peso y anchura. Puede sustituir varios archivos estáticos y ofrecer variaciones continuas."
+    },
+    "superscript": {
+      "title": "Superíndice",
+      "description": "Caracteres elevados para exponentes o notas. Ajustar su tamaño y posición vertical evita alterar el interlineado del texto."
+    },
+    "subscript": {
+      "title": "Subíndice",
+      "description": "Caracteres descendidos para fórmulas químicas o notación. Su tamaño y posición deben conservar el ritmo de las líneas contiguas."
+    },
+    "srgb": {
+      "title": "sRGB",
+      "description": "El espacio de color estándar que la mayoría de las pantallas ha usado durante décadas. Todos los valores hexadecimales pertenecen a él. Su gama es limitada: una pantalla moderna puede mostrar colores que sRGB no puede describir."
+    },
+    "p3": {
+      "title": "P3",
+      "description": "Un espacio de color más amplio compatible con la mayoría de las pantallas modernas. Permite colores más vivos, sobre todo verdes y rojos, que sRGB no puede alcanzar."
+    },
+    "oklch": {
+      "title": "OKLCH",
+      "description": "Un espacio de color que se ajusta a cómo percibimos el brillo. A diferencia de HSL, dos colores con el mismo valor de luminosidad realmente se ven igual de brillantes. Es útil para generar paletas y mezclas de color accesibles."
+    },
+    "alpha": {
+      "title": "Alfa",
+      "description": "El componente de transparencia de un color, desde totalmente opaco hasta totalmente invisible. Un borde con alfa se integra en la superficie inferior. Un color hexadecimal opaco queda por encima. La diferencia es sutil, pero se percibe de forma constante."
+    },
+    "semantic-token": {
+      "title": "Token semántico",
+      "description": "Una variable de color nombrada por su función y no por su valor. --color-border-subtle en lugar de #e0e0e0. Cuando cambia el valor, se actualiza todo lo que usa el token."
+    },
+    "contrast-ratio": {
+      "title": "Relación de contraste",
+      "description": "La diferencia de luminancia entre un color de primer plano y uno de fondo. WCAG exige 4,5:1 para el texto normal, y 3:1 para el texto grande y los componentes de interfaz."
+    },
+    "tinted-neutral": {
+      "title": "Gris con matiz",
+      "description": "Un gris con una ligera inclinación hacia un tono. El #808080 puro parece un color provisional. Un neutro con matiz parece elegido con intención."
+    },
+    "saturation": {
+      "title": "Saturación",
+      "description": "Lo vivo o apagado que es un color. En modo oscuro, los colores de marca con saturación máxima pueden parecer que vibran fuera de la pantalla. Reducirla entre un 20 y un 30 % los calma."
+    },
+    "chroma": {
+      "title": "Croma",
+      "description": "El equivalente de la saturación en OKLCH, pero preciso desde el punto de vista perceptual. Reducir el croma para lograr un tono claro mantiene vivo el color. Reducir la opacidad también lo aclara, pero lo vuelve gris y apagado."
+    },
+    "gradient": {
+      "title": "Degradado",
+      "description": "Una transición entre dos o más colores. En HSL o sRGB, el punto medio suele volverse gris. Crear degradados en OKLCH mantiene los colores vivos durante toda la transición."
+    },
+    "opacity-vs-visibility": {
+      "title": "Opacidad y visibilidad",
+      "description": "Dos maneras de ocultar un elemento. La opacidad cero conserva su espacio y sigue recibiendo eventos del puntero. visibility: hidden elimina la interacción, pero mantiene el espacio. Conviene saber cuál necesitas."
+    },
+    "dark-mode": {
+      "title": "Modo oscuro",
+      "description": "Una interfaz construida sobre superficies oscuras. La superficie más clara debe ocupar la parte superior de la jerarquía de capas. Los tokens del modo claro rara vez se trasladan directamente, así que hay que revisar cada decisión de color."
+    },
+    "blending": {
+      "title": "Fusión de colores",
+      "description": "Cómo interactúa una capa con lo que tiene debajo. Multiplicar oscurece, Trama aclara y Superponer hace ambas cosas según el color de base. Es útil para integrar imágenes con superficies de color y dar profundidad a las ilustraciones."
+    }
+  },
+  "scaleTitle": "Título",
+  "scaleSubtitle": "Subtítulo",
+  "weightNote": "El control solo cambia el peso del título. El texto principal mantiene un peso de 400 para comparar.",
+  "weightPreview": {
+    "label": "Novedades del proyecto",
+    "title": "El proyecto avanza",
+    "body": "Consulta el trabajo completado esta semana y el siguiente paso del proyecto."
+  },
+  "receipt": {
+    "title": "Detalle de costes",
+    "item": "Concepto {number}",
+    "total": "Total"
+  },
+  "widowProfile": {
+    "role": "Diseñador de producto"
+  },
+  "clampPreview": {
+    "minimum": "Mín",
+    "preferred": "Ideal",
+    "maximum": "Máx",
+    "actual": "Tamaño",
+    "minimumState": "En el mínimo: estrechar no reduce más el texto",
+    "preferredState": "El texto cambia con el ancho disponible",
+    "maximumState": "En el máximo: ampliar no aumenta más el texto"
+  },
+  "lookHere": "Mira aquí",
+  "overflowProfile": {
+    "name": "Alexandra Kim",
+    "role": "Diseñadora de producto · Sistemas de diseño y experiencia de usuario",
+    "bio": "Transformar ideas complejas en productos claros y útiles, con interacciones pensadas para la vida cotidiana."
+  },
+  "color": "Color",
+  "colorPreview": {
+    "red": "Rojo",
+    "green": "Verde",
+    "blue": "Azul",
+    "sampleColor": "Color de muestra",
+    "lightness": "Luminosidad",
+    "chroma": "Croma",
+    "alpha": "Alfa",
+    "inProgress": "En curso",
+    "project": "Una nueva idea",
+    "continue": "Continuar",
+    "textLightness": "Nivel de gris del texto",
+    "bodyText": "AA texto",
+    "largeText": "AA texto grande",
+    "pass": "Cumple",
+    "fail": "Insuficiente",
+    "neutralTone": "Tono del gris",
+    "warm": "Cálido",
+    "cool": "Frío",
+    "saturation": "Saturación",
+    "interpolation": "Espacio de interpolación",
+    "start": "Inicio",
+    "middle": "Centro",
+    "end": "Final",
+    "hideMethod": "Método para ocultar",
+    "tryArea": "Prueba el área discontinua.",
+    "tryButton": "Probar el botón invisible",
+    "clickCount": "Clics: {count}",
+    "theme": "Tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "canvas": "Fondo",
+    "surface": "Superficie",
+    "raised": "Relieve",
+    "blendMode": "Modo de fusión",
+    "multiply": "Multiplicar",
+    "screen": "Trama",
+    "overlay": "Superponer",
+    "p3Note": "P3 requiere una pantalla y un navegador compatibles. En otras pantallas, ambos círculos muestran el color alternativo sRGB.",
+    "tokenNote": "Cambia --color-border-subtle para actualizar los tres bordes a la vez.",
+    "contrastNote": "WCAG AA: 4,5:1 para texto normal; 3:1 para texto grande y componentes de interfaz.",
+    "saturationNote": "Prueba una saturación del 70 al 80 % sobre el fondo oscuro. El tono y la luminosidad HSL quedan fijos.",
+    "chromaNote": "Izquierda: más luminosidad y menos croma. Derecha: menos alfa. El fondo gris es el mismo.",
+    "gradientNote": "Los extremos no cambian. Compara el color del centro.",
+    "alphaNote": "Compara un borde con alfa y uno opaco #808080 sobre distintos fondos.",
+    "visibilityNote": "Ambos conservan su espacio. Solo opacity: 0 sigue recibiendo clics y foco del teclado.",
+    "darkNote": "En la paleta oscura, las superficies elevadas son más claras.",
+    "blendNote": "Los colores no cambian. El modo de fusión modifica la zona donde se superponen.",
+    "oklchNote": "Todos los colores de una fila comparten el mismo valor L. Compara los cambios de brillo de cada fila.",
+    "tinted": "Con matiz",
+    "borderColor": "Color del borde",
+    "subtle": "Suave",
+    "strong": "Marcado",
+    "projectName": "Nombre del proyecto",
+    "uiComponent": "AA interfaz",
+    "tintAmount": "Aclarado"
+  }
+}
