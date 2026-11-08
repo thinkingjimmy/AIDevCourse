@@ -1,7 +1,7 @@
 function cameraProperties(glass: DOMRect) {
-  const root = document.documentElement;
-  const width = root.clientWidth;
-  const height = root.clientHeight;
+  // Root snapshots include scrollbar gutters, unlike documentElement.clientWidth.
+  const width = window.innerWidth;
+  const height = window.innerHeight;
   // Travel just past the rounded glass so its corners clear the final viewport.
   const scale = Math.min(glass.width / width, glass.height / height) * .96;
   const x = glass.left + (glass.width - width * scale) / 2;
@@ -31,6 +31,7 @@ async function homeScreen(signal: AbortSignal) {
 }
 
 async function zoomScreen(direction: 'in' | 'out', navigate: () => Promise<void>, signal: AbortSignal, glass?: DOMRect) {
+  signal.throwIfAborted();
   const root = document.documentElement;
   let camera: ReturnType<typeof cameraProperties> | undefined;
   const frame = (bounds: DOMRect) => {
@@ -49,6 +50,8 @@ async function zoomScreen(direction: 'in' | 'out', navigate: () => Promise<void>
       }
     });
     const skip = () => view.skipTransition();
+    // Cancellation may reject ready; route latency alone must not cancel the camera.
+    void view.ready.catch(() => {});
     signal.addEventListener('abort', skip, { once: true });
     if (signal.aborted) skip();
     try { await view.finished; }

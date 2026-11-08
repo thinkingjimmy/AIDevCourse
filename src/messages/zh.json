@@ -84,6 +84,11 @@
     "gettingStarted": "起步"
   },
   "Course": {
+    "selectionActions": "选中文字操作",
+    "selectionQuestion": "提问",
+    "selectionCorrection": "纠错",
+    "selectionDestination": "在新标签页打开 GitHub issue 表单",
+    "selectionExcerpt": "原文已节选",
     "emptyTitle": "这一语言还没有课程",
     "emptyBody": "这个语言暂时没有课程。你可以先了解这个网站。",
     "otherLanguages": "其他语言的已发布内容",

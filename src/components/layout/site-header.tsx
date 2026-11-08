@@ -1,5 +1,6 @@
 'use client';
 import type { ReactNode } from 'react';
+import { preload } from 'react-dom';
 import { usePathname } from 'next/navigation';
 import { SiteLogo } from './page-primitives';
 import type { Locale } from '@/lib/i18n/config';
@@ -7,16 +8,23 @@ import { canonicalPath, localePath, stripLocale } from '@/lib/i18n/routing';
 import { vocabularyForPath, type VocabularyKind } from '@/lib/vocabulary/collections';
 import { site } from '@/lib/site-config';
 import { canAnimateNavigation, useCourseTransition } from '@/components/home/course-transition';
+import { macintoshArtwork } from '@/components/home/macintosh';
 
 export function SiteHeader({ locale, courses, labels, shortcut, children, hero = false }: {
   locale: Locale; courses: { url: string; title: string }[];
   labels: { home: string; navigation: string; vocabulary: Record<VocabularyKind, string> }; shortcut: ReactNode; children: ReactNode; hero?: boolean;
 }) {
   const path = canonicalPath(usePathname());
-  const { returnHome } = useCourseTransition();
+  const { phase, returnHome } = useCourseTransition();
   const course = courses.find(item => path === item.url || path.startsWith(`${item.url}/`));
   const vocabulary = vocabularyForPath(stripLocale(path));
-  const logo = <SiteLogo href={localePath(locale)} prefetch={vocabulary ? false : undefined} aria-label={`${site.name} · ${labels.home}`} className="site-header-logo"
+  const prepareHome = () => {
+    if (course || vocabulary) preload(macintoshArtwork, { as: 'image', type: 'image/svg+xml' });
+  };
+  // Prepare the return route after the current camera has finished capturing and moving.
+  const prefetchHome = vocabulary ? false : course ? phase === 'idle' : undefined;
+  const logo = <SiteLogo href={localePath(locale)} prefetch={prefetchHome} aria-label={`${site.name} · ${labels.home}`} className="site-header-logo"
+    onPointerEnter={prepareHome} onPointerDown={prepareHome} onFocus={prepareHome}
     onClick={event => {
       if ((!course && !vocabulary) || !canAnimateNavigation(event)) return;
       event.preventDefault();

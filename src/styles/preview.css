@@ -27,7 +27,7 @@ html.design {
 }
 html.design *, html.design *::before, html.design *::after { @apply box-border; }
 html.design body { @apply m-0 bg-background font-sans text-ui text-foreground antialiased; }
-html.design ::selection { @apply bg-foreground text-background; }
+html.design ::selection { @apply bg-brand text-white; }
 html.design :focus { @apply outline-none; }
 html.design :focus-visible { @apply outline-1 outline-offset-2 outline-foreground/55; }
 html.design a { @apply text-inherit no-underline; }

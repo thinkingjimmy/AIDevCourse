@@ -84,6 +84,11 @@
     "gettingStarted": "はじめに"
   },
   "Course": {
+    "selectionActions": "選択したテキストの操作",
+    "selectionQuestion": "質問",
+    "selectionCorrection": "修正",
+    "selectionDestination": "新しいタブで GitHub の issue フォームを開く",
+    "selectionExcerpt": "原文の一部を引用しています",
     "emptyTitle": "この言語にはまだコースがありません",
     "emptyBody": "この言語のコースはまだありません。先にこのサイトについてご覧ください。",
     "otherLanguages": "他の言語の公開済みコース",

@@ -61,7 +61,6 @@ export function CourseTransitionProvider({ children, cancelLabel, openingLabel }
     const transition: Transition = { controller: new AbortController(), entry };
     active.current = transition;
     router.prefetch(entry.url);
-    entry.home.inert = true;
     try {
       const origin = await insertDisk(entry, transition.controller.signal, setPhase);
       if (active.current !== transition) return;

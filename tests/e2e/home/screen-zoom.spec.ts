@@ -28,10 +28,11 @@ async function cameraFrame(page: Page, fraction: number) {
       return { x: m.e, y: m.f, scaleX: m.a, scaleY: m.d, opacity: Number(css.opacity) };
     }
     const aperture = getComputedStyle(root, '::view-transition-image-pair(root)');
+    const viewport = getComputedStyle(root, '::view-transition-group(root)');
     return {
       home: snapshot(`${returning ? 'new' : 'old'}(mac-home)`), course: snapshot('group(root)'), content: snapshot(`${returning ? 'old' : 'new'}(root)`),
       aperture: { x: parseFloat(aperture.left), y: parseFloat(aperture.top), width: parseFloat(aperture.width), height: parseFloat(aperture.height) },
-      width: root.clientWidth, height: root.clientHeight,
+      width: parseFloat(viewport.width), height: parseFloat(viewport.height),
     };
   }, fraction);
 }

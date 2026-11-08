@@ -84,6 +84,11 @@
     "gettingStarted": "Primeros pasos"
   },
   "Course": {
+    "selectionActions": "Acciones del texto seleccionado",
+    "selectionQuestion": "Preguntar",
+    "selectionCorrection": "Corregir",
+    "selectionDestination": "Abrir un formulario de GitHub en una pestaña nueva",
+    "selectionExcerpt": "Solo se incluye una parte del texto",
     "emptyTitle": "Aún no hay cursos en este idioma",
     "emptyBody": "Este idioma todavía no tiene un curso. Mientras tanto, conoce más sobre este sitio.",
     "otherLanguages": "Disponible en otros idiomas",

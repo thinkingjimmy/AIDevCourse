@@ -12,9 +12,11 @@
 :root[data-course-zoom]::view-transition-old(mac-home),
 :root[data-course-zoom]::view-transition-new(mac-home) {
   image-rendering: pixelated;
+  mix-blend-mode: normal;
   transform-origin: top left;
   animation: approach-mac-screen var(--screen-travel);
 }
+:root[data-course-zoom]::view-transition-image-pair(mac-home) { isolation: auto; }
 :root[data-course-zoom]::view-transition-group(root) {
   z-index: 1;
   transform-origin: top left;

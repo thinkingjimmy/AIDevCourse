@@ -84,6 +84,11 @@
     "gettingStarted": "Getting started"
   },
   "Course": {
+    "selectionActions": "Selected text actions",
+    "selectionQuestion": "Ask",
+    "selectionCorrection": "Correct",
+    "selectionDestination": "Open a GitHub issue form in a new tab",
+    "selectionExcerpt": "Only part of the passage is included",
     "emptyTitle": "No courses in this language yet",
     "emptyBody": "This language does not have a course yet. You can learn more about this site.",
     "otherLanguages": "Available in other languages",

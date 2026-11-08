@@ -63,7 +63,15 @@ for (const scenario of [
         expect(toggleBox.y + toggleBox.height / 2).toBeCloseTo(titleBox.y + titleBox.height / 2, 1);
         evidence.push({ courseTitle: titleBox, toggle: toggleBox });
         await expect(sidebar).toHaveCSS('background-color', background);
-        await expect(page.locator('[data-slot="sidebar-inner"]')).toHaveCSS('background-color', 'rgb(241, 244, 236)');
+        const sidebarColor = await sidebar.evaluate(element => {
+          const probe = document.createElement('div');
+          probe.style.backgroundColor = 'var(--color-sidebar)';
+          element.append(probe);
+          const color = getComputedStyle(probe).backgroundColor;
+          probe.remove();
+          return color;
+        });
+        await expect(page.locator('[data-slot="sidebar-inner"]')).toHaveCSS('background-color', sidebarColor);
         expect((await sidebar.boundingBox())!.y).toBeGreaterThanOrEqual((await header.boundingBox())!.height - 1);
         const outline = (await page.locator('[data-slot="lesson-aside"]').boundingBox())!;
         expect(sidebarBox.y).toBe(paneBox.y);

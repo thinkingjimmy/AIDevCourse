@@ -57,7 +57,7 @@
   button:disabled { @apply cursor-not-allowed opacity-50; }
   a { @apply text-inherit; }
   :focus-visible { @apply outline-2 outline-offset-4 outline-foreground; }
-  ::selection { @apply bg-foreground text-white; }
+  ::selection { @apply bg-brand text-white; }
   svg { @apply shrink-0; }
   h1, h2, h3, p { @apply wrap-break-word; }
   @media (scripting: none) {

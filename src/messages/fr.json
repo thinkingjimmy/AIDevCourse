@@ -84,6 +84,11 @@
     "gettingStarted": "Pour commencer"
   },
   "Course": {
+    "selectionActions": "Actions sur le texte sélectionné",
+    "selectionQuestion": "Question",
+    "selectionCorrection": "Corriger",
+    "selectionDestination": "Ouvrir un formulaire GitHub dans un nouvel onglet",
+    "selectionExcerpt": "Seule une partie du passage est incluse",
     "emptyTitle": "Pas encore de cours dans cette langue",
     "emptyBody": "Cette langue n’a pas encore de cours. En attendant, découvrez ce site.",
     "otherLanguages": "Disponible dans d’autres langues",

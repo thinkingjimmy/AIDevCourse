@@ -54,39 +54,41 @@ export async function insertDisk(entry: DiskEntry, signal: AbortSignal, phase: (
   // An external SVG layer has no geometry until its artwork has loaded.
   if (!slot.width || !screen.getBoundingClientRect().width) return null;
   const original = source.querySelector<HTMLElement>('[data-slot="course-disk"]');
+  const host = home.getBoundingClientRect(), start = source.getBoundingClientRect();
+  const width = source.clientWidth, height = source.clientHeight;
+  const initialTransform = original ? getComputedStyle(original).transform : 'none';
   const scroll = bringScreenIntoView(screen, slot, signal);
+  home.inert = true;
   let flight: HTMLElement | undefined;
   let pocket: HTMLElement | undefined;
   try {
     if (original) {
-      const host = home.getBoundingClientRect(), start = source.getBoundingClientRect();
-      const width = source.clientWidth, height = source.clientHeight;
       const scale = Math.min(.8, slot.width * .92 / width), angle = 68;
       const projectedHeight = height * scale * Math.cos(angle * Math.PI / 180);
       const left = start.left - host.left, top = start.top - host.top;
       const x = slot.left + slot.width / 2 - width / 2 - host.left, y = slot.top + slot.height / 2 + 1 - host.top;
       flight = visualClone(original);
       flight.classList.add('flying-course-disk');
-      Object.assign(flight.style, { left: `${left}px`, top: `${top}px`, width: `${width}px`, height: `${height}px` });
-      home.appendChild(flight);
-      source.dataset.inDrive = '';
-      phase('lifting');
-      const lift = await move(flight, [
-        { transform: getComputedStyle(original).transform, offset: 0 },
-        { transform: `translate(${(x - left) * .08}px,-22px) rotate(0deg)`, offset: .18 },
-        { transform: `translate(${x - left}px,${y - top}px) rotateX(${angle}deg) scale(${scale})`, offset: 1 },
-      ], 330, signal, 'cubic-bezier(.4,0,.22,1)');
-      lift.cancel();
+      Object.assign(flight.style, { left: '0', top: '0', width: `${width}px`, height: `${height}px` });
+      // Keep the disk in one layer throughout the flight and drive insertion.
       pocket = document.createElement('div');
       pocket.className = 'disk-insertion-pocket';
       Object.assign(pocket.style, { left: `${x}px`, top: `${y}px`, width: `${width}px`, height: `${projectedHeight + 12}px` });
-      home.appendChild(pocket);
       pocket.appendChild(flight);
-      Object.assign(flight.style, { left: '0', top: '0' });
+      home.appendChild(pocket);
+      source.dataset.inDrive = '';
+      phase('lifting');
+      const lift = await move(flight, [
+        { transform: `translate3d(${left - x}px,${top - y}px,0) ${initialTransform === 'none' ? '' : initialTransform}`, offset: 0 },
+        { transform: `translate3d(${(left - x) * .92}px,${top - y - 22}px,0) rotateX(0deg) scale(1)`, offset: .18 },
+        { transform: `translate3d(0,0,0) rotateX(${angle}deg) scale(${scale})`, offset: 1 },
+      ], 330, signal, 'cubic-bezier(.4,0,.22,1)');
+      lift.cancel();
+      pocket.style.overflow = 'hidden';
       phase('inserting');
       await move(flight, [
-        { transform: `translateY(0) rotateX(${angle}deg) scale(${scale})` },
-        { transform: `translateY(${-projectedHeight - 8}px) rotateX(${angle}deg) scale(${scale})` },
+        { transform: `translate3d(0,0,0) rotateX(${angle}deg) scale(${scale})` },
+        { transform: `translate3d(0,${-projectedHeight - 8}px,0) rotateX(${angle}deg) scale(${scale})` },
       ], 130, signal, 'cubic-bezier(.4,0,.6,1)');
     }
     await scroll;
