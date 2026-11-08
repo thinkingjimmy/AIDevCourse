@@ -24,15 +24,14 @@
 | 变量 | 环境 | 值 |
 | --- | --- | --- |
 | `ENABLE_EXPERIMENTAL_COREPACK` | Production、Preview | `1`，使 Vercel 使用 `packageManager` 中固定的 pnpm 版本 |
-| `SITE_URL` | Production | 已验证的最终 HTTPS origin |
 
-不要手动设置 Vercel 提供的 `VERCEL_ENV`、`VERCEL_URL`，也不要设置 `CONTENT_TEST`。不需要数据库、模型 API key 或翻译服务。环境变量变更后，需要重新构建部署。
+域名只在 Vercel 项目的 Domains 中配置，无需设置 `SITE_URL`，代码也不再读取该变量。不要手动设置 Vercel 提供的 `VERCEL_ENV`、`VERCEL_URL`、`VERCEL_PROJECT_PRODUCTION_URL`，也不要设置 `CONTENT_TEST`。不需要数据库、模型 API key 或翻译服务。域名或环境变量变更后，需要重新构建部署，以更新静态页面中的完整网址。
 
-生产的 `SITE_URL` 不带路径、账号、端口、查询参数或片段。构建会拒绝缺失值、HTTP、IP 地址、本地域名和示例域名。该检查只验证格式；域名所有权和 Vercel 域名状态仍须在项目中确认。仓库没有预设生产域名。
+Production 使用 Vercel 自动提供的 `https://VERCEL_PROJECT_PRODUCTION_URL` 作为 canonical、hreflang 和 sitemap 的 origin。Vercel 选择最短的生产自定义域名；没有自定义域名时使用项目的 `vercel.app` 域名。该系统变量只包含主机名，不带协议、路径、账号、端口、查询参数或片段。构建会拒绝缺失值、IP 地址、本地域名和示例域名，不会退回每次变化的部署地址。该检查只验证格式；域名所有权和 Vercel 域名状态仍须在项目中确认。仓库没有预设生产域名。
 
-Preview 使用 Vercel 提供的 `https://VERCEL_URL` 作为 canonical、hreflang 和 sitemap 的 origin；即使 Preview 继承了生产 `SITE_URL`，也优先使用部署地址。Preview 的响应头和页面 metadata 均为 `noindex, nofollow`，`robots.txt` 禁止抓取。noindex 不是身份验证，需要限制访问时使用 Vercel Deployment Protection。
+Preview 使用 Vercel 提供的 `https://VERCEL_URL` 作为 canonical、hreflang 和 sitemap 的 origin；即使存在 `VERCEL_PROJECT_PRODUCTION_URL`，也使用预览部署地址。Preview 的响应头和页面 metadata 均为 `noindex, nofollow`，`robots.txt` 禁止抓取。noindex 不是身份验证，需要限制访问时使用 Vercel Deployment Protection。
 
-本地可将 `config/.env.example` 复制到根目录 `.env.local`。本地默认 origin 是 `http://localhost:3000`，并保持 noindex。实际环境文件不提交。
+本地无需环境文件，origin 是 `http://localhost:3000`，并保持 noindex。`config/.env.example` 记录部署环境说明。实际环境文件不提交。
 
 ## 构建前检查
 
@@ -55,7 +54,7 @@ Next.js 的 MDX 集成在构建时生成 `.source` 中的模块、公开目录�
 1. 作者确认品牌、域名、作者身份与首发文章，并确认准备发布的原文和译文已在 `content/` 中。
 2. 执行 `pnpm audit --prod`、`pnpm check`、`pnpm build`、`pnpm test:e2e`。解决高危或严重依赖公告。隔离内容能力另用 `CONTENT_TEST=1 pnpm build` 和 `CONTENT_TEST=1 pnpm test:e2e` 验证。
 3. 推送经检查的提交，在 GitHub 检查 Quality 工作流。分支保护需仓库管理员设置，本文不宣称已启用。
-4. 在 Vercel Preview 复查五语入口、真实课程、缺译文空状态、SEO、搜索和成就，再从同一提交创建 Production 部署。生产构建使用 Production 的 `SITE_URL`；不要直接把按 Preview 环境构建的产物绑定到生产域名，因为静态页面保留了预览 origin 和 noindex。
+4. 在 Vercel Preview 复查五语入口、真实课程、缺译文空状态、SEO、搜索和成就，再从同一提交创建 Production 部署。生产构建使用 `VERCEL_PROJECT_PRODUCTION_URL`；不要直接把按 Preview 环境构建的产物绑定到生产域名，因为静态页面保留了预览 origin 和 noindex。
 5. 记录提交 SHA、部署 URL、生产域名、发布时间、实际内容覆盖和上一可用部署 ID。
 
 只有部署构建使用正常 `pnpm build`；禁止把 `.next-test` 当作生产产物。CI 最后一阶段的 fixture 构建仅用于测试，不存在从 CI 上传它到 Vercel 的步骤。
@@ -70,12 +69,12 @@ Next.js 的 MDX 集成在构建时生成 `.source` 中的模块、公开目录�
 
 在 Vercel 将上一可用部署重新提升为生产，并记录回滚原因、时间和部署 ID。不要运行浏览器存储清理，不要重置用户学习记录。回滚后重做上述冒烟，检查域名、缓存、语言协商和已恢复的文章范围。内容版本较旧时可能重新出现文章，但稳定 ID 仍用于关联浏览器学习记录；不要将旧完成标记转换为成就。
 
-回滚目标须为已通过生产构建检查的部署，且其 `SITE_URL` 与当前生产域名一致。
+回滚目标须为已通过生产构建检查的部署，且构建时的 origin 与当前生产域名一致。
 
 ## 官方依据
 
 - [Vercel Node.js 版本](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions)：主版本选择、`engines` 优先级和补丁更新。
 - [Vercel 包管理器](https://vercel.com/docs/package-managers) 与 [Corepack 设置](https://vercel.com/docs/builds/configure-a-build#corepack)：自动检测与固定 pnpm 版本。
-- [Vercel 系统环境变量](https://vercel.com/docs/environment-variables/system-environment-variables)：`VERCEL_ENV`、`VERCEL_URL` 的含义和启用方式。
+- [Vercel 系统环境变量](https://vercel.com/docs/environment-variables/system-environment-variables)：`VERCEL_ENV`、`VERCEL_URL`、`VERCEL_PROJECT_PRODUCTION_URL` 的含义和启用方式。
 - [Next.js 环境变量](https://nextjs.org/docs/app/guides/environment-variables)：环境文件加载规则。
 - [Next.js 输出与依赖追踪](https://nextjs.org/docs/app/api-reference/config/next-config-js/output)：部署文件追踪和额外包含规则。
