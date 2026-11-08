@@ -5,7 +5,10 @@ export type AchievementDefinition = {
   answer: string; explanation: string; takeaway: string;
   options: { value: string; label: string }[];
 };
-export type CourseAchievement = { id: string; lessonId: string; title: string; url: string };
+export const courseCompletionAchievementId = 'course-completion';
+export type CourseAchievement = { id: string; title: string; url: string } & (
+  { kind: 'exercise'; lessonId: string } | { kind: 'course-completion' }
+);
 export type ContentDocument = {
   file: string; locale: Locale; courseSlug: string; slug: string[]; url: string;
   data: DocumentData; headings: { id: string; title: string; depth: number }[];

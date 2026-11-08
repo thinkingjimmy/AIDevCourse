@@ -9,7 +9,7 @@ import { useLearning } from '@/components/progress/progress-provider';
 import { AchievementGallery } from '@/components/progress/achievement-gallery';
 import { useTranslations } from 'next-intl';
 import type { AchievementDefinition } from '@/lib/content/model';
-import { playAchievementConfetti } from './confetti';
+import { playAchievementConfetti } from '@/components/progress/confetti';
 
 const optionLetter = (index: number): string => index < 26 ? String.fromCharCode(65 + index) : optionLetter(Math.floor(index / 26) - 1) + optionLetter(index % 26);
 

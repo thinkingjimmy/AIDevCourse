@@ -12,6 +12,7 @@
     "toc": "本页目录",
     "markComplete": "标记为已完成",
     "nextChapter": "下一章",
+    "finishCourse": "完成课程",
     "completed": "已完成",
     "overview": "课程总览",
     "lessons": "简体中文已发布 {count} 课",
@@ -43,6 +44,7 @@
     "linkPreviewUnavailable": "暂时无法预览，点击链接查看页面。",
     "noHeadings": "暂无标题",
     "code": "代码",
+    "codeFoldLines": "{count} 行",
     "mermaidDiagram": "Mermaid 图表",
     "toolCallComplete": "已完成",
     "citationSource": "查看来源：{title}",
@@ -111,7 +113,15 @@
     "achievementEarned": "已解锁",
     "achievementLocked": "未解锁",
     "achievementVisit": "前往课程：{title}",
-    "achievementsEmpty": "暂时还没有可解锁的成就。"
+    "achievementsEmpty": "暂时还没有可解锁的成就。",
+    "completionAchievement": "完成 {course}",
+    "completionTitle": "恭喜完成 {course}！",
+    "completionBody": "每一课的积累，都让你离想做的作品更近。继续把学到的知识用起来吧。",
+    "completionPartialTitle": "又完成一课，继续加油！",
+    "completionPartialBody": "每一步积累都算数。回到课程总览，继续完成还没学完的课吧。",
+    "completionInvitation": "如果课程对你有帮助，欢迎给项目点个 GitHub Star，或关注 Jimmy，获取后续更新。",
+    "completionOverview": "返回课程总览",
+    "completionSaveFailed": "学习记录暂时保存在当前页面，刷新后可能丢失。"
   },
   "Search": {
     "open": "搜索课时",

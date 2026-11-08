@@ -226,7 +226,7 @@ test('author dialog follows the selected language and enlarged text', async ({ p
 });
 
 for (const width of [1440, 390]) {
-  test(`lesson header opens language choices at ${width}px`, async ({ page }) => {
+  test(`lesson header opens language choices at ${width}px`, async ({ page, browserName }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/zh/courses/llm-101/what-a-language-model-does');
     const footer = page.locator('[data-slot="sidebar-footer"]');
@@ -241,8 +241,9 @@ for (const width of [1440, 390]) {
     await expect(menu.getByRole('link')).toHaveCount(5);
     await expect(menu.locator('[data-slot="dropdown-menu-sub-trigger"]')).toHaveCount(0);
     await expect(menu.getByRole('link', { name: messages('zh').Ui.about, exact: true })).toHaveCount(0);
-    await page.keyboard.press('Tab');
-    expect(await menu.evaluate(element => element.contains(document.activeElement))).toBe(true);
+    // macOS WebKit uses Option+Tab to include native links in keyboard navigation.
+    await page.keyboard.press(browserName === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab');
+    await expect(menu.getByRole('link').first()).toBeFocused();
     await capture(page, `lesson-header-language-menu-${width}`);
     await page.keyboard.press('Escape');
     await expect(trigger).toBeFocused();

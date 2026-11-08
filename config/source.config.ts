@@ -11,6 +11,7 @@ import { remarkMark } from 'remark-mark-highlight';
 import { remarkMath, remarkValidateMath, rehypeMath, mathOptions } from '../src/lib/content/math';
 import { remarkNumberJimmyNotes } from '../src/lib/content/note-numbers';
 import { remarkMermaid } from '../src/lib/content/mermaid/remark';
+import { codeFoldTransformer, remarkValidateCodeFolds } from '../src/lib/content/code-folds';
 import { vocabularyPaths } from '../src/lib/vocabulary/collections';
 const catalog = readCatalog();
 // Freeze the checked public boundary at build time; runtime routes need no filesystem access.
@@ -34,12 +35,12 @@ export default defineConfig({
     // Keep interactive heading components in the article, not module-level TOC exports.
     remarkHeadingOptions: { generateToc: true },
     valueToExport: ['toc'],
-    remarkPlugins: (plugins) => [remarkMark, remarkMath, remarkValidateMath, remarkNumberJimmyNotes, remarkMermaid, ...plugins],
+    remarkPlugins: (plugins) => [remarkMark, remarkMath, remarkValidateMath, remarkValidateCodeFolds, remarkNumberJimmyNotes, remarkMermaid, ...plugins],
     // Render math before Shiki can treat its generated code nodes as a programming language.
     rehypePlugins: (plugins) => [[rehypeMath, mathOptions], ...plugins.filter((plugin) => plugin !== rehypeToc)],
     rehypeCodeOptions: {
       themes: { light: 'github-light', dark: 'github-light' },
-      transformers: [{ pre(node) { node.properties['data-language'] = this.options.lang; } }],
+      transformers: [{ pre(node) { node.properties['data-language'] = this.options.lang; } }, codeFoldTransformer],
     },
   },
 });

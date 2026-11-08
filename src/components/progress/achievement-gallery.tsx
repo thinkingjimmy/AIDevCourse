@@ -7,6 +7,7 @@ import { BracketsCurlyIcon } from '@phosphor-icons/react/dist/ssr/BracketsCurly'
 import { ChartLineUpIcon } from '@phosphor-icons/react/dist/ssr/ChartLineUp';
 import { ChatTextIcon } from '@phosphor-icons/react/dist/ssr/ChatText';
 import { CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';
+import { GraduationCapIcon } from '@phosphor-icons/react/dist/ssr/GraduationCap';
 import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import { MedalIcon } from '@phosphor-icons/react/dist/ssr/Medal';
 import { ShuffleIcon } from '@phosphor-icons/react/dist/ssr/Shuffle';
@@ -32,7 +33,10 @@ export function AchievementGallery({ children }: { children?: ReactElement }) {
   const format = useFormatter();
   const { courses, learning, ready } = useAchievements();
   const { isMobile, setOpenMobile } = useSidebar();
-  const achievements = courses.flatMap((course) => course.achievements.map((item) => ({ ...item, courseId: course.id })));
+  const achievements = courses.flatMap((course) => course.achievements.map((item) => ({
+    ...item, courseId: course.id, courseTitle: course.title,
+    title: item.kind === 'course-completion' ? t('completionAchievement', { course: course.title }) : item.title,
+  })));
   const isEarned = (courseId: string, id: string) => ready && Object.hasOwn(learning[courseId]?.unlocked ?? {}, id);
   const earned = achievements.filter((item) => isEarned(item.courseId, item.id)).length;
   const total = achievements.length;
@@ -78,7 +82,7 @@ export function AchievementGallery({ children }: { children?: ReactElement }) {
         {total ? <ul className="m-0 grid list-none grid-cols-1 gap-x-4 gap-y-5 p-0 @[15rem]/medals:grid-cols-2 sm:@[34rem]/medals:grid-cols-4" aria-label={t('achievementsTitle')}>
           {achievements.map((achievement) => {
             const unlocked = isEarned(achievement.courseId, achievement.id);
-            const Icon = medalIcons[achievement.id as keyof typeof medalIcons] ?? MedalIcon;
+            const Icon = achievement.kind === 'course-completion' ? GraduationCapIcon : medalIcons[achievement.id as keyof typeof medalIcons] ?? MedalIcon;
             return <li key={`${achievement.courseId}:${achievement.id}`} data-medal={achievement.id} data-medal-course={achievement.courseId} data-earned={unlocked}
               aria-label={`${achievement.title} · ${t(unlocked ? 'achievementEarned' : 'achievementLocked')}`}
               className="group/medal relative grid min-w-0 grid-rows-[4.5rem_minmax(2.5rem,auto)] content-start justify-items-start gap-y-2 text-left">
@@ -90,7 +94,7 @@ export function AchievementGallery({ children }: { children?: ReactElement }) {
                 {unlocked && <span className="absolute -right-1 -bottom-1 flex size-5 items-center justify-center rounded-sm border-2 border-background bg-brand text-white"><CheckIcon size={12} weight="bold" /></span>}
               </span>
               <span className={cn('min-h-10 text-caption leading-copy font-medium text-reading [overflow-wrap:anywhere]', unlocked && 'text-brand')}>{achievement.title}</span>
-              <Link data-medal-link href={achievement.url} aria-label={t('achievementVisit', { title: achievement.title })}
+              <Link data-medal-link href={achievement.url} aria-label={achievement.kind === 'course-completion' ? `${ui('overview')} · ${achievement.courseTitle}` : t('achievementVisit', { title: achievement.title })}
                 onClick={() => { setOpen(false); if (isMobile) setOpenMobile(false); }}
                 className="absolute -top-1.5 left-13.5 z-10 flex size-6.5 items-center justify-center rounded-sm border border-brand/35 bg-background text-brand opacity-0 shadow-[2px_2px_0_var(--color-brand-soft)] transition-opacity group-hover/medal:opacity-100 group-focus-within/medal:opacity-100 hover:border-brand hover:bg-brand-soft focus-visible:opacity-100 focus-visible:outline-brand [@media(hover:none)]:opacity-100 [@media(pointer:coarse)]:opacity-100 [@media(pointer:coarse)]:before:absolute [@media(pointer:coarse)]:before:-inset-2.5">
                 <ArrowUpRightIcon size={14} aria-hidden />

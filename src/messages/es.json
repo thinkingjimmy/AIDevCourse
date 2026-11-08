@@ -12,6 +12,7 @@
     "toc": "En esta página",
     "markComplete": "Marcar como completada",
     "nextChapter": "Siguiente capítulo",
+    "finishCourse": "Finalizar el curso",
     "completed": "Completada",
     "overview": "Resumen del curso",
     "lessons": "{count, plural, one {# lección publicada en español} other {# lecciones publicadas en español}}",
@@ -43,6 +44,7 @@
     "linkPreviewUnavailable": "Vista previa no disponible. Abre el enlace para ver esta página.",
     "noHeadings": "Sin títulos",
     "code": "Código",
+    "codeFoldLines": "{count, plural, one {# línea} other {# líneas}}",
     "mermaidDiagram": "Diagrama Mermaid",
     "toolCallComplete": "Completado",
     "citationSource": "Ver fuente: {title}",
@@ -111,7 +113,15 @@
     "achievementEarned": "Desbloqueada",
     "achievementLocked": "Bloqueada",
     "achievementVisit": "Ir a la lección: {title}",
-    "achievementsEmpty": "Aún no hay logros disponibles."
+    "achievementsEmpty": "Aún no hay logros disponibles.",
+    "completionAchievement": "Completar {course}",
+    "completionTitle": "¡Felicidades por completar {course}!",
+    "completionBody": "Cada lección te acerca a lo que quieres crear. Sigue poniendo en práctica lo que has aprendido.",
+    "completionPartialTitle": "¡Otra lección completada! Sigue así.",
+    "completionPartialBody": "Cada paso cuenta. Vuelve al resumen del curso para continuar las lecciones que te faltan.",
+    "completionInvitation": "Si este curso te ha ayudado, dale una estrella al proyecto en GitHub o sigue a Jimmy para conocer las próximas novedades.",
+    "completionOverview": "Volver al resumen del curso",
+    "completionSaveFailed": "Tu progreso solo se guarda durante esta visita y puede perderse al actualizar la página."
   },
   "Search": {
     "open": "Buscar lecciones",

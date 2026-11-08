@@ -1,6 +1,6 @@
 'use client';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { LearningStorage, coursePrefix, type LearningState } from '@/lib/progress';
+import { LearningStorage, areLessonsComplete, coursePrefix, type LearningState } from '@/lib/progress';
 import type { AchievementCourse } from '@/lib/content/model';
 
 type Context = {
@@ -11,16 +11,25 @@ type Context = {
 };
 const AchievementContext = createContext<Context | null>(null);
 
+function reconcileCompletion(course: AchievementCourse, storage: LearningStorage, learning = storage.load()) {
+  const achievement = course.achievements.find((item) => item.kind === 'course-completion');
+  if (achievement && !Object.hasOwn(learning.unlocked, achievement.id) && areLessonsComplete(course.lessonIds, learning.completed)) {
+    return storage.unlock(achievement.id);
+  }
+  return learning;
+}
+
 export function AchievementProvider({ courses, children }: { courses: AchievementCourse[]; children: ReactNode }) {
-  const stores = useMemo(() => new Map(courses.map((course) => [course.id,
-    new LearningStorage(() => window.localStorage, course.id, course.achievements.map((item) => item.id), course.lessonIds),
-  ])), [courses]);
+  const stores = useMemo(() => new Map(courses.map((course) => [course.id, {
+    course,
+    storage: new LearningStorage(() => window.localStorage, course.id, course.achievements.map((item) => item.id), course.lessonIds),
+  }])), [courses]);
   const [learning, setLearning] = useState<Record<string, LearningState>>({});
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const read = () => {
-      setLearning(Object.fromEntries([...stores].map(([id, storage]) => [id, storage.load()])));
+      setLearning(Object.fromEntries([...stores].map(([id, { course, storage }]) => [id, reconcileCompletion(course, storage)])));
       setReady(true);
     };
     const sync = (event: StorageEvent) => {
@@ -34,27 +43,27 @@ export function AchievementProvider({ courses, children }: { courses: Achievemen
   }, [stores]);
 
   const unlock = useCallback((courseId: string, achievementId: string) => {
-    const storage = stores.get(courseId);
-    if (!ready || !storage || !courses.some((course) => course.id === courseId && course.achievements.some((item) => item.id === achievementId))) return false;
-    const next = storage.unlock(achievementId);
+    const entry = stores.get(courseId);
+    if (!ready || !entry || !entry.course.achievements.some((item) => item.kind === 'exercise' && item.id === achievementId)) return false;
+    const next = reconcileCompletion(entry.course, entry.storage, entry.storage.unlock(achievementId));
     setLearning((current) => ({ ...current, [courseId]: next }));
     return true;
-  }, [courses, ready, stores]);
+  }, [ready, stores]);
 
   const visit = useCallback((courseId: string, lessonId: string) => {
-    const storage = stores.get(courseId);
-    if (!ready || !storage) return;
-    const next = storage.visit(lessonId);
+    const entry = stores.get(courseId);
+    if (!ready || !entry) return;
+    const next = reconcileCompletion(entry.course, entry.storage, entry.storage.visit(lessonId));
     setLearning((current) => ({ ...current, [courseId]: next }));
   }, [ready, stores]);
 
   const complete = useCallback((courseId: string, lessonId: string) => {
-    const storage = stores.get(courseId);
-    if (!ready || !storage || !courses.some((course) => course.id === courseId && course.lessonIds.includes(lessonId))) return false;
-    const next = storage.complete(lessonId);
+    const entry = stores.get(courseId);
+    if (!ready || !entry || !entry.course.lessonIds.includes(lessonId)) return false;
+    const next = reconcileCompletion(entry.course, entry.storage, entry.storage.complete(lessonId));
     setLearning((current) => ({ ...current, [courseId]: next }));
     return true;
-  }, [courses, ready, stores]);
+  }, [ready, stores]);
 
   const value = useMemo(() => ({ courses, learning, ready, unlock, visit, complete }), [courses, learning, ready, unlock, visit, complete]);
   return <AchievementContext value={value}>{children}</AchievementContext>;

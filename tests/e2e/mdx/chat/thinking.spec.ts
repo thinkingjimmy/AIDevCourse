@@ -106,9 +106,8 @@ for (const scenario of [
         const trigger = reasoning.locator(scenario.javaScriptEnabled ? '[data-slot="trace-collapsible-trigger"]' : 'summary');
         const reasoningBody = reasoning.locator(scenario.javaScriptEnabled ? '[data-slot="thinking-content"]' : 'details [data-slot="thinking-content"]');
         const response = reasoning.locator('..').locator('[data-slot="message-response"]');
-        await expect(reasoningBody).toBeHidden();
-        await expect(response).toBeVisible();
-        await trigger.click();
+        if (scenario.javaScriptEnabled) await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+        else await expect(reasoning.locator('details')).toHaveAttribute('open', '');
         await expect(reasoningBody).toBeVisible();
         await expect(reasoningBody).toContainText('先拆解：');
         await expect(reasoningBody).not.toContainText('最后回答：');
@@ -117,6 +116,7 @@ for (const scenario of [
         await expect(reasoningBody).toBeHidden();
         await expect(response).toBeVisible();
         await trigger.click();
+        await expect(reasoningBody).toBeVisible();
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
         await test.info().attach(`thinking-lesson-${scenario.name}`, { body: await reasoning.locator('..').locator('..').screenshot(), contentType: 'image/png' });
       }

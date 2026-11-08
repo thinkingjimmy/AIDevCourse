@@ -11,6 +11,7 @@ import MathExamples from './math/examples.mdx';
 import MermaidExamples from './mermaid/examples.mdx';
 import Links from './links.mdx';
 import Takeaways from './takeaways.mdx';
+import CodeExamples from './code/examples.mdx';
 import Embeds from './embeds/examples.mdx';
 import { getMDXComponents } from '@/components/mdx/components';
 import { InlineCitation } from '@/components/mdx/chat/inline-citation';
@@ -46,6 +47,10 @@ export default async function ComponentPreview({ searchParams }: { searchParams:
       <section id="authoring" className="mt-10 border-t border-border pt-6">
         <h2 className="m-0 mb-3 text-lg font-semibold">MDX 用法</h2>
         <pre tabIndex={0} role="region" aria-label="MDX 示例" className="m-0 overflow-x-auto rounded-md bg-muted p-4 font-mono text-caption leading-body"><code>{'Read <JimmyNoteAnchor id="context">this text</JimmyNoteAnchor>.\n\n<JimmyNote anchor="context">\nAdd a personal observation here.\n\nA second paragraph can include **emphasis** and [links](https://example.com).\n</JimmyNote>'}</code></pre>
+      </section>
+      <section id="code-folding" className="mt-10 border-t border-border pt-6">
+        <h2 className="m-0 mb-3 text-2xl font-semibold">代码块</h2>
+        <div className="course-prose prose"><CodeExamples components={getMDXComponents()} /></div>
       </section>
       <section id="highlights" className="mt-10 border-t border-border pt-6">
         <h2 className="m-0 mb-3 text-2xl font-semibold">文字高亮</h2>

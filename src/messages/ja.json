@@ -12,6 +12,7 @@
     "toc": "このページの内容",
     "markComplete": "完了にする",
     "nextChapter": "次の章へ",
+    "finishCourse": "コースを終了",
     "completed": "完了",
     "overview": "コース概要",
     "lessons": "日本語で公開済み：{count} レッスン",
@@ -43,6 +44,7 @@
     "linkPreviewUnavailable": "プレビューを表示できません。リンクからページを開いてください。",
     "noHeadings": "見出しはありません",
     "code": "コード",
+    "codeFoldLines": "{count} 行",
     "mermaidDiagram": "Mermaid 図",
     "toolCallComplete": "完了",
     "citationSource": "出典を表示：{title}",
@@ -111,7 +113,15 @@
     "achievementEarned": "獲得済み",
     "achievementLocked": "未獲得",
     "achievementVisit": "レッスンへ：{title}",
-    "achievementsEmpty": "まだ獲得できる実績はありません。"
+    "achievementsEmpty": "まだ獲得できる実績はありません。",
+    "completionAchievement": "{course} を修了",
+    "completionTitle": "{course} の修了おめでとうございます！",
+    "completionBody": "一つひとつの学びが、作りたいものへと近づく力になります。学んだことを、これからも実践してみましょう。",
+    "completionPartialTitle": "また一つ学びました。この調子で！",
+    "completionPartialBody": "一歩ずつの積み重ねが大切です。コース概要に戻って、まだ終わっていないレッスンを続けましょう。",
+    "completionInvitation": "このコースが役に立ったら、GitHub でプロジェクトに Star を付けたり、Jimmy をフォローして今後の更新をチェックしたりしてみてください。",
+    "completionOverview": "コース概要に戻る",
+    "completionSaveFailed": "学習記録は今回の閲覧中のみ保持されます。再読み込みすると失われることがあります。"
   },
   "Search": {
     "open": "レッスンを検索",

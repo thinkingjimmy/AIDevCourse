@@ -56,6 +56,18 @@ $$
 
 普通价格写成 `\$10`，避免美元符号被识别为公式。行内代码、普通围栏代码及转义的美元符号保持原样；未闭合的行内公式保持普通文本。无效 LaTeX 会使内容检查或编译失败，错误包含文件、公式起始行列和原因。不支持完整 LaTeX 文档、公式自动编号、交叉引用或自定义宏配置。可在 [公式预览](http://localhost:3000/design/components#math) 检查显示。
 
+Code fences support partial folding with `fold="7-25"`. Count lines from 1 inside the fence. The first line of each range stays visible as the toggle label; the following lines through the inclusive end are initially collapsed. Use a descriptive comment for the title line. Multiple ranges use one attribute, such as `fold="1-4,7-9"`. Ranges must be ordered, must not overlap, and must contain a nonempty title plus at least one following line. Invalid ranges fail content validation and compilation. Native disclosure controls support keyboard input and work without JavaScript. Copy always includes the original full code, without the extra line-count text. Folding does not apply to Mermaid diagrams. See the [code preview](http://localhost:3000/design/components#code-folding).
+
+````mdx
+```ts fold="1-3"
+// Prepare a request
+const input = "Hello";
+const request = { input };
+
+send(request);
+```
+````
+
 普通 Markdown 页面链接自动支持预览，无需添加组件或 import。鼠标悬停 350ms 或键盘聚焦后显示标题、摘要、域名和可用的封面；鼠标移入卡片后保持显示，Escape 关闭。站内已发布课程和课时使用本地标题与简介；外部 HTTPS 链接按需读取页面元数据并缓存。未提供元数据或读取失败时显示域名与提示，链接仍可打开。触屏点击和无 JavaScript 时直接跳转。同页锚点、邮件和下载链接保留原行为。可在 [链接预览](http://localhost:3000/design/components#link-previews) 检查效果。
 
 使用独立的 `<XEmbed url="..." />` 嵌入单条公开 X 帖子，使用 `<YouTube url="..." />` 嵌入单个 YouTube 视频。两个组件均无需 import，只接受必填的静态 `url` 与可选的非空 `title` 字符串，不接受子内容，不能放在行内。可在 [嵌入预览](http://localhost:3000/design/components#embeds) 检查显示。普通链接继续显示链接预览，不会自动转换为播放器。
@@ -73,7 +85,20 @@ X 接受 `x.com` 和 `twitter.com` 的帖子链接，包括移动端域名与 `/
 
 X 使用官方组件，在接近视口时加载，全页共用一次脚本。脚本加载最多等待 10 秒，单条帖子整体最多等待 15 秒；失败时显示本地化提示。YouTube 使用隐私增强播放器，延迟加载，不自动播放，支持全屏与移动端内联播放；窄屏保留至少 200px 高度。X 仅在加载失败或无 JavaScript 时显示原站链接；加载成功后使用帖子自带的查看入口。YouTube 始终保留原站链接。嵌入会直接连接相应平台，受平台隐私政策及可用性影响；隐私增强模式不表示完全没有网络请求或跟踪。构建不请求平台接口，也不需要 API 密钥。
 
-标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`JimmyNoteAnchor`、`KeyTakeaway`、`ResourceDisks`、`Chat`、`ChatMessage`、`ChatThinking`、`ChatToolCall`、`InlineCitation`、`ChatMessageSequence`、`XEmbed`、`YouTube`、`Steps`、`Step`、`LLMGenerationDemo`、`MenuComparisonDemo`、`AnimationDemo`、`TokenizationDiagram`、`TokenProbabilityDiagram`、`LLMPretrainingOverview`、`LLMSingleRoundTrainingDemo`、`LLMMultiRoundTrainingDemo`、`Achievement`、`AchievementOption`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
+Use `XProfile` for a reusable X recommendation card. Required attributes are static, nonempty `username`, `name`, `avatar`, and `bio` strings. Use a username without `@` (1–15 letters, numbers, or underscores) and an existing local `/images/` avatar. The whole card opens `https://x.com/{username}` in a new tab. It supports keyboard navigation and works without JavaScript. `XProfile` must be a standalone block with no children. Wrap one or more cards in `XProfiles` for a two-column layout when the content area is at least 36rem wide; narrower areas use one column. `XProfiles` accepts only direct `XProfile` children and has no attributes. Keep names, biographies, and image sources current; [profile sources](./references/x-profiles.md) record the first set used in `ai-chat-tips`.
+
+```mdx
+<XProfiles>
+  <XProfile
+    username="karpathy"
+    name="Andrej Karpathy"
+    avatar="/images/profiles/x/karpathy.jpg"
+    bio="AI education and practical examples."
+  />
+</XProfiles>
+```
+
+标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`JimmyNoteAnchor`、`KeyTakeaway`、`ResourceDisks`、`Chat`、`ChatMessage`、`ChatThinking`、`ChatToolCall`、`InlineCitation`、`ChatMessageSequence`、`XEmbed`、`YouTube`、`XProfile`、`XProfiles`、`Steps`、`Step`、`LLMGenerationDemo`、`MenuComparisonDemo`、`AnimationDemo`、`TokenizationDiagram`、`TokenProbabilityDiagram`、`LLMPretrainingOverview`、`LLMSingleRoundTrainingDemo`、`LLMMultiRoundTrainingDemo`、`Achievement`、`AchievementOption`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
 
 使用 `mermaid` 代码围栏绘制流程图、时序图等图表，无需 import。图表使用 [Pele](https://pele.run/) 在服务端生成 SVG，不向浏览器加载图表引擎。图表沿用站点字体与颜色；宽图保持文字大小，在图表区域内横向滚动，支持键盘操作、放大文字和无 JavaScript 阅读。通过 `accTitle` 与 `accDescr` 提供图表标题和说明。可在 [组件预览](http://localhost:3000/design/components#mermaid) 检查效果。
 

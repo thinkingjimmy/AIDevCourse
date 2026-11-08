@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 import { scanContent, contentRoot } from './scan';
 import { publishDocuments, validateReferences } from './validate';
-import { identity, renderedAnchors, type Catalog, type CourseManifest, type LessonSummary } from './model';
+import { courseCompletionAchievementId, identity, renderedAnchors, type Catalog, type CourseAchievement, type CourseManifest, type LessonSummary } from './model';
 
 export function readCatalog(options: { root?: string; publicRoot?: string } = {}): Catalog {
   const scan = scanContent(options.root ?? contentRoot());
@@ -25,16 +25,19 @@ export function readCatalog(options: { root?: string; publicRoot?: string } = {}
           moduleTitle: scan.labels.get(`${doc.locale}/${doc.courseSlug}${modulePath ? `/${modulePath}` : ''}`) ?? course.title };
       });
     const sourceOrder = scan.order.get(course.sourceLocale) ?? [];
-    const achievements = visible.filter((doc) => doc.locale === course.sourceLocale && doc.data.courseId === course.courseId && doc.data.kind === 'lesson')
+    const achievements: CourseAchievement[] = visible.filter((doc) => doc.locale === course.sourceLocale && doc.data.courseId === course.courseId && doc.data.kind === 'lesson')
       .sort((a, b) => sourceOrder.indexOf(a.file) - sourceOrder.indexOf(b.file))
       .flatMap((doc) => doc.achievements.map((achievement) => {
         const lessonId = doc.data.kind === 'lesson' ? doc.data.lessonId : '';
         const translated = visible.find((item) => item.locale === document.locale && item.data.courseId === course.courseId &&
           item.data.kind === 'lesson' && item.data.lessonId === lessonId);
         const localAchievement = translated?.achievements.find((item) => item.id === achievement.id);
-        return { id: achievement.id, lessonId, title: localAchievement?.title ?? achievement.title,
+        return { kind: 'exercise' as const, id: achievement.id, lessonId, title: localAchievement?.title ?? achievement.title,
           url: `${localAchievement ? translated!.url : doc.url}#achievement-${achievement.id}` };
       }));
+    if (course.section !== 'introduction' && (course.level === 'beginner' || course.level === 'intermediate')) {
+      achievements.push({ kind: 'course-completion', id: courseCompletionAchievementId, title: course.title, url: document.url });
+    }
     courses.push({ id: course.courseId, locale: document.locale, slug: document.courseSlug, title: course.title,
       description: course.description, url: document.url, sourceLocale: course.sourceLocale, level: course.level, section: course.section,
       goals: course.goals, audience: course.audience, prerequisites: course.prerequisites,

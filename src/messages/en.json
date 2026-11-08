@@ -12,6 +12,7 @@
     "toc": "On this page",
     "markComplete": "Mark as complete",
     "nextChapter": "Next chapter",
+    "finishCourse": "Finish course",
     "completed": "Completed",
     "overview": "Course overview",
     "lessons": "{count, plural, one {# published lesson in English} other {# published lessons in English}}",
@@ -43,6 +44,7 @@
     "linkPreviewUnavailable": "Preview unavailable. Open the link to view this page.",
     "noHeadings": "No headings",
     "code": "Code",
+    "codeFoldLines": "{count, plural, one {# line} other {# lines}}",
     "mermaidDiagram": "Mermaid diagram",
     "toolCallComplete": "Completed",
     "citationSource": "View source: {title}",
@@ -111,7 +113,15 @@
     "achievementEarned": "Unlocked",
     "achievementLocked": "Locked",
     "achievementVisit": "Go to lesson: {title}",
-    "achievementsEmpty": "There are no achievements available yet."
+    "achievementsEmpty": "There are no achievements available yet.",
+    "completionAchievement": "Complete {course}",
+    "completionTitle": "Congratulations on completing {course}!",
+    "completionBody": "Each lesson brings you closer to what you want to build. Keep putting what you have learned into practice.",
+    "completionPartialTitle": "Another lesson complete. Keep going!",
+    "completionPartialBody": "Every step counts. Return to the course overview to continue the lessons you have not finished yet.",
+    "completionInvitation": "If the course helped you, give the project a star on GitHub or follow Jimmy for future updates.",
+    "completionOverview": "Back to course overview",
+    "completionSaveFailed": "Your learning records are saved only for this visit and may be lost when you refresh."
   },
   "Search": {
     "open": "Search lessons",

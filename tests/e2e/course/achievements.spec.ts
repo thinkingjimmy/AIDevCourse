@@ -227,17 +227,27 @@ for (const width of [320, 390]) {
   });
 }
 
-test('translations use original exercises when the translated exercise is missing', async ({ page, browserName }) => {
+test('gallery localizes available exercises and keeps original-language fallbacks', async ({ page, browserName }) => {
   const english = catalog.courses.find((item) => item.locale === 'en' && item.id === course.id)!;
+  const translated = catalog.documents.find((doc) => doc.url === english.lessons[0].url)!.achievements.find((item) => item.id === firstAchievement.id)!;
+  const originalCourse = globalAchievementCourses(catalog, 'en').find((item) => item.achievements.some((achievement) => achievement.kind === 'exercise') && !catalog.courses.some((course) => course.id === item.id && course.locale === 'en'))!;
+  const original = originalCourse.achievements.find((item) => item.kind === 'exercise')!;
   await page.goto(english.lessons[0].url);
   await page.getByRole('button', { name: 'My achievements', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'My achievements' });
   await expect(dialog.locator('[data-medal]')).toHaveCount(total);
-  await expect(dialog.locator('[data-medal]').first()).toContainText(firstDefinition.title);
-  await expect(dialog.locator('[data-medal]').first().getByRole('link')).toHaveAttribute('href', `${firstLesson.url}#achievement-${firstAchievement.id}`);
+  await expect(dialog.locator('[data-medal]').first()).toContainText(translated.title);
+  await expect(dialog.locator('[data-medal]').first().getByRole('link')).toHaveAttribute('href', `${english.lessons[0].url}#achievement-${firstAchievement.id}`);
+  const fallback = dialog.locator(`[data-medal-course="${originalCourse.id}"][data-medal="${original.id}"]`);
+  await expect(fallback).toContainText(original.title);
+  await expect(fallback.getByRole('link')).toHaveAttribute('href', original.url);
   await expect(dialog.getByRole('button', { name: 'Close', exact: true })).toBeFocused();
   // macOS WebKit uses Option+Tab to include links in keyboard navigation.
   await page.keyboard.press(browserName === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab');
+  // Firefox includes overflowing scroll regions in its native Tab order.
+  if (browserName === 'firefox' && await dialog.locator('.overflow-y-auto').evaluate((element) => element === document.activeElement)) {
+    await page.keyboard.press('Tab');
+  }
   await expect(dialog.locator('[data-medal]').first().getByRole('link')).toBeFocused();
   await expect(dialog.locator('[data-medal]').first().getByRole('link')).toHaveCSS('opacity', '1');
 });

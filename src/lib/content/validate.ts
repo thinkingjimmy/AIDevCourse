@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs';
 import { resolve, sep } from 'node:path';
-import { identity, renderedAnchors, type ContentDocument } from './model';
+import { courseCompletionAchievementId, identity, renderedAnchors, type ContentDocument } from './model';
 import { languageNames, type Locale } from '../i18n/config';
 import { localePath, pathLocale, stripLocale } from '../i18n/routing';
 
@@ -23,6 +23,7 @@ export function publishDocuments(documents: ContentDocument[], order: Map<Locale
     if (byURL.has(doc.url)) fail(doc, `Duplicate URL ${doc.url}`);
     if (doc.data.kind === 'course' && doc.achievements.length) fail(doc, 'Achievements belong in lesson articles');
     for (const achievement of doc.achievements) {
+      if (achievement.id === courseCompletionAchievementId) fail(doc, 'The course-completion achievement ID is reserved');
       const achievementKey = `${doc.locale}:${doc.data.courseId}:${achievement.id}`;
       if (achievementIds.has(achievementKey)) fail(doc, `Duplicate achievement ID ${achievement.id}`);
       achievementIds.add(achievementKey);

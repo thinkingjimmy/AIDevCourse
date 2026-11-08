@@ -12,7 +12,8 @@ import type { Root } from 'mdast';
 import type { AchievementDefinition, ContentDocument } from './model';
 import { parseXUrl, parseYouTubeUrl } from '../embeds/urls';
 import { isEmbedOnlyNote } from './note-numbers';
-export const supportedComponents = ['Callout', 'JimmyNote', 'JimmyNoteAnchor', 'KeyTakeaway', 'ResourceDisks', 'Chat', 'ChatMessage', 'ChatThinking', 'ChatToolCall', 'InlineCitation', 'ChatMessageSequence', 'XEmbed', 'YouTube', 'Steps', 'Step', 'LLMGenerationDemo', 'MenuComparisonDemo', 'NewtonSecondLawDemo', 'AnimationDemo', 'TokenizationDiagram', 'TokenProbabilityDiagram', 'LLMPretrainingOverview', 'LLMSingleRoundTrainingDemo', 'LLMMultiRoundTrainingDemo', 'Achievement', 'AchievementOption'] as const;
+import { validateCodeFolds } from './code-folds';
+export const supportedComponents = ['Callout', 'JimmyNote', 'JimmyNoteAnchor', 'KeyTakeaway', 'ResourceDisks', 'Chat', 'ChatMessage', 'ChatThinking', 'ChatToolCall', 'InlineCitation', 'ChatMessageSequence', 'XEmbed', 'YouTube', 'XProfile', 'XProfiles', 'Steps', 'Step', 'LLMGenerationDemo', 'MenuComparisonDemo', 'NewtonSecondLawDemo', 'AnimationDemo', 'TokenizationDiagram', 'TokenProbabilityDiagram', 'LLMPretrainingOverview', 'LLMSingleRoundTrainingDemo', 'LLMMultiRoundTrainingDemo', 'Achievement', 'AchievementOption'] as const;
 type Element = {
   name: string; attributes: { type: string; name: string; value: unknown }[];
   children: { type: string; value?: string; name?: string; children?: Element['children'] }[];
@@ -23,6 +24,7 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
   const tree = unified().use(remarkParse).use(remarkGfm).use(remarkMdx).use(remarkMark).use(remarkMath).parse(body) as Root;
   validateMath(tree, file, lineOffset);
   validateMermaid(tree, file, lineOffset);
+  validateCodeFolds(tree, file, lineOffset);
   const slugger = new GithubSlugger();
   const headings: ContentDocument['headings'] = [];
   const links: ContentDocument['links'] = [];
@@ -67,7 +69,13 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
         if (node.type !== 'mdxJsxFlowElement') fail(`${element.name} must be a standalone block`);
         if (element.children.some((child) => child.type !== 'text' || child.value?.trim())) fail(`${element.name} does not accept children`);
       }
-      if (['Chat', 'KeyTakeaway'].includes(element.name) && element.attributes.length) fail(`${element.name} does not accept attributes`);
+      if (['Chat', 'KeyTakeaway', 'XProfiles'].includes(element.name) && element.attributes.length) fail(`${element.name} does not accept attributes`);
+      if (element.name === 'XProfiles') {
+        if (node.type !== 'mdxJsxFlowElement') fail('XProfiles must be a standalone block');
+        const profiles = element.children.filter(child => child.type !== 'text' || child.value?.trim());
+        if (!profiles.length) fail('XProfiles requires at least one XProfile');
+        if (profiles.some(child => child.type !== 'mdxJsxFlowElement' || child.name !== 'XProfile')) fail('XProfiles accepts only direct XProfile children');
+      }
       if (element.name === 'KeyTakeaway') {
         if (node.type === 'mdxJsxTextElement') fail('KeyTakeaway must be a standalone block');
         if (!toString(node).trim()) fail('KeyTakeaway requires text to remember');
@@ -91,7 +99,7 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
         if (!toString(node).trim()) fail(element.name === 'ChatThinking' ? 'ChatThinking requires reasoning content' : 'ChatToolCall requires content');
       }
       const embed = element.name === 'XEmbed' || element.name === 'YouTube';
-      const allowed: readonly string[] = embed ? ['url', 'title'] : element.name === 'JimmyNoteAnchor' ? ['id', 'variant'] : element.name === 'JimmyNote' ? ['anchor'] : element.name === 'Achievement' ? achievementFields : element.name === 'AchievementOption' ? ['value'] : element.name === 'ChatMessage' ? ['from', 'state'] : element.name === 'ChatToolCall' ? ['name', 'title', 'defaultOpen'] : element.name === 'ChatThinking' ? ['defaultOpen'] : element.name === 'InlineCitation' ? ['url', 'title', 'description'] : ['title', 'type'];
+      const allowed: readonly string[] = embed ? ['url', 'title'] : element.name === 'XProfile' ? ['username', 'name', 'avatar', 'bio'] : element.name === 'JimmyNoteAnchor' ? ['id', 'variant'] : element.name === 'JimmyNote' ? ['anchor'] : element.name === 'Achievement' ? achievementFields : element.name === 'AchievementOption' ? ['value'] : element.name === 'ChatMessage' ? ['from', 'state'] : element.name === 'ChatToolCall' ? ['name', 'title', 'defaultOpen'] : element.name === 'ChatThinking' ? ['defaultOpen'] : element.name === 'InlineCitation' ? ['url', 'title', 'description'] : ['title', 'type'];
       const attributes: Record<string, string> = {};
       for (const attribute of element.attributes) {
         if (attribute.type !== 'mdxJsxAttribute' || !allowed.includes(attribute.name)) fail(`Unsupported attribute on ${element.name}; use static ${allowed.join('/')} values`);
@@ -104,6 +112,14 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
         }
         if (typeof attribute.value !== 'string') fail(`Unsupported attribute on ${element.name}; use static strings`);
         attributes[attribute.name] = attribute.value as string;
+      }
+      if (element.name === 'XProfile') {
+        if (node.type !== 'mdxJsxFlowElement') fail('XProfile must be a standalone block');
+        if (element.children.some(child => child.type !== 'text' || child.value?.trim())) fail('XProfile does not accept children');
+        for (const field of ['username', 'name', 'avatar', 'bio']) if (!attributes[field]?.trim()) fail(`XProfile requires a nonempty ${field}`);
+        if (!/^[A-Za-z0-9_]{1,15}$/.test(attributes.username)) fail('XProfile username must contain 1–15 letters, numbers, or underscores');
+        links.push({ url: `https://x.com/${attributes.username}`, image: false, label: attributes.name });
+        links.push({ url: attributes.avatar, image: true, label: attributes.name });
       }
       if (element.name === 'ChatToolCall') {
         for (const field of ['name', 'title']) if (!attributes[field]?.trim()) fail(`ChatToolCall requires a nonempty ${field}`);

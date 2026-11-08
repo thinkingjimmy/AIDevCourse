@@ -1,14 +1,14 @@
 
 const colors = ['#ffca28', '#ff5a36', '#ff2d95', '#b84dff', '#536dfe', '#00b8ff', '#00d8a0', '#ffd740'];
 
-export function playAchievementConfetti(): () => void {
+export function playAchievementConfetti({ layer: placement = 'page' }: { layer?: 'page' | 'dialog' } = {}): () => void {
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
   if (motion.matches) return () => {};
 
   const layer = document.createElement('div');
   layer.dataset.achievementConfetti = '';
   layer.setAttribute('aria-hidden', 'true');
-  layer.className = 'pointer-events-none fixed inset-0 z-[60] overflow-hidden';
+  layer.className = `pointer-events-none fixed inset-0 overflow-hidden ${placement === 'dialog' ? 'z-[72]' : 'z-[60]'}`;
   document.body.append(layer);
 
   const animations: Animation[] = [];

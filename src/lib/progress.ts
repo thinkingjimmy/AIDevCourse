@@ -1,4 +1,8 @@
 export type LearningState = { unlocked: Record<string, string>; completed: Record<string, string>; last?: string; failed: boolean };
+export function areLessonsComplete(lessonIds: readonly string[], completed: LearningState['completed']) {
+  return lessonIds.length > 0 && lessonIds.every((id) => Object.hasOwn(completed, id));
+}
+
 type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 const validId = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const validDate = (value: unknown): value is string => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value) && Number.isFinite(Date.parse(value));
