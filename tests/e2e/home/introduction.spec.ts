@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { readCatalog } from '../../../src/lib/content/manifest';
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published introduction course.');
 const title = '从想法到作品';
@@ -24,12 +25,14 @@ for (const scenario of [
       const errors: string[] = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.goto('/zh');
-      await expect(page.locator('#catalog h2')).toHaveText(['学习资源', '入门', '中级']);
-      const card = page.getByRole('region', { name: '学习资源', exact: true }).getByRole('link', { name: title, exact: true });
+      const courses = page.getByRole('region', { name: '系统课程', exact: true });
+      const card = courses.getByRole('link', { name: title, exact: true });
       await expect(card).toHaveAttribute('href', url);
       await expect(card.locator('.disk-meta')).toHaveText('起步6 课');
       await expect(page.locator('[data-slot="hero-primary-action"]')).toHaveAttribute('href', url);
-      await expect(page.getByRole('region', { name: '入门', exact: true }).getByRole('heading', { level: 3 })).toHaveText(['LLM 101', 'Coding 101', '设计 101']);
+      await expect(courses.getByRole('heading', { level: 3 }).first()).toHaveText(title);
+      const published = readCatalog().courses.filter(course => course.locale === 'zh' && course.id !== 'musings');
+      await expect(courses.getByRole('heading', { level: 3 })).toHaveText(published.slice(0, 9).map(course => course.title));
       if (scenario.javaScriptEnabled) expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations).toEqual([]);
       await card.focus(); await card.press('Enter');
       await expect(page).toHaveURL(url);
@@ -91,11 +94,11 @@ for (const scenario of [
   });
 }
 
-test('untranslated introduction groups stay hidden', async ({ page }, testInfo) => {
+test('untranslated introduction courses stay out of the catalog', async ({ page }, testInfo) => {
   for (const path of ['/', '/ja', '/fr', '/es']) {
     await page.goto(path);
-    await expect(page.locator('#courses-introduction')).toHaveCount(0);
-    await expect(page.locator('#catalog h2')).toHaveCount(2);
+    await expect(page.locator('[data-course-disk="ai-coding"]')).toHaveCount(0);
+    await expect(page.locator('#catalog').getByRole('heading', { level: 2 })).toHaveCount(1);
     await expect(page.getByRole('link', { name: 'LLM 101', exact: true })).toBeVisible();
   }
   await testInfo.attach('Localized catalog', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });

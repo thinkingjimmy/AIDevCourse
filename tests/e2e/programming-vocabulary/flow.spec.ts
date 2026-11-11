@@ -41,11 +41,11 @@ for (const scenario of [
       };
       const copy = dictionary('zh');
       const term = copy.terms['static-website'];
-      await page.goto('/zh');
-      const resources = page.getByRole('region', { name: '学习资源', exact: true });
+      await page.goto('/zh?view=resources');
+      const resources = page.getByRole('region', { name: '学习资料', exact: true });
       const card = resources.getByRole('link', { name: copy.title, exact: true });
       await expect(card).toHaveAttribute('href', path);
-      await expect(card.locator('.disk-meta')).toHaveText('工具1 词条');
+      await expect(card.locator('.optical-disc-meta')).toHaveText('1 词条');
       await card.focus();
       await card.press('Enter');
       await expect(page).toHaveURL(path);

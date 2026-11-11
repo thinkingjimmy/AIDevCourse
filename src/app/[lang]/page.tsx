@@ -9,7 +9,7 @@ import { pageMetadata } from '@/lib/metadata';
 import type { GalleryItem } from '@/components/home/disk';
 import { getLearningResources } from '@/components/home/resources';
 
-type Props = { params: Promise<{ lang: string }>; searchParams: Promise<{ page?: string | string[] }> };
+type Props = { params: Promise<{ lang: string }>; searchParams: Promise<{ page?: string | string[]; view?: string | string[] }> };
 export async function generateMetadata({ params }: Props) {
   const { lang } = await params; if (!isLocale(lang)) return {};
   const t = await getTranslations({ locale: lang, namespace: 'Home' });
@@ -20,22 +20,30 @@ export default async function HomePage({ params, searchParams }: Props) {
   const t = await getTranslations({ locale: lang, namespace: 'Home' });
   const course = await getTranslations({ locale: lang, namespace: 'Course' });
   const ui = await getTranslations({ locale: lang, namespace: 'Ui' });
-  const resources = await getLearningResources(lang);
-  const courses = getCourses(lang);
+  const { items: dictionaries } = await getLearningResources(lang);
+  const catalog = getCourses(lang);
+  const courses = catalog.filter(item => item.id !== 'musings');
+  const blog = catalog.find(item => item.id === 'musings');
   const startingCourse = courses.find(item => item.section === 'introduction' && item.lessons.length)
     ?? courses.find(item => item.id === 'llm-101') ?? courses.find(item => item.lessons.length) ?? courses[0];
-  const requestedPage = Number((await searchParams).page);
+  const { page, view } = await searchParams;
   const courseItems: GalleryItem[] = courses.map(({ id, slug, title, description, url, level, section, lessons }) => ({
-    id, slug, title, description, url, kind: 'course', group: section === 'introduction' ? 'resources' : level,
+    id, slug, title, description, url, kind: 'course', group: section === 'introduction' ? 'introduction' : level,
     dots: section === 'introduction' ? 0 : { beginner: 1, intermediate: 2, advanced: 3 }[level],
     labels: { level: section === 'introduction' ? t('gettingStarted') : ui(level), status: lessons.length ? ui('lessonCount', { count: lessons.length }) : course('updating') },
   }));
-  const items = [...courseItems.filter(item => item.group === 'resources'), ...resources.items, ...courseItems.filter(item => item.group !== 'resources')];
-  const page = Number.isSafeInteger(requestedPage) ? Math.min(Math.max(1, requestedPage), Math.max(1, Math.ceil(items.length / 9))) : 1;
-  return <HomeGallery locale={lang} page={page} startUrl={startingCourse?.url ?? localePath(lang, '/about')}
-    items={items}
+  const resourceItems = [...dictionaries];
+  if (blog) resourceItems.unshift({
+    id: blog.id, slug: blog.slug, title: blog.title, description: blog.description, url: blog.url,
+    kind: 'resource', group: 'resources', dots: 0, labels: { level: '', status: t('articleCount', { count: blog.lessons.length }) },
+  });
+  const views = { courses: t('coursesView'), resources: t('resourcesView') };
+  const directions = (view: string) => ({ previous: t('previousView', { view }), next: t('nextView', { view }) });
+  return <HomeGallery locale={lang} initialView={view === 'resources' ? 'resources' : 'courses'} initialPage={Number(page)}
+    startUrl={startingCourse?.url ?? localePath(lang, '/about')} items={{ courses: courseItems, resources: resourceItems }}
     labels={{ title: t('title'), intro: t('heroIntro'), start: courses.length ? t('start') : course('aboutSite'),
-      opening: t('openingCourse'), previous: t('previousPage'), next: t('nextPage'), pagination: t('pagination'),
-      levels: { resources: resources.label, ...Object.fromEntries((['beginner', 'intermediate', 'advanced'] as const).map(level => [level, ui(level)])) },
+      opening: { courses: t('openingCourse'), resources: t('openingResource') },
+      previous: t('previousPage'), next: t('nextPage'), pagination: t('pagination'), views,
+      switchView: t('switchView'), switchTo: { courses: directions(views.courses), resources: directions(views.resources) },
     }}>{!courses.length && <EmptyCourses locale={lang} />}</HomeGallery>;
 }

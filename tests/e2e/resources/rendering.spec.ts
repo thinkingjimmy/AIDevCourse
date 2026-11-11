@@ -3,6 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { readFileSync } from 'node:fs';
 import { locales } from '../../../src/lib/i18n/config';
 import { localePath } from '../../../src/lib/i18n/routing';
+import { vocabularyCategories } from '../../../src/lib/vocabulary/catalog';
 
 const lesson = '/zh/courses/getting-started/about-this-course';
 const destination = '/zh/vocabulary/typography';
@@ -15,21 +16,20 @@ for (const scenario of [
   { name: 'enlarged', width: 390, size: 24, javaScriptEnabled: true },
   { name: 'no-js', width: 390, size: 16, javaScriptEnabled: false },
 ]) {
-  test(`lesson resource disks reuse the homepage and navigate on ${scenario.name}`, async ({ browser, baseURL }, testInfo) => {
+  test(`lesson resource disks share homepage metadata and navigate on ${scenario.name}`, async ({ browser, baseURL }, testInfo) => {
     const context = await browser.newContext({ baseURL, viewport: { width: scenario.width, height: 960 },
       javaScriptEnabled: scenario.javaScriptEnabled, hasTouch: scenario.width < 961, reducedMotion: 'reduce' });
     try {
       const page = await context.newPage();
       const errors: string[] = [];
       page.on('pageerror', error => errors.push(error.message));
-      await page.goto('/zh');
+      await page.goto('/zh?view=resources');
       await page.waitForLoadState('networkidle');
       const homeDisk = page.locator('[data-resource-disk="vocabulary"]');
       await expect(homeDisk).toHaveAccessibleName('设计词典');
       const home = await homeDisk.evaluate(element => ({
-        artwork: getComputedStyle(element.querySelector('.course-disk')!).borderImageSource,
-        title: element.querySelector('.disk-title')!.textContent,
-        meta: element.querySelector('.disk-meta')!.textContent,
+        title: element.querySelector('.optical-disc-title')!.textContent,
+        meta: element.querySelector('.optical-disc-meta')!.textContent,
         description: document.getElementById(element.getAttribute('aria-describedby')!)!.textContent,
       }));
       await page.goto(lesson);
@@ -41,8 +41,8 @@ for (const scenario of [
       await expect(disk).toHaveAttribute('href', destination);
       await expect(disk).toHaveAccessibleDescription(home.description!);
       await expect(disk.locator('.disk-title')).toHaveText(home.title!);
-      await expect(disk.locator('.disk-meta')).toHaveText(home.meta!);
-      await expect(disk.locator('.course-disk')).toHaveCSS('border-image-source', home.artwork);
+      await expect(disk.locator('.disk-meta')).toHaveText(`工具${home.meta}`);
+      await expect(disk.locator('.course-disk')).toHaveCSS('border-image-source', /disks\/amber\.svg/);
       expect(await resources.getByRole('listitem').count()).toBeGreaterThanOrEqual(1);
       await resources.scrollIntoViewIfNeeded();
       const geometry = await resources.evaluate(element => {
@@ -118,15 +118,16 @@ test('resource disks wrap additional cards inside the article at narrow widths',
 
 test('the shared homepage resource catalog keeps localized labels and destinations', async ({ page }, testInfo) => {
   const evidence = [];
+  const count = vocabularyCategories.reduce((total, category) => total + category.terms.length, 0);
   for (const locale of locales) {
     const copy = JSON.parse(readFileSync(`src/messages/vocabulary/${locale}.json`, 'utf8'));
     await page.context().clearCookies();
-    await page.goto(localePath(locale));
+    await page.goto(`${localePath(locale)}?view=resources`);
     const disk = page.locator('[data-resource-disk="vocabulary"]');
     await expect(disk).toHaveAccessibleName(copy.title);
     await expect(disk).toHaveAccessibleDescription(copy.description);
     await expect(disk).toHaveAttribute('href', localePath(locale, '/vocabulary/typography'));
-    await expect(disk.locator('.disk-level')).toHaveText(copy.tool);
+    await expect(disk.locator('.optical-disc-meta')).toHaveText(copy.termCount.replace('{count}', String(count)));
     evidence.push({ locale, title: copy.title, url: await disk.getAttribute('href') });
   }
   await testInfo.attach('Localized resource catalog', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });

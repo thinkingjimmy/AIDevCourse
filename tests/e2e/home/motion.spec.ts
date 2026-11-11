@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { readCatalog } from '../../../src/lib/content/manifest';
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published disk catalog.');
 const courseUrl = '/zh/courses/llm-101';
@@ -169,12 +170,15 @@ for (const interruption of ['viewport', 'motion preference'] as const) {
   });
 }
 
-test('invalid or out-of-range catalog pages retain published course links', async ({ page }, testInfo) => {
-  for (const value of ['0', '-1', '99', 'NaN', '1.5', 'Infinity', '1&page=2']) {
+test('invalid or out-of-range catalog pages stay within the published catalog', async ({ page }, testInfo) => {
+  const courses = readCatalog().courses.filter(course => course.locale === 'zh' && course.id !== 'musings');
+  const publishedUrls = courses.map(course => course.url);
+  const visibleUrls = () => page.locator('[data-course-disk]').evaluateAll(links => links.map(link => link.getAttribute('href')));
+  for (const value of ['0', '-1', 'NaN', '1.5', 'Infinity', '1&page=2']) {
     await page.goto(`/zh?page=${value}`);
-    await expect(page.locator('[data-course-disk]')).toHaveCount(5);
-    await expect(page.locator('.disk-pagination')).toHaveCount(0);
-    await expect(page.locator(diskSelector)).toHaveAttribute('href', courseUrl);
+    expect(await visibleUrls()).toEqual(publishedUrls.slice(0, 9));
   }
+  await page.goto(`/zh?page=${courses.length + 1}`);
+  expect(await visibleUrls()).toEqual(publishedUrls.slice(Math.floor((courses.length - 1) / 9) * 9));
   await testInfo.attach('Catalog bounds', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
 });

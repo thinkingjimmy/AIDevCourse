@@ -13,7 +13,7 @@ for (const [name, width, height] of [
     const hero = page.getByRole('banner');
     const initial = (await hero.boundingBox())!;
     expect(initial.height).toBeLessThan(height * .7);
-    const disk = page.locator('[data-course-disk="coding-101"]');
+    const disk = page.locator('[data-course-disk="agent-101"]');
     await page.evaluate(() => window.scrollTo({ top: 500, behavior: 'instant' }));
     await disk.focus();
     const geometry = await disk.evaluate(element => {
@@ -30,7 +30,7 @@ for (const [name, width, height] of [
     expect(geometry.disk.top).toBeGreaterThanOrEqual(geometry.hero.bottom);
     expect(geometry.clickable).toBe(true);
     await expect(disk).toBeFocused();
-    await expect(page.locator('[data-slot="mac-screen"]')).toHaveText('Coding 101');
+    await expect(page.locator('[data-slot="mac-screen"]')).toHaveText('Agent 101');
     await testInfo.attach('Sticky hero and reachable disk', { body: JSON.stringify(geometry, null, 2), contentType: 'application/json' });
     await testInfo.attach('Scrolled course gallery', { body: await page.screenshot(), contentType: 'image/png' });
   });

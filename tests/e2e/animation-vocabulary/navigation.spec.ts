@@ -11,13 +11,13 @@ test.use({ viewport: { width: 1440, height: 1100 }, reducedMotion: 'reduce' });
 test('animation and design dictionaries are sibling resources on the homepage and in lessons', async ({ page }, testInfo) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto('/zh');
-  const resources = page.getByRole('region', { name: '学习资源', exact: true });
+  await page.goto('/zh?view=resources');
+  const resources = page.getByRole('region', { name: '学习资料', exact: true });
   const animation = resources.getByRole('link', { name: '动画词典', exact: true });
   await expect(resources.getByRole('link', { name: '设计词典', exact: true })).toBeVisible();
   await expect(animation).toHaveAttribute('href', path);
-  await expect(animation.locator('.disk-meta')).toHaveText('工具6 词条');
-  await testInfo.attach('Sibling resource disks', { body: await resources.screenshot(), contentType: 'image/png' });
+  await expect(animation.locator('.optical-disc-meta')).toHaveText('6 词条');
+  await testInfo.attach('Sibling resource discs', { body: await resources.screenshot(), contentType: 'image/png' });
   await animation.focus();
   await animation.press('Enter');
   await expect(page).toHaveURL(path);
@@ -103,7 +103,7 @@ test('five languages publish localized cards, metadata, resources and stable ter
     await expect(page).toHaveURL(`${localePath(next, route)}#reveal`);
     await expect(page.locator('#reveal')).toHaveAttribute('data-selected', 'true');
     await page.context().clearCookies();
-    await page.goto(localePath(locale));
+    await page.goto(`${localePath(locale)}?view=resources`);
     await expect(page.locator('[data-resource-disk="animation-vocabulary"]')).toHaveAccessibleName(copy.title);
     const entry = await request.get(localePath(locale, '/animation-vocabulary'));
     expect(new URL(entry.url()).pathname).toBe(localePath(locale, route));

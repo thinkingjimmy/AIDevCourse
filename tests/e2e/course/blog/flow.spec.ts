@@ -57,11 +57,11 @@ for (const scenario of [
         await page.screenshot({ path, animations: 'disabled' });
         await testInfo.attach(name, { path, contentType: 'image/png' });
       };
-      await page.goto('/zh');
-      const resources = page.getByRole('region', { name: '学习资源', exact: true });
+      await page.goto('/zh?view=resources');
+      const resources = page.getByRole('region', { name: '学习资料', exact: true });
       const card = resources.getByRole('link', { name: '博客', exact: true });
       await expect(card).toHaveAttribute('href', course);
-      await expect(card.locator('.disk-meta')).toContainText('2 课');
+      await expect(card.locator('.optical-disc-meta')).toHaveText('2 篇文章');
       await expect(page.locator('[data-slot="hero-primary-action"]')).toHaveAttribute('href', '/zh/courses/getting-started');
       await card.focus();
       await card.press('Enter');
@@ -90,11 +90,12 @@ for (const scenario of [
           const source = `/images/writing/no-loyalty-to-ai-coding-tools/${filename}`;
           const image = images.nth(imageIndex);
           const imageUrl = new URL((await image.getAttribute('src'))!, baseURL);
-          expect(imageUrl.pathname === '/_next/image' ? imageUrl.searchParams.get('url') : imageUrl.pathname).toBe(source);
+          const original = imageUrl.pathname === '/_next/image' ? imageUrl.searchParams.get('url') : imageUrl.pathname;
+          expect(original).toMatch(/^\/(?:images\/|_next\/static\/media\/)/);
           await expect(image).toHaveAttribute('alt', /\S+/);
           await image.scrollIntoViewIfNeeded();
           await expect.poll(() => image.evaluate(element => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-          const response = await context.request.get(source);
+          const response = await context.request.get(original!);
           expect(response.ok()).toBe(true);
           expect(digest(await response.body())).toBe(digest(readFileSync(`public${source}`)));
         }

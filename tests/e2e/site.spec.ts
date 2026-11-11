@@ -239,20 +239,33 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       test.skip(process.env.CONTENT_TEST === '1', 'Uses the published catalog.');
       await page.setViewportSize(viewport);
       await page.emulateMedia({ reducedMotion: 'reduce' });
-      const courses = readCatalog().courses.filter(course => course.locale === locale);
+      const courses = readCatalog().courses.filter(course => course.locale === locale && course.id !== 'musings');
       const messages = JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
       await page.goto(localePath(locale));
       await page.evaluate(() => document.fonts.ready);
-      const vocabulary = JSON.parse(readFileSync(`src/messages/vocabulary/${locale}.json`, 'utf8'));
-      const groups = ['beginner', 'intermediate', 'advanced'].filter(section => courses.some(course => !course.section && course.level === section));
-      await expect(page.locator('#catalog h2')).toHaveText([vocabulary.resources, ...groups.map(section => messages.Ui[section])]);
-      await expect(page.locator('[data-course-disk]')).toHaveCount(Math.min(8, courses.length));
-      for (const course of courses.slice(0, 8)) {
-        const disk = page.getByRole('link', { name: course.title, exact: true });
-        await expect(disk).toHaveAttribute('href', course.url);
-        await expect(disk).toHaveAccessibleDescription(course.description);
-        await expect(disk.locator('.disk-title')).toHaveText(course.title);
+      const shownCourses: string[] = [];
+      for (let pageNumber = 1; pageNumber < 5; pageNumber++) {
+        if (pageNumber > 1) {
+          await page.goto(`${localePath(locale)}?page=${pageNumber}`);
+          await page.evaluate(() => document.fonts.ready);
+        }
+        const catalog = page.getByRole('region', { name: messages.Home.coursesView, exact: true });
+        await expect(catalog).toBeVisible();
+        const hrefs = await catalog.locator('[data-course-disk]').evaluateAll(links => links.map(link => link.getAttribute('href')!));
+        for (const href of hrefs) {
+          const course = courses.find(candidate => candidate.url === href);
+          expect(course, `Unexpected course disk ${href}`).toBeTruthy();
+          const disk = page.getByRole('link', { name: course!.title, exact: true });
+          await expect(disk).toHaveAttribute('href', course!.url);
+          await expect(disk).toHaveAccessibleDescription(course!.description);
+          await expect(disk.locator('.disk-title')).toHaveText(course!.title);
+        }
+        shownCourses.push(...hrefs);
+        if (!(await page.locator(`.disk-pagination a[aria-label="${messages.Home.nextPage}"]`).count())) break;
       }
+      expect(shownCourses.sort()).toEqual(courses.map(course => course.url).sort());
+      await page.goto(localePath(locale));
+      await page.evaluate(() => document.fonts.ready);
       const action = page.locator('[data-slot="hero-primary-action"]');
       const first = courses.find(course => course.section === 'introduction' && course.lessons.length) ?? courses.find(course => course.id === 'llm-101')!;
       await expect(action).toHaveAttribute('href', first.url);

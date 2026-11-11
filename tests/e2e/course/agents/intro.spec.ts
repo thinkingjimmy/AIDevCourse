@@ -15,12 +15,8 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
     await page.goto('/zh');
-    await expect(page.locator('#catalog h2')).toHaveText(['学习资源', '入门', '中级']);
-    const beginner = page.getByRole('region', { name: '入门', exact: true });
-    const intermediate = page.getByRole('region', { name: '中级', exact: true });
-    await expect(beginner.getByRole('heading', { level: 3 })).toHaveText(['LLM 101', 'Coding 101', '设计 101']);
-    await expect(intermediate.getByRole('heading', { level: 3 })).toHaveText(['Agent 101']);
-    const card = intermediate.getByRole('link', { name: 'Agent 101', exact: true });
+    const courses = page.getByRole('region', { name: '系统课程', exact: true });
+    const card = courses.getByRole('link', { name: 'Agent 101', exact: true });
     await expect(card).toHaveAttribute('href', course);
     await expect(card).toContainText('中级');
     await expect(card).toContainText('1 课');
@@ -65,7 +61,8 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     expect(accessibility.violations).toEqual([]);
     await testInfo.attach(`agent-intro-${viewport.name}`, { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
     await page.locator('article > .prose').getByRole('link', { name: 'Agent 101', exact: true }).last().click();
-    await expect(page).toHaveURL(course);
+    await expect(page).toHaveURL(`${lesson}?${new URLSearchParams({ read: course })}`);
+    await expect(page.locator('[data-slot="reading-pane"]').getByRole('heading', { name: 'Agent 101', exact: true })).toBeVisible();
     expect(errors).toEqual([]);
   });
 }
@@ -110,8 +107,7 @@ test('read the introduction and open the course on a narrow screen without JavaS
     await expect(page.locator('article > .prose')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.goto('/zh');
-    await expect(page.locator('#catalog h2')).toHaveText(['学习资源', '入门', '中级']);
-    await page.getByRole('region', { name: '中级', exact: true }).getByRole('link', { name: 'Agent 101', exact: true }).click();
+    await page.getByRole('region', { name: '系统课程', exact: true }).getByRole('link', { name: 'Agent 101', exact: true }).click();
     await expect(page).toHaveURL(course);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   } finally { await context.close(); }

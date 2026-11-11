@@ -47,6 +47,8 @@ function bringScreenIntoView(screen: Element, slot: DOMRect, signal: AbortSignal
 
 export async function insertDisk(entry: DiskEntry, signal: AbortSignal, phase: (value: DiskPhase) => void) {
   const { home, source } = entry;
+  const optical = source.querySelector<HTMLElement>('[data-slot="optical-disc"]');
+  if (optical) return insertOpticalDisc(home, source, optical, signal, phase);
   const screen = home.querySelector<SVGGElement>('[data-slot="mac-screen"]');
   const drive = home.querySelector<SVGUseElement>('[data-slot="mac-drive"]');
   if (!screen || !drive) return null;
@@ -96,5 +98,63 @@ export async function insertDisk(entry: DiskEntry, signal: AbortSignal, phase: (
     return screen.getBoundingClientRect();
   } finally {
     flight?.remove(); pocket?.remove();
+  }
+}
+
+async function insertOpticalDisc(home: HTMLElement, source: HTMLElement, original: HTMLElement, signal: AbortSignal, phase: (value: DiskPhase) => void) {
+  const screen = home.querySelector<HTMLElement>('[data-slot="playstation-screen"]');
+  const tray = home.querySelector<HTMLElement>('[data-slot="playstation-tray"]');
+  const bed = tray?.firstElementChild;
+  const image = screen?.parentElement?.querySelector('img');
+  if (!screen || !tray || !bed || !image?.complete || !image.naturalWidth || !tray.getBoundingClientRect().width || !original.offsetWidth) return null;
+
+  home.inert = true;
+  phase('lifting');
+  await bringScreenIntoView(screen, tray.getBoundingClientRect(), signal);
+  signal.throwIfAborted();
+  const host = home.getBoundingClientRect();
+  const start = original.getBoundingClientRect();
+  const slot = tray.getBoundingClientRect();
+  const diameter = original.offsetWidth;
+  const x = slot.left + slot.width / 2 - start.left - diameter / 2;
+  const y = slot.top + slot.height * .47 - start.top - diameter / 2;
+  const scale = slot.width * .8 / diameter;
+  const pose = (dx: number, dy: number, tilt: number, spin: number, size: number) =>
+    `translate3d(${dx}px,${dy}px,0) perspective(600px) rotateX(${tilt}deg) rotateZ(${spin}deg) scale(${size})`;
+  const seated = pose(x, y, 65, 0, scale);
+  const flight = visualClone(original);
+  flight.classList.add('flying-optical-disc');
+  Object.assign(flight.style, { left: `${start.left - host.left}px`, top: `${start.top - host.top}px`, width: `${diameter}px`, height: `${diameter}px` });
+  home.appendChild(flight);
+  source.dataset.inDrive = '';
+  try {
+    const [lift, open] = await Promise.all([
+      move(flight, [
+        { transform: pose(0, 0, 0, 0, 1), offset: 0 },
+        { transform: pose(x * .13, y * .13 - 14, 14, 18, .9), offset: .25 },
+        { transform: pose(x, y - 11, 57, 10, scale * 1.08), offset: .82 },
+        { transform: seated, offset: 1 },
+      ], 560, signal, 'cubic-bezier(.24,.68,.24,1)'),
+      move(bed, [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], 270, signal),
+    ]);
+    phase('inserting');
+    lift.cancel();
+    open.cancel();
+    await Promise.all([
+      move(flight, [
+        { transform: seated, opacity: 1, offset: 0 },
+        { transform: seated, opacity: 1, offset: .22 },
+        { transform: pose(x, y - slot.height * .47, 89, 0, scale * .94), opacity: 0, offset: 1 },
+      ], 350, signal, 'cubic-bezier(.4,0,.6,1)'),
+      move(bed, [
+        { transform: 'scaleY(1)', offset: 0 },
+        { transform: 'scaleY(1)', offset: .22 },
+        { transform: 'scaleY(0)', offset: 1 },
+      ], 350, signal, 'cubic-bezier(.4,0,.6,1)'),
+    ]);
+    return screen.getBoundingClientRect();
+  } finally {
+    flight.remove();
+    bed.getAnimations().forEach(animation => animation.cancel());
   }
 }

@@ -20,9 +20,8 @@ for (const scenario of [
       const errors: string[] = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.goto('/zh');
-      const beginner = page.getByRole('region', { name: '入门', exact: true });
-      await expect(beginner.getByRole('heading', { level: 3 })).toHaveText(['LLM 101', 'Coding 101', '设计 101']);
-      const card = beginner.getByRole('link', { name: '设计 101', exact: true });
+      const courses = page.getByRole('region', { name: '系统课程', exact: true });
+      const card = courses.getByRole('link', { name: '设计 101', exact: true });
       await expect(card).toHaveAttribute('href', course);
       await expect(card.locator('.disk-level')).toHaveText('入门');
       await expect(card).toContainText('1 课');

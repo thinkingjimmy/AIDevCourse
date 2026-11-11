@@ -14,6 +14,12 @@ const materials = new Map<string, typeof variants[number]>([
   ['design-101', 'index'], ['agent-101', 'cobalt'], ['vocabulary', 'amber'], ['animation-vocabulary', 'plum'],
   ['programming-vocabulary', 'brick'],
 ]);
+const discPrints = new Map([
+  ['musings', ['0% 0%', '#422436']],
+  ['vocabulary', ['100% 0%', '#173d38']],
+  ['animation-vocabulary', ['0% 100%', '#262855']],
+  ['programming-vocabulary', ['100% 100%', '#103846']],
+]);
 export function diskMaterial(item: { id: string }): CSSProperties {
   const seed = Array.from(item.id).reduce((sum, character) => sum + character.codePointAt(0)!, 0);
   const variant = materials.get(item.id) ?? variants[seed % variants.length];
@@ -33,14 +39,35 @@ export function DiskCover({ id, title, titleId, labels, level, dots, heading = f
     </div>
   </div>;
 }
-export function DiskLink({ item, className, ...props }: { item: GalleryItem } & Omit<ComponentProps<typeof Link>, 'href' | 'children'>) {
+function OpticalDiscCover({ item, titleId }: { item: GalleryItem; titleId: string }) {
+  const [position, color] = discPrints.get(item.id) ?? ['100% 100%', '#103846'];
+  const style = { '--disc-print-position': position, '--disc-print-color': color } as CSSProperties;
+  return <>
+    <div className="optical-disc" data-slot="optical-disc" style={style}>
+      <div className="optical-disc-surface">
+        <div className="optical-disc-print">
+          <div className="optical-disc-label">
+            <h3 id={titleId} className="optical-disc-title">{item.title}</h3>
+            <span className="optical-disc-brand" aria-hidden>{site.name}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span className="optical-disc-meta">{item.labels.status}</span>
+  </>;
+}
+
+export function DiskLink({ item, optical = false, className, ...props }: {
+  item: GalleryItem; optical?: boolean;
+} & Omit<ComponentProps<typeof Link>, 'href' | 'children'>) {
   const id = useId();
   const titleId = `${id}-${item.kind}-${item.slug}`;
   const descriptionId = `${id}-description-${item.slug}`;
   return <Link {...props} href={item.url} aria-labelledby={titleId} aria-describedby={descriptionId}
     data-course-disk={item.kind === 'course' ? item.id : undefined} data-resource-disk={item.kind === 'resource' ? item.id : undefined}
-    className={cn('course-disk-link', className)}>
-    <DiskCover id={item.id} title={item.title} titleId={titleId} labels={item.labels} level={item.group} dots={item.dots} heading />
+    className={cn(optical ? 'optical-disc-link' : 'course-disk-link', className)}>
+    {optical ? <OpticalDiscCover item={item} titleId={titleId} />
+      : <DiskCover id={item.id} title={item.title} titleId={titleId} labels={item.labels} level={item.group} dots={item.dots} heading />}
     <span className="sr-only" id={descriptionId}>{item.description}</span>
   </Link>;
 }

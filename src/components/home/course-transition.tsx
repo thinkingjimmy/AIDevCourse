@@ -32,11 +32,14 @@ export function canAnimateNavigation(event: MouseEvent<HTMLAnchorElement>) {
     && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-export function CourseTransitionProvider({ children, cancelLabel, openingLabel }: { children: ReactNode; cancelLabel: string; openingLabel: string }) {
+export function CourseTransitionProvider({ children, cancelLabel, openingLabel, openingResourceLabel }: {
+  children: ReactNode; cancelLabel: string; openingLabel: string; openingResourceLabel: string;
+}) {
   const router = useRouter();
   const pathname = canonicalPath(usePathname());
   const active = useRef<Transition | null>(null);
   const [phase, setPhase] = useState<DiskPhase>('idle');
+  const [opening, setOpening] = useState(openingLabel);
   const reset = useCallback((restoreFocus = false) => {
     const transition = active.current;
     if (!transition) return;
@@ -60,6 +63,7 @@ export function CourseTransitionProvider({ children, cancelLabel, openingLabel }
     if (active.current) return;
     const transition: Transition = { controller: new AbortController(), entry };
     active.current = transition;
+    setOpening(entry.source.hasAttribute('data-resource-disk') ? openingResourceLabel : openingLabel);
     router.prefetch(entry.url);
     try {
       const origin = await insertDisk(entry, transition.controller.signal, setPhase);
@@ -75,7 +79,7 @@ export function CourseTransitionProvider({ children, cancelLabel, openingLabel }
     } finally {
       if (active.current === transition) reset();
     }
-  }, [navigate, reset, router]);
+  }, [navigate, openingLabel, openingResourceLabel, reset, router]);
   const returnHome = useCallback(async (entry: HomeEntry) => {
     if (active.current) return;
     const transition: Transition = { controller: new AbortController(), entry };
@@ -124,7 +128,7 @@ export function CourseTransitionProvider({ children, cancelLabel, openingLabel }
     };
   }, [reset, router]);
   return <Context value={{ phase, openCourse, returnHome }}>{children}
-    <span className="sr-only" role="status" aria-live="polite">{phase === 'idle' ? '' : openingLabel}</span>
+    <span className="sr-only" role="status" aria-live="polite">{phase === 'idle' ? '' : opening}</span>
     {(phase === 'lifting' || phase === 'inserting') && <button type="button" className="disk-cancel" onClick={() => reset(true)}>{cancelLabel}</button>}
   </Context>;
 }

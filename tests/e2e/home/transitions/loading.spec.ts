@@ -53,7 +53,7 @@ for (const source of ['home', 'overview', 'lesson', 'design dictionary', 'animat
       await route.continue();
     });
     try {
-      await page.goto(entering ? '/zh' : '/zh/courses/llm-101');
+      await page.goto(dictionary ? '/zh?view=resources' : entering ? '/zh' : '/zh/courses/llm-101');
       if (source === 'lesson') {
         await page.locator('[data-slot="hero-primary-action"]').click();
         await expect(page.locator('article h1')).toBeVisible();
@@ -79,7 +79,7 @@ for (const source of ['home', 'overview', 'lesson', 'design dictionary', 'animat
         await page.locator('.site-header-logo').click();
         await expect(page).toHaveURL('/zh');
         await expectFullCamera(page, 320, testInfo, 1);
-        await expect(page.locator(trigger)).toBeVisible();
+        await expect(page.getByRole('region', { name: '系统课程', exact: true })).toBeVisible();
       }
     } finally { release(); }
   });

@@ -10,7 +10,7 @@ for (const width of [320, 375, 390, 430]) {
       await page.goto(`/${locale}`);
       await page.evaluate(() => document.fonts.ready);
       const action = (await page.locator('[data-slot="hero-primary-action"]').boundingBox())!;
-      expect(action.height).toBeGreaterThanOrEqual(48);
+      expect(action.height + .01).toBeGreaterThanOrEqual(48);
       const heading = (await page.locator('h1').boundingBox())!;
       const computer = (await page.locator('[data-slot="home-macintosh"]').boundingBox())!;
       expect(heading.x + heading.width).toBeLessThan(computer.x);

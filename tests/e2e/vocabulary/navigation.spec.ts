@@ -8,14 +8,14 @@ import { vocabularyCategories } from '../../../src/lib/vocabulary/catalog';
 test.use({ viewport: { width: 1440, height: 960 }, reducedMotion: 'reduce' });
 const path = '/zh/vocabulary/typography';
 
-test('resource disk opens the dictionary and returns to the homepage', async ({ page }, testInfo) => {
-  await page.goto('/zh');
-  const resources = page.getByRole('region', { name: '学习资源', exact: true });
+test('resource disc opens the dictionary and returns to the homepage', async ({ page }, testInfo) => {
+  await page.goto('/zh?view=resources');
+  const resources = page.getByRole('region', { name: '学习资料', exact: true });
   const disk = resources.getByRole('link', { name: '设计词典', exact: true });
   await expect(disk).toHaveAttribute('href', path);
   const count = vocabularyCategories.reduce((total, category) => total + category.terms.length, 0);
-  await expect(disk.locator('.disk-meta')).toHaveText(`工具${count} 词条`);
-  await testInfo.attach('Learning resources disk', { body: await resources.screenshot(), contentType: 'image/png' });
+  await expect(disk.locator('.optical-disc-meta')).toHaveText(`${count} 词条`);
+  await testInfo.attach('Learning resources disc', { body: await resources.screenshot(), contentType: 'image/png' });
   await disk.focus();
   await disk.press('Enter');
   await expect(page).toHaveURL(path);
@@ -26,18 +26,18 @@ test('resource disk opens the dictionary and returns to the homepage', async ({ 
   await testInfo.attach('Typography desktop', { body: await page.screenshot(), contentType: 'image/png' });
   await page.locator('.site-header-logo').click();
   await expect(page).toHaveURL('/zh');
-  await expect(disk).toBeVisible();
+  await expect(page.getByRole('region', { name: '系统课程', exact: true })).toBeVisible();
 });
 
 for (const width of [1440, 390]) {
-  test(`dictionary disk animation completes in both directions at ${width}px`, async ({ page }, testInfo) => {
+  test(`dictionary disc insertion and return complete at ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: 'no-preference' });
-    await page.goto('/zh');
+    await page.goto('/zh?view=resources');
     const disk = page.locator('[data-resource-disk="vocabulary"]');
     await disk.click();
     await expect(page.locator('.home-gallery')).toHaveAttribute('data-disk-phase', 'lifting');
-    await expect(page.locator('.flying-course-disk')).toBeVisible();
+    await expect(page.locator('.flying-optical-disc')).toBeVisible();
     await expect(page).toHaveURL(path);
     await expect(page.locator('html')).not.toHaveAttribute('data-course-zoom');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('文字排版');
@@ -45,7 +45,7 @@ for (const width of [1440, 390]) {
     await expect(page).toHaveURL('/zh');
     await expect(page.locator('html')).not.toHaveAttribute('data-course-zoom');
     await expect(page.locator('.home-gallery')).not.toHaveAttribute('inert');
-    await expect(disk).toBeVisible();
+    await expect(page.getByRole('region', { name: '系统课程', exact: true })).toBeVisible();
     await testInfo.attach(`Dictionary round trip ${width}px`, { body: await page.screenshot(), contentType: 'image/png' });
   });
 }

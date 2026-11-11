@@ -15,6 +15,12 @@
   --text-diagram-label--line-height: 1;
   --text-diagram-caption: 0.59375rem;
   --text-diagram-caption--line-height: 1;
+  --text-device-arrow: 1.6875rem;
+  --text-device-greeting: 10.2cqw;
+  --text-device-label: clamp(8px, 5.6cqw, 18px);
+  --text-disc-title: clamp(11px, 9.5cqw, 16px);
+  --text-disc-title--line-height: 1.1;
+  --text-disc-brand: clamp(6px, 5.4cqw, 9px);
 
   --text-xs--line-height: 1.4;
   --text-sm--line-height: 1.5;
