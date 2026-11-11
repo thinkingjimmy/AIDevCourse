@@ -11,10 +11,10 @@ import {
 import type { Locale } from '@/lib/i18n/config';
 import { localePath } from '@/lib/i18n/routing';
 import { cn } from '@/lib/utils';
-import { vocabularyCollections, type DictionaryTermId, type DictionaryCategory, type VocabularyKind } from '@/lib/vocabulary/collections';
+import { vocabularyCollections, vocabularyTermPath, type DictionaryTermId, type DictionaryCategory, type VocabularyKind } from '@/lib/vocabulary/collections';
 
-export function VocabularyDirectoryContents({ category: activeCategory, collection, query, onSelect }: {
-  category: DictionaryCategory; collection: VocabularyKind; query: string; onSelect: (id: DictionaryTermId) => void;
+export function VocabularyDirectoryContents({ category: activeCategory, collection, query, onSelect, selected }: {
+  category: DictionaryCategory; collection: VocabularyKind; query: string; onSelect?: (id: DictionaryTermId) => void; selected?: DictionaryTermId;
 }) {
   const dictionary = vocabularyCollections[collection];
   const categories = dictionary.categories;
@@ -26,16 +26,16 @@ export function VocabularyDirectoryContents({ category: activeCategory, collecti
     .filter(term => `${t(`terms.${term.id}.title`)} ${term.english} ${term.id}`.normalize('NFKC').toLocaleLowerCase().includes(normalized));
 
   const select = (event: MouseEvent<HTMLAnchorElement>, id: DictionaryTermId) => {
-    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (!onSelect || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     onSelect(id);
   };
   const termLink = (id: DictionaryTermId, index: number, categoryIndex: number) => {
     const category = categories[categoryIndex];
-    const current = category.id === activeCategory.id;
-    return <SidebarMenuSubButton asChild className={directoryStyles.link}>
-      <Link href={current ? `#${id}` : `${localePath(locale, `${dictionary.path}/${category.id}`)}#${id}`}
-        prefetch={false} onClick={event => { if (current) select(event, id); }}>
+    const current = collection !== 'programming' && category.id === activeCategory.id;
+    return <SidebarMenuSubButton asChild className={directoryStyles.link} isActive={selected === id}>
+      <Link href={current ? `#${id}` : localePath(locale, vocabularyTermPath(collection, category.id, id))} aria-current={selected === id ? 'page' : undefined}
+        prefetch={false} onClick={event => { if (current || selected === id) select(event, id); }}>
         <span className={directoryStyles.number} aria-hidden>{categoryIndex + 1}.{index + 1}</span>
         <span className={directoryStyles.label}>{t(`terms.${id}.title`)}</span>
       </Link>

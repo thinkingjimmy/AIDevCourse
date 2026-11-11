@@ -9,7 +9,10 @@ import type { ContentDocument } from './model';
 import { contentMode } from '../../../config/content-mode.mjs';
 const relativePath = (root: string, path: string) => relative(root, path).replaceAll('\\', '/');
 export function contentRoot() {
-  return join(process.cwd(), contentMode.content);
+  // Literal roots keep filesystem tracing inside content instead of the entire repository.
+  return contentMode.content === 'tests/fixtures'
+    ? join(process.cwd(), 'tests/fixtures')
+    : join(process.cwd(), 'content');
 }
 export function scanContent(root: string) {
   const documents: ContentDocument[] = [];

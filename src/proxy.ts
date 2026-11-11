@@ -55,4 +55,4 @@ export async function proxy(request: NextRequest) {
   }
   return NextResponse.next();
 }
-export const config = { matcher: ['/((?!api(?:/|$)|_next(?:/|$)|images(?:/|$)|favicon.svg$|robots.txt$|sitemap.xml$).*)'] };
+export const config = { matcher: ['/((?!api(?:/|$)|_next(?:/|$)|images(?:/|$)|fonts(?:/|$)|favicon.svg$|robots.txt$|sitemap.xml$).*)'] };

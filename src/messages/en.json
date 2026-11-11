@@ -42,6 +42,11 @@
     "linkPreview": "Page preview",
     "linkPreviewLoading": "Loading page preview…",
     "linkPreviewUnavailable": "Preview unavailable. Open the link to view this page.",
+    "sideReading": "Side reading: {title}",
+    "closeReading": "Close side reading",
+    "readingLoading": "Loading lesson…",
+    "readingFailed": "This page could not load. Try again.",
+    "retryReading": "Try again",
     "noHeadings": "No headings",
     "code": "Code",
     "codeFoldLines": "{count, plural, one {# line} other {# lines}}",
@@ -340,5 +345,124 @@
     "zoom": "Enlarge the {label} illustration",
     "imageTitle": "{label} illustration",
     "close": "Close illustration"
+  },
+  "ChatSequence": {
+    "label": "Animated Chat message sequence",
+    "actorsLabel": "Messages between the user, product, provider server, and model program",
+    "actors": {
+      "user": "User",
+      "product": "Chat",
+      "server": "Server",
+      "model": "Model"
+    },
+    "modelStates": {
+      "idle": "Not called",
+      "waiting": "Waiting",
+      "running": "Running",
+      "generated": "Reply ready"
+    },
+    "playStates": {
+      "finished": "Demo complete",
+      "paused": "Paused",
+      "playing": "Playing automatically"
+    },
+    "replay": "Restart demo",
+    "playAgain": "Play again",
+    "resume": "Resume",
+    "pause": "Pause",
+    "invalidAttempt": "Wrong format: the server rejects the request",
+    "validAttempt": "The expected format produces a reply",
+    "invalidFormat": "Invalid format",
+    "validFormat": "Valid format",
+    "inputMessage": "Hello, my name is Jimmy.",
+    "replyMessage": "Hello, Jimmy!",
+    "requestLabel": "Example JSON request in the expected structure",
+    "responseLabel": "Example JSON response from the server",
+    "events": {
+      "input": {
+        "label": "Enter a message",
+        "caption": "First attempt · wrong format",
+        "message": "Hello, my name is Jimmy."
+      },
+      "raw": {
+        "label": "Send raw text",
+        "caption": "The expected request structure is missing",
+        "message": "Hello, my name is Jimmy."
+      },
+      "reject": {
+        "label": "Reject: wrong format",
+        "caption": "The server returns a format error",
+        "message": "The request failed the format check. The model program was not called."
+      },
+      "error": {
+        "label": "Show the error",
+        "caption": "The first attempt failed",
+        "message": "The product received an error. No model reply was generated."
+      },
+      "retry": {
+        "label": "Send the message again",
+        "caption": "Second attempt · expected format",
+        "message": "The same message: Hello, my name is Jimmy."
+      },
+      "request": {
+        "label": "Send the expected format",
+        "caption": "Include model and messages as required"
+      },
+      "invoke": {
+        "label": "Pass the message to the model",
+        "caption": "The request passes the format check",
+        "message": "The server passes the message content to the model program."
+      },
+      "generate": {
+        "label": "Generate a reply",
+        "caption": "The model generates a reply",
+        "message": "Hello, Jimmy!"
+      },
+      "response": {
+        "label": "Return the reply (JSON)",
+        "caption": "The server returns JSON to the product"
+      },
+      "display": {
+        "label": "Show the reply",
+        "caption": "The second attempt succeeded",
+        "message": "Hello, Jimmy!"
+      }
+    }
+  },
+  "Newton": {
+    "label": "Interactive Newton’s second law demo",
+    "title": "Try it: Newton’s second law",
+    "reference": "Reference: 4 N / 2 kg",
+    "yourSettings": "Your settings",
+    "speed": "Speed",
+    "formula": "Acceleration = net force ÷ mass",
+    "equationExact": "Acceleration equals {force} newtons divided by {mass} kilograms, or {acceleration} meters per second squared",
+    "equationApproximate": "Acceleration equals {force} newtons divided by {mass} kilograms, approximately {acceleration} meters per second squared",
+    "setup": "Both start from rest, with force applied for 2 seconds",
+    "force": "Net force F",
+    "mass": "Mass m",
+    "forceValue": "{force} newtons",
+    "massValue": "{mass} kilograms",
+    "pause": "Pause",
+    "resume": "Resume",
+    "playAgain": "Compare again",
+    "start": "Start comparison",
+    "reset": "Reset",
+    "insights": {
+      "zero": "Zero net force means zero acceleration. The cart starts from rest, so it stays still.",
+      "initial": "Change the net force from 4 N to 8 N and watch the acceleration.",
+      "doubleForce": "Double the force with the same mass, and acceleration doubles. Speed increases by 4 m/s each second.",
+      "doubleMass": "Double the mass with the same force, and acceleration halves. Speed increases by 1 m/s each second.",
+      "sameRatio": "Force and mass change in the same proportion. Acceleration matches the reference: speed increases by 2 m/s each second.",
+      "other": "Speed increases by about {acceleration} m/s each second. Acceleration is about {ratio} times the reference."
+    },
+    "assumptions": "Compare horizontal motion only, ignoring friction. Both carts start from rest. Net force stays constant for 2 seconds.",
+    "status": {
+      "complete": "Comparison complete. After 2 seconds, your cart moves at {speed} meters per second; the reference moves at 4 meters per second.",
+      "playing": "Both carts start moving together.",
+      "paused": "Comparison paused.",
+      "ready": "Net force: {force} newtons. Mass: {mass} kilograms. Acceleration: {acceleration} meters per second squared."
+    },
+    "static": "At constant mass, doubling net force doubles acceleration. At constant force, doubling mass halves acceleration. Enable JavaScript to adjust force and mass and observe both carts."
   }
 }

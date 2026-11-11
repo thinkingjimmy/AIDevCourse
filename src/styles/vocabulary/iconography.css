@@ -1,0 +1,33 @@
+.vocabulary-iconography [data-slot=tabs-list] { max-width: 100%; height: auto; min-height: 36px; flex-wrap: wrap; }
+.vocabulary-iconography [data-slot=tabs-trigger] { min-height: 30px; }
+.vocabulary-iconography .vocabulary-stage { color: var(--color-brand); }
+.icon-pair { @apply text-xs text-muted-foreground; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; width: min(100%,260px); text-align: center; }
+.icon-pair > div { display: grid; justify-items: center; align-content: start; gap: 16px; min-width: 0; }
+.icon-pair svg,.icon-size-row svg { color: var(--color-brand); }
+.icon-size-row { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); align-items: end; gap: 20px; width: min(100%,260px); text-align: center; }
+.icon-size-row code { @apply text-xs text-muted-foreground; }
+.icon-size-cell { display: grid; place-items: center; height: 76px; margin-bottom: 12px; }
+.icon-centre-frame { position: relative; display: grid; place-items: center; width: 72px; height: 72px; border: 1px solid var(--color-border); border-radius: 50%; }
+.icon-centre-frame::before,.icon-centre-frame::after { content: ''; position: absolute; background: var(--color-border); pointer-events: none; }
+.icon-centre-frame::before { top: 0; bottom: 0; left: 50%; width: 1px; }
+.icon-centre-frame::after { left: 0; right: 0; top: 50%; height: 1px; }
+.icon-centre-frame svg { position: relative; }
+.icon-cap-sample { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 24px; width: min(100%,260px); }
+.icon-cap-sample code { @apply text-xs text-muted-foreground; width: 100%; text-align: center; }
+.icon-pixel-sample { display: grid; justify-items: center; gap: 20px; width: 100%; }
+.icon-pixel-sample canvas { display: block; width: min(100%,96px); aspect-ratio: 1; image-rendering: pixelated; background: var(--color-background); outline: 1px solid var(--color-border); }
+.icon-library-row { display: flex; align-items: center; justify-content: space-evenly; gap: 24px; width: min(100%,260px); height: 76px; padding: 16px; border-block: 1px dashed var(--color-border); }
+.icon-size-frame { display: grid; place-items: center; width: min(100%,88px); aspect-ratio: 1; border: 1px dashed var(--color-border); border-radius: 8px; }
+.icon-label-sample { @apply text-sm; display: inline-flex; align-items: center; justify-content: center; gap: 8px; max-width: 100%; min-height: 48px; padding: 12px; border: 1px solid var(--color-border); border-radius: 8px; color: var(--color-foreground); }
+.icon-label-sample span { min-width: 0; overflow-wrap: anywhere; }
+.icon-weight-comparison,.icon-meaning-list,.icon-toggle-list { display: grid; gap: 16px; width: min(100%,240px); }
+.icon-bold-label { font-weight: 700; }
+.icon-state-nav { display: flex; gap: 16px; padding: 12px; border: 1px solid var(--color-border); border-radius: 12px; }
+.icon-state-nav button { color: var(--color-brand); }
+.icon-state-nav button[aria-pressed=true] { background: var(--color-brand-soft); }
+.icon-toggle-list button { justify-content: flex-start; gap: 8px; height: auto; min-height: 48px; white-space: normal; text-align: left; }
+.icon-toggle-list button svg { color: var(--color-brand); }
+.icon-metaphors { @apply text-xs text-muted-foreground; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; width: min(100%,260px); text-align: center; }
+.icon-metaphors > div { display: grid; justify-items: center; align-content: start; gap: 16px; }
+.icon-metaphors svg { color: var(--color-brand); }
+.icon-metaphors[data-labels=false] span { visibility: hidden; }

@@ -1,5 +1,5 @@
 import { localePath } from '../src/lib/i18n/routing';
-import { defineConfig, defineDocs } from 'fumadocs-mdx/config';
+import { defineConfig, defineCollections } from 'fumadocs-mdx/config';
 import { rehypeToc } from 'fumadocs-core/mdx-plugins';
 import { readCatalog } from '../src/lib/content/manifest';
 import { contentRoot } from '../src/lib/content/scan';
@@ -25,10 +25,13 @@ writeFileSync(`${contentMode.generated}/routes.json`, JSON.stringify([
   // Design and component previews remain outside the published course catalog.
   '/design', '/design/a', '/design/b', '/design/c', '/design/components',
 ]));
-export const courses = defineDocs({
+export const courses = defineCollections({
+  type: 'doc',
   dir: contentRoot(),
-  docs: { schema: documentSchema, files: catalog.documents.length ? catalog.documents.map((doc) => doc.file) : ['__no_published_content__.mdx'] },
-  meta: { files: ['**/meta.json'] },
+  schema: documentSchema,
+  async: true,
+  dynamic: process.env.NODE_ENV === 'development',
+  files: catalog.documents.length ? catalog.documents.map((doc) => doc.file) : ['__no_published_content__.mdx'],
 });
 export default defineConfig({
   mdxOptions: {

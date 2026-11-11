@@ -19,6 +19,9 @@ import { LLMGenerationDemo } from './llm-generation-demo';
 import { MenuComparisonDemo } from './menu-comparison-demo';
 import { NewtonSecondLawDemo } from './physics/newton-second-law-demo';
 import { AnimationDemo } from './motion/demo';
+import { FrontendLayersDemo } from './frontend/layers';
+import { FrontendInspectorDemo } from './frontend/inspector';
+import { FrontendInspectorPractice } from './frontend/practice';
 import { TokenizationDiagram } from './tokenization-diagram';
 import { TokenProbabilityDiagram } from './token-probability-diagram';
 import { LLMSingleRoundTrainingDemo } from './llm-training/single-round';
@@ -28,6 +31,7 @@ import { ChatMessageSequence } from './chat-sequence/demo';
 import { LinkPreview } from './link-preview/link-preview';
 import { XEmbed } from './embeds/x-embed';
 import { YouTube } from './embeds/youtube';
+import { WebsitePreview } from './embeds/website-preview';
 import { XProfile, XProfiles } from './profiles/x-profile';
 import { getAchievementComponents } from './achievement/components';
 import { ResourceDisks } from '@/components/home/resources';
@@ -46,16 +50,23 @@ function HighlightedText({ className, ...props }: ComponentProps<'mark'>) {
 function StrongText({ className, ...props }: ComponentProps<'strong'>) {
   return <strong {...props} className={cn('text-brand', className)} />;
 }
-export function getMDXComponents(achievements: readonly AchievementDefinition[] = []): MDXComponents {
+export function getMDXComponents(achievements: readonly AchievementDefinition[] = [], scope?: { prefix: string; pageUrl: string }): MDXComponents {
+  const headingProps = (props: ComponentProps<'h1'>) => scope && props.id
+    ? { ...props, id: `${scope.prefix}${props.id}`, 'data-heading-url': `${scope.pageUrl}#${props.id}` } : props;
   return {
-    ...defaults, Steps, Step, Callout, JimmyNote, JimmyNoteAnchor, KeyTakeaway, ResourceDisks, Chat, ChatMessage, ChatThinking, ChatToolCall, InlineCitation, ChatMessageSequence, XEmbed, YouTube, XProfile, XProfiles, LLMGenerationDemo, MenuComparisonDemo, NewtonSecondLawDemo, AnimationDemo, TokenizationDiagram, TokenProbabilityDiagram, LLMPretrainingOverview, LLMSingleRoundTrainingDemo, LLMMultiRoundTrainingDemo, MermaidDiagram, ...getAchievementComponents(achievements), pre: LocalizedCodeBlock,
-    a: LinkPreview, mark: HighlightedText, strong: StrongText, table: MarkdownTable, thead: TableHeader, tbody: TableBody, tfoot: TableFooter,
+    ...defaults, Steps, Step, Callout, JimmyNote, JimmyNoteAnchor, KeyTakeaway, ResourceDisks, Chat, ChatMessage, ChatThinking, ChatToolCall, InlineCitation, ChatMessageSequence, XEmbed, YouTube, WebsitePreview, XProfile, XProfiles, LLMGenerationDemo, MenuComparisonDemo, NewtonSecondLawDemo, AnimationDemo, FrontendLayersDemo, FrontendInspectorDemo, FrontendInspectorPractice, TokenizationDiagram, TokenProbabilityDiagram, LLMPretrainingOverview, LLMSingleRoundTrainingDemo, LLMMultiRoundTrainingDemo, MermaidDiagram, ...getAchievementComponents(achievements, scope?.prefix), pre: LocalizedCodeBlock,
+    a: scope ? props => <LinkPreview {...props} href={props.href?.startsWith('#') ? `${scope.pageUrl}${props.href}` : props.href} /> : LinkPreview,
+    ...(scope ? {
+      JimmyNote: (props: ComponentProps<typeof JimmyNote>) => <JimmyNote {...props} anchor={`${scope.prefix}${props.anchor}`} />,
+      JimmyNoteAnchor: (props: ComponentProps<typeof JimmyNoteAnchor>) => <JimmyNoteAnchor {...props} id={`${scope.prefix}${props.id}`} />,
+    } : {}),
+    mark: HighlightedText, strong: StrongText, table: MarkdownTable, thead: TableHeader, tbody: TableBody, tfoot: TableFooter,
     tr: TableRow, th: TableHead, td: TableCell, caption: TableCaption,
-    h1: (props) => <Heading as="h1" {...props} />,
-    h2: (props) => <Heading as="h2" {...props} />,
-    h3: (props) => <Heading as="h3" {...props} />,
-    h4: (props) => <Heading as="h4" {...props} />,
-    h5: (props) => <Heading as="h5" {...props} />,
-    h6: (props) => <Heading as="h6" {...props} />,
+    h1: (props) => <Heading as="h1" {...headingProps(props)} />,
+    h2: (props) => <Heading as="h2" {...headingProps(props)} />,
+    h3: (props) => <Heading as="h3" {...headingProps(props)} />,
+    h4: (props) => <Heading as="h4" {...headingProps(props)} />,
+    h5: (props) => <Heading as="h5" {...headingProps(props)} />,
+    h6: (props) => <Heading as="h6" {...headingProps(props)} />,
   };
 }

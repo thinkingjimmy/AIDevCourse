@@ -83,6 +83,9 @@ test('negotiates only the homepage and keeps English paths prefix-free', async (
     const missing = await request.get(path, { maxRedirects: 0 }); expect(missing.status(), path).toBe(404);
   }
   expect((await request.get('/favicon.svg')).status()).toBe(200);
+  for (const font of ['course-pixel-zh_hans', 'course-pixel-ja']) {
+    expect((await request.get(`/fonts/hero/${font}.woff2`)).status(), font).toBe(200);
+  }
   for (const locale of locales) {
     const missing = await request.get(localePath(locale as Locale, `/unknown-page`));
     expect(missing.status()).toBe(404);

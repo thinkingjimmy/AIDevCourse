@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
+import { NextProvider } from 'fumadocs-core/framework/next';
 import { isLocale } from '@/lib/i18n/config';
 import Examples from './examples.mdx';
 import Tables from './tables.mdx';
@@ -28,6 +29,7 @@ export default async function ComponentPreview({ searchParams }: { searchParams:
   return <>
     <DesignHeader />
     <NextIntlClientProvider locale={locale} messages={{ Ui: messages.Ui, Author: messages.Author }}>
+    <NextProvider>
     <main id="main" className="mx-auto w-[min(760px,calc(100%-32px))] py-12">
       <h1 className="m-0 text-title leading-heading font-semibold tracking-tight">正文组件</h1>
       <section id="jimmy-notes" className="mx-[calc((100%-min(65.5rem,100vw-2rem))/2)] mt-8 w-[min(65.5rem,calc(100vw-2rem))] @container/lesson">
@@ -89,6 +91,7 @@ export default async function ComponentPreview({ searchParams }: { searchParams:
         <div className="course-prose prose"><Embeds components={getMDXComponents()} /></div>
       </section>
     </main>
+    </NextProvider>
     </NextIntlClientProvider>
     <DesignFooter>正文组件预览</DesignFooter>
   </>;

@@ -18,7 +18,9 @@
 @import './vocabulary/layout.css';
 @import './vocabulary/demos.css';
 @import './vocabulary/color.css';
+@import './vocabulary/iconography.css';
 @import './vocabulary/animation.css';
+@import './vocabulary/programming.css';
 @source '../';
 @source '../../node_modules/fumadocs-ui/dist/**/*.js';
 

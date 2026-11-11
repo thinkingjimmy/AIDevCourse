@@ -12,6 +12,7 @@ const variants = ['ivory', 'forest', 'index', 'smoke', 'cobalt', 'amber', 'plum'
 const materials = new Map<string, typeof variants[number]>([
   ['ai-coding', 'ivory'], ['llm-101', 'forest'], ['coding-101', 'smoke'],
   ['design-101', 'index'], ['agent-101', 'cobalt'], ['vocabulary', 'amber'], ['animation-vocabulary', 'plum'],
+  ['programming-vocabulary', 'brick'],
 ]);
 export function diskMaterial(item: { id: string }): CSSProperties {
   const seed = Array.from(item.id).reduce((sum, character) => sum + character.codePointAt(0)!, 0);

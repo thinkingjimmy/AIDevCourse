@@ -15,7 +15,7 @@ export function sameSelection(first: LessonSelection | null, second: LessonSelec
 }
 
 export function measureLessonRange(article: HTMLElement, range: Range) {
-  const pane = article.closest('[data-slot="lesson-region"]');
+  const pane = article.closest('[data-lesson-scroll]');
   if (!pane) return null;
   const paneRect = pane.getBoundingClientRect();
   const bounds = { left: Math.max(0, paneRect.left), right: Math.min(innerWidth, paneRect.right),

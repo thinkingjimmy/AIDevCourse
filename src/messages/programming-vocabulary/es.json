@@ -1,0 +1,143 @@
+{
+  "title": "Glosario de programación",
+  "description": "Aprende términos de programación con definiciones claras y ejemplos interactivos. Empieza por cómo se entregan las páginas estáticas.",
+  "web-foundations": "Fundamentos de la web",
+  "source": "Referencia de términos: MDN",
+  "search": "Buscar términos",
+  "searchPlaceholder": "Buscar términos o nombres en inglés",
+  "clearSearch": "Borrar búsqueda",
+  "noResults": "No hay términos coincidentes. Prueba otra palabra.",
+  "resultsCount": "{count} resultados",
+  "loadMore": "Cargar más",
+  "openDirectory": "Abrir el índice del glosario",
+  "closeDirectory": "Cerrar el índice del glosario",
+  "demo": {
+    "server": "Servidor estático",
+    "prepared": "Archivos preparados antes de la visita",
+    "deliveryCount": "Respuestas HTML: {count}",
+    "browser": "Navegador",
+    "pageMessage": "Esta página procede de un archivo HTML ya preparado.",
+    "click": "Pulsar el botón de la página",
+    "clickCount": "Contador del navegador: {count}",
+    "visit": "Visitar de nuevo",
+    "reset": "Reiniciar demo",
+    "status": "Respuestas HTML: {deliveries}. Contador del navegador: {clicks}.",
+    "note": "Pulsa el botón de la página: solo cambia el contador del navegador. Una nueva visita recibe el mismo HTML y reinicia ese contador a cero.",
+    "noJs": "La definición y el diagrama se pueden leer sin JavaScript. Activa JavaScript para probar los botones.",
+    "caveat": "Esta demostración simplificada es local y no envía solicitudes de red. Una visita real puede reutilizar la caché del navegador o de una CDN."
+  },
+  "terms": {
+    "static-website": {
+      "title": "Sitio web estático",
+      "description": "Un sitio cuyo HTML se prepara antes de la visita y se entrega al navegador como archivos.",
+      "article": {
+        "meaning": {
+          "heading": "Qué significa «estático»",
+          "definition": "Un sitio estático entrega páginas <code>HTML</code> ya preparadas y archivos relacionados, como estilos, imágenes y JavaScript. El servidor no necesita componer HTML nuevo para cada visita.",
+          "analogy": "Piensa en una presentación personal. Escribes tu nombre, experiencia y proyectos en los archivos de la página y los publicas. Cuando alguien abre esa dirección, el servidor entrega la página que ya publicaste.",
+          "keyPoint": "<strong>La clave es cuándo se genera el HTML, y no si la página tiene animaciones, botones o interacciones.</strong>"
+        },
+        "how-it-works": {
+          "heading": "Qué ocurre al abrir el sitio",
+          "intro": "Empecemos con un caso habitual: el navegador necesita obtener la página y no tiene una respuesta en caché que pueda reutilizar.",
+          "prepare": "Preparar los archivos. El autor escribe HTML o una herramienta lo genera de antemano, antes de que llegue un lector.",
+          "deploy": "Publicar los archivos. El HTML, el CSS, el JavaScript y las imágenes se colocan en un servidor que pueda entregarlos.",
+          "request": "Solicitar la página. El lector abre una URL. El navegador solicita el HTML y el servidor devuelve el archivo preparado.",
+          "render": "Mostrar la página. El navegador lee el HTML, carga los estilos, las imágenes y los scripts necesarios, muestra el resultado y ejecuta las interacciones.",
+          "cache": "Una visita real no siempre descarga todos los archivos de nuevo. El navegador y una CDN pueden reutilizar contenido. Una CDN distribuye servidores en distintos lugares para entregar contenido cercano; usarla no determina si el sitio es estático."
+        },
+        "example": {
+          "heading": "Un ejemplo de sitio pequeño",
+          "intro": "Un portafolio sencillo puede estar formado por estos archivos. No hace falta memorizar el código: primero entiende qué hace cada uno.",
+          "html": "<code>index.html</code> contiene la estructura y el contenido inicial, como el título, la presentación y un botón.",
+          "css": "<code>style.css</code> define las fuentes, los colores, los espacios y la distribución en distintas pantallas.",
+          "js": "<code>script.js</code> se ejecuta en el navegador, por ejemplo para contar los clics de un botón.",
+          "codeIntro": "El HTML puede preparar un título y un botón contador, y después cargar un script:",
+          "scriptIntro": "El script puede cambiar el número del botón dentro del navegador:",
+          "change": "Al pulsar el botón, el navegador actualiza la página actual. No reescribe el archivo HTML del servidor, así que el sitio puede seguir entregándose de forma estática.",
+          "generated": "No es necesario escribir a mano cada página estática. Un generador puede convertir artículos y plantillas en HTML de antemano y publicar los archivos resultantes."
+        },
+        "interaction": {
+          "heading": "Prueba una página estática interactiva",
+          "intro": "Pulsa el botón de la página y compara el contador del navegador con las respuestas HTML. Después selecciona «Visitar de nuevo» y observa qué número cambia.",
+          "explanation": "El primer clic solo cambia un número en la memoria del navegador. «Visitar de nuevo» simula recibir otra vez el HTML inicial, por lo que el contador vuelve a cero. Un sitio real también puede guardar el estado en el navegador y recuperarlo en una visita posterior."
+        },
+        "comparison": {
+          "heading": "Sitios estáticos y dinámicos",
+          "intro": "Esta comparación trata de cómo el servidor entrega el HTML. Que la página cambie dentro del navegador es otra cuestión.",
+          "aspect": "Aspecto",
+          "static": "Entregar HTML preparado",
+          "dynamic": "Generar HTML para la solicitud",
+          "rows": {
+            "timing": {
+              "label": "Momento de generación",
+              "static": "Antes de publicarlo",
+              "dynamic": "Al procesar la solicitud"
+            },
+            "work": {
+              "label": "Trabajo del servidor",
+              "static": "Buscar y devolver un archivo existente",
+              "dynamic": "Ejecutar la lógica de la aplicación y producir una respuesta"
+            },
+            "data": {
+              "label": "Datos del HTML",
+              "static": "Normalmente añadidos al escribir o compilar",
+              "dynamic": "Pueden consultarse en una base de datos u otra fuente para la solicitud"
+            },
+            "updates": {
+              "label": "Actualizar el texto publicado",
+              "static": "Editar archivos, o compilar de nuevo y publicar",
+              "dynamic": "Generar una página con los datos actualizados"
+            }
+          },
+          "mixed": "Un producto puede combinar ambos métodos: preparar las páginas públicas y generar las páginas de cuenta para cada solicitud. Una página estática también puede llamar a una API tras cargarse para mostrar datos actuales. Un botón o una captura no bastan para saber cómo se obtuvo el HTML inicial."
+        },
+        "uses": {
+          "heading": "Cuándo encaja un sitio estático",
+          "intro": "Puede ser adecuado si el trabajo principal es publicar contenido y la mayoría de los lectores pueden recibir la misma página inicial.",
+          "portfolio": "Sitios personales y portafolios: presentarte, mostrar proyectos y compartir datos de contacto.",
+          "publishing": "Blogs, tutoriales y documentación: los autores publican contenido que los lectores recorren por páginas.",
+          "marketing": "Páginas de productos y eventos: mostrar información pública y usar scripts para animaciones o una calculadora.",
+          "benefits": "Los archivos preparados suelen ser fáciles de almacenar en caché y distribuir. También pueden reducir la lógica del servidor que genera páginas. La velocidad y el coste reales dependen de las imágenes, los scripts, el tráfico y el alojamiento.",
+          "limits": "El inicio de sesión, los comentarios compartidos, los pagos, las existencias en tiempo real y guardar formularios requieren servicios e interfaces adecuados. El frontend puede seguir siendo estático, pero los archivos HTML públicos no realizan solos esas funciones."
+        },
+        "misconceptions": {
+          "heading": "Confusiones frecuentes",
+          "frozen": {
+            "title": "¿Estático significa que el contenido nunca cambia?",
+            "body": "No. El autor puede editar los archivos y publicarlos de nuevo. Estático describe cómo se entrega el HTML en una visita, no la frecuencia de actualización."
+          },
+          "server": {
+            "title": "¿Un sitio estático no tiene servidor?",
+            "body": "Una visita en línea sigue necesitando un servidor o una CDN para entregar archivos. Puedes evitar mantener una aplicación que genere HTML, pero los archivos todavía necesitan alojamiento y distribución."
+          },
+          "database": {
+            "title": "¿Un sitio estático puede usar una base de datos?",
+            "body": "La compilación puede leer una base de datos o un gestor de contenidos. El navegador también puede obtener datos mediante una API. Entregar el HTML inicial y obtener datos después son pasos diferentes."
+          },
+          "security": {
+            "title": "¿Se puede guardar una clave API secreta en el frontend?",
+            "body": "No pongas claves secretas en HTML o JavaScript públicos. Los lectores pueden inspeccionar los archivos que recibe su navegador. Las operaciones que necesitan secretos deben usar una interfaz de servidor adecuada."
+          }
+        },
+        "recap": {
+          "heading": "Comprueba lo que has entendido",
+          "question": "Un portafolio genera todo su HTML de antemano. Tiene animaciones, filtros y una consulta a una API del tiempo. ¿Puede seguir siendo un sitio estático?",
+          "answer": "Sí.",
+          "reason": "Su HTML inicial existe antes de la visita. Las animaciones, los filtros y las consultas posteriores a la API ocurren en el navegador; no convierten el HTML inicial en una respuesta generada para esa solicitud.",
+          "remember": "Hazte esta pregunta: <strong>al abrir la página, ¿el servidor devuelve HTML existente o genera HTML para esa solicitud?</strong>"
+        },
+        "references": {
+          "heading": "Para seguir leyendo",
+          "intro": "Estas guías oficiales explican el contenido estático, el alojamiento, las interacciones del navegador y la caché.",
+          "clientServer": "MDN: comunicación cliente-servidor y sitios estáticos y dinámicos",
+          "server": "MDN: qué hace un servidor web",
+          "pages": "GitHub Docs: publicación y compilación de páginas estáticas",
+          "javascript": "MDN: el papel de JavaScript en la web",
+          "caching": "MDN: caché HTTP"
+        }
+      }
+    }
+  },
+  "directory": "Diccionario"
+}

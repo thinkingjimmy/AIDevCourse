@@ -1,6 +1,6 @@
 {
   "title": "Dictionnaire du design",
-  "description": "Explorez la typographie et la couleur avec des exemples interactifs. Ajustez le texte, mélangez les couleurs et comparez les résultats.",
+  "description": "Explorez la typographie, la couleur et les icônes avec des exemples interactifs. Ajustez le texte, mélangez les couleurs et comparez le dessin et l’usage des icônes.",
   "resources": "Ressources",
   "tool": "Outil",
   "termCount": "{count} termes",
@@ -193,6 +193,54 @@
     "blending": {
       "title": "Fusion",
       "description": "La façon dont un calque interagit avec ce qui se trouve dessous. Produit assombrit, Écran éclaircit, et Incrustation fait les deux selon la couleur de base. Utile pour intégrer des images à des surfaces colorées et donner de la profondeur aux illustrations."
+    },
+    "stroke-weight": {
+      "title": "Épaisseur du trait",
+      "description": "L’épaisseur des lignes d’une icône. Les traits fins disparaissent à petite taille. À grande taille, ils paraissent fragiles. L’épaisseur doit évoluer avec la taille."
+    },
+    "optical-centre": {
+      "title": "Centre optique",
+      "description": "L’endroit où un élément paraît centré, par opposition à son centre mathématique. Un bouton de lecture centré par ses coordonnées paraît trop lourd à gauche. Décalez-le légèrement à droite et il trouve sa place."
+    },
+    "filled-vs-outlined": {
+      "title": "Plein et contour",
+      "description": "Deux styles d’icônes qui communiquent un état. Le plein signale souvent un élément actif ou sélectionné. Le contour indique l’état par défaut. Les mélanger sans règle claire crée du bruit visuel."
+    },
+    "cap-style": {
+      "title": "Forme des extrémités",
+      "description": "Le choix entre des extrémités de trait carrées ou arrondies. Les extrémités arrondies paraissent abouties dans la plupart des interfaces. Les extrémités carrées peuvent sembler peu soignées."
+    },
+    "pixel-hinting": {
+      "title": "Alignement sur les pixels",
+      "description": "Ajuster les tracés d’une icône pour qu’ils s’alignent nettement sur la grille de pixels à petite taille. Sans cet ajustement, un logo conservant tous ses détails devient illisible à 16px."
+    },
+    "icon-library": {
+      "title": "Bibliothèque d’icônes",
+      "description": "Un ensemble d’icônes dessinées avec la même taille, la même épaisseur et le même rayon. Mélanger deux bibliothèques, même proches, crée de légers écarts qui s’accumulent dans tout le produit."
+    },
+    "icon-size-system": {
+      "title": "Système de tailles d’icônes",
+      "description": "Les tailles définies pour l’affichage d’une icône, généralement 12, 16, 20, 24 et 48px. Chaque taille devrait idéalement être dessinée ou ajustée pour son contexte précis, plutôt que redimensionnée à partir d’un seul original."
+    },
+    "meaning-collision": {
+      "title": "Conflit de sens",
+      "description": "L’utilisation d’une même icône pour deux actions différentes dans un produit. Une étoile pour les favoris et les notes. Un chevron pour développer et pour naviguer. Les utilisateurs n’apprennent aucun de ces sens de manière fiable."
+    },
+    "contextual-swap": {
+      "title": "Changement selon l’état",
+      "description": "Passer d’une icône en contour à une icône pleine, ou l’inverse, pour signaler un changement d’état : actif, sélectionné ou activé. Pour fonctionner, cette convention doit rester cohérente dans tout le produit. Des usages mélangés empêchent les utilisateurs d’apprendre la règle."
+    },
+    "breathing-room": {
+      "title": "Espace entre icône et texte",
+      "description": "L’espace entre une icône et son libellé dans un bouton ou une ligne de liste. Trop proches, ils semblent se heurter. Un écart de 6 à 8px est un point de départ raisonnable. Cet espace fait partie de la conception du composant, il ne se décide pas après coup."
+    },
+    "unified-weight": {
+      "title": "Poids visuel commun",
+      "description": "Quand les icônes et le texte voisin ont le même poids visuel. Une icône au trait fin près d’un texte gras semble venir d’un autre produit. Les icônes doivent paraître appartenir à la même famille visuelle que les caractères à côté."
+    },
+    "metaphor-accuracy": {
+      "title": "Justesse de la métaphore",
+      "description": "L’icône représente-t-elle vraiment ce qu’elle est censée représenter ? Une disquette pour enregistrer, un combiné téléphonique pour appeler, une maison pour l’accueil. Ces métaphores fonctionnent jusqu’à ce que la génération qui les utilise n’ait jamais vu l’objet réel. Il est utile de les réexaminer à mesure que l’âge du public évolue."
     }
   },
   "scaleTitle": "Titre",
@@ -283,5 +331,57 @@
     "projectName": "Nom du projet",
     "uiComponent": "AA interface",
     "tintAmount": "Éclaircissement"
+  },
+  "iconography": "Iconographie",
+  "iconPreview": {
+    "weightSystem": "Variation du trait",
+    "fixed": "Trait fixe",
+    "scaled": "Trait adapté",
+    "stroke": "Épaisseur du trait",
+    "strokeNote": "Le curseur règle le trait à 24px. En mode fixe, il reste identique à toute taille ; en mode adapté, il suit la taille de l’icône.",
+    "alignment": "Centrage",
+    "coordinates": "Par coordonnées",
+    "optical": "À l’œil",
+    "opticalNote": "Les cercles et les repères centraux restent fixes. Le réglage optique décale légèrement le triangle vers la droite.",
+    "capStyle": "Extrémités du trait",
+    "square": "Carrées",
+    "round": "Arrondies",
+    "capNote": "Le tracé et l’épaisseur restent identiques. Comparez les extrémités à taille réelle et agrandies.",
+    "pixelAlignment": "Alignement des pixels",
+    "unhinted": "Non aligné",
+    "hinted": "Aligné",
+    "pixelNote": "En haut : l’icône native à 16px. En bas : le même dessin tramé en 16 × 16, agrandi 6 fois. Votre écran peut rendre les contours natifs différemment.",
+    "iconSet": "Jeu d’icônes",
+    "mixed": "Mélangé",
+    "consistent": "Cohérent",
+    "libraryNote": "Passez au jeu cohérent pour aligner taille, épaisseur du trait et traitement des angles.",
+    "iconSize": "Taille de l’icône",
+    "master": "Original redimensionné",
+    "sizeAdjusted": "Taille adaptée",
+    "sizeNote": "Comparez l’original de 24px redimensionné aux dessins adaptés. À 12px, la porte disparaît ; les autres tailles ajustent tracés et traits.",
+    "gap": "Écart icône–texte",
+    "newFolder": "Nouveau dossier",
+    "gapNote": "Essayez 6 à 8px, puis comparez sans espace. La taille de l’icône et du texte ne change pas.",
+    "unifiedNote": "Le texte du bas reste gras. Épaississez son icône pour équilibrer le duo ; la ligne du haut sert de référence en graisse normale.",
+    "navigation": "Destinations d’exemple",
+    "home": "Accueil",
+    "heart": "Favoris",
+    "bookmark": "Lire plus tard",
+    "filledNote": "Choisissez une destination. Son icône devient pleine ; les autres restent en contour.",
+    "meaningSystem": "Sens des actions",
+    "collision": "Même icône",
+    "distinct": "Icônes distinctes",
+    "favourite": "Ajouter aux favoris",
+    "rate": "Noter",
+    "collisionNote": "Les deux actions utilisent d’abord une étoile. Attribuez un cœur aux favoris et réservez l’étoile aux notes.",
+    "favourited": "Dans les favoris",
+    "bookmarked": "Enregistré pour plus tard",
+    "swapNote": "Activez chaque action. Le plein signifie toujours sélectionné ; le contour, non sélectionné.",
+    "iconLabels": "Libellés des icônes",
+    "iconsOnly": "Icônes seules",
+    "withLabels": "Avec libellés",
+    "save": "Enregistrer",
+    "phone": "Appeler",
+    "metaphorNote": "Nommez les trois actions, puis affichez leurs libellés. La familiarité d’un symbole dépend de ce que votre public reconnaît."
   }
 }

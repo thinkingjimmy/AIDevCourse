@@ -1,6 +1,6 @@
 {
   "title": "Diccionario de diseño",
-  "description": "Explora la tipografía y el color con ejemplos interactivos. Ajusta el texto, mezcla colores y compara los resultados.",
+  "description": "Explora la tipografía, el color y la iconografía con ejemplos interactivos. Ajusta el texto, mezcla colores y compara cómo se dibujan y se usan los iconos.",
   "resources": "Recursos de aprendizaje",
   "tool": "Herramienta",
   "termCount": "{count} términos",
@@ -193,6 +193,54 @@
     "blending": {
       "title": "Fusión de colores",
       "description": "Cómo interactúa una capa con lo que tiene debajo. Multiplicar oscurece, Trama aclara y Superponer hace ambas cosas según el color de base. Es útil para integrar imágenes con superficies de color y dar profundidad a las ilustraciones."
+    },
+    "stroke-weight": {
+      "title": "Grosor del trazo",
+      "description": "El grosor de las líneas de un icono. Los trazos finos desaparecen a tamaños pequeños. A tamaños grandes parecen frágiles. El grosor debe variar con el tamaño."
+    },
+    "optical-centre": {
+      "title": "Centro óptico",
+      "description": "El lugar donde algo parece centrado, frente a donde lo está matemáticamente. Un botón de reproducción centrado por coordenadas parece tener más peso a la izquierda. Muévelo un poco a la derecha y encajará."
+    },
+    "filled-vs-outlined": {
+      "title": "Relleno y contorno",
+      "description": "Dos estilos de iconos para comunicar un estado. El relleno suele indicar activo o seleccionado. El contorno indica el estado predeterminado. Mezclarlos sin un sistema claro genera ruido visual."
+    },
+    "cap-style": {
+      "title": "Forma de los extremos",
+      "description": "Si los extremos de un trazo son cuadrados o redondos. Los extremos redondos parecen acabados en la mayoría de las interfaces. Los cuadrados pueden parecer poco refinados."
+    },
+    "pixel-hinting": {
+      "title": "Ajuste a píxeles",
+      "description": "Ajustar los trazados de un icono para que encajen con nitidez en la cuadrícula de píxeles a tamaños pequeños. Sin ello, un logotipo con todos sus detalles se vuelve borroso a 16px."
+    },
+    "icon-library": {
+      "title": "Biblioteca de iconos",
+      "description": "Un conjunto de iconos dibujados con el mismo tamaño, grosor y radio. Mezclar dos bibliotecas, incluso parecidas, crea pequeñas diferencias que se acumulan en todo el producto."
+    },
+    "icon-size-system": {
+      "title": "Sistema de tamaños de iconos",
+      "description": "Los tamaños definidos para mostrar un icono, normalmente 12, 16, 20, 24 y 48px. Lo ideal es dibujar o ajustar cada tamaño para su contexto específico, en vez de escalar un único original."
+    },
+    "meaning-collision": {
+      "title": "Conflicto de significado",
+      "description": "Cuando un mismo icono se usa para dos acciones distintas en el mismo producto. Una estrella tanto para favoritos como para valoraciones. Un chevrón tanto para desplegar como para navegar. Los usuarios no aprenden ninguno de los dos significados de forma fiable."
+    },
+    "contextual-swap": {
+      "title": "Cambio según el estado",
+      "description": "Cambiar de un icono de contorno a uno relleno, o al revés, para indicar un cambio de estado como activo, seleccionado o activado. La convención debe ser coherente en todo el producto para funcionar. Los usos mezclados impiden que los usuarios aprendan el patrón."
+    },
+    "breathing-room": {
+      "title": "Espacio entre icono y texto",
+      "description": "El espacio entre un icono y su etiqueta dentro de un botón o un elemento de lista. Si están demasiado cerca, parecen chocar. Entre 6 y 8px es un punto de partida razonable. El espacio forma parte del diseño del componente, no se añade al final."
+    },
+    "unified-weight": {
+      "title": "Peso visual uniforme",
+      "description": "Cuando los iconos y el texto que los rodea comparten el mismo peso visual. Un icono de trazo fino junto a texto en negrita parece venir de otro producto. Los iconos deben pertenecer a la misma familia visual que el texto contiguo."
+    },
+    "metaphor-accuracy": {
+      "title": "Precisión de la metáfora",
+      "description": "Si el icono representa realmente lo que debe representar. Un disquete para guardar, un auricular telefónico para llamar, una casa para el inicio. Estas metáforas funcionan hasta que la generación que las usa nunca ha visto el objeto físico. Conviene revisarlas a medida que cambia la edad del público."
     }
   },
   "scaleTitle": "Título",
@@ -283,5 +331,57 @@
     "projectName": "Nombre del proyecto",
     "uiComponent": "AA interfaz",
     "tintAmount": "Aclarado"
+  },
+  "iconography": "Iconografía",
+  "iconPreview": {
+    "weightSystem": "Escala del trazo",
+    "fixed": "Trazo fijo",
+    "scaled": "Trazo adaptado",
+    "stroke": "Grosor del trazo",
+    "strokeNote": "El control ajusta el trazo a 24px. En modo fijo se mantiene en todos los tamaños; en modo adaptado cambia con el tamaño del icono.",
+    "alignment": "Centrado",
+    "coordinates": "Por coordenadas",
+    "optical": "A simple vista",
+    "opticalNote": "Los círculos y las guías centrales no se mueven. El ajuste óptico desplaza el triángulo un poco a la derecha.",
+    "capStyle": "Extremos del trazo",
+    "square": "Cuadrados",
+    "round": "Redondos",
+    "capNote": "El trazado y el grosor son los mismos. Compara los extremos a tamaño real y ampliados.",
+    "pixelAlignment": "Alineación de píxeles",
+    "unhinted": "Sin alinear",
+    "hinted": "Alineado",
+    "pixelNote": "Arriba: el icono nativo de 16px. Abajo: el mismo dibujo rasterizado en 16 × 16 y ampliado 6 veces. Tu pantalla puede mostrar los bordes nativos de otra forma.",
+    "iconSet": "Conjunto de iconos",
+    "mixed": "Mezclado",
+    "consistent": "Uniforme",
+    "libraryNote": "Cambia al conjunto uniforme para igualar tamaño, grosor y tratamiento de las esquinas.",
+    "iconSize": "Tamaño del icono",
+    "master": "Original escalado",
+    "sizeAdjusted": "Tamaño ajustado",
+    "sizeNote": "Compara el original de 24px escalado con dibujos adaptados. A 12px se omite la puerta; los demás tamaños ajustan trazados y grosores.",
+    "gap": "Espacio icono–texto",
+    "newFolder": "Nueva carpeta",
+    "gapNote": "Prueba entre 6 y 8px y compáralo sin espacio. El tamaño del icono y el texto se mantiene.",
+    "unifiedNote": "El texto inferior sigue en negrita. Engrosa su icono para equilibrarlos; la fila superior es la referencia de peso normal.",
+    "navigation": "Destinos de ejemplo",
+    "home": "Inicio",
+    "heart": "Favoritos",
+    "bookmark": "Leer más tarde",
+    "filledNote": "Elige un destino. Su icono se rellena; los demás conservan el contorno.",
+    "meaningSystem": "Significado de las acciones",
+    "collision": "Mismo icono",
+    "distinct": "Iconos distintos",
+    "favourite": "Añadir a favoritos",
+    "rate": "Valorar",
+    "collisionNote": "Las dos acciones empiezan con una estrella. Usa un corazón para favoritos y reserva la estrella para valoraciones.",
+    "favourited": "En favoritos",
+    "bookmarked": "Guardado para más tarde",
+    "swapNote": "Activa cada acción. El relleno siempre indica seleccionado; el contorno, sin seleccionar.",
+    "iconLabels": "Etiquetas de los iconos",
+    "iconsOnly": "Solo iconos",
+    "withLabels": "Con etiquetas",
+    "save": "Guardar",
+    "phone": "Llamar",
+    "metaphorNote": "Identifica las tres acciones y luego muestra sus etiquetas. Que un símbolo resulte familiar depende de lo que reconozca tu público."
   }
 }

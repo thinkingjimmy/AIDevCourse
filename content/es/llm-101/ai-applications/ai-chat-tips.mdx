@@ -1,0 +1,110 @@
+---
+courseId: llm-101
+lessonId: how-to-use-ai-artifacts
+title: "Trucos prácticos de AI Chat"
+description: "Crea tutoriales interactivos y paneles de datos con Artifacts. Describe las interacciones, modifica el resultado y comprueba los datos y el funcionamiento."
+---
+
+En la lección anterior vimos [varios consejos para usar AI Chat](/es/courses/llm-101/ai-chat-advice). Ahora veremos funciones concretas: cómo convertir una respuesta en contenido que puedas ver, manejar y modificar.
+
+## 1. Elige un producto según tus necesidades
+
+Si tienes un presupuesto limitado, usa el método de [Cómo elegir un modelo de lenguaje](/es/courses/llm-101/how-to-choose-a-language-model). Si aún dudas, consulta mi otra web, [Vibe Coding Navigator](https://vibecodingnav.com). Recopila los resultados de evaluación de los principales modelos para ayudarte a elegir el más adecuado.
+
+Si solo quieres modelos o productos gratuitos, puedes considerar DeepSeek Chat o ChatGPT. Recientemente también han aparecido productos Personal Agent como Grok Bot o Muse. Más adelante hablaremos de los Agents.
+
+Esta lección se centra en trucos prácticos para productos Chat.
+
+## 2. Usa la búsqueda
+
+Para reducir los errores causados por conocimientos desactualizados, conviene activar la búsqueda. Algunos productos, como DeepSeek, tienen un interruptor que debes activar para que el modelo use una [herramienta de búsqueda](/es/courses/llm-101/what-is-a-tool). Otros, como ChatGPT, la activan por defecto. No hace falta hacerlo manualmente: el modelo puede buscar cuando planteas una pregunta.
+
+## 3. Usa más los Artifacts
+
+Un Artifact es una pieza independiente que la IA crea dentro de una conversación. En Claude puede ser un documento, un diagrama, una página web o una herramienta interactiva. Puedes seguir modificándolo después. Aquí nos centramos en contenido interactivo: la IA escribe código y el producto lo presenta como una interfaz que puedes manejar. Consulta la [guía oficial de Artifacts de Claude](https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them) para conocer los formatos disponibles y cómo acceder a ellos.
+
+Veamos algunos ejemplos:
+
+- Si pides un análisis de datos con Artifacts, la IA puede escribir el código de un panel tras analizar los datos. Así puedes consultar distintos informes. Sin esta función, quizá solo recibas tablas o texto, menos fáciles de entender visualmente.
+- Si pides que explique un concepto, como una fórmula de física, la IA suele responder en Markdown. Con Artifacts puede escribir una pequeña demostración interactiva. Por ejemplo:
+
+<NewtonSecondLawDemo />
+
+Para usar esta capacidad, normalmente basta con añadir una frase al prompt:
+
+> Usa código para generar un xxx interactivo.
+
+Sustituye xxx por «tutorial», «panel de datos», «demostración interactiva» u otro contenido.
+
+## 4. Usa normas de escritura para estructurar el texto
+
+Esta es una técnica que uso a menudo. Cuando quiero que la IA explique un tema que conozco poco, le pido que siga ASD-STE100:
+
+> Responde siguiendo las reglas de ASD-STE100.
+
+ASD-STE100 es una norma de lenguaje natural controlado creada por la Asociación de Industrias Aeroespaciales y de Defensa de Europa (ASD). Surgió a partir de un problema de la aviación de las décadas de 1970 y 1980. Con personal de mantenimiento en todo el mundo, se observó que técnicos con distintas lenguas maternas interpretaban de manera diferente un mismo manual en inglés, lo que podía causar errores.
+
+Por eso ASD creó la norma: asignar un solo significado a cada palabra y reducir la ambigüedad. Así, los técnicos no nativos de inglés pueden comprender y ejecutar las instrucciones correctamente. Las frases de procedimientos suelen limitarse a 20 palabras, y las descriptivas a 25. Cada frase trata un solo asunto o acción. Se usa la voz activa para indicar quién hace qué. Se evitan las cláusulas complejas y las cadenas de sustantivos.
+
+Cuando la IA sigue estas reglas, produce texto más estructurado, fácil de leer y de entender.
+
+## 5. Observa cómo la usan otras personas
+
+No descubrí ASD-STE100 por mi cuenta. Lo conocí gracias a <JimmyNoteAnchor id="001">una publicación de Andrej Karpathy</JimmyNoteAnchor>.
+
+<JimmyNote anchor="001">
+    <XEmbed url="https://x.com/karpathy/status/2105819303471976479?a=jKGxAIdqr06cS-yztuU&s=20" />
+</JimmyNote>
+
+Estas son algunas personas a las que sigo con frecuencia:
+
+<XProfiles>
+  <XProfile
+    username="karpathy"
+    name="Andrej Karpathy"
+    avatar="/images/profiles/x/karpathy.jpg"
+    bio="Comparte fundamentos de modelos de lenguaje, educación sobre IA y usos cotidianos de la IA."
+  />
+  <XProfile
+    username="poteto"
+    name="Lauren Tan"
+    avatar="/images/profiles/x/poteto.jpg"
+    bio="Miembro del equipo central de React Compiler; comparte prácticas de programación con IA e ingeniería de software."
+  />
+  <XProfile
+    username="theo"
+    name="Theo - t3.gg"
+    avatar="/images/profiles/x/theo.jpg"
+    bio="Desarrolla T3 Code y T3 Chat; comparte experiencias de programación con IA, desarrollo web y herramientas."
+  />
+  <XProfile
+    username="mattpocockuk"
+    name="Matt Pocock"
+    avatar="/images/profiles/x/mattpocockuk.jpg"
+    bio="Creador de Total TypeScript y AI Hero; publica tutoriales de TypeScript e ingeniería de IA."
+  />
+  <XProfile
+    username="op7418"
+    name="Guizang (歸藏)"
+    avatar="/images/profiles/x/op7418.jpg"
+    bio="Trata temas de IA, generación de imágenes y vídeo y diseño; comparte herramientas y métodos creativos."
+  />
+  <XProfile
+    username="trq212"
+    name="Thariq"
+    avatar="/images/profiles/x/trq212.jpg"
+    bio="Participó en el desarrollo de Claude Code; comparte experiencias con Agents de IA y flujos de programación."
+  />
+  <XProfile
+    username="lennysan"
+    name="Lenny Rachitsky"
+    avatar="/images/profiles/x/lennysan.jpg"
+    bio="Comparte experiencias de producto, crecimiento y carrera, y entrevista a profesionales de producto y tecnología."
+  />
+  <XProfile
+    username="dotey"
+    name="Baoyu (宝玉)"
+    avatar="/images/profiles/x/dotey.jpg"
+    bio="Comparte conocimientos de IA, ingeniería de software y gestión técnica; traduce y explica contenidos técnicos."
+  />
+</XProfiles>

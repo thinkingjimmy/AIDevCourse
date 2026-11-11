@@ -238,7 +238,7 @@ test('cross-category search retains the query and restores anchors through brows
   await expect(page.locator('#contrast-ratio')).toBeInViewport();
   await sidebar.getByRole('button', { name: '清除搜索' }).click();
   await expect(sidebar.locator('details').first()).not.toHaveAttribute('open');
-  await expect(sidebar.locator('details').last()).toHaveAttribute('open');
+  await expect(sidebar.locator('details').filter({ has: page.locator('a[href="#srgb"]') })).toHaveAttribute('open');
   await sidebar.locator('a[href="#srgb"]').click();
   await expect(page.locator('.vocabulary-heading')).toBeInViewport();
   await testInfo.attach('Color category and shared directory', { body: await page.screenshot(), contentType: 'image/png' });

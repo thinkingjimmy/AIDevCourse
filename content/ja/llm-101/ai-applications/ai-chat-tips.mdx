@@ -1,0 +1,110 @@
+---
+courseId: llm-101
+lessonId: how-to-use-ai-artifacts
+title: "AI Chat の実用的な使い方"
+description: "Artifact で対話型チュートリアルやデータダッシュボードを作り、操作の要件を伝え、少しずつ修正してデータと動作を確認します。"
+---
+
+前の授業では [AI Chat を使うときのアドバイス](/ja/courses/llm-101/ai-chat-advice)を紹介しました。今回は具体的な機能を使い、AI の回答を見たり、操作したり、修正したりできる形にする方法を説明します。
+
+## 1. 目的に合う製品を選ぶ
+
+予算の条件がある場合は、[自分に合う大規模言語モデルの選び方](/ja/courses/llm-101/how-to-choose-a-language-model)で紹介した方法を使えます。それでも迷うなら、私の別のサイト [Vibe Coding Navigator](https://vibecodingnav.com) を見てください。主要な大規模モデルの評価結果を集めているので、自分に合うモデルを選ぶ参考になります。
+
+無料のモデルや製品だけを使うなら、DeepSeek Chat や ChatGPT を検討できます。最近は Grok Bot や Muse などの Personal Agent 製品も登場しました。Agent については後で説明します。
+
+この授業では、主に Chat 製品の実用的な使い方を紹介します。
+
+## 2. 検索機能を使う
+
+知識の更新が間に合わないことによる誤答を減らすため、検索機能は有効にしておくとよいでしょう。DeepSeek のように、検索スイッチをオンにして初めて[検索ツール](/ja/courses/llm-101/what-is-a-tool)を使う製品もあります。一方、ChatGPT のように最初から有効な製品では、手動でオンにせず、質問時にモデルが検索を使えます。
+
+## 3. Artifact 機能を活用する
+
+Artifact は、AI が会話の中で作る独立した成果物です。Claude では、文書、図、ウェブページ、対話型ツールなどを作れます。生成後も修正できます。ここでは、AI にコードを書かせ、製品が操作可能な画面として表示する対話型コンテンツを扱います。対応形式や使い始め方は、[Claude の Artifact 公式ガイド](https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them)を参照してください。
+
+いくつか例を挙げます。
+
+- データ分析で Artifact を使うよう依頼すると、AI は分析後にコードでダッシュボードを作り、さまざまなレポートを見られる形にできます。この機能を使わない場合は、表や文章が並ぶだけで、視覚的にはわかりにくいかもしれません。
+- 物理の公式などを説明してもらうとき、通常の回答は主に Markdown です。Artifact を使うよう依頼すれば、コードで簡単な対話型デモを作れます。たとえば、次のようなものです。
+
+<NewtonSecondLawDemo />
+
+使い方は簡単です。通常はプロンプトに一文を加えます。
+
+> コードを使って、操作できる xxx を作ってください。
+
+xxx には「チュートリアル」「データダッシュボード」「対話型デモ」などを入れます。
+
+## 4. 文章の規格を使って出力を整理する
+
+これは最近よく使う方法です。あまり詳しくない内容を AI に説明してもらうとき、ASD-STE100 に従って回答するよう頼みます。
+
+> ASD-STE100 の規則に従って回答してください。
+
+ASD-STE100 は、欧州航空宇宙防衛工業会（ASD）が定めた制御自然言語の規格です。背景には、1970〜1980 年代の航空業界の問題がありました。世界中の整備担当者が同じ英文マニュアルを読んでも、母語の違いによって解釈が異なり、整備ミスにつながることがあったのです。
+
+そこで ASD は、一つの語に一つの意味を持たせ、曖昧さを減らす規格を作りました。英語を母語としない整備担当者でも、正しく読んで作業できるようにするためです。手順や操作の指示文は原則 20 語以内、説明文は原則 25 語以内とします。一文では一つの事柄や動作だけを扱い、能動態で誰が何をするかを明確にします。複雑な節や名詞の連続を避けます。
+
+AI がこの規則に従うと、文章が整理され、読みやすく理解しやすくなります。
+
+## 5. ほかの人の使い方を見る
+
+ASD-STE100 も、私が自分で見つけたわけではありません。<JimmyNoteAnchor id="001">Andrej Karpathy の投稿</JimmyNoteAnchor>で知りました。
+
+<JimmyNote anchor="001">
+    <XEmbed url="https://x.com/karpathy/status/2105819303471976479?a=jKGxAIdqr06cS-yztuU&s=20" />
+</JimmyNote>
+
+私がよく見ている発信者を紹介します。
+
+<XProfiles>
+  <XProfile
+    username="karpathy"
+    name="Andrej Karpathy"
+    avatar="/images/profiles/x/karpathy.jpg"
+    bio="大規模言語モデルの仕組み、AI 教育、日常での AI 活用を発信。"
+  />
+  <XProfile
+    username="poteto"
+    name="Lauren Tan"
+    avatar="/images/profiles/x/poteto.jpg"
+    bio="React Compiler のコアチームメンバー。AI コーディングとソフトウェア開発の実践を発信。"
+  />
+  <XProfile
+    username="theo"
+    name="Theo - t3.gg"
+    avatar="/images/profiles/x/theo.jpg"
+    bio="T3 Code と T3 Chat を開発。AI コーディング、ウェブ開発、ツールの使用体験を発信。"
+  />
+  <XProfile
+    username="mattpocockuk"
+    name="Matt Pocock"
+    avatar="/images/profiles/x/mattpocockuk.jpg"
+    bio="Total TypeScript と AI Hero の作者。TypeScript と AI エンジニアリングの教材を発信。"
+  />
+  <XProfile
+    username="op7418"
+    name="歸藏"
+    avatar="/images/profiles/x/op7418.jpg"
+    bio="AI、画像・動画生成、デザインを中心に、ツールの使用体験や制作方法を発信。"
+  />
+  <XProfile
+    username="trq212"
+    name="Thariq"
+    avatar="/images/profiles/x/trq212.jpg"
+    bio="Claude Code の開発に参加した経験を持ち、AI Agent やコーディングの作業手順を発信。"
+  />
+  <XProfile
+    username="lennysan"
+    name="Lenny Rachitsky"
+    avatar="/images/profiles/x/lennysan.jpg"
+    bio="プロダクト、成長、キャリアの知見を共有し、製品・技術分野の実務者にインタビュー。"
+  />
+  <XProfile
+    username="dotey"
+    name="宝玉"
+    avatar="/images/profiles/x/dotey.jpg"
+    bio="AI、ソフトウェア開発、エンジニアリングマネジメントの知識を共有し、技術記事を翻訳・解説。"
+  />
+</XProfiles>

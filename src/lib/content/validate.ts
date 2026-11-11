@@ -3,6 +3,8 @@ import { resolve, sep } from 'node:path';
 import { courseCompletionAchievementId, identity, renderedAnchors, type ContentDocument } from './model';
 import { languageNames, type Locale } from '../i18n/config';
 import { localePath, pathLocale, stripLocale } from '../i18n/routing';
+import { vocabularyForPath } from '../vocabulary/collections';
+import { isProgrammingAnchor } from '../vocabulary/programming';
 
 export function publishDocuments(documents: ContentDocument[], order: Map<Locale, string[]>) {
   const byKey = new Map<string, ContentDocument>();
@@ -95,8 +97,11 @@ export function validateReferences(documents: ContentDocument[], publicRoot: str
       const locale = pathLocale(targetPath);
       if (targetPath !== localePath(locale, stripLocale(targetPath))) fail('Use the canonical language path');
       const simplePage = targetPath === localePath(locale) || targetPath === localePath(locale, '/about');
-      if (!target && !simplePage) fail('Target is missing');
-      if (fragment && (!target || !renderedAnchors(target).includes(decodeURIComponent(fragment)))) fail('Missing heading anchor');
+      const dictionary = vocabularyForPath(stripLocale(targetPath));
+      const category = dictionary?.categories.find(category => stripLocale(targetPath) === `${dictionary.path}/${category.id}`) ?? dictionary?.categories[0];
+      const anchors: readonly string[] = target ? renderedAnchors(target) : category?.terms.map(([id]) => id) ?? [];
+      if (!target && !simplePage && !dictionary) fail('Target is missing');
+      if (fragment && !anchors.includes(decodeURIComponent(fragment)) && !(dictionary?.id === 'programming' && isProgrammingAnchor(decodeURIComponent(fragment)))) fail('Missing heading anchor');
       if (locale !== doc.locale && !link.label.includes(languageNames[locale])) fail('Cross-language links must name their target language');
     }
   }

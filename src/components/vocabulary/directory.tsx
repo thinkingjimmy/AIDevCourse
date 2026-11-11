@@ -9,9 +9,9 @@ import { vocabularyCollections, type DictionaryTermId, type DictionaryCategory, 
 import { VocabularyDirectoryContents } from './directory/contents';
 import { VocabularySearch } from './directory/search';
 
-export function VocabularyDirectory({ category, collection, query, onQueryChange, onSelect }: {
+export function VocabularyDirectory({ category, collection, query, onQueryChange, onSelect, selected }: {
   category: DictionaryCategory; collection: VocabularyKind;
-  query: string; onQueryChange: (query: string) => void; onSelect: (id: DictionaryTermId) => void;
+  query: string; onQueryChange: (query: string) => void; onSelect?: (id: DictionaryTermId) => void; selected?: DictionaryTermId;
 }) {
   const dictionary = vocabularyCollections[collection];
   const t = useTranslations(dictionary.namespace);
@@ -29,6 +29,6 @@ export function VocabularyDirectory({ category, collection, query, onQueryChange
       </div>}>
       <VocabularySearch collection={collection} query={query} onQueryChange={onQueryChange} />
     </DirectoryHeader>
-    <VocabularyDirectoryContents category={category} collection={collection} query={query} onSelect={onSelect} />
+    <VocabularyDirectoryContents category={category} collection={collection} query={query} onSelect={onSelect} selected={selected} />
   </Sidebar>;
 }

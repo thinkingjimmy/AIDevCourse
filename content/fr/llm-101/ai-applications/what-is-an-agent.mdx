@@ -1,0 +1,400 @@
+---
+courseId: llm-101
+lessonId: what-is-an-agent
+title: "Qu’est-ce qu’un Agent ?"
+description: "Un exemple de réparation d’un bouton web explique comment un Agent appelle des outils, lit les résultats, poursuit son travail et juge la tâche terminée."
+---
+
+Nous savons maintenant que [les modèles peuvent demander des appels d’outils](/fr/courses/llm-101/what-is-a-tool) et qu’AI Chat peut nous aider à [créer et modifier des contenus interactifs](/fr/courses/llm-101/ai-chat-tips).
+
+Ce sont des fonctions des produits Chat. Qu’est-ce donc qu’un Agent, cette notion si répandue aujourd’hui ? En quoi diffère-t-il de Chat ?
+
+## 1. Qu’est-ce qu’un Agent ?
+
+Un <JimmyNoteAnchor id="001">Agent</JimmyNoteAnchor> est souvent décrit comme un agent intelligent ou un intermédiaire.
+
+<JimmyNote anchor="001">
+    Le secteur propose de nombreuses définitions. Le sujet étant complexe, cette leçon se limite au concept central. Les détails seront abordés dans [Agent 101 (简体中文)](/zh/courses/agent-101).
+</JimmyNote>
+
+Nous avons vu qu’un modèle de Chat reçoit l’entrée du programme serveur, effectue des calculs et génère une réponse. Le serveur transmet ensuite cette réponse au programme Chat, qui vous l’affiche.
+
+Un Agent fonctionne un peu différemment. Son programme demande d’abord au modèle de réfléchir à l’action à entreprendre. Il appelle ensuite un outil, observe le résultat et réfléchit à la suite.
+
+Ce cycle « réfléchir » → « agir » → « observer » → « réfléchir » → « agir » → « observer » se répète jusqu’à la fin de la tâche.
+
+## 2. Comment passer de la réponse à la réflexion et à l’action ?
+
+Prenons un exemple concret pour comprendre ce passage.
+
+Supposons que les données d’entraînement ne contiennent rien sur Inception ou Matrix. L’utilisateur demande : quelle est la somme de l’année de naissance du réalisateur d’Inception et de l’année de sortie du premier Matrix ?
+
+Le programme Agent envoie un message au programme serveur. Après traitement, celui-ci renvoie des données de la forme suivante.
+
+```json
+{
+  "messages": [
+    {
+      "role": "user", // Rôle du message : utilisateur
+      "content": "Quelle est la somme de l’année de naissance du réalisateur d’Inception et de l’année de sortie du premier Matrix ?" // Question de l’utilisateur
+    },
+    {
+      "role": "assistant", // Rôle du message : modèle
+      "reasoning": "Pour calculer la somme, il me manque deux valeurs : l’année de naissance du réalisateur d’Inception et l’année de sortie du premier Matrix. Cherchons d’abord le réalisateur d’Inception.", // Raisonnement du modèle
+      "content": null, // Contenu généré : vide. Le modèle demande un appel d’outil au lieu de répondre.
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Inception movie director\"}" // Rechercher le réalisateur d’Inception 
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // Rôle du message : outil
+      "content": "Inception est un film d’action et de science-fiction sorti en 2010, écrit et réalisé par Christopher Nolan." // Résultat renvoyé par l’outil
+    }
+  ]
+}
+```
+
+Comparez avec l’exemple précédent. Un champ `reasoning` supplémentaire présente le raisonnement du modèle. C’est l’étape « réfléchir » :
+
+```json
+{
+  "reasoning": "Pour calculer la somme, il me manque deux valeurs : l’année de naissance du réalisateur d’Inception et l’année de sortie du premier Matrix. Cherchons d’abord le réalisateur d’Inception.", // Raisonnement du modèle
+}
+```
+
+À partir de ce raisonnement, le modèle génère une demande de recherche sur le réalisateur d’Inception. C’est l’étape « agir » :
+
+```json
+{
+  "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Inception movie director\"}" // Rechercher le réalisateur d’Inception 
+          }
+        }
+      ]
+}
+```
+
+L’outil renvoie le résultat, puis le modèle passe à l’étape « observer » :
+
+```json
+{
+  {
+    "role": "tool", // Rôle du message : outil
+    "content": "Inception est un film d’action et de science-fiction sorti en 2010, écrit et réalisé par Christopher Nolan." // Résultat renvoyé par l’outil
+  }
+}
+```
+
+
+
+Le JSON montre que l’outil a renvoyé le nom du réalisateur, Christopher Nolan, mais pas son année de naissance. Le modèle réfléchit donc à nouveau et appelle un outil. Ce deuxième cycle de réflexion, d’action et d’observation donne le résultat suivant :
+
+```json fold="7-25"
+{
+  "messages": [
+    {
+      "role": "user", // Rôle du message : utilisateur
+      "content": "Quelle est la somme de l’année de naissance du réalisateur d’Inception et de l’année de sortie du premier Matrix ?" // Question de l’utilisateur
+    },
+    # Premier raisonnement et appel d’outil
+    {
+      "role": "assistant", // Rôle du message : modèle
+      "reasoning": "Pour calculer la somme, il me manque deux valeurs : l’année de naissance du réalisateur d’Inception et l’année de sortie du premier Matrix. Cherchons d’abord le réalisateur d’Inception.", // Raisonnement du modèle
+      "content": null, // Contenu généré : vide. Le modèle demande un appel d’outil au lieu de répondre.
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Inception movie director\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // Rôle du message : outil
+      "content": "Inception est un film d’action et de science-fiction sorti en 2010, écrit et réalisé par Christopher Nolan." // Résultat renvoyé par l’outil
+    }
+    # Deuxième raisonnement et appel d’outil
+    {
+      "role": "assistant", // Rôle du message : modèle
+      "reasoning": "Le réalisateur est Christopher Nolan. Il me manque son année de naissance et l’année de sortie de Matrix. Cherchons maintenant l’année de naissance de Christopher Nolan.", // Raisonnement du modèle
+      "content": null, // Contenu généré : vide. Le modèle demande un appel d’outil au lieu de répondre.
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Christopher Nolan birth year\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // Rôle du message : outil
+      "content": "Christopher Nolan est né le 30 juillet 1970." // Résultat renvoyé par l’outil
+    }
+  ]
+}
+```
+
+Cette fois, le résultat fournit la date de naissance du réalisateur : le 30 juillet 1970. Le modèle poursuit les recherches et le calcul jusqu’à disposer de toutes les informations nécessaires. Il obtient finalement ceci :
+
+```json fold="7-44"
+{
+  "messages": [
+    {
+      "role": "user", // Rôle du message : utilisateur
+      "content": "Quelle est la somme de l’année de naissance du réalisateur d’Inception et de l’année de sortie du premier Matrix ?" // Question de l’utilisateur
+    },
+    # Premier raisonnement et appel d’outil
+    {
+      "role": "assistant", // Rôle du message : modèle
+      "reasoning": "Pour calculer la somme, il me manque deux valeurs : l’année de naissance du réalisateur d’Inception et l’année de sortie du premier Matrix. Cherchons d’abord le réalisateur d’Inception.", // Raisonnement du modèle
+      "content": null, // Contenu généré : vide. Le modèle demande un appel d’outil au lieu de répondre.
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Inception movie director\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // Rôle du message : outil
+      "content": "Inception est un film d’action et de science-fiction sorti en 2010, écrit et réalisé par Christopher Nolan." // Résultat renvoyé par l’outil
+    },
+    # Deuxième raisonnement et appel d’outil
+    {
+      "role": "assistant", // Rôle du message : modèle
+      "reasoning": "Le réalisateur est Christopher Nolan. Il me manque son année de naissance et l’année de sortie de Matrix. Cherchons maintenant l’année de naissance de Christopher Nolan.", // Raisonnement du modèle
+      "content": null, // Contenu généré : vide. Le modèle demande un appel d’outil au lieu de répondre.
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Christopher Nolan birth year\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // Rôle du message : outil
+      "content": "Christopher Nolan est né le 30 juillet 1970." // Résultat renvoyé par l’outil
+    },
+    # Troisième raisonnement et appel d’outil
+    {
+      "role": "assistant", // Rôle du message : modèle
+      "reasoning": "Le réalisateur est Christopher Nolan. Il me manque encore l’année de sortie de Matrix. Cherchons cette année.", // Raisonnement du modèle
+      "content": null, // Contenu généré : vide. Le modèle demande un appel d’outil au lieu de répondre.
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"The Matrix first movie release date\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // Rôle du message : outil
+      "content": "Le premier Matrix est sorti le 31 mars 1999." // Résultat renvoyé par l’outil
+    },
+    # Quatrième raisonnement et appel d’outil
+    {
+      "role": "assistant", // Rôle du message : modèle
+      "reasoning": "J’ai les deux nombres : 1970 et 1999. Pour éviter une erreur de calcul mental, j’utilise la calculatrice pour les additionner.", // Raisonnement du modèle
+      "content": null, // Contenu généré : vide. Le modèle demande un appel d’outil au lieu de répondre.
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "calculate",
+            "arguments": "{\"operation\":\"add\",\"numbers\":[1970,1999]}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // Rôle du message : outil
+      "content": "1970 + 1999 = 3969" // Résultat renvoyé par l’outil
+    }
+    # Résultat final
+    {
+      "role": "assistant", // Rôle du message : modèle
+      "reasoning": "Le résultat est 3969. Toutes les étapes ont été vérifiées, je peux donner la réponse finale.", // Raisonnement du modèle
+      "content": "Christopher Nolan, réalisateur d’Inception, est né en 1970. Matrix est sorti en 1999. La somme des deux années est 3969.", // Contenu généré : réponse finale
+    }
+  ]
+}
+```
+
+Le JSON peut être difficile à lire. Regroupons les informations essentielles dans un schéma pour voir tout le processus :
+
+``` mermaid
+block-beta
+  columns 1
+
+  block:questionRow
+    columns 10
+    questionStage["Question de l’utilisateur"]
+    q["Question
+Quelle est la somme de l’année de naissance du réalisateur d’Inception et de l’année de sortie du premier Matrix ?"]:9
+  end
+
+  block:round1
+    columns 10
+    r1["Étape 1
+Trouver le réalisateur"]
+
+    t1["Réfléchir
+Pour calculer la somme, il me manque deux valeurs : l’année de naissance du réalisateur d’Inception et l’année de sortie du premier Matrix. Cherchons d’abord le réalisateur d’Inception."]:3
+
+    a1["Agir
+Search[#quot;Inception movie director#quot;]"]:3
+
+    o1["Observer
+Inception est un film d’action et de science-fiction sorti en 2010, écrit et réalisé par Christopher Nolan."]:3
+  end
+
+  block:round2
+    columns 10
+    r2["Étape 2
+Trouver l’année
+de naissance"]
+
+    t2["Réfléchir
+Le réalisateur est Christopher Nolan. Il me manque son année de naissance et l’année de sortie de Matrix. Cherchons maintenant l’année de naissance de Christopher Nolan."]:3
+
+    a2["Agir
+Search[#quot;Christopher Nolan birth year#quot;]"]:3
+
+    o2["Observer
+Christopher Nolan est né le 30 juillet 1970."]:3
+  end
+
+  block:round3
+    columns 10
+    r3["Étape 3
+Trouver l’année
+de sortie"]
+
+    t3["Réfléchir
+Le premier nombre est 1970. Il me manque le second : l’année de sortie du premier Matrix."]:3
+
+    a3["Agir
+Search[#quot;The Matrix release year#quot;]"]:3
+
+    o3["Observer
+Matrix est sorti aux États-Unis le 31 mars 1999."]:3
+  end
+
+  block:round4
+    columns 10
+    r4["Étape 4
+Calculer la somme"]
+
+    t4["Réfléchir
+J’ai les deux nombres : 1970 et 1999. Pour éviter une erreur de calcul mental, j’utilise la calculatrice pour les additionner."]:3
+
+    a4["Agir
+Calculator[#quot;1970 + 1999#quot;]"]:3
+
+    o4["Observer
+3969"]:3
+  end
+
+  block:round5
+    columns 10
+    r5["Étape 5
+Donner la réponse"]
+
+    t5["Réfléchir
+Le résultat est 3969. Toutes les étapes ont été vérifiées, je peux donner la réponse finale."]:3
+
+    a5["Agir
+Finish[Christopher Nolan, réalisateur d’Inception, est né en 1970. Matrix est sorti en 1999. La somme des deux années est 3969.]"]:3
+
+    space:3
+  end
+
+  questionRow --> round1
+  round1 --> round2
+  round2 --> round3
+  round3 --> round4
+  round4 --> round5
+
+  t1 --> a1
+  a1 --> o1
+  t2 --> a2
+  a2 --> o2
+  t3 --> a3
+  a3 --> o3
+  t4 --> a4
+  a4 --> o4
+  t5 --> a5
+
+```
+
+## 3. Pourquoi utiliser ce fonctionnement ?
+
+Le cycle répété « réfléchir » → « agir » → « observer » est aussi appelé [ReAct](https://react-lm.github.io/). C’est le principe central de l’Agent et sa principale différence avec AI Chat traditionnel.
+
+Pourquoi ce mode de fonctionnement existe-t-il ?
+
+Dans certains cas, une seule exécution d’AI Chat ne suffit pas au modèle pour répondre. Dans notre exemple, toujours en supposant qu’il ne connaît ni Inception ni Matrix, Chat pourrait donner cette <JimmyNoteAnchor id="002">réponse</JimmyNoteAnchor> :
+
+<Chat>
+<ChatMessage from="user">
+Quelle est la somme de l’année de naissance du réalisateur d’Inception et de l’année de sortie du premier Matrix ?
+</ChatMessage>
+
+<ChatMessage from="assistant">
+<ChatToolCall name="search_web" title="Rechercher sur le web" defaultOpen={true}>
+**Arguments de l’appel**
+
+```json
+{
+  "query": "Inception movie director"
+}
+```
+
+**Résultat renvoyé**
+
+```json
+{
+  "director": "Christopher Nolan"
+}
+```
+</ChatToolCall>
+
+Désolé, je sais seulement que le réalisateur d’Inception est Christopher Nolan. Je ne connais pas son année de naissance.
+</ChatMessage>
+</Chat>
+
+<JimmyNote anchor="002">
+    Cet exemple peut vous sembler mal choisi : les modèles ont appris sur tant de données, pourquoi ne sauraient-ils pas répondre ? En effet, un produit Chat pourrait fournir la bonne réponse à cette question précise.
+    
+    J’utilise surtout cet exemple pour expliquer le principe de l’Agent et montrer comment les outils et ReAct aident un modèle à résoudre seul des problèmes inconnus. L’entraînement prend généralement beaucoup de temps. Les connaissances ont donc souvent plusieurs mois de retard, voire six mois.
+</JimmyNote>
+
+
+## 4. Que faut-il apprendre ensuite ?
+
+Vous comprenez désormais AI Chat et les notions associées. Vous pouvez poursuivre avec [Agent 101 (简体中文)](/zh/courses/agent-101) pour approfondir les Agents IA.
+
+Si la programmation avec l’IA vous intéresse davantage, commencez par [Coding 101 (简体中文)](/zh/courses/coding-101). Le cours part des bases de la programmation et vous apprend progressivement à développer un site avec l’IA.

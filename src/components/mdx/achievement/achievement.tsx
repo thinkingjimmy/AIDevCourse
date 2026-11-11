@@ -13,7 +13,7 @@ import { playAchievementConfetti } from '@/components/progress/confetti';
 
 const optionLetter = (index: number): string => index < 26 ? String.fromCharCode(65 + index) : optionLetter(Math.floor(index / 26) - 1) + optionLetter(index % 26);
 
-export function Achievement({ definition }: { definition: AchievementDefinition }) {
+export function Achievement({ definition, anchorPrefix = '' }: { definition: AchievementDefinition; anchorPrefix?: string }) {
   const { id, title, question, answer, explanation, takeaway, options } = definition;
   const t = useTranslations('Achievement');
   const { learning, ready, unlock } = useLearning();
@@ -66,7 +66,7 @@ export function Achievement({ definition }: { definition: AchievementDefinition 
     setAnnouncement('');
   };
 
-  return <FramedNote ref={card} id={`achievement-${id}`} role="region" aria-labelledby={titleId}
+  return <FramedNote ref={card} id={`${anchorPrefix}achievement-${id}`} role="region" aria-labelledby={titleId}
     label={showReward ? t('unlocked', { title }) : t('challenge')}
     data-achievement={id} data-state={showReward ? 'unlocked' : incorrect ? 'incorrect' : retrying ? 'retrying' : 'locked'}
     signature={showReward ? <h3 ref={heading} id={titleId} tabIndex={-1} className="m-0 min-w-0 wrap-anywhere text-sm leading-copy font-medium text-brand">

@@ -140,7 +140,7 @@ for (const scenario of [
       await expect(page).toHaveURL(destination.replace('/zh', ''));
       await expect(page.getByRole('banner')).toHaveCSS('position', 'static');
       expect(context.pages()).toHaveLength(1);
-      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await testInfo.attach('Reading layout', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
     } finally { await context.close(); }
   });

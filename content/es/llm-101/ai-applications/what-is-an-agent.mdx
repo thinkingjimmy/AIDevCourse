@@ -1,0 +1,400 @@
+---
+courseId: llm-101
+lessonId: what-is-an-agent
+title: "¿Qué es un Agent?"
+description: "Un ejemplo de reparación de un botón web explica cómo un Agent llama a herramientas, lee resultados, continúa y determina si ha terminado la tarea."
+---
+
+Ya sabemos que [los modelos pueden solicitar herramientas](/es/courses/llm-101/what-is-a-tool) y que AI Chat puede ayudarnos a [crear y modificar contenido interactivo](/es/courses/llm-101/ai-chat-tips).
+
+Estas son funciones de los productos Chat. Entonces, ¿qué es un Agent, esa idea tan popular ahora? ¿En qué se diferencia de Chat?
+
+## 1. ¿Qué es un Agent?
+
+Un <JimmyNoteAnchor id="001">Agent</JimmyNoteAnchor> suele describirse como un agente inteligente o un representante.
+
+<JimmyNote anchor="001">
+    Hay muchas definiciones en el sector. Como el tema es complejo, esta lección se centra en el concepto principal. Trataremos los detalles en [Agent 101 (简体中文)](/zh/courses/agent-101).
+</JimmyNote>
+
+En las lecciones anteriores vimos que el modelo de Chat recibe la entrada del programa servidor, calcula y genera una respuesta. El servidor la devuelve al programa Chat, que te la muestra.
+
+Un Agent funciona de forma algo distinta. Su programa pide primero al modelo que piense qué debe hacer. Después llama a una herramienta para actuar, observa el resultado y piensa en el siguiente paso.
+
+Este ciclo de «pensar» → «actuar» → «observar» → «pensar» → «actuar» → «observar» se repite hasta completar la tarea.
+
+## 2. ¿Cómo pasa el modelo de responder a pensar y actuar?
+
+Veamos un ejemplo concreto para entender ese cambio.
+
+Supongamos que el entrenamiento no contiene información sobre Inception ni The Matrix. El usuario pregunta: ¿cuánto suman el año de nacimiento del director de Inception y el año de estreno de la primera película de The Matrix?
+
+El programa Agent envía un mensaje al programa servidor. Tras procesarlo, este devuelve datos con la siguiente estructura.
+
+```json
+{
+  "messages": [
+    {
+      "role": "user", // Rol del mensaje: usuario
+      "content": "¿Cuánto suman el año de nacimiento del director de Inception y el año de estreno de la primera película de The Matrix?" // Pregunta del usuario
+    },
+    {
+      "role": "assistant", // Rol del mensaje: modelo
+      "reasoning": "Para calcular la suma, necesito dos datos: el año de nacimiento del director de Inception y el año de estreno de la primera película de Matrix. Primero buscaré al director de Inception.", // Razonamiento del modelo
+      "content": null, // Contenido generado: vacío. El modelo solicita una llamada a una herramienta en vez de responder.
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Inception movie director\"}" // Buscar al director de Inception 
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // Rol del mensaje: herramienta
+      "content": "Inception es una película de acción y ciencia ficción estrenada en 2010, escrita y dirigida por Christopher Nolan." // Resultado devuelto por la herramienta
+    }
+  ]
+}
+```
+
+Compáralo con el ejemplo anterior. Aparece un campo adicional, `reasoning`, que muestra el razonamiento del modelo. Es el paso de «pensar»:
+
+```json
+{
+  "reasoning": "Para calcular la suma, necesito dos datos: el año de nacimiento del director de Inception y el año de estreno de la primera película de Matrix. Primero buscaré al director de Inception.", // Razonamiento del modelo
+}
+```
+
+A partir de ese razonamiento, el modelo genera una solicitud para buscar al director de Inception. Es el paso de «actuar»:
+
+```json
+{
+  "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Inception movie director\"}" // Buscar al director de Inception 
+          }
+        }
+      ]
+}
+```
+
+La herramienta devuelve el resultado y el modelo pasa a «observar»:
+
+```json
+{
+  {
+    "role": "tool", // Rol del mensaje: herramienta
+    "content": "Inception es una película de acción y ciencia ficción estrenada en 2010, escrita y dirigida por Christopher Nolan." // Resultado devuelto por la herramienta
+  }
+}
+```
+
+
+
+El JSON muestra que la herramienta devolvió el nombre del director, Christopher Nolan, pero no su año de nacimiento. El modelo vuelve a razonar y a llamar a una herramienta. Esta segunda ronda de pensar, actuar y observar produce lo siguiente:
+
+```json fold="7-25"
+{
+  "messages": [
+    {
+      "role": "user", // Rol del mensaje: usuario
+      "content": "¿Cuánto suman el año de nacimiento del director de Inception y el año de estreno de la primera película de The Matrix?" // Pregunta del usuario
+    },
+    # Primer razonamiento y llamada a una herramienta
+    {
+      "role": "assistant", // Rol del mensaje: modelo
+      "reasoning": "Para calcular la suma, necesito dos datos: el año de nacimiento del director de Inception y el año de estreno de la primera película de Matrix. Primero buscaré al director de Inception.", // Razonamiento del modelo
+      "content": null, // Contenido generado: vacío. El modelo solicita una llamada a una herramienta en vez de responder.
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Inception movie director\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // Rol del mensaje: herramienta
+      "content": "Inception es una película de acción y ciencia ficción estrenada en 2010, escrita y dirigida por Christopher Nolan." // Resultado devuelto por la herramienta
+    }
+    # Segundo razonamiento y llamada a una herramienta
+    {
+      "role": "assistant", // Rol del mensaje: modelo
+      "reasoning": "El director es Christopher Nolan. Aún necesito su año de nacimiento y el año de estreno de Matrix. Ahora buscaré el año de nacimiento de Christopher Nolan.", // Razonamiento del modelo
+      "content": null, // Contenido generado: vacío. El modelo solicita una llamada a una herramienta en vez de responder.
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Christopher Nolan birth year\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // Rol del mensaje: herramienta
+      "content": "Christopher Nolan nació el 30 de julio de 1970." // Resultado devuelto por la herramienta
+    }
+  ]
+}
+```
+
+Esta vez, el resultado aporta la fecha de nacimiento del director: 30 de julio de 1970. El modelo continúa con las búsquedas y el cálculo restantes hasta reunir todos los datos necesarios. Finalmente obtiene este resultado:
+
+```json fold="7-44"
+{
+  "messages": [
+    {
+      "role": "user", // Rol del mensaje: usuario
+      "content": "¿Cuánto suman el año de nacimiento del director de Inception y el año de estreno de la primera película de The Matrix?" // Pregunta del usuario
+    },
+    # Primer razonamiento y llamada a una herramienta
+    {
+      "role": "assistant", // Rol del mensaje: modelo
+      "reasoning": "Para calcular la suma, necesito dos datos: el año de nacimiento del director de Inception y el año de estreno de la primera película de Matrix. Primero buscaré al director de Inception.", // Razonamiento del modelo
+      "content": null, // Contenido generado: vacío. El modelo solicita una llamada a una herramienta en vez de responder.
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Inception movie director\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // Rol del mensaje: herramienta
+      "content": "Inception es una película de acción y ciencia ficción estrenada en 2010, escrita y dirigida por Christopher Nolan." // Resultado devuelto por la herramienta
+    },
+    # Segundo razonamiento y llamada a una herramienta
+    {
+      "role": "assistant", // Rol del mensaje: modelo
+      "reasoning": "El director es Christopher Nolan. Aún necesito su año de nacimiento y el año de estreno de Matrix. Ahora buscaré el año de nacimiento de Christopher Nolan.", // Razonamiento del modelo
+      "content": null, // Contenido generado: vacío. El modelo solicita una llamada a una herramienta en vez de responder.
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Christopher Nolan birth year\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // Rol del mensaje: herramienta
+      "content": "Christopher Nolan nació el 30 de julio de 1970." // Resultado devuelto por la herramienta
+    },
+    # Tercer razonamiento y llamada a una herramienta
+    {
+      "role": "assistant", // Rol del mensaje: modelo
+      "reasoning": "El director es Christopher Nolan. Aún necesito el año de estreno de Matrix. Ahora buscaré ese año.", // Razonamiento del modelo
+      "content": null, // Contenido generado: vacío. El modelo solicita una llamada a una herramienta en vez de responder.
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"The Matrix first movie release date\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // Rol del mensaje: herramienta
+      "content": "La primera película de Matrix se estrenó el 31 de marzo de 1999." // Resultado devuelto por la herramienta
+    },
+    # Cuarto razonamiento y llamada a una herramienta
+    {
+      "role": "assistant", // Rol del mensaje: modelo
+      "reasoning": "Ya tengo los dos números: 1970 y 1999. Para evitar errores de cálculo mental, usaré la calculadora para sumarlos.", // Razonamiento del modelo
+      "content": null, // Contenido generado: vacío. El modelo solicita una llamada a una herramienta en vez de responder.
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "calculate",
+            "arguments": "{\"operation\":\"add\",\"numbers\":[1970,1999]}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // Rol del mensaje: herramienta
+      "content": "1970 + 1999 = 3969" // Resultado devuelto por la herramienta
+    }
+    # Resultado final
+    {
+      "role": "assistant", // Rol del mensaje: modelo
+      "reasoning": "El resultado es 3969. Todos los pasos están comprobados; puedo dar la respuesta final.", // Razonamiento del modelo
+      "content": "Christopher Nolan, director de Inception, nació en 1970 y Matrix se estrenó en 1999. La suma de los dos años es 3969.", // Contenido generado: respuesta final
+    }
+  ]
+}
+```
+
+El JSON puede resultar difícil de leer. Organicemos la información principal en un diagrama para ver todo el proceso:
+
+``` mermaid
+block-beta
+  columns 1
+
+  block:questionRow
+    columns 10
+    questionStage["Pregunta del usuario"]
+    q["Pregunta
+¿Cuánto suman el año de nacimiento del director de Inception y el año de estreno de la primera película de The Matrix?"]:9
+  end
+
+  block:round1
+    columns 10
+    r1["Ronda 1
+Buscar al director"]
+
+    t1["Pensar
+Para calcular la suma, necesito dos datos: el año de nacimiento del director de Inception y el año de estreno de la primera película de Matrix. Primero buscaré al director de Inception."]:3
+
+    a1["Actuar
+Search[#quot;Inception movie director#quot;]"]:3
+
+    o1["Observar
+Inception es una película de acción y ciencia ficción estrenada en 2010, escrita y dirigida por Christopher Nolan."]:3
+  end
+
+  block:round2
+    columns 10
+    r2["Ronda 2
+Buscar el año
+de nacimiento"]
+
+    t2["Pensar
+El director es Christopher Nolan. Aún necesito su año de nacimiento y el año de estreno de Matrix. Ahora buscaré el año de nacimiento de Christopher Nolan."]:3
+
+    a2["Actuar
+Search[#quot;Christopher Nolan birth year#quot;]"]:3
+
+    o2["Observar
+Christopher Nolan nació el 30 de julio de 1970."]:3
+  end
+
+  block:round3
+    columns 10
+    r3["Ronda 3
+Buscar el año
+de estreno"]
+
+    t3["Pensar
+El primer número es 1970. Ahora necesito el segundo: el año de estreno de la primera película de Matrix."]:3
+
+    a3["Actuar
+Search[#quot;The Matrix release year#quot;]"]:3
+
+    o3["Observar
+Matrix se estrenó en Estados Unidos el 31 de marzo de 1999."]:3
+  end
+
+  block:round4
+    columns 10
+    r4["Ronda 4
+Calcular la suma"]
+
+    t4["Pensar
+Ya tengo los dos números: 1970 y 1999. Para evitar errores de cálculo mental, usaré la calculadora para sumarlos."]:3
+
+    a4["Actuar
+Calculator[#quot;1970 + 1999#quot;]"]:3
+
+    o4["Observar
+3969"]:3
+  end
+
+  block:round5
+    columns 10
+    r5["Ronda 5
+Dar la respuesta"]
+
+    t5["Pensar
+El resultado es 3969. Todos los pasos están comprobados; puedo dar la respuesta final."]:3
+
+    a5["Actuar
+Finish[Christopher Nolan, director de Inception, nació en 1970 y Matrix se estrenó en 1999. La suma de los dos años es 3969.]"]:3
+
+    space:3
+  end
+
+  questionRow --> round1
+  round1 --> round2
+  round2 --> round3
+  round3 --> round4
+  round4 --> round5
+
+  t1 --> a1
+  a1 --> o1
+  t2 --> a2
+  a2 --> o2
+  t3 --> a3
+  a3 --> o3
+  t4 --> a4
+  a4 --> o4
+  t5 --> a5
+
+```
+
+## 3. ¿Por qué usar este patrón?
+
+El ciclo repetido de «pensar» → «actuar» → «observar» también se llama [ReAct](https://react-lm.github.io/). Es el principio central de un Agent y su principal diferencia con AI Chat tradicional.
+
+¿Por qué existe esta forma de trabajar?
+
+En algunos casos, ejecutar AI Chat una sola vez no basta para que el modelo responda. En el ejemplo anterior, suponiendo aún que desconoce Inception y The Matrix, Chat podría dar esta <JimmyNoteAnchor id="002">respuesta</JimmyNoteAnchor>:
+
+<Chat>
+<ChatMessage from="user">
+¿Cuánto suman el año de nacimiento del director de Inception y el año de estreno de la primera película de The Matrix?
+</ChatMessage>
+
+<ChatMessage from="assistant">
+<ChatToolCall name="search_web" title="Buscar en la web" defaultOpen={true}>
+**Argumentos de la llamada**
+
+```json
+{
+  "query": "Inception movie director"
+}
+```
+
+**Resultado devuelto**
+
+```json
+{
+  "director": "Christopher Nolan"
+}
+```
+</ChatToolCall>
+
+Lo siento, solo sé que el director de Inception es Christopher Nolan. No conozco su año de nacimiento.
+</ChatMessage>
+</Chat>
+
+<JimmyNote anchor="002">
+    Quizá este ejemplo te parezca inadecuado: si los modelos han aprendido de tantos datos, ¿cómo no van a responder? En efecto, un producto Chat podría contestar bien esta pregunta concreta.
+    
+    Uso el ejemplo sobre todo para explicar el principio del Agent y mostrar cómo las herramientas y ReAct permiten resolver problemas desconocidos de forma autónoma. El entrenamiento suele llevar mucho tiempo, por lo que los conocimientos pueden ir varios meses, o incluso medio año, por detrás.
+</JimmyNote>
+
+
+## 4. ¿Qué aprender después?
+
+Ya entiendes AI Chat y los conceptos relacionados. Puedes continuar con [Agent 101 (简体中文)](/zh/courses/agent-101) para aprender más sobre Agents de IA.
+
+Si te interesa más programar con IA, empieza por [Coding 101 (简体中文)](/zh/courses/coding-101). Parte de conceptos básicos de programación y te enseña poco a poco a desarrollar una web con IA.

@@ -8,7 +8,7 @@
     "node": "^24.0.0"
   },
   "scripts": {
-    "dev": "next dev --webpack",
+    "dev": "next dev --turbopack",
     "content:generate": "node scripts/content/generate.mjs",
     "content:check": "node --import tsx scripts/content/check.ts",
     "i18n:check": "node --import tsx scripts/quality/check-i18n.ts",
@@ -21,6 +21,7 @@
     "check": "pnpm deployment:check && pnpm structure:check && pnpm lint && pnpm typecheck && pnpm content:check && pnpm i18n:check && pnpm test",
     "test:e2e:report": "playwright show-report .artifacts/e2e/public/report",
     "measure:performance": "node scripts/performance/measure.mjs",
+    "measure:startup": "node scripts/performance/dev-startup.mjs",
     "structure:check": "node --import tsx scripts/quality/check-structure.ts",
     "deployment:check": "node scripts/deployment/check.mjs"
   },

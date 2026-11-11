@@ -61,7 +61,7 @@ export function LessonRegion({ title, hasToc, children }: { title: string; hasTo
     window.addEventListener('hashchange', revealFragment);
     return () => window.removeEventListener('hashchange', revealFragment);
   }, []);
-  return <section ref={pane} data-slot="lesson-region" aria-label={title} tabIndex={0} className={cn(
+  return <section ref={pane} data-slot="lesson-region" data-lesson-scroll="" aria-label={title} tabIndex={0} className={cn(
     '@container/lesson min-h-0 flex-1 overflow-y-auto overscroll-contain px-8 focus-visible:-outline-offset-2 max-[961px]:px-5 max-[961px]:pb-[calc(6.5rem+env(safe-area-inset-bottom))]',
     hasToc && 'min-[961px]:pl-20',
   )}>{children}</section>;

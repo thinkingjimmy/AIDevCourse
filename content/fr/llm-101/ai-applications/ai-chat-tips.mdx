@@ -1,0 +1,110 @@
+---
+courseId: llm-101
+lessonId: how-to-use-ai-artifacts
+title: "Conseils pratiques pour AI Chat"
+description: "Créez des tutoriels interactifs et des tableaux de bord avec les Artifacts. Décrivez les interactions, révisez le résultat et vérifiez les données et les actions."
+---
+
+La leçon précédente présentait [des conseils pour utiliser AI Chat](/fr/courses/llm-101/ai-chat-advice). Voyons maintenant des fonctions précises : comment transformer une réponse en contenu que vous pouvez consulter, manipuler et modifier.
+
+## 1. Choisir un produit adapté à vos besoins
+
+Si votre budget est limité, utilisez la méthode de la leçon [Comment choisir un modèle de langage](/fr/courses/llm-101/how-to-choose-a-language-model). Si vous hésitez encore, consultez mon autre site, [Vibe Coding Navigator](https://vibecodingnav.com). Il rassemble les résultats d’évaluation des principaux modèles pour vous aider à choisir.
+
+Pour des modèles ou produits gratuits, vous pouvez envisager DeepSeek Chat ou ChatGPT. Des produits Personal Agent, comme Grok Bot et Muse, sont aussi apparus récemment. Nous parlerons des Agents plus tard.
+
+Cette leçon présente surtout des astuces pratiques pour les produits Chat.
+
+## 2. Utiliser la recherche
+
+Pour réduire les erreurs dues à des connaissances anciennes, mieux vaut activer la recherche. Certains produits, comme DeepSeek, proposent un interrupteur à activer avant que le modèle utilise un [outil de recherche](/fr/courses/llm-101/what-is-a-tool). D’autres, comme ChatGPT, l’activent par défaut. Vous n’avez rien à activer manuellement : le modèle peut rechercher des informations lorsque vous posez une question.
+
+## 3. Utiliser davantage les Artifacts
+
+Un Artifact est une réalisation distincte créée par l’IA dans une conversation. Dans Claude, il peut s’agir d’un document, d’un schéma, d’une page web ou d’un outil interactif. Vous pouvez ensuite le modifier. Cette leçon porte sur les contenus interactifs : l’IA écrit du code, puis le produit le présente sous forme d’interface utilisable. Consultez le [guide officiel des Artifacts de Claude](https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them) pour connaître les formats disponibles et leur accès.
+
+Voici quelques exemples :
+
+- Pour une analyse de données avec les Artifacts, l’IA peut écrire le code d’un tableau de bord après l’analyse. Vous pouvez alors consulter différents rapports. Sans cette fonction, elle peut simplement fournir des tableaux ou du texte, moins faciles à comprendre visuellement.
+- Pour expliquer une notion, comme une formule de physique, l’IA répond généralement en Markdown. Avec les Artifacts, elle peut coder une petite démonstration interactive. Par exemple :
+
+<NewtonSecondLawDemo />
+
+Pour demander ce résultat, il suffit généralement d’ajouter une phrase au prompt :
+
+> Utilise du code pour créer un xxx interactif.
+
+Remplacez xxx par « tutoriel », « tableau de bord », « démonstration interactive », ou une autre réalisation.
+
+## 4. Utiliser des normes de rédaction pour structurer les réponses
+
+Voici une technique que j’utilise souvent. Quand je demande une explication sur un sujet peu familier, je demande à l’IA de suivre ASD-STE100 :
+
+> Respecte les règles ASD-STE100 dans ta réponse.
+
+ASD-STE100 est une norme de langue naturelle contrôlée, élaborée par l’Association européenne des industries aérospatiales et de défense (ASD). Elle trouve son origine dans l’aviation des années 1970 et 1980. Avec des équipes de maintenance partout dans le monde, le secteur constatait que des techniciens de langues maternelles différentes interprétaient différemment un même manuel anglais, ce qui pouvait provoquer des erreurs.
+
+L’ASD a donc établi cette norme pour attribuer un seul sens à chaque mot et réduire l’ambiguïté. Elle aide les techniciens non anglophones à comprendre et à exécuter correctement les instructions. Les phrases de procédure comptent généralement au maximum 20 mots, et les phrases descriptives 25 mots. Chaque phrase traite d’un seul sujet ou d’une seule action. La voix active indique clairement qui fait quoi. Il faut éviter les propositions complexes et les longues suites de noms.
+
+En suivant ces règles, l’IA produit un texte mieux structuré, plus facile à lire et à comprendre.
+
+## 5. Observer les usages des autres
+
+Je n’ai pas découvert ASD-STE100 tout seul. J’en ai entendu parler dans <JimmyNoteAnchor id="001">une publication d’Andrej Karpathy</JimmyNoteAnchor>.
+
+<JimmyNote anchor="001">
+    <XEmbed url="https://x.com/karpathy/status/2105819303471976479?a=jKGxAIdqr06cS-yztuU&s=20" />
+</JimmyNote>
+
+Voici quelques personnes que je suis régulièrement :
+
+<XProfiles>
+  <XProfile
+    username="karpathy"
+    name="Andrej Karpathy"
+    avatar="/images/profiles/x/karpathy.jpg"
+    bio="Partage les principes des modèles de langage, l’éducation à l’IA et les usages quotidiens de l’IA."
+  />
+  <XProfile
+    username="poteto"
+    name="Lauren Tan"
+    avatar="/images/profiles/x/poteto.jpg"
+    bio="Membre de l’équipe centrale de React Compiler, partageant des pratiques de programmation avec l’IA et de génie logiciel."
+  />
+  <XProfile
+    username="theo"
+    name="Theo - t3.gg"
+    avatar="/images/profiles/x/theo.jpg"
+    bio="Développe T3 Code et T3 Chat ; partage ses expériences de programmation avec l’IA, de développement web et d’outils."
+  />
+  <XProfile
+    username="mattpocockuk"
+    name="Matt Pocock"
+    avatar="/images/profiles/x/mattpocockuk.jpg"
+    bio="Créateur de Total TypeScript et d’AI Hero, proposant des tutoriels TypeScript et d’ingénierie de l’IA."
+  />
+  <XProfile
+    username="op7418"
+    name="Guizang (歸藏)"
+    avatar="/images/profiles/x/op7418.jpg"
+    bio="S’intéresse à l’IA, à la génération d’images et de vidéos et au design ; partage des outils et des méthodes de création."
+  />
+  <XProfile
+    username="trq212"
+    name="Thariq"
+    avatar="/images/profiles/x/trq212.jpg"
+    bio="A participé au développement de Claude Code ; partage son expérience des Agents IA et des méthodes de programmation."
+  />
+  <XProfile
+    username="lennysan"
+    name="Lenny Rachitsky"
+    avatar="/images/profiles/x/lennysan.jpg"
+    bio="Partage des expériences produit, croissance et carrière, et interroge des professionnels du produit et de la technologie."
+  />
+  <XProfile
+    username="dotey"
+    name="Baoyu (宝玉)"
+    avatar="/images/profiles/x/dotey.jpg"
+    bio="Partage des connaissances en IA, génie logiciel et management technique ; traduit et explique des contenus techniques."
+  />
+</XProfiles>

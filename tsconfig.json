@@ -36,6 +36,9 @@
       "@routes": [
         "./.source/routes.json",
         "./.source-test/routes.json"
+      ],
+      "@catalog-reader": [
+        "./src/lib/content/source/production.ts"
       ]
     },
     "allowJs": true

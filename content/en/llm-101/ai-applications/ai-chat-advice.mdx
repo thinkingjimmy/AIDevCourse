@@ -1,0 +1,107 @@
+---
+courseId: llm-101
+lessonId: what-can-you-do-with-ai-chat
+title: "Some advice for using AI Chat"
+description: "Try boldly, learn through trial and error, and ask AI to question and restate your ideas. Express your needs, add context, and understand AI’s limits."
+---
+
+The last two lessons explained [how AI Chat works](/courses/llm-101/how-ai-chat-works) and [how models use tools](/courses/llm-101/what-is-a-tool). With those principles in mind, let us ask a more practical question: what can you do with AI Chat?
+
+## 1. Try more things
+
+AI is new to many people. But if you are willing to experiment, you will soon find interesting ways to use it.
+
+You have to take the first step to discover what AI can do:
+
+- If you are a student, do more than ask it to do your homework. Ask it to teach you what you do not understand, and keep asking until you understand. Be bold. AI will not laugh at you.
+- If you work in an organization, do more than ask it to write reports. Tell it about the task that troubles you most and see how it can help. Even if it cannot do the task directly, it may help improve your workflow.
+- If you are a business owner or manager, consider using AI for data or financial analysis, such as employee performance, cost control, or market trends.
+- If you really do not know where to start, try using AI in place of search. When you need to look something up or ask a question, try AI before a search engine.
+
+My first suggestion is to experiment boldly and not fear mistakes. AI is a tool. It will not laugh at you; it is there to help. A conversation costs nothing anyway.
+
+## 2. Learn through trial and error
+
+Once you start, AI may give answers that amaze you, or answers that confuse or disappoint you. <JimmyNoteAnchor id="001">That is normal. Do not give up after one failed attempt.</JimmyNoteAnchor>
+
+<JimmyNote anchor="001">
+  Frankly, with how far AI has come, I think models can answer most common questions well. If the answer is poor, the problem is often your question rather than the language model 😝
+</JimmyNote>
+
+From what I have observed, two causes are most likely when an AI answer is wrong or falls short:
+
+- AI has not understood your intent, so the answer goes in the wrong direction.
+- You have not provided enough context.
+
+The first cause is usually the instruction. Words can be ambiguous, so AI can answer incorrectly. For example, you ask it to do something like a previous task and write:
+
+> Make it the same as the previous xxx.
+
+This can mean two things:
+
+- Use the same requirements as the previous xxx for the new task.
+- Make the result of the new task match the previous xxx.
+
+This ambiguity can lead to an unsuitable answer. Another possibility is insufficient context, which prevents AI from answering correctly. This often happens with specialized questions.
+
+For example, with a health question, you might simply ask:
+
+> I have been feeling tired all the time lately. What should I do?
+
+AI may reply, “Rest more, exercise more, and drink more water.” But with more context, such as staying up late, irregular meals, and little exercise, it can give more specific suggestions.
+
+So if an answer disappoints you, do not immediately dismiss AI as useless or unreliable. Experiment, ask follow-up questions, and give it a few more chances.
+
+
+## 3. Ask AI to question you and restate your ideas
+
+I usually use two methods to address ambiguity and missing context.
+
+**Method 1: Ask AI to ask me questions**
+
+For complex or unfamiliar problems, I add this sentence to my instruction:
+
+> If you need more information to answer this question better, ask me questions and request the information you need.
+
+AI can then ask questions before answering. This sometimes resolves ambiguity and fills gaps in context. I have also found that it can ask about things I had not considered.
+
+**Method 2: Ask AI to restate its understanding**
+
+When I use AI for product development, we sometimes have a long discussion about user experience, code design, and other topics. Afterward, before it writes code or a proposal, I check:
+
+> Please restate your understanding of the product proposal. What is the user flow?
+
+AI then explains what it understood. I can see whether it understood the problem and whether I need to add information. For complex tasks, or when you worry about misunderstanding, ask it to restate things more often. It can misunderstand, and you may also have made a mistake in your instruction.
+
+I have found another benefit: its restatement can teach me clearer or shorter ways to express an idea, or reveal details I missed.
+
+## 4. Accept AI’s limits
+
+You have experimented and tried again, but the answers still disappoint you.
+
+That is normal. AI has limits, and it is relatively weak at open-ended questions. Based on my experiments and observations as of November 2026, answers from any model are unlikely to be especially good in these situations:
+
+- If you have no direction at all, AI is unlikely to give you a good one. Think back to how it works. If your instruction is vague, you have no starting idea, and the task is absent from its training data—in other words, it has not learned it—how could it answer well?
+- You might object that AI can now solve mathematical problems humans cannot, even though they were not in its training data. My understanding is that it can approach these open-ended problems through sheer persistence: keep trying, with human supervision, until an idea emerges. Mathematics may be too abstract, so consider advertising copy. If you ask AI for excellent copy immediately, it will probably struggle, even with a strong model. But after a long conversation, it may combine words into a striking phrase or a new expression. You must guide it and recognize the result. Sometimes the deciding factor is the user, not the model’s strength. Returning to mathematics, even the strongest model would not help someone as weak at math as I am. I could not recognize useful ideas in its answers and guide it toward a solution.
+- AI is not a particularly good innovator or creator, but it can be a very good reviewer or critic. When you are undecided or unsure about something, it may offer useful advice.
+
+## 5. Achievement challenge
+
+<Achievement
+  id="use-chat-with-source-material"
+  title="Use Chat for a real task"
+  question="You want AI Chat to organize three pieces of user feedback. Which approach is better?"
+  answer="provide-and-check"
+  explanation="Give the original feedback and your requirements so the model can work from real material. Categories and summaries can still omit or misinterpret details, so you must check them. Three comments alone cannot tell the model about every user."
+  takeaway="Give AI Chat a specific task and the necessary material. Improve the result through follow-up questions, then compare it with the source."
+>
+  <AchievementOption value="guess-the-feedback">
+    Just say “Analyze user feedback” and let the model guess what users said.
+  </AchievementOption>
+  <AchievementOption value="provide-and-check">
+    Provide the three original comments. Ask for categories with supporting evidence, then check the result against the source.
+  </AchievementOption>
+  <AchievementOption value="trust-the-format">
+    As long as the model produces a complete table, treat its guesses as facts.
+  </AchievementOption>
+</Achievement>

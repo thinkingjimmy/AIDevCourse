@@ -42,6 +42,11 @@
     "linkPreview": "Aperçu de la page",
     "linkPreviewLoading": "Chargement de l’aperçu…",
     "linkPreviewUnavailable": "Aperçu indisponible. Ouvrez le lien pour voir cette page.",
+    "sideReading": "Lecture latérale : {title}",
+    "closeReading": "Fermer la lecture latérale",
+    "readingLoading": "Chargement de la leçon…",
+    "readingFailed": "Cette page n’a pas pu se charger. Réessayez.",
+    "retryReading": "Réessayer",
     "noHeadings": "Aucun titre",
     "code": "Code",
     "codeFoldLines": "{count, plural, one {# ligne} other {# lignes}}",
@@ -340,5 +345,124 @@
     "zoom": "Agrandir l’illustration : {label}",
     "imageTitle": "Illustration : {label}",
     "close": "Fermer l’illustration"
+  },
+  "ChatSequence": {
+    "label": "Séquence animée des messages de Chat",
+    "actorsLabel": "Messages entre la personne, le produit, le serveur du fournisseur et le programme du modèle",
+    "actors": {
+      "user": "Vous",
+      "product": "Chat",
+      "server": "Serveur",
+      "model": "Modèle"
+    },
+    "modelStates": {
+      "idle": "Non appelé",
+      "waiting": "En attente",
+      "running": "En cours",
+      "generated": "Réponse prête"
+    },
+    "playStates": {
+      "finished": "Démonstration terminée",
+      "paused": "En pause",
+      "playing": "Lecture automatique"
+    },
+    "replay": "Recommencer",
+    "playAgain": "Relire",
+    "resume": "Reprendre",
+    "pause": "Pause",
+    "invalidAttempt": "Format incorrect : le serveur refuse la requête",
+    "validAttempt": "Le format attendu permet de recevoir une réponse",
+    "invalidFormat": "Format incorrect",
+    "validFormat": "Format correct",
+    "inputMessage": "Bonjour, je m’appelle Jimmy.",
+    "replyMessage": "Bonjour, Jimmy !",
+    "requestLabel": "Exemple de requête JSON conforme à la structure attendue",
+    "responseLabel": "Exemple de réponse JSON du serveur",
+    "events": {
+      "input": {
+        "label": "Saisir un message",
+        "caption": "Premier essai · format incorrect",
+        "message": "Bonjour, je m’appelle Jimmy."
+      },
+      "raw": {
+        "label": "Envoyer le texte brut",
+        "caption": "La structure attendue est absente",
+        "message": "Bonjour, je m’appelle Jimmy."
+      },
+      "reject": {
+        "label": "Refus : format incorrect",
+        "caption": "Le serveur renvoie une erreur de format",
+        "message": "La requête échoue au contrôle du format. Le programme du modèle n’est pas appelé."
+      },
+      "error": {
+        "label": "Afficher l’erreur",
+        "caption": "Le premier essai échoue",
+        "message": "Le produit reçoit une erreur. Le modèle n’a généré aucune réponse."
+      },
+      "retry": {
+        "label": "Renvoyer le message",
+        "caption": "Deuxième essai · format attendu",
+        "message": "Le même message : Bonjour, je m’appelle Jimmy."
+      },
+      "request": {
+        "label": "Envoyer au format attendu",
+        "caption": "Inclure model et messages comme prévu"
+      },
+      "invoke": {
+        "label": "Transmettre au modèle",
+        "caption": "Le format de la requête est valide",
+        "message": "Le serveur transmet le contenu du message au programme du modèle."
+      },
+      "generate": {
+        "label": "Générer une réponse",
+        "caption": "Le modèle génère une réponse",
+        "message": "Bonjour, Jimmy !"
+      },
+      "response": {
+        "label": "Renvoyer la réponse (JSON)",
+        "caption": "Le serveur renvoie le JSON au produit"
+      },
+      "display": {
+        "label": "Afficher la réponse",
+        "caption": "Le deuxième essai réussit",
+        "message": "Bonjour, Jimmy !"
+      }
+    }
+  },
+  "Newton": {
+    "label": "Démonstration interactive de la deuxième loi de Newton",
+    "title": "À vous : deuxième loi de Newton",
+    "reference": "Référence : 4 N / 2 kg",
+    "yourSettings": "Vos réglages",
+    "speed": "Vitesse",
+    "formula": "Accélération = force résultante ÷ masse",
+    "equationExact": "L’accélération vaut {force} newtons divisés par {mass} kilogrammes, soit {acceleration} mètres par seconde au carré",
+    "equationApproximate": "L’accélération vaut {force} newtons divisés par {mass} kilogrammes, soit environ {acceleration} mètres par seconde au carré",
+    "setup": "Départ simultané à l’arrêt, force appliquée pendant 2 secondes",
+    "force": "Force résultante F",
+    "mass": "Masse m",
+    "forceValue": "{force} newtons",
+    "massValue": "{mass} kilogrammes",
+    "pause": "Pause",
+    "resume": "Reprendre",
+    "playAgain": "Comparer à nouveau",
+    "start": "Lancer la comparaison",
+    "reset": "Réinitialiser",
+    "insights": {
+      "zero": "Une force résultante nulle donne une accélération nulle. Le chariot part à l’arrêt et reste immobile.",
+      "initial": "Passez la force résultante de 4 N à 8 N et observez l’accélération.",
+      "doubleForce": "À masse constante, doubler la force double l’accélération. La vitesse augmente de 4 m/s chaque seconde.",
+      "doubleMass": "À force constante, doubler la masse divise l’accélération par deux. La vitesse augmente de 1 m/s chaque seconde.",
+      "sameRatio": "La force et la masse varient dans la même proportion. L’accélération égale la référence : la vitesse augmente de 2 m/s chaque seconde.",
+      "other": "La vitesse augmente d’environ {acceleration} m/s chaque seconde. L’accélération vaut environ {ratio} fois la référence."
+    },
+    "assumptions": "On compare uniquement le mouvement horizontal, sans frottement. Les deux chariots partent à l’arrêt. La force résultante reste constante pendant 2 secondes.",
+    "status": {
+      "complete": "Comparaison terminée. Après 2 secondes, votre chariot avance à {speed} mètres par seconde, contre 4 pour la référence.",
+      "playing": "Les deux chariots démarrent ensemble.",
+      "paused": "Comparaison en pause.",
+      "ready": "Force résultante : {force} newtons. Masse : {mass} kilogrammes. Accélération : {acceleration} mètres par seconde au carré."
+    },
+    "static": "À masse constante, doubler la force résultante double l’accélération. À force constante, doubler la masse divise l’accélération par deux. Activez JavaScript pour régler la force et la masse et observer les chariots."
   }
 }

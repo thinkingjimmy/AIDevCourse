@@ -1,0 +1,92 @@
+.stage { overflow-x: hidden; }
+.stage[data-open] .primary { flex: 1 0 50%; }
+
+.pane {
+  position: relative;
+  display: flex;
+  flex: 1 0 50%;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  overflow: clip;
+  border-left: 1px solid var(--color-brand);
+  background: var(--color-background);
+}
+
+.pane[data-motion="open"], .pane[data-motion="close"] {
+  transition: opacity var(--reading-enter) var(--reading-easing), transform var(--reading-enter) var(--reading-easing);
+}
+
+.pane[data-motion="close"] { transition-duration: var(--reading-exit); }
+
+.pane[data-closing] {
+  position: absolute;
+  inset: 0 0 0 auto;
+  z-index: 1;
+  width: 50%;
+  opacity: 0;
+  transform: translateX(24px);
+  pointer-events: none;
+}
+
+.content { min-height: 100%; }
+.pane[data-motion="open"] .content, .pane[data-motion="replace"] .content {
+  transition: opacity var(--reading-content) var(--reading-easing), transform var(--reading-content) var(--reading-easing);
+}
+
+@starting-style {
+  .pane[data-motion="open"] { opacity: 0; transform: translateX(24px); }
+  .pane[data-motion="open"] .content, .pane[data-motion="replace"] .content { opacity: 0; transform: translateY(6px); }
+}
+
+.close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 30;
+  width: 44px;
+  height: 44px;
+  background: var(--color-background);
+  color: var(--color-brand);
+  border-radius: 2px;
+}
+
+.close::before { inset: 0; }
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  padding: 0 28px;
+  outline-offset: -2px;
+}
+
+.scroll :global(.course-overview) { padding: 0 0 40px; }
+.scroll :global(.course-overview-hero) { grid-template-columns: 1fr; gap: 0; }
+.scroll :global(.course-disk-cover) { display: none; }
+.scroll :global(article > h2:first-child) { padding-right: 40px; }
+.stage :global([data-slot="lesson-region"]) { overscroll-behavior-x: auto; }
+
+@container reader (max-width: 36rem) {
+  .stage[data-open] .primary :global([data-slot="lesson-aside"]) { display: none; }
+  .stage[data-open] .primary :global([data-slot="lesson-region"]) { padding-left: 20px; }
+}
+
+@media (max-width: 960px) {
+  .stage { overflow-x: auto; }
+  .stage[data-closing] { overflow-x: hidden; }
+  .stage[data-open] .primary, .pane { flex-basis: 100%; }
+  .pane[data-closing] { width: 100%; }
+  .scroll { padding: 0 20px calc(6.5rem + env(safe-area-inset-bottom)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pane, .content { transition: none !important; }
+}
+
+@media print {
+  .stage { display: block; overflow: visible; }
+  .pane { display: none; }
+}

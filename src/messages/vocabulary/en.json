@@ -1,6 +1,6 @@
 {
   "title": "Design dictionary",
-  "description": "Explore typography and color through interactive examples. Adjust type, mix colors and compare interface treatments.",
+  "description": "Explore typography, color and iconography through interactive examples. Adjust type, mix colors and compare how icons are drawn and used.",
   "resources": "Learning resources",
   "tool": "Tool",
   "termCount": "{count} terms",
@@ -193,6 +193,54 @@
     "blending": {
       "title": "Blending",
       "description": "How a layer interacts with what’s beneath it. Multiply darkens, Screen lightens, Overlay does both depending on the base color. Useful for integrating images with colored surfaces and adding depth to illustrations."
+    },
+    "stroke-weight": {
+      "title": "Stroke weight",
+      "description": "How thick the lines of an icon are. Thin strokes disappear at small sizes. At large sizes they look frail. Weight needs to scale with size."
+    },
+    "optical-centre": {
+      "title": "Optical centre",
+      "description": "Where something looks centred versus where it mathematically is. A play button centred by coordinates looks left-heavy. Nudge it right and it sits."
+    },
+    "filled-vs-outlined": {
+      "title": "Filled vs outlined",
+      "description": "Two icon styles for communicating state. Filled often signals active or selected. Outlined signals default. Mixing both without a clear system creates noise."
+    },
+    "cap-style": {
+      "title": "Cap style",
+      "description": "Whether stroke ends are square or round. Round caps feel finished in most UI contexts. Square caps can read as unrefined."
+    },
+    "pixel-hinting": {
+      "title": "Pixel hinting",
+      "description": "Adjusting icon paths to sit cleanly on a pixel grid at small sizes. A full-detail logo at 16px turns to mush without it."
+    },
+    "icon-library": {
+      "title": "Icon library",
+      "description": "A set of icons drawn at the same size, weight, and radius. Mixing two libraries, even similar ones, creates subtle mismatches that compound across a product."
+    },
+    "icon-size-system": {
+      "title": "Icon size system",
+      "description": "The defined sizes an icon is designed to appear at, typically 12, 16, 20, 24, and 48px. Each size is ideally drawn or adjusted for that specific context rather than scaled from a single master."
+    },
+    "meaning-collision": {
+      "title": "Meaning collision",
+      "description": "When the same icon is used for two different actions in the same product. A star used for both favouriting and rating. A chevron used for both expanding and navigating. Users learn neither reliably."
+    },
+    "contextual-swap": {
+      "title": "Contextual swap",
+      "description": "Switching from an outlined icon to a filled one (or vice versa) to signal a state change like active, selected, or toggled. The convention needs to be consistent across the product to work. Mixed usage means users can’t learn the pattern."
+    },
+    "breathing-room": {
+      "title": "Breathing room",
+      "description": "The space between an icon and its label inside a button or list item. Too close and they look like they collided. 6 to 8px is a reasonable starting point. The gap is part of the component design, not an afterthought."
+    },
+    "unified-weight": {
+      "title": "Unified weight",
+      "description": "When icons and surrounding text share the same visual weight. A thin-stroke icon next to bold text looks like it came from a different product. Icons should feel like they belong to the same visual family as the type beside them."
+    },
+    "metaphor-accuracy": {
+      "title": "Metaphor accuracy",
+      "description": "Whether the icon actually represents what it’s supposed to. A floppy disk for save, a phone handset for call, a house for home. These work until the generation using them has never seen the physical object. Worth auditing as your audience ages."
     }
   },
   "scaleTitle": "Title",
@@ -283,5 +331,57 @@
     "projectName": "Project name",
     "uiComponent": "AA UI",
     "tintAmount": "Tint amount"
+  },
+  "iconography": "Iconography",
+  "iconPreview": {
+    "weightSystem": "Stroke scaling",
+    "fixed": "Fixed stroke",
+    "scaled": "Scale with size",
+    "stroke": "Stroke weight",
+    "strokeNote": "The slider sets the 24px weight. Fixed uses that same stroke at every size; scaled adjusts it with icon size.",
+    "alignment": "Centring",
+    "coordinates": "Coordinates",
+    "optical": "By eye",
+    "opticalNote": "The circles and centre guides stay fixed. The optical setting moves the play shape slightly right.",
+    "capStyle": "Stroke ends",
+    "square": "Square",
+    "round": "Round",
+    "capNote": "The path and weight stay the same. Compare the stroke ends at native size and enlarged.",
+    "pixelAlignment": "Pixel alignment",
+    "unhinted": "Unaligned",
+    "hinted": "Pixel aligned",
+    "pixelNote": "Top: native 16px. Below: the same drawing rasterised at 16 × 16, enlarged 6×. Your display can render native edges differently.",
+    "iconSet": "Icon set",
+    "mixed": "Mixed",
+    "consistent": "Consistent",
+    "libraryNote": "Switch to a consistent set: size, stroke weight and corner treatment align.",
+    "iconSize": "Icon size",
+    "master": "Scaled master",
+    "sizeAdjusted": "Size adjusted",
+    "sizeNote": "Compare a scaled 24px master with size-specific drawings. The 12px version omits the door; other sizes adjust paths and strokes.",
+    "gap": "Icon–label gap",
+    "newFolder": "New folder",
+    "gapNote": "Try 6–8px, then compare with no gap. The icon and label keep their size.",
+    "unifiedNote": "The lower label stays bold. Increase its icon stroke to balance the pair; the upper row is the regular-weight reference.",
+    "navigation": "Sample destinations",
+    "home": "Home",
+    "heart": "Favourites",
+    "bookmark": "Save for later",
+    "filledNote": "Choose a destination. Its icon fills; the others stay outlined.",
+    "meaningSystem": "Action meanings",
+    "collision": "Same icon",
+    "distinct": "Distinct icons",
+    "favourite": "Favourite",
+    "rate": "Rate",
+    "collisionNote": "Both actions start with a star. Give favourites a heart and reserve the star for ratings.",
+    "favourited": "Favourited",
+    "bookmarked": "Saved for later",
+    "swapNote": "Toggle each action. Filled consistently means selected; outlined means unselected.",
+    "iconLabels": "Icon labels",
+    "iconsOnly": "Icons only",
+    "withLabels": "With labels",
+    "save": "Save",
+    "phone": "Call",
+    "metaphorNote": "Name the three actions, then reveal their labels. Familiar symbols depend on what your audience recognises."
   }
 }

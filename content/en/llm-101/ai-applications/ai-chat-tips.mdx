@@ -1,0 +1,110 @@
+---
+courseId: llm-101
+lessonId: how-to-use-ai-artifacts
+title: "Practical AI Chat tips"
+description: "Use Artifacts to create interactive tutorials and dashboards. Describe interactions, revise the result, and check its data and behavior."
+---
+
+In the previous lesson, we covered [some advice for using AI Chat](/courses/llm-101/ai-chat-advice). This lesson looks at specific features: how to turn an AI answer into something you can view, operate, and modify.
+
+## 1. Choose a product that fits your needs
+
+If you have a budget to consider, use the approach in [How to choose a language model](/courses/llm-101/how-to-choose-a-language-model). If you are still unsure, visit my other website, [Vibe Coding Navigator](https://vibecodingnav.com). It collects evaluation results for the major language models, which you can use to choose one that suits you.
+
+If you only want free models or products, consider DeepSeek Chat or ChatGPT. Personal Agent products such as Grok Bot and Muse have also appeared recently. We will discuss Agents later.
+
+This lesson focuses on practical ways to use Chat products.
+
+## 2. Use search
+
+To reduce errors caused by outdated knowledge, it is best to enable search. Some products, such as DeepSeek, have a search switch that you must turn on before the model uses a [search tool](/courses/llm-101/what-is-a-tool). Others, such as ChatGPT, enable it by default. You do not need to turn it on manually; the model can use search when you ask a question.
+
+## 3. Use Artifacts more often
+
+An Artifact is a separate piece of work that AI creates in a conversation. In Claude, it can be a document, diagram, webpage, or interactive tool. You can keep revising it afterward. This lesson focuses on interactive content: AI writes code, and the product presents that code as an interface you can use. See [Claude’s official Artifact guide](https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them) for supported formats and how to access them.
+
+Here are a few examples:
+
+- When you ask AI to analyze data with Artifacts, it can write code for a dashboard after the analysis. You can then view different reports. Without this feature, the answer may be a collection of tables or text that is less easy to understand visually.
+- When you ask AI to explain a concept, such as a physics formula, it usually replies in Markdown. With Artifacts, it can write a simple interactive demo instead. For example:
+
+<NewtonSecondLawDemo />
+
+To request this, you can usually add a sentence to your prompt:
+
+> Please use code to create an interactive xxx.
+
+Replace xxx with “tutorial”, “data dashboard”, “interactive demo”, or something similar.
+
+## 4. Use writing standards to get more structured text
+
+Here is a technique I often use. When I want AI to explain something unfamiliar, I ask it to follow ASD-STE100:
+
+> Please follow the ASD-STE100 rules in your answer.
+
+ASD-STE100 is a controlled natural language standard developed by the Aerospace, Security and Defence Industries Association of Europe (ASD). Its origins lie in the aviation industry of the 1970s and 1980s. With maintenance workers around the world, the industry found that technicians with different first languages could interpret the same English manual differently, leading to maintenance errors.
+
+ASD developed the standard to give each word one meaning and reduce ambiguity. This helps maintenance workers whose first language is not English read and follow instructions correctly. The rules generally limit procedural instructions to 20 words per sentence and descriptive sentences to 25 words. Each sentence covers one thing or action. Use the active voice to make clear who does what. Avoid complex clauses and dense strings of nouns.
+
+When AI follows these rules, its output becomes more structured and easier to read and understand.
+
+## 5. See how other people use AI
+
+I did not discover ASD-STE100 on my own. I learned about it from <JimmyNoteAnchor id="001">a post by Andrej Karpathy</JimmyNoteAnchor>.
+
+<JimmyNote anchor="001">
+    <XEmbed url="https://x.com/karpathy/status/2105819303471976479?a=jKGxAIdqr06cS-yztuU&s=20" />
+</JimmyNote>
+
+Here are some people I often follow:
+
+<XProfiles>
+  <XProfile
+    username="karpathy"
+    name="Andrej Karpathy"
+    avatar="/images/profiles/x/karpathy.jpg"
+    bio="Shares language model fundamentals, AI education, and practical everyday AI use."
+  />
+  <XProfile
+    username="poteto"
+    name="Lauren Tan"
+    avatar="/images/profiles/x/poteto.jpg"
+    bio="React Compiler core team member sharing AI coding and software engineering practices."
+  />
+  <XProfile
+    username="theo"
+    name="Theo - t3.gg"
+    avatar="/images/profiles/x/theo.jpg"
+    bio="Builds T3 Code and T3 Chat; shares AI coding, web development, and tool experiences."
+  />
+  <XProfile
+    username="mattpocockuk"
+    name="Matt Pocock"
+    avatar="/images/profiles/x/mattpocockuk.jpg"
+    bio="Creator of Total TypeScript and AI Hero, sharing TypeScript and AI engineering tutorials."
+  />
+  <XProfile
+    username="op7418"
+    name="Guizang (歸藏)"
+    avatar="/images/profiles/x/op7418.jpg"
+    bio="Covers AI, image and video generation, and design; shares tools and creative methods."
+  />
+  <XProfile
+    username="trq212"
+    name="Thariq"
+    avatar="/images/profiles/x/trq212.jpg"
+    bio="Previously worked on Claude Code; shares AI Agent and coding workflow experience."
+  />
+  <XProfile
+    username="lennysan"
+    name="Lenny Rachitsky"
+    avatar="/images/profiles/x/lennysan.jpg"
+    bio="Shares product, growth, and career experience, and interviews product and technology practitioners."
+  />
+  <XProfile
+    username="dotey"
+    name="Baoyu (宝玉)"
+    avatar="/images/profiles/x/dotey.jpg"
+    bio="Shares AI, software engineering, and engineering management knowledge; translates and explains technical material."
+  />
+</XProfiles>

@@ -1,0 +1,400 @@
+---
+courseId: llm-101
+lessonId: what-is-an-agent
+title: "Agent とは？"
+description: "ウェブページのボタンを修正する例から、Agent がツールを呼び出し、結果を読み、作業を続け、完了を判断する仕組みを学びます。"
+---
+
+ここまでで、[モデルはツールの呼び出しを要求できる](/ja/courses/llm-101/what-is-a-tool)ことや、AI Chat で[対話型コンテンツを作って修正できる](/ja/courses/llm-101/ai-chat-tips)ことを学びました。
+
+これらは Chat 製品の機能です。では、最近よく聞く Agent（エージェント）とは何で、Chat とどう違うのでしょうか？
+
+## 1. Agent とは何か？
+
+<JimmyNoteAnchor id="001">Agent</JimmyNoteAnchor> は、知的エージェントや代理として説明されます。
+
+<JimmyNote anchor="001">
+    業界には Agent の定義がいくつもあります。複雑な話題なので、この授業では中心となる概念に絞ります。詳しい内容は [Agent 101（简体中文）](/zh/courses/agent-101) で扱います。
+</JimmyNote>
+
+前の授業では、Chat のモデルがサーバープログラムから入力を受け取り、計算して回答を生成すると説明しました。その回答をサーバーが Chat プログラムに返し、ユーザーに表示します。
+
+Agent は少し違います。まずモデルに今何をするべきかを考えさせます。その結果に応じてツールで行動し、返された結果を観察して、次の一手を考えます。
+
+この「考える」→「行動する」→「観察する」→「考える」→「行動する」→「観察する」という流れを、仕事が終わるまで繰り返します。
+
+## 2. モデルはどうやって回答から思考と行動へ進むのか？
+
+具体的な例で、この変化を見ていきましょう。
+
+モデルの学習データに映画『インセプション』と『マトリックス』の情報がまったくないとします。ユーザーは「『インセプション』の監督の生年と、『マトリックス』第 1 作の公開年を足すと、いくつになりますか？」と聞きます。
+
+Agent プログラムがサーバープログラムへメッセージを送り、処理が行われると、次の構造のデータが返ります。
+
+```json
+{
+  "messages": [
+    {
+      "role": "user", // メッセージの役割：ユーザー
+      "content": "『インセプション』の監督の生年と、『マトリックス』第 1 作の公開年を足すと、いくつになりますか？" // ユーザーの質問内容
+    },
+    {
+      "role": "assistant", // メッセージの役割：モデル
+      "reasoning": "合計を出すには、まだわからない 2 つの値が必要です。『インセプション』の監督とその生年、そして『マトリックス』第 1 作の公開年です。まず監督を調べます。", // モデルの思考過程
+      "content": null, // 生成内容：空。回答ではなくツール呼び出し要求を生成しています。
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Inception movie director\"}" // 『インセプション』の監督を検索 
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // メッセージの役割：ツール
+      "content": "『インセプション』（Inception）は 2010 年公開の SF アクション映画で、Christopher Nolan が脚本と監督を担当しています。" // ツールが返した結果
+    }
+  ]
+}
+```
+
+前の例と比べると、`reasoning` フィールドが増えています。ここにはモデルの思考過程が示されています。これが「考える」の段階です。
+
+```json
+{
+  "reasoning": "合計を出すには、まだわからない 2 つの値が必要です。『インセプション』の監督とその生年、そして『マトリックス』第 1 作の公開年です。まず監督を調べます。", // モデルの思考過程
+}
+```
+
+この思考に基づき、モデルは『インセプション』の監督を探す検索要求を生成します。これが「行動する」の段階です。
+
+```json
+{
+  "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Inception movie director\"}" // 『インセプション』の監督を検索 
+          }
+        }
+      ]
+}
+```
+
+ツールが検索結果を返し、モデルは「観察する」段階に入ります。
+
+```json
+{
+  {
+    "role": "tool", // メッセージの役割：ツール
+    "content": "『インセプション』（Inception）は 2010 年公開の SF アクション映画で、Christopher Nolan が脚本と監督を担当しています。" // ツールが返した結果
+  }
+}
+```
+
+
+
+JSON では、ツールから監督名の Christopher Nolan が返っていますが、生年はありません。そこでモデルはもう一度考えてツールを呼び出し、2 回目の「考える・行動する・観察する」を行います。
+
+```json fold="7-25"
+{
+  "messages": [
+    {
+      "role": "user", // メッセージの役割：ユーザー
+      "content": "『インセプション』の監督の生年と、『マトリックス』第 1 作の公開年を足すと、いくつになりますか？" // ユーザーの質問内容
+    },
+    # 1 回目の思考とツール呼び出し
+    {
+      "role": "assistant", // メッセージの役割：モデル
+      "reasoning": "合計を出すには、まだわからない 2 つの値が必要です。『インセプション』の監督とその生年、そして『マトリックス』第 1 作の公開年です。まず監督を調べます。", // モデルの思考過程
+      "content": null, // 生成内容：空。回答ではなくツール呼び出し要求を生成しています。
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Inception movie director\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // メッセージの役割：ツール
+      "content": "『インセプション』（Inception）は 2010 年公開の SF アクション映画で、Christopher Nolan が脚本と監督を担当しています。" // ツールが返した結果
+    }
+    # 2 回目の思考とツール呼び出し
+    {
+      "role": "assistant", // メッセージの役割：モデル
+      "reasoning": "監督は Christopher Nolan です。まだ生年と『マトリックス』の公開年がわかりません。次に Christopher Nolan の生年を調べます。", // モデルの思考過程
+      "content": null, // 生成内容：空。回答ではなくツール呼び出し要求を生成しています。
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Christopher Nolan birth year\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // メッセージの役割：ツール
+      "content": "Christopher Nolan は 1970 年 7 月 30 日生まれです。" // ツールが返した結果
+    }
+  ]
+}
+```
+
+今度はツールの結果から、生年月日が 1970 年 7 月 30 日だとわかります。モデルは残りの検索と計算を続け、必要な情報をそろえて、最終的に次の結果を得ます。
+
+```json fold="7-44"
+{
+  "messages": [
+    {
+      "role": "user", // メッセージの役割：ユーザー
+      "content": "『インセプション』の監督の生年と、『マトリックス』第 1 作の公開年を足すと、いくつになりますか？" // ユーザーの質問内容
+    },
+    # 1 回目の思考とツール呼び出し
+    {
+      "role": "assistant", // メッセージの役割：モデル
+      "reasoning": "合計を出すには、まだわからない 2 つの値が必要です。『インセプション』の監督とその生年、そして『マトリックス』第 1 作の公開年です。まず監督を調べます。", // モデルの思考過程
+      "content": null, // 生成内容：空。回答ではなくツール呼び出し要求を生成しています。
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Inception movie director\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // メッセージの役割：ツール
+      "content": "『インセプション』（Inception）は 2010 年公開の SF アクション映画で、Christopher Nolan が脚本と監督を担当しています。" // ツールが返した結果
+    },
+    # 2 回目の思考とツール呼び出し
+    {
+      "role": "assistant", // メッセージの役割：モデル
+      "reasoning": "監督は Christopher Nolan です。まだ生年と『マトリックス』の公開年がわかりません。次に Christopher Nolan の生年を調べます。", // モデルの思考過程
+      "content": null, // 生成内容：空。回答ではなくツール呼び出し要求を生成しています。
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"Christopher Nolan birth year\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // メッセージの役割：ツール
+      "content": "Christopher Nolan は 1970 年 7 月 30 日生まれです。" // ツールが返した結果
+    },
+    # 3 回目の思考とツール呼び出し
+    {
+      "role": "assistant", // メッセージの役割：モデル
+      "reasoning": "監督は Christopher Nolan です。まだ『マトリックス』の公開年がわかりません。次にその公開年を調べます。", // モデルの思考過程
+      "content": null, // 生成内容：空。回答ではなくツール呼び出し要求を生成しています。
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "search_web",
+            "arguments": "{\"query\":\"The Matrix first movie release date\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // メッセージの役割：ツール
+      "content": "『マトリックス』（The Matrix）第 1 作は 1999 年 3 月 31 日に公開されました。" // ツールが返した結果
+    },
+    # 4 回目の思考とツール呼び出し
+    {
+      "role": "assistant", // メッセージの役割：モデル
+      "reasoning": "1970 と 1999 の 2 つの数字がそろいました。暗算の間違いを避けるため、計算機ツールで合計を求めます。", // モデルの思考過程
+      "content": null, // 生成内容：空。回答ではなくツール呼び出し要求を生成しています。
+      "tool_calls": [
+        {
+          "type": "function",
+          "function": {
+            "name": "calculate",
+            "arguments": "{\"operation\":\"add\",\"numbers\":[1970,1999]}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool", // メッセージの役割：ツール
+      "content": "1970 + 1999 = 3969" // ツールが返した結果
+    }
+    # 最終結果
+    {
+      "role": "assistant", // メッセージの役割：モデル
+      "reasoning": "計算結果は 3969 です。すべての手順を確認したので、最終回答を出せます。", // モデルの思考過程
+      "content": "『インセプション』の監督 Christopher Nolan は 1970 年生まれで、『マトリックス』は 1999 年公開です。2 つの年を足すと 3969 になります。", // モデルの生成内容：最終回答
+    }
+  ]
+}
+```
+
+JSON は読みにくいかもしれないので、大切な情報を図にまとめます。全体の流れは次のとおりです。
+
+``` mermaid
+block-beta
+  columns 1
+
+  block:questionRow
+    columns 10
+    questionStage["ユーザーの質問"]
+    q["質問
+『インセプション』の監督の生年と、『マトリックス』第 1 作の公開年を足すと、いくつになりますか？"]:9
+  end
+
+  block:round1
+    columns 10
+    r1["第 1 ラウンド
+監督を確認"]
+
+    t1["考える
+合計を出すには、まだわからない 2 つの値が必要です。『インセプション』の監督とその生年、そして『マトリックス』第 1 作の公開年です。まず監督を調べます。"]:3
+
+    a1["行動する
+Search[#quot;Inception movie director#quot;]"]:3
+
+    o1["観察する
+『インセプション』（Inception）は 2010 年公開の SF アクション映画で、Christopher Nolan が脚本と監督を担当しています。"]:3
+  end
+
+  block:round2
+    columns 10
+    r2["第 2 ラウンド
+生年を
+調べる"]
+
+    t2["考える
+監督は Christopher Nolan です。まだ生年と『マトリックス』の公開年がわかりません。次に Christopher Nolan の生年を調べます。"]:3
+
+    a2["行動する
+Search[#quot;Christopher Nolan birth year#quot;]"]:3
+
+    o2["観察する
+Christopher Nolan は 1970 年 7 月 30 日生まれです。"]:3
+  end
+
+  block:round3
+    columns 10
+    r3["第 3 ラウンド
+公開年を
+調べる"]
+
+    t3["考える
+最初の数字は 1970 です。次に必要なのは、『マトリックス』（The Matrix）第 1 作の公開年です。"]:3
+
+    a3["行動する
+Search[#quot;The Matrix release year#quot;]"]:3
+
+    o3["観察する
+『マトリックス』（The Matrix）は 1999 年 3 月 31 日にアメリカで公開されました。"]:3
+  end
+
+  block:round4
+    columns 10
+    r4["第 4 ラウンド
+合計を計算"]
+
+    t4["考える
+1970 と 1999 の 2 つの数字がそろいました。暗算の間違いを避けるため、計算機ツールで合計を求めます。"]:3
+
+    a4["行動する
+Calculator[#quot;1970 + 1999#quot;]"]:3
+
+    o4["観察する
+3969"]:3
+  end
+
+  block:round5
+    columns 10
+    r5["第 5 ラウンド
+回答を出力"]
+
+    t5["考える
+計算結果は 3969 です。すべての手順を確認したので、最終回答を出せます。"]:3
+
+    a5["行動する
+Finish[『インセプション』の監督 Christopher Nolan は 1970 年生まれで、『マトリックス』は 1999 年公開です。2 つの年を足すと 3969 になります。]"]:3
+
+    space:3
+  end
+
+  questionRow --> round1
+  round1 --> round2
+  round2 --> round3
+  round3 --> round4
+  round4 --> round5
+
+  t1 --> a1
+  a1 --> o1
+  t2 --> a2
+  a2 --> o2
+  t3 --> a3
+  a3 --> o3
+  t4 --> a4
+  a4 --> o4
+  t5 --> a5
+
+```
+
+## 3. なぜこの方式を使うのか？
+
+「考える」→「行動する」→「観察する」を繰り返す流れは、[ReAct](https://react-lm.github.io/) とも呼ばれます。これが Agent の中心的な仕組みであり、従来の AI Chat との大きな違いです。
+
+なぜこのような使い方があるのでしょうか？
+
+AI Chat を 1 回実行するだけでは、答えるための情報が足りない場合があるからです。先ほどと同じく、モデルが『インセプション』と『マトリックス』を知らないとすると、Chat の<JimmyNoteAnchor id="002">回答</JimmyNoteAnchor>は次のようになるかもしれません。
+
+<Chat>
+<ChatMessage from="user">
+『インセプション』の監督の生年と、『マトリックス』第 1 作の公開年を足すと、いくつになりますか？
+</ChatMessage>
+
+<ChatMessage from="assistant">
+<ChatToolCall name="search_web" title="ウェブ検索" defaultOpen={true}>
+**呼び出し引数**
+
+```json
+{
+  "query": "Inception movie director"
+}
+```
+
+**返された結果**
+
+```json
+{
+  "director": "Christopher Nolan"
+}
+```
+</ChatToolCall>
+
+すみません。『インセプション』の監督が Christopher Nolan であることはわかりますが、生年はわかりません。
+</ChatMessage>
+</Chat>
+
+<JimmyNote anchor="002">
+    モデルは大量のデータで学習しているのに答えられないのか、と、この例を不自然に感じるかもしれません。確かに、実際の Chat 製品なら正しく答えられる場合もあります。
+    
+    この例の目的は Agent の仕組みを理解し、モデルがツールと ReAct を使って未知の問題を自分で解決する流れを知ることです。学習には通常長い時間がかかるので、知識は数か月、場合によっては半年ほど遅れます。
+</JimmyNote>
+
+
+## 4. 次に何を学ぶか？
+
+ここまでで、AI Chat などの仕組みを理解できました。さらに知りたいなら [Agent 101（简体中文）](/zh/courses/agent-101) へ進み、AI Agent について学べます。
+
+Agent より AI コーディングに興味がある場合は、[Coding 101（简体中文）](/zh/courses/coding-101) を見てください。プログラミングの基礎から始め、AI でウェブサイトを開発する方法を少しずつ学べます。

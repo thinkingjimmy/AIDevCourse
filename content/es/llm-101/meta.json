@@ -3,6 +3,7 @@
   "pages": [
     "index",
     "model-fundamentals",
-    "model-training"
+    "model-training",
+    "ai-applications"
   ]
 }

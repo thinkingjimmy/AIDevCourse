@@ -1,0 +1,54 @@
+{
+  "url": "https://index.how/to/articulate#iconography",
+  "checked": "2026-11-10",
+  "terms": {
+    "stroke-weight": {
+      "title": "Stroke weight",
+      "sha256": "f998bd5880079886b9144c2ac4e5cffdadff7b386be2bb97b2a492db2b0a8d34"
+    },
+    "optical-centre": {
+      "title": "Optical centre",
+      "sha256": "2f521e35c20cf3ba6ee2c8751fd25f5c5eeb3bdfd380150b6fd2e4642df23a1d"
+    },
+    "filled-vs-outlined": {
+      "title": "Filled vs outlined",
+      "sha256": "748e2e6680c70bbf6e8dd4611d3d52bafef4c502cd0a66d2589a565f14610968"
+    },
+    "cap-style": {
+      "title": "Cap style",
+      "sha256": "c679c88e141dc2d3a759e46db8e9d23a527318656a65985c82ea99771e88ac27"
+    },
+    "pixel-hinting": {
+      "title": "Pixel hinting",
+      "sha256": "c272d29cd6f9c8a2658c3f62a733e5ae87c34ccfa31ba62b837be0d23271f7fb"
+    },
+    "icon-library": {
+      "title": "Icon library",
+      "sha256": "ce90cebe9e49191153f3b1cd0fe2769781873614e8f9f54c81e947b7174f93de"
+    },
+    "icon-size-system": {
+      "title": "Icon size system",
+      "sha256": "caf6acee11c5e108be54fd2a9a5f4f9890ee6b830f1286eb86894411ae86187e"
+    },
+    "meaning-collision": {
+      "title": "Meaning collision",
+      "sha256": "40a7feb861240a6f9d184f86d53f6a89df8e4016dcffaee4c316c435d32e71d8"
+    },
+    "contextual-swap": {
+      "title": "Contextual swap",
+      "sha256": "5d3f8cad99248271ae7113976683e8a28e1d75c7ee947efa6a9daad348eb75bc"
+    },
+    "breathing-room": {
+      "title": "Breathing room",
+      "sha256": "d308df084c13daccc585fbcb486003a4af20c9758c2400ec01f63c88b9f29aca"
+    },
+    "unified-weight": {
+      "title": "Unified weight",
+      "sha256": "f7f30c6e56580c99209a9098ba8a867c4c60633bde451ad9ac0c67aa0f2b361d"
+    },
+    "metaphor-accuracy": {
+      "title": "Metaphor accuracy",
+      "sha256": "d0086a6e2aff739767da39df48606a582ded35189e30054e257400532c0cf422"
+    }
+  }
+}

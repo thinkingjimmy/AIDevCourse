@@ -1,0 +1,143 @@
+{
+  "title": "Programming glossary",
+  "description": "Learn programming terms through clear definitions and interactive examples. Start with how static websites deliver pages.",
+  "web-foundations": "Web foundations",
+  "source": "Term reference: MDN",
+  "search": "Search terms",
+  "searchPlaceholder": "Search terms or English names",
+  "clearSearch": "Clear search",
+  "noResults": "No matching terms. Try another word.",
+  "resultsCount": "{count} results",
+  "loadMore": "Load more",
+  "openDirectory": "Open dictionary navigation",
+  "closeDirectory": "Collapse dictionary navigation",
+  "demo": {
+    "server": "Static server",
+    "prepared": "Files prepared before the visit",
+    "deliveryCount": "HTML responses: {count}",
+    "browser": "Browser",
+    "pageMessage": "This page comes from a prepared HTML file.",
+    "click": "Click the page button",
+    "clickCount": "Browser count: {count}",
+    "visit": "Visit again",
+    "reset": "Reset demo",
+    "status": "HTML responses: {deliveries}. Browser count: {clicks}.",
+    "note": "Click the page button: only the browser count changes. Visit again to receive the same HTML and restart the browser count at zero.",
+    "noJs": "The definition and diagram work without JavaScript. Enable JavaScript to try the buttons.",
+    "caveat": "This is a simplified local demonstration. It sends no network requests. Real visits can reuse browser or CDN caches."
+  },
+  "terms": {
+    "static-website": {
+      "title": "Static website",
+      "description": "A website whose HTML is prepared before a visit and delivered as page files.",
+      "article": {
+        "meaning": {
+          "heading": "What static means",
+          "definition": "A static website serves prepared <code>HTML</code> pages and related files, including styles, images, and JavaScript. The server does not need to assemble new HTML for that visit.",
+          "analogy": "Consider a personal introduction. You put your name, experience, and work into page files, then publish them online. When a reader opens that address, the server delivers the page you already published.",
+          "keyPoint": "<strong>The key question is when the HTML is generated, rather than whether the page has animations, buttons, or interactions.</strong>"
+        },
+        "how-it-works": {
+          "heading": "What happens when you open the site",
+          "intro": "Start with a common case: the browser needs to fetch the page and has no cached response it can reuse.",
+          "prepare": "Prepare the files. An author writes HTML or a build tool generates it in advance, before a reader visits.",
+          "deploy": "Publish the files. Put HTML, CSS, JavaScript, and images on a server that can deliver them.",
+          "request": "Request the page. A reader opens a URL. The browser requests its HTML, and the server returns the prepared file.",
+          "render": "Display the page. The browser reads the HTML, loads the styles, images, and scripts it needs, then displays the result and runs interactions.",
+          "cache": "A real visit does not always download every file again. Browser caches and a CDN can reuse content. A CDN is a service with servers in different places that can deliver content nearby; using one does not determine whether a website is static."
+        },
+        "example": {
+          "heading": "A small website example",
+          "intro": "A simple portfolio can consist of these files. You do not need to memorize the code; first understand each file’s job.",
+          "html": "<code>index.html</code> contains the structure and initial content, such as a title, introduction, and button.",
+          "css": "<code>style.css</code> controls fonts, colors, spacing, and layouts for different screens.",
+          "js": "<code>script.js</code> runs in the browser, for example to count button clicks.",
+          "codeIntro": "The HTML can prepare a heading and counter button, then load a script:",
+          "scriptIntro": "The script can update the number on the button inside the browser:",
+          "change": "Clicking the button updates the current page in the browser. It does not rewrite the server’s HTML file, so the website can still be served statically.",
+          "generated": "Static pages do not all need to be written by hand. A static site generator can turn articles and templates into HTML in advance, then publish the generated files."
+        },
+        "interaction": {
+          "heading": "Try an interactive static page",
+          "intro": "Click the page button and compare the browser count with the HTML response count. Then choose “Visit again” and see which number changes.",
+          "explanation": "The first click changes a number in browser memory. “Visit again” simulates receiving the initial HTML again, so this example starts the count at zero. A real site can also save state in the browser and restore it on a later visit."
+        },
+        "comparison": {
+          "heading": "Static and dynamic websites",
+          "intro": "This comparison concerns how the server supplies HTML. Whether a page can change in the browser is a separate question.",
+          "aspect": "Aspect",
+          "static": "Serve prepared HTML",
+          "dynamic": "Generate HTML for a request",
+          "rows": {
+            "timing": {
+              "label": "Generation time",
+              "static": "Before publication",
+              "dynamic": "While handling the request"
+            },
+            "work": {
+              "label": "Server work",
+              "static": "Find and return an existing file",
+              "dynamic": "Run application logic and produce a response"
+            },
+            "data": {
+              "label": "Data in the HTML",
+              "static": "Usually added during authoring or a build",
+              "dynamic": "Can be read from a database or another source for the request"
+            },
+            "updates": {
+              "label": "Updating published text",
+              "static": "Edit files, or rebuild and publish",
+              "dynamic": "Generate a page from updated data"
+            }
+          },
+          "mixed": "One product can use both approaches: prepare public introduction pages in advance and generate account pages for each request. A static page can also call an API after loading to show current data. A button or screenshot alone cannot tell you how the initial HTML was supplied."
+        },
+        "uses": {
+          "heading": "When a static website fits",
+          "intro": "Consider a static website when the main task is publishing content and most readers can receive the same initial page.",
+          "portfolio": "Personal sites and portfolios: introduce yourself, show projects, and share contact details.",
+          "publishing": "Blogs, tutorials, and product documentation: authors publish content that readers browse as pages.",
+          "marketing": "Product and event pages: display public information, with browser scripts for animation or a calculator.",
+          "benefits": "Prepared files are often straightforward to cache and distribute. They can also reduce the server logic needed to generate pages. Actual speed and cost still depend on images, scripts, traffic, and hosting.",
+          "limits": "Login, shared comments, payments, live inventory, and stored submissions require the appropriate services and interfaces. The frontend can still be served statically, but public HTML files alone do not implement those functions."
+        },
+        "misconceptions": {
+          "heading": "Common points of confusion",
+          "frozen": {
+            "title": "Does static mean the content never changes?",
+            "body": "No. Authors can edit and republish files. Static describes how HTML is supplied for a visit, rather than how often the site is updated."
+          },
+          "server": {
+            "title": "Does a static website have no server?",
+            "body": "An online visit still needs a server or CDN to deliver files. You may not need to maintain an application that generates HTML, but the files still need hosting and delivery."
+          },
+          "database": {
+            "title": "Can a static site use a database?",
+            "body": "A build can read a database or content management system. The browser can also fetch data through an API. Supplying the initial HTML and fetching later data are separate steps."
+          },
+          "security": {
+            "title": "Can frontend files store a secret API key?",
+            "body": "Do not put secret keys in public HTML or JavaScript. Readers can inspect files delivered to their browser. Operations that need secrets should use an appropriate server-side interface."
+          }
+        },
+        "recap": {
+          "heading": "Check your understanding",
+          "question": "A portfolio generates all its HTML in advance. It has animations, filter buttons, and a weather API call. Can it still be a static website?",
+          "answer": "Yes.",
+          "reason": "Its initial HTML exists before the visit. Animations, filtering, and later API requests run in the browser; they do not turn the initial HTML into a response generated for that request.",
+          "remember": "Ask this question: <strong>When someone opens the page, does the server return existing HTML or generate HTML for that request?</strong>"
+        },
+        "references": {
+          "heading": "Read further",
+          "intro": "These official guides explain static content, file hosting, browser interactions, and caching.",
+          "clientServer": "MDN: client-server interactions and static versus dynamic sites",
+          "server": "MDN: what a web server does",
+          "pages": "GitHub Docs: publishing and building static pages",
+          "javascript": "MDN: what JavaScript does on the web",
+          "caching": "MDN: HTTP caching"
+        }
+      }
+    }
+  },
+  "directory": "Dictionary"
+}

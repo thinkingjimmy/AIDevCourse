@@ -9,12 +9,12 @@
   .gallery-copy p { @apply text-base leading-body text-muted-foreground; max-width: 26rem; margin: 16px 0 22px; text-wrap: pretty; }
   .gallery-copy h1:lang(ja) { font-family: 'Course Pixel JP', var(--font-site-pixel); }
   .gallery-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-  .gallery-computer { grid-column: 2; grid-row: 1; justify-self: center; width: min(100%, clamp(210px, 36svh, 324px)); }
+  .gallery-computer { grid-column: 2; grid-row: 1; justify-self: end; width: min(100%, clamp(210px, 36svh, 324px)); }
   .home-courses { padding-top: 20px; }
   .disk-catalog { display: grid; gap: 40px; }
   .disk-group-title { @apply font-mono text-caption font-medium text-brand; display: flex; align-items: center; gap: 16px; margin: 0 0 28px; }
   .disk-group-title::after { content: ''; flex: 1; height: 1px; background: color-mix(in srgb, var(--color-brand) 20%, transparent); }
-  .disk-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; justify-items: start; }
+  .disk-grid { display: grid; grid-template-columns: repeat(4, 176px); gap: 28px; justify-content: space-between; }
   .course-disk-link, .course-disk-cover { position: relative; display: flex; width: 176px; min-height: 188px; color: #294735; text-decoration: none; }
   .course-disk-link { border-radius: 2px; scroll-margin-block: 12px; }
   /* Nine-slice artwork lets the paper grow with text while the shutter and corners retain their proportions. */
@@ -40,6 +40,9 @@
     .course-disk-link:hover .course-disk { transform: translateY(-6px) rotate(-2deg); }
   }
   .course-disk-link:focus-visible .course-disk { transform: translateY(-4px); }
+  @media (max-width: 900px) {
+    .disk-grid { grid-template-columns: repeat(3, 176px); }
+  }
   @media (max-width: 841px) {
     .gallery-copy h1 { @apply text-display; }
   }
@@ -57,7 +60,7 @@
     .home-courses { padding-top: 16px; }
     .disk-catalog { gap: 32px; }
     .disk-group-title { margin-bottom: 24px; }
-    .disk-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px 16px; }
+    .disk-grid { grid-template-columns: repeat(2,148px); gap: 24px 16px; }
     .course-disk-link, .course-disk-cover { width: 148px; min-height: 164px; }
     .course-disk { border-width: 64px 12px 17px; }
     .disk-label { padding: 3px 3px 2px; }
@@ -68,7 +71,7 @@
     .home-gallery { padding-right: 16px; padding-left: 16px; }
     .gallery-hero { grid-template-columns: minmax(0,1fr) 104px; }
     .gallery-copy h1 { @apply text-2xl; }
-    .disk-grid { gap: 22px 12px; }
+    .disk-grid { grid-template-columns: repeat(2,136px); gap: 22px 12px; }
     .course-disk-link, .course-disk-cover { width: 136px; min-height: 158px; }
     .course-disk { border-width: 59px 11px 16px; }
   }

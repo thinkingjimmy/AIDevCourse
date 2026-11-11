@@ -1,4 +1,8 @@
 {
   "title": "学前必看",
-  "pages": ["about-this-course", "changelog"]
+  "pages": [
+    "about-this-course",
+    "acknowledgements",
+    "changelog"
+  ]
 }

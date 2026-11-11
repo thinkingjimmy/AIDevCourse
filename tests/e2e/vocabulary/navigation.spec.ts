@@ -3,6 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { readFileSync } from 'node:fs';
 import { locales, htmlLanguages } from '../../../src/lib/i18n/config';
 import { localePath } from '../../../src/lib/i18n/routing';
+import { vocabularyCategories } from '../../../src/lib/vocabulary/catalog';
 
 test.use({ viewport: { width: 1440, height: 960 }, reducedMotion: 'reduce' });
 const path = '/zh/vocabulary/typography';
@@ -12,7 +13,8 @@ test('resource disk opens the dictionary and returns to the homepage', async ({ 
   const resources = page.getByRole('region', { name: '学习资源', exact: true });
   const disk = resources.getByRole('link', { name: '设计词典', exact: true });
   await expect(disk).toHaveAttribute('href', path);
-  await expect(disk.locator('.disk-meta')).toHaveText('工具34 词条');
+  const count = vocabularyCategories.reduce((total, category) => total + category.terms.length, 0);
+  await expect(disk.locator('.disk-meta')).toHaveText(`工具${count} 词条`);
   await testInfo.attach('Learning resources disk', { body: await resources.screenshot(), contentType: 'image/png' });
   await disk.focus();
   await disk.press('Enter');

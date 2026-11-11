@@ -6,6 +6,7 @@ const dictionaries = Object.fromEntries(locales.map((locale) => [locale, {
   ...JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8')),
   Vocabulary: JSON.parse(readFileSync(`src/messages/vocabulary/${locale}.json`, 'utf8')),
   AnimationVocabulary: JSON.parse(readFileSync(`src/messages/animation-vocabulary/${locale}.json`, 'utf8')),
+  ProgrammingVocabulary: JSON.parse(readFileSync(`src/messages/programming-vocabulary/${locale}.json`, 'utf8')),
 }]));
 const count = validateDictionaries(dictionaries);
 readCatalog();

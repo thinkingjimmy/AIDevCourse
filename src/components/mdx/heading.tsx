@@ -16,19 +16,19 @@ function canLinkHeading(children: ReactNode): boolean {
   });
 }
 
-export function Heading({ as: Tag = 'h1', id, className, children, ...props }: ComponentProps<'h1'> & { as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' }) {
+export function Heading({ as: Tag = 'h1', id, 'data-heading-url': pageUrl, className, children, ...props }: ComponentProps<'h1'> & { as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'; 'data-heading-url'?: string }) {
   const t = useTranslations('Ui');
   const [status, setStatus] = useState<'idle' | 'copied' | 'failed'>('idle');
   const reset = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => () => clearTimeout(reset.current), []);
   if (!id) return <Tag {...props} className={className}>{children}</Tag>;
   return <Tag {...props} id={id} className={cn('group/heading flex scroll-m-28 flex-row items-center gap-1', className)}>
-    {canLinkHeading(children) ? <a data-card="" href={`#${id}`}>{children}</a> : <span className="min-w-0">{children}</span>}
+    {canLinkHeading(children) ? <a data-card="" href={pageUrl ?? `#${id}`}>{children}</a> : <span className="min-w-0">{children}</span>}
     <Button variant="ghost" size="icon-touch" className="not-prose size-6 shrink-0 rounded-sm text-brand/70 opacity-0 transition-opacity before:-inset-2.5 hover:bg-brand-soft hover:text-brand focus-visible:outline-brand group-hover/heading:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100" aria-label={t('copyAnchor')} onClick={async () => {
       clearTimeout(reset.current);
       try {
-        const url = new URL(window.location.href);
-        url.hash = id;
+        const url = new URL(pageUrl ?? window.location.href, window.location.origin);
+        if (!pageUrl) url.hash = id;
         await navigator.clipboard.writeText(url.href);
         setStatus('copied');
         reset.current = setTimeout(() => setStatus('idle'), 1500);

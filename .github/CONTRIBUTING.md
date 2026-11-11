@@ -24,7 +24,9 @@ pnpm dev
 
 Open [localhost:3000/zh](http://localhost:3000/zh). No database, model API key, or translation service is required. Never commit `.env` files, API keys, dependencies, build output, or generated test evidence.
 
-Development uses Webpack with an in-memory cache. Body edits and achievement declarations support hot reload. Restart after changing frontmatter, file paths, or `meta.json` order. Fonts are installed through pinned Fontsource packages; development and builds do not download fonts from Google.
+Development also accepts this computer's current IPv4 addresses, so local-network previews can load client resources and hot reload. Other origins remain blocked.
+
+Development uses Turbopack with a persistent disk cache. Articles compile on demand; the homepage and course directories read the validated catalog without loading article bodies. Unchanged content reuses its validation result. Development enables memory eviction after cache snapshots and garbage collection for unused compiler work. Body edits and achievement declarations support hot reload. Restart after changing frontmatter, file paths, or `meta.json` order. Fonts are installed through pinned Fontsource packages; development and builds do not download fonts from Google.
 
 English routes have no language prefix. Other languages use `/zh`, `/ja`, `/fr`, and `/es`. Design studies are at `/design`, and writing components are at `/design/components`. The design and animation dictionaries start at `/vocabulary/typography` and `/animation-vocabulary/entrances-and-exits`.
 
@@ -32,7 +34,7 @@ English routes have no language prefix. Other languages use `/zh`, `/ja`, `/fr`,
 
 | Command | Purpose |
 | --- | --- |
-| `pnpm dev` | Start the Webpack development server |
+| `pnpm dev` | Start the Turbopack development server |
 | `pnpm check` | Check structure, documentation links, lint, types, content, dictionaries, and existing unit tests |
 | `pnpm audit --prod` | Check production dependencies against current advisories |
 | `pnpm build` | Validate and build published courses |
@@ -40,6 +42,7 @@ English routes have no language prefix. Other languages use `/zh`, `/ja`, `/fr`,
 | `pnpm test:e2e tests/e2e/navigation.spec.ts --project=chromium` | Check the affected navigation module after a build |
 | `pnpm test:e2e:report` | Open the public-build HTML test report |
 | `pnpm measure:performance` | Measure a server running on port 3200; discover pages from its sitemap |
+| `pnpm measure:startup` | Measure isolated cold starts, restarts, and dev-process memory; save logs and JSON under `.artifacts/performance/dev-startup/` |
 
 Install browser binaries with `pnpm exec playwright install chromium firefox webkit` before running browser checks.
 
@@ -77,6 +80,10 @@ CONTENT_TEST=1 pnpm test:e2e tests/e2e/navigation.spec.ts --project=chromium
 Both commands in the fixture pair need the same environment. The assignment above uses POSIX shell syntax. In PowerShell, set `$env:CONTENT_TEST = '1'` before the fixture commands and remove it afterwards. Public courses build to `.next`; fixtures build to `.next-test`. Never deploy fixtures.
 
 E2E starts its own server on port **3310**; set `E2E_PORT` if needed. Repeatable reports, traces, and screenshots go to `.artifacts/e2e/public/` or `.artifacts/e2e/fixtures/`. Measurements and other generated evidence also stay in Git-ignored `.artifacts/`. Attach relevant screenshots or logs to your PR. Find browser cases in [tests/e2e](../tests/e2e/).
+
+Use `CONTENT_TEST=1 E2E_DEV=1 pnpm test:e2e tests/e2e/development/content.spec.ts --project=chromium --workers=1` to check development content refresh and cache invalidation. These checks temporarily edit fixture content and create a temporary image; they restore both. Development E2E evidence uses the `dev-public` and `dev-fixtures` report directories.
+
+`pnpm measure:startup` creates a temporary `dev-profile-*` directory, shares installed dependencies, and starts its own local server. It moves the source copy into its report directory when finished. It does not stop an existing server or change its cache. Set `STARTUP_RUNS` (1–10), `STARTUP_LABEL`, or `STARTUP_IDLE_MS` (1000–60000) to change the measurements; use `STARTUP_SOURCE` to compare another checkout or a previous source snapshot. Reported memory sums RSS for the dev process tree, so shared pages can be counted more than once. Keep `.next/dev` between normal sessions to reuse the disk cache.
 
 During development, run only E2E cases for the changed modules. CI and release checks run the complete public and fixture matrices in Chromium, Firefox, and WebKit. Before a release, run:
 

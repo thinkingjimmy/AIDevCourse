@@ -42,6 +42,11 @@
     "linkPreview": "ページのプレビュー",
     "linkPreviewLoading": "プレビューを読み込み中…",
     "linkPreviewUnavailable": "プレビューを表示できません。リンクからページを開いてください。",
+    "sideReading": "サイドで読む：{title}",
+    "closeReading": "サイド表示を閉じる",
+    "readingLoading": "レッスンを読み込み中…",
+    "readingFailed": "ページを読み込めませんでした。再試行してください。",
+    "retryReading": "再試行",
     "noHeadings": "見出しはありません",
     "code": "コード",
     "codeFoldLines": "{count} 行",
@@ -340,5 +345,124 @@
     "zoom": "{label}の図を拡大",
     "imageTitle": "{label}の図",
     "close": "図を閉じる"
+  },
+  "ChatSequence": {
+    "label": "Chat のメッセージ送信の自動デモ",
+    "actorsLabel": "ユーザー、製品、提供元サーバー、モデルプログラム間のメッセージ順序",
+    "actors": {
+      "user": "ユーザー",
+      "product": "Chat",
+      "server": "サーバー",
+      "model": "モデル"
+    },
+    "modelStates": {
+      "idle": "未呼び出し",
+      "waiting": "待機中",
+      "running": "実行中",
+      "generated": "回答の準備完了"
+    },
+    "playStates": {
+      "finished": "デモ完了",
+      "paused": "一時停止中",
+      "playing": "自動再生中"
+    },
+    "replay": "最初から",
+    "playAgain": "もう一度再生",
+    "resume": "続ける",
+    "pause": "一時停止",
+    "invalidAttempt": "形式が合わず、サーバーが要求を拒否",
+    "validAttempt": "指定の形式で送信し、回答を取得",
+    "invalidFormat": "形式エラー",
+    "validFormat": "正しい形式",
+    "inputMessage": "こんにちは。Jimmy です。",
+    "replyMessage": "Jimmy、こんにちは！",
+    "requestLabel": "指定の構造に従った JSON リクエストの例",
+    "responseLabel": "サーバーが返す JSON レスポンスの例",
+    "events": {
+      "input": {
+        "label": "メッセージを入力",
+        "caption": "1 回目：形式が不一致",
+        "message": "こんにちは。Jimmy です。"
+      },
+      "raw": {
+        "label": "テキストを直接送信",
+        "caption": "指定のリクエスト構造がない",
+        "message": "こんにちは。Jimmy です。"
+      },
+      "reject": {
+        "label": "形式不一致で拒否",
+        "caption": "サーバーが形式エラーを返す",
+        "message": "形式チェックに通らず、モデルプログラムは呼び出されませんでした。"
+      },
+      "error": {
+        "label": "エラーを表示",
+        "caption": "1 回目は失敗",
+        "message": "製品がエラーを受信しました。モデルの回答は生成されていません。"
+      },
+      "retry": {
+        "label": "もう一度送信",
+        "caption": "2 回目：指定の形式",
+        "message": "同じメッセージ：こんにちは。Jimmy です。"
+      },
+      "request": {
+        "label": "指定の形式で送信",
+        "caption": "指定どおり model と messages を含める"
+      },
+      "invoke": {
+        "label": "モデルに渡して実行",
+        "caption": "リクエストが形式チェックに合格",
+        "message": "サーバーがメッセージの内容をモデルプログラムに渡します。"
+      },
+      "generate": {
+        "label": "回答を生成",
+        "caption": "モデルが回答を生成",
+        "message": "Jimmy、こんにちは！"
+      },
+      "response": {
+        "label": "回答を返す（JSON）",
+        "caption": "サーバーが製品に JSON を返す"
+      },
+      "display": {
+        "label": "回答を表示",
+        "caption": "2 回目は成功",
+        "message": "Jimmy、こんにちは！"
+      }
+    }
+  },
+  "Newton": {
+    "label": "ニュートンの運動の第 2 法則のデモ",
+    "title": "試そう：運動の第 2 法則",
+    "reference": "比較用：4 N / 2 kg",
+    "yourSettings": "あなたの設定",
+    "speed": "速度",
+    "formula": "加速度 = 合力 ÷ 質量",
+    "equationExact": "加速度は {force} ニュートン ÷ {mass} キログラムで、{acceleration} メートル毎秒毎秒です",
+    "equationApproximate": "加速度は {force} ニュートン ÷ {mass} キログラムで、約 {acceleration} メートル毎秒毎秒です",
+    "setup": "同時に静止状態から出発し、2 秒間力を加える",
+    "force": "合力 F",
+    "mass": "質量 m",
+    "forceValue": "{force} ニュートン",
+    "massValue": "{mass} キログラム",
+    "pause": "一時停止",
+    "resume": "続ける",
+    "playAgain": "もう一度比較",
+    "start": "比較を始める",
+    "reset": "リセット",
+    "insights": {
+      "zero": "合力が 0 なら加速度も 0。小車は静止状態から始まるので、そのまま止まっています。",
+      "initial": "合力を 4 N から 8 N に変え、加速度の変化を見てみましょう。",
+      "doubleForce": "質量が同じで合力が 2 倍になると、加速度も 2 倍です。速度は毎秒 4 m/s 増えます。",
+      "doubleMass": "合力が同じで質量が 2 倍になると、加速度は半分です。速度は毎秒 1 m/s 増えます。",
+      "sameRatio": "合力と質量が同じ割合で変わると、加速度は比較用と同じです。速度は毎秒 2 m/s 増えます。",
+      "other": "速度は毎秒約 {acceleration} m/s 増えます。加速度は比較用の約 {ratio} 倍です。"
+    },
+    "assumptions": "水平方向の運動だけを比較し、摩擦は無視します。両車は静止状態から出発し、合力は 2 秒間一定です。",
+    "status": {
+      "complete": "比較完了。2 秒後、あなたの小車は秒速 {speed} メートル、比較用は秒速 4 メートルです。",
+      "playing": "2 台の小車が同時に動き始めます。",
+      "paused": "比較を一時停止しました。",
+      "ready": "合力 {force} ニュートン、質量 {mass} キログラム、加速度 {acceleration} メートル毎秒毎秒。"
+    },
+    "static": "質量が一定なら合力を 2 倍にすると加速度も 2 倍になります。合力が一定なら質量を 2 倍にすると加速度は半分です。JavaScript を有効にすると、力と質量を調整して両車の動きを確認できます。"
   }
 }

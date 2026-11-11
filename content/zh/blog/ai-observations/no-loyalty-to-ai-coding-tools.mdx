@@ -1,0 +1,95 @@
+---
+courseId: musings
+lessonId: no-loyalty-to-ai-coding-tools
+title: "没人对 AI 编程工具有忠诚度：聊聊 2026 年 Stack Overflow 开发者调查"
+description: "最近在看 Stack Overflow 的 2026 年开发者调查报告，发现了一些有趣的趋势。"
+---
+
+又到年底了，各大分析机构陆续发布与 AI 相关的 2026 年终总结。
+
+今天想先分享一篇很有代表性的报告——[「Stack Overflow 2026 开发者调查」](https://survey.stackoverflow.co/2026/ai/data) 。这份调查报告，我觉得值得看的原因是它从 23 年就开始发了，连着看会看到不少趋势。不过问卷这几年随着 AI 的进步，问法也有不同，所以有些答案的数据我也是粗估换算了下，大家看个趋势就好（或者就当图一乐了🤣）。
+
+首先，简单介绍下 Stack Overflow 本次调研的数据来源，调查是通过其网站的站内消息、横幅广告、官方博客和邮件招来的，职业开发者占 75% 到 77%，学生大约一成。美国约 19% 到 22%，德国 8% 到 9%，印度 6% 到 7%，英国约 6%。
+
+更有意思的是**样本结构的变化**。回答问卷的人数一路下降，但越来越资深（Jimmy：看得出来 AI 对 Stack  Overflow 的影响还是很大的，估计有不少看我分享的人，可能都不晓得这个网站吧）：
+- 人数：89,184（2023）→ 65,437（2024）→ 49,009（2025）→ 30,903（2026），三年少了约 65%。
+- 年龄： 35 岁以上从约 37.5%（2023、2024）升到 46.9%（2025）、49.8%（2026），25 岁以下从约 25% 降到约 19%。
+- 资历：工作 15 年以上的从三成不到升到 41.5%（2026），编程 20 年以上的从约 26% 升到约 38%。
+
+样本有自选择偏差。Stack Overflow 自己也承认，越活跃的用户越愿意答。2026 年有 64% 的人说因为 AI，简单问题已经少来 Stack Overflow 了，还留下来答问卷的，是仍然重度用这个网站的人，这批人对 AI 的态度未必代表所有开发者。但我个人认为，样本虽然更资深了，但受访者的某些反馈，其实更能反映出 AI 的进步，所以才会推荐大家看看这份问卷。
+
+横向和纵向看，我和 AI 一起总结出了以下几个结论：
+
+## 1. AI 工具普及率超过 80%，资深研发也成重度用户
+
+- 已经在使用 AI 工具的人数逐年上升：44%（2023）→ 62%（2024）→ 79%（2025）→ 83%（2026）。
+- 编程助手占 66%，通用聊天工具占 63%，agent 或自动化工作流已经到了 26%。
+- 用 AI 的人里 77% 每天都用。按我的加总估算，55% 的人每天用 AI 两小时以上，其中 31% 超过四小时。
+
+<JimmyNoteAnchor id="survey-sample" variant="image">
+
+![AI 工具普及率](/images/writing/no-loyalty-to-ai-coding-tools/001.png)
+
+</JimmyNoteAnchor>
+
+<JimmyNote anchor="survey-sample">
+这里我要再次 callback 一下问卷样本，越往后，越资深。这个数据表明，即使对于资深开发者来说，AI 都已经是主力工具，不是偶尔打开的辅助。我还记得，25 年的时候 DHH（资深程序员，Ruby on Rails 之父）还在吐槽 AI 不能写好代码，26 年，他已经全面拥抱 AI 了。
+</JimmyNote>
+
+## 2. 2026 年迎来满意度与复杂任务拐点
+
+虽然用得越来越多，但实际的满意度并没有显著提高。
+
+![AI 工具满意度](/images/writing/no-loyalty-to-ai-coding-tools/002.png)
+
+从 23 年开始，<JimmyNoteAnchor id="satisfaction">受访者对使用 AI 持正面态度其实是逐年下降的</JimmyNoteAnchor>，直到今年才触底回升：
+- **正面态度比例**：76%（2023）→ 71.9%（2024）→ 59.7%（2025）→ **62.0%（2026）**。
+- **认为AI 能做好复杂任务**：36%（2024）→ 30%（2025）→ 55%（2026），其中「非常好」从 3% 到 4% 跳到 16%。
+- 为何 26 年又涨了？Jimmy：我理解是因为 Agent 出现了。2026 受访者的编程 Agent 使用比例为 65.9%（25 年大约是 40% 多）。
+
+<JimmyNote anchor="satisfaction">
+我个人的理解这一方面是受访人，越来越资深，对 AI 的态度更谨慎，并且开发者将 AI 用到越来越多/难的地方，所以逐年下降是比较合理，毕竟要求变高了。遥想当年，我用得最多的就是 Cursor 的 tab 功能，满意度的确高啊，但现在都不用了，给 AI 的都是什么从 0 开发前后端功能，亦或者大的重构，出几个 bug 当然是正常的，满意度下降也很合理。
+</JimmyNote>
+
+## 3. Agent 步入生产环境，但“零信任本地核验”是常态
+
+![AI 工具使用场景](/images/writing/no-loyalty-to-ai-coding-tools/003.png)
+
+如何用，用在哪也有变化：
+- 受访者对于 AI 给出的结果，有 76.5% 人不会直接用。大多数会先在本地运行，检查后，再决定是否使用，直接照用的只有 9.6%。
+- 使用场景上，也有变化。2023 和 2024 年大家最想多用 AI 的是测试和文档，2026 年变成了<JimmyNoteAnchor id="production-workflows">安全（38%）和数据、日志分析（38%）</JimmyNoteAnchor>。
+
+<JimmyNote anchor="production-workflows">
+我认为这个数据与我的使用情况匹配，日常写代码已被大幅覆盖，而最消耗心智的正是边缘 Case 分析、系统可观测性与排障，这些领域目前市面上的 Agent 仍有极大提升空间。
+</JimmyNote>
+
+## 4. 企业落地滞后，职业替代的紧迫感加剧
+
+- 54% 的人希望 AI 的记忆只归自己控制，只有 15% 接受由公司统一管。
+- 组织层面，30% 的公司还是让员工自己决定用不用 AI 工具，有正式工具和使用规范的只有 24%。
+- 认为 AI 威胁自己工作的从 12%（2024）升到 15%（2025）。2026 年没有直接问这个问题，但<JimmyNoteAnchor id="career-impact">有 17% 的人因为怕技能退化或者被取代而刻意不用 AI</JimmyNoteAnchor>。
+
+<JimmyNote anchor="career-impact">
+当年珍妮纺织机在英国普及用了近 20 年，传统工人尚有代际转型的窗口期；但 AI 的迭代周期是以月为单位的。作为长期在一线做 AI 产品和工程的人，我已经做好未来被 AI 部分（甚至完全）替代的准备。现在也在倒逼自己多去拓展一下自己的能力边界。
+</JimmyNote>
+
+## 5. Claude Code 暂时领跑，但开发者对工具“毫无忠诚度”
+
+过去一年用过的编程 agent 里，<JimmyNoteAnchor id="tool-switching">Claude Code 占 65.5%</JimmyNoteAnchor>，GitHub Copilot 58.7%，OpenAI Codex 29.5%，Cursor 25.5%，Google Antigravity 16%，OpenCode 13.6%。
+
+<JimmyNote anchor="tool-switching">
+为何是暂时领跑？因为按我的加总，约 80% 的人每周用两种以上 AI 工具，40.5% 用三到五种。三分之二的人过去一年换过工具，最主要的原因是输出质量更好（25%），因为价格换的只有 6.4%。也就是说，大家对哪家模型没什么忠诚度，谁好用就用谁。
+</JimmyNote>
+
+<JimmyNoteAnchor id="personal-experience" variant="image">
+
+![AI 工具使用场景](/images/writing/no-loyalty-to-ai-coding-tools/004.png)
+
+</JimmyNoteAnchor>
+
+<JimmyNote anchor="personal-experience">
+此处我也分享下我的实际感受：
+
+https://x.com/thinkingjimmy/status/2107288899303461108?s=20
+</JimmyNote>
+

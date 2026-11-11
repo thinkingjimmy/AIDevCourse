@@ -1,0 +1,143 @@
+{
+  "title": "Glossaire de programmation",
+  "description": "Découvrez les termes de programmation avec des définitions claires et des exemples interactifs. Commencez par la livraison des pages statiques.",
+  "web-foundations": "Fondamentaux du Web",
+  "source": "Référence des termes : MDN",
+  "search": "Rechercher un terme",
+  "searchPlaceholder": "Rechercher un terme ou son nom anglais",
+  "clearSearch": "Effacer la recherche",
+  "noResults": "Aucun terme trouvé. Essayez un autre mot.",
+  "resultsCount": "{count} résultats",
+  "loadMore": "Afficher plus",
+  "openDirectory": "Ouvrir le sommaire du glossaire",
+  "closeDirectory": "Fermer le sommaire du glossaire",
+  "demo": {
+    "server": "Serveur statique",
+    "prepared": "Fichiers préparés avant la visite",
+    "deliveryCount": "Réponses HTML : {count}",
+    "browser": "Navigateur",
+    "pageMessage": "Cette page provient d’un fichier HTML déjà préparé.",
+    "click": "Cliquer sur le bouton de la page",
+    "clickCount": "Compteur du navigateur : {count}",
+    "visit": "Visiter à nouveau",
+    "reset": "Réinitialiser la démo",
+    "status": "Réponses HTML : {deliveries}. Compteur du navigateur : {clicks}.",
+    "note": "Cliquez sur le bouton de la page : seul le compteur du navigateur change. Une nouvelle visite reçoit le même HTML et remet ce compteur à zéro.",
+    "noJs": "La définition et le schéma restent lisibles sans JavaScript. Activez JavaScript pour essayer les boutons.",
+    "caveat": "Cette démonstration simplifiée reste locale et n’envoie aucune requête réseau. Une visite réelle peut réutiliser le cache du navigateur ou d’un CDN."
+  },
+  "terms": {
+    "static-website": {
+      "title": "Site statique",
+      "description": "Un site dont le HTML est préparé avant la visite, puis livré au navigateur sous forme de fichiers.",
+      "article": {
+        "meaning": {
+          "heading": "Ce que signifie « statique »",
+          "definition": "Un site statique fournit des pages <code>HTML</code> déjà préparées et leurs fichiers associés : styles, images et JavaScript. Le serveur n’a pas besoin de composer un nouveau HTML pour cette visite.",
+          "analogy": "Prenons une page de présentation personnelle. Vous inscrivez votre nom, votre parcours et vos projets dans des fichiers, puis vous les publiez. Quand une personne ouvre cette adresse, le serveur livre la page déjà publiée.",
+          "keyPoint": "<strong>Le critère est le moment où le HTML est généré, plutôt que la présence d’animations, de boutons ou d’interactions.</strong>"
+        },
+        "how-it-works": {
+          "heading": "Que se passe-t-il à l’ouverture du site ?",
+          "intro": "Partons d’un cas courant : le navigateur doit récupérer la page et ne dispose pas d’une réponse en cache réutilisable.",
+          "prepare": "Préparer les fichiers. L’auteur écrit le HTML, ou un outil de construction le génère avant toute visite.",
+          "deploy": "Publier les fichiers. Le HTML, le CSS, le JavaScript et les images sont placés sur un serveur capable de les distribuer.",
+          "request": "Demander la page. Une personne ouvre une URL. Le navigateur demande le HTML et le serveur renvoie le fichier préparé.",
+          "render": "Afficher la page. Le navigateur lit le HTML, charge les styles, les images et les scripts nécessaires, puis affiche le résultat et exécute les interactions.",
+          "cache": "Une visite réelle ne télécharge pas forcément tous les fichiers à nouveau. Le navigateur et un CDN peuvent réutiliser du contenu. Un CDN est un service réparti sur plusieurs lieux pour servir le contenu à proximité ; son utilisation ne détermine pas si un site est statique."
+        },
+        "example": {
+          "heading": "Un petit exemple de site",
+          "intro": "Un portfolio simple peut se limiter aux fichiers suivants. Inutile de mémoriser le code : commencez par le rôle de chaque fichier.",
+          "html": "<code>index.html</code> contient la structure et le contenu initial : titre, présentation et bouton, par exemple.",
+          "css": "<code>style.css</code> définit les polices, les couleurs, les espacements et la disposition selon l’écran.",
+          "js": "<code>script.js</code> s’exécute dans le navigateur, par exemple pour compter les clics.",
+          "codeIntro": "Le HTML peut préparer un titre et un bouton compteur, puis charger un script :",
+          "scriptIntro": "Le script peut modifier le nombre sur le bouton dans le navigateur :",
+          "change": "Le clic modifie la page courante dans le navigateur. Il ne réécrit pas le fichier HTML du serveur : le site peut toujours être distribué de façon statique.",
+          "generated": "Il n’est pas nécessaire d’écrire chaque page à la main. Un générateur de site statique peut transformer des articles et des modèles en HTML à l’avance, puis publier les fichiers produits."
+        },
+        "interaction": {
+          "heading": "Essayez une page statique interactive",
+          "intro": "Cliquez sur le bouton de la page et comparez le compteur du navigateur au nombre de réponses HTML. Choisissez ensuite « Visiter à nouveau » et observez les nombres.",
+          "explanation": "Le premier clic change uniquement un nombre en mémoire dans le navigateur. « Visiter à nouveau » simule la réception du HTML initial : le compteur revient donc à zéro. Un vrai site peut aussi sauvegarder un état dans le navigateur pour le retrouver plus tard."
+        },
+        "comparison": {
+          "heading": "Sites statiques et sites dynamiques",
+          "intro": "Cette comparaison porte sur la manière dont le serveur fournit le HTML. Le fait qu’une page change dans le navigateur est une autre question.",
+          "aspect": "Critère",
+          "static": "Fournir du HTML préparé",
+          "dynamic": "Générer le HTML à la demande",
+          "rows": {
+            "timing": {
+              "label": "Moment de génération",
+              "static": "Avant la publication",
+              "dynamic": "Pendant le traitement de la requête"
+            },
+            "work": {
+              "label": "Travail du serveur",
+              "static": "Trouver et renvoyer un fichier existant",
+              "dynamic": "Exécuter la logique applicative et produire une réponse"
+            },
+            "data": {
+              "label": "Données du HTML",
+              "static": "Généralement ajoutées à la rédaction ou à la construction",
+              "dynamic": "Peuvent être lues en base ou ailleurs à la réception de la requête"
+            },
+            "updates": {
+              "label": "Modifier un texte publié",
+              "static": "Modifier les fichiers ou reconstruire, puis publier",
+              "dynamic": "Générer une page depuis les données actualisées"
+            }
+          },
+          "mixed": "Un produit peut combiner les deux : préparer les pages publiques à l’avance et générer les pages de compte à la demande. Une page statique peut également appeler une API après son chargement pour afficher des données actuelles. Un bouton ou une capture d’écran ne suffit pas à trancher."
+        },
+        "uses": {
+          "heading": "Quand choisir un site statique",
+          "intro": "Cette approche convient souvent à la publication de contenu lorsque la plupart des lecteurs peuvent recevoir la même page initiale.",
+          "portfolio": "Sites personnels et portfolios : se présenter, montrer ses projets et fournir ses coordonnées.",
+          "publishing": "Blogs, tutoriels et documentation : les auteurs publient du contenu que les lecteurs parcourent.",
+          "marketing": "Pages de produits et d’événements : afficher des informations publiques, avec des scripts pour les animations ou un calculateur.",
+          "benefits": "Les fichiers préparés sont souvent simples à mettre en cache et à distribuer. Ils réduisent aussi la logique serveur nécessaire à la génération des pages. La vitesse et le coût dépendent toutefois des images, des scripts, du trafic et de l’hébergement.",
+          "limits": "Connexion, commentaires partagés, paiements, stocks en direct et enregistrement des formulaires nécessitent des services et des interfaces adaptés. Le frontend peut rester statique, mais les fichiers HTML publics ne réalisent pas seuls ces fonctions."
+        },
+        "misconceptions": {
+          "heading": "Quelques confusions courantes",
+          "frozen": {
+            "title": "Statique signifie-t-il que le contenu ne change jamais ?",
+            "body": "Non. L’auteur peut modifier et republier les fichiers. Le terme décrit la fourniture du HTML lors d’une visite, pas la fréquence de mise à jour."
+          },
+          "server": {
+            "title": "Un site statique se passe-t-il de serveur ?",
+            "body": "Une visite en ligne nécessite toujours un serveur ou un CDN pour livrer les fichiers. Vous pouvez éviter de gérer une application qui génère du HTML, mais les fichiers ont toujours besoin d’être hébergés et transmis."
+          },
+          "database": {
+            "title": "Un site statique peut-il utiliser une base de données ?",
+            "body": "La construction peut lire une base ou un système de gestion de contenu. Le navigateur peut aussi récupérer des données via une API. Il faut distinguer la fourniture du HTML initial et les données chargées ensuite."
+          },
+          "security": {
+            "title": "Peut-on placer une clé API secrète dans le frontend ?",
+            "body": "Ne placez pas de clé secrète dans du HTML ou du JavaScript public. Les lecteurs peuvent examiner les fichiers reçus par leur navigateur. Les opérations qui exigent un secret doivent passer par une interface serveur adaptée."
+          }
+        },
+        "recap": {
+          "heading": "Vérifiez votre compréhension",
+          "question": "Un portfolio génère tout son HTML à l’avance. Il contient des animations, des filtres et un appel à une API météo. Peut-il rester un site statique ?",
+          "answer": "Oui.",
+          "reason": "Son HTML initial existe avant la visite. Les animations, les filtres et les requêtes API ultérieures s’exécutent dans le navigateur ; ils ne transforment pas le HTML initial en une page générée pour la requête.",
+          "remember": "Posez-vous cette question : <strong>à l’ouverture de la page, le serveur renvoie-t-il du HTML existant ou génère-t-il du HTML pour cette requête ?</strong>"
+        },
+        "references": {
+          "heading": "Pour aller plus loin",
+          "intro": "Ces guides officiels expliquent le contenu statique, l’hébergement, les interactions dans le navigateur et le cache.",
+          "clientServer": "MDN : échanges client-serveur, sites statiques et dynamiques",
+          "server": "MDN : le rôle d’un serveur web",
+          "pages": "GitHub Docs : publier et construire des pages statiques",
+          "javascript": "MDN : le rôle de JavaScript sur le Web",
+          "caching": "MDN : le cache HTTP"
+        }
+      }
+    }
+  },
+  "directory": "Dictionnaire"
+}

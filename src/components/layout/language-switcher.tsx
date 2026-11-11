@@ -9,6 +9,7 @@ import { locales, languageNames, htmlLanguages, localeCookie, defaultLocale, typ
 import { canonicalPath, localePath, stripLocale } from '@/lib/i18n/routing';
 import type { Catalog } from '@/lib/content/model';
 import { isDictionaryTerm, vocabularyForPath } from '@/lib/vocabulary/collections';
+import { isProgrammingAnchor } from '@/lib/vocabulary/programming';
 type LanguageProps = { locale: Locale; translations: Catalog['translations'] };
 const languageFlags: Record<Locale, string> = { en: '🇺🇸', zh: '🇨🇳', ja: '🇯🇵', fr: '🇫🇷', es: '🇪🇸' };
 export function HomeLanguageSwitcher(props: LanguageProps) {
@@ -57,7 +58,7 @@ function LanguageLinks({ locale, translations }: LanguageProps) {
         const fallback = current && !samePage ? t(coursePage ? 'courseFallback' : 'listFallback') : undefined;
         // The root otherwise negotiates again, so native English-home links carry the explicit choice.
         const href = lang === defaultLocale && url === '/' ? '/?lang=en' : url;
-        return <a className="flex min-h-11 touch-manipulation items-center justify-between gap-5 border-b border-line-soft px-3 py-2.5 text-ui font-[550] whitespace-nowrap no-underline last:border-0 hover:bg-surface aria-current:bg-surface" key={lang} href={href} hrefLang={htmlLanguages[lang]} aria-current={lang === locale ? 'true' : undefined} onClick={(event) => {
+        return <a className="flex min-h-11 touch-manipulation items-center justify-between gap-5 border-b border-line-soft px-3 py-2.5 text-ui font-medium whitespace-nowrap no-underline last:border-0 hover:bg-surface aria-current:bg-surface" key={lang} href={href} hrefLang={htmlLanguages[lang]} aria-current={lang === locale ? 'true' : undefined} onClick={(event) => {
           let saved = false;
           try {
             document.cookie = `${localeCookie}=${lang}; Path=/; Max-Age=31536000; SameSite=Lax`;
@@ -68,7 +69,7 @@ function LanguageLinks({ locale, translations }: LanguageProps) {
           if (hash) {
             try {
               const id = decodeURIComponent(hash.slice(1));
-              if (samePage?.headings.includes(id) || (vocabulary && isDictionaryTerm(id, vocabulary.id))) event.currentTarget.href = `${url}${hash}`;
+              if (samePage?.headings.includes(id) || (vocabulary && (isDictionaryTerm(id, vocabulary.id) || (vocabulary.id === 'programming' && isProgrammingAnchor(id))))) event.currentTarget.href = `${url}${hash}`;
             }
             catch { /* An invalid hash is safely discarded. */ }
           }

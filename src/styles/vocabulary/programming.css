@@ -1,0 +1,27 @@
+.static-site-demo { container-type: inline-size; min-width: 0; }
+.static-site-demo .vocabulary-stage { padding: 12px 0 24px; }
+.static-site-example { width: 100%; min-width: 0; }
+.static-site-flow { display: grid; grid-template-columns: minmax(0,1fr) 24px minmax(0,1fr); align-items: center; gap: 16px; }
+.static-site-server, .static-site-browser { min-width: 0; align-self: stretch; border: 1px solid var(--color-border); border-radius: 3px; padding: 20px; background: var(--color-surface); }
+.static-site-panel-title { @apply text-sm leading-copy font-semibold text-brand; display: flex; align-items: center; gap: 8px; margin: 0 0 16px; }
+.static-site-panel-description { @apply text-sm leading-body text-muted-foreground; margin: 0 0 16px; }
+.static-site-files { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; padding: 0; list-style: none; }
+.static-site-files code { @apply font-mono text-xs leading-copy; display: block; border: 1px solid var(--color-border); border-radius: 2px; padding: 8px; background: var(--color-background); }
+.static-site-count { @apply text-sm leading-copy font-medium tabular-nums text-brand; margin: 16px 0 0; }
+.static-site-arrow { justify-self: center; color: var(--color-brand); }
+.static-site-preview { padding: 16px; border: 1px solid var(--color-border); border-radius: 2px; background: var(--color-background); }
+.static-site-greeting { @apply text-xl leading-heading font-semibold text-brand; margin: 0 0 12px; }
+.static-site-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.static-site-demo .vocabulary-note { max-width: 64ch; margin-right: auto; margin-left: auto; }
+@container (max-width: 600px) {
+  .static-site-flow { grid-template-columns: minmax(0,1fr); gap: 12px; }
+  .static-site-arrow { transform: rotate(90deg); }
+  .static-site-server, .static-site-browser { padding: 16px; }
+}
+@media (scripting: none) {
+  /* Native document scrolling keeps direct section links usable before hydration. */
+  [data-slot=site-window][data-variant=reading]:has([data-slot=programming-reading-group]) { height: auto; min-height: calc(100dvh - 2 * var(--course-window-margin)); overflow: visible; }
+  [data-slot=lesson-region]:has([data-slot=programming-reading-group]) { overflow: visible; }
+  [data-slot=sidebar-inset]:has([data-slot=programming-reading-group]) > [data-slot=lesson-aside] { display: none; }
+  [data-slot=programming-article-outline] { display: block; }
+}

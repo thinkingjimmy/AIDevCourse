@@ -3,10 +3,11 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import Link, { type LinkProps } from 'fumadocs-core/link';
 import { HoverCard } from 'radix-ui';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { GlobeIcon } from '@phosphor-icons/react/dist/ssr/Globe';
 import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import type { LinkPreviewData } from '@/lib/link-preview/model';
+import { pathLocale } from '@/lib/i18n/routing';
 
 const previews = new Map<string, { expires: number; promise: Promise<LinkPreviewData | null> }>();
 function loadPreview(href: string) {
@@ -23,11 +24,15 @@ function loadPreview(href: string) {
 }
 
 export function LinkPreview(props: LinkProps) {
+  const locale = useLocale();
   const href = props.href ?? '';
   const isPage = /^https?:\/\//i.test(href) || href.startsWith('/') && !href.startsWith('//');
   if (!isPage || props.download !== undefined) return <Link {...props} />;
   try { new URL(href, 'https://aidevcourse.invalid'); } catch { return <Link {...props} />; }
-  return <PreviewLink key={href} {...props} href={href} />;
+  // A different language uses another layout tree; do not prefetch its segments from this tree.
+  const prefetch = href.startsWith('/') && pathLocale(href) !== locale ? false : props.prefetch;
+  if (href.startsWith('/')) return <Link {...props} prefetch={prefetch} />;
+  return <PreviewLink key={href} {...props} href={href} prefetch={prefetch} />;
 }
 
 function PreviewLink({ href, children, ref, ...props }: LinkProps & { href: string }) {
@@ -53,7 +58,7 @@ function PreviewLink({ href, children, ref, ...props }: LinkProps & { href: stri
       onPointerEnter={(event) => { if (event.pointerType !== 'touch') { touch.current = false; dismissed.current = false; } }}
       onKeyDown={() => { touch.current = false; }}
       onFocus={(event) => { if (touch.current) event.preventDefault(); else dismissed.current = false; }}>
-      <Link {...props} ref={ref} href={href} aria-describedby={open ? [props['aria-describedby'], id].filter(Boolean).join(' ') : props['aria-describedby']} data-link-preview="">{children}</Link>
+      <Link {...props} ref={ref} href={href} onClick={event => { props.onClick?.(event); dismissed.current = true; setOpen(false); }} aria-describedby={open ? [props['aria-describedby'], id].filter(Boolean).join(' ') : props['aria-describedby']} data-link-preview="">{children}</Link>
     </HoverCard.Trigger>
     <HoverCard.Portal>
       <HoverCard.Content id={id} role="tooltip" side="top" align="start" sideOffset={10} collisionPadding={12}

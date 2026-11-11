@@ -1,0 +1,193 @@
+---
+courseId: llm-101
+lessonId: how-ai-chat-works
+title: "¿Cómo funciona AI Chat?"
+description: "Un ejemplo de conversación explica cómo los productos Chat envían el historial junto con una nueva pregunta."
+---
+
+Ahora que hemos explicado cómo los grandes modelos de lenguaje generan contenido, veamos productos Chat como ChatGPT o la aplicación DeepSeek.
+
+Al usar estos productos, quizá te hayas preguntado por qué el LLM parece recordar lo que dijiste antes. ¿Cómo lo recuerda?
+
+## 1. ¿Por qué parece que el modelo te recuerda?
+
+Abre un producto Chat y haz esta prueba. Dale al LLM una instrucción como esta. Podrías recibir la siguiente respuesta.
+
+<Chat>
+<ChatMessage from="user">
+Me llamo Jimmy. A partir de ahora, empieza todas tus respuestas con Jimmy.
+</ChatMessage>
+
+<ChatMessage from="assistant">
+Jimmy, entendido. A partir de ahora empezaré cada respuesta con «Jimmy». ¿De qué te gustaría hablar?
+</ChatMessage>
+</Chat>
+
+Después, pregunta:
+
+<Chat>
+<ChatMessage from="user">
+¿Qué tiempo hace hoy en Guangzhou?
+</ChatMessage>
+
+<ChatMessage from="assistant">
+Jimmy, hoy hace sol en Guangzhou y la temperatura es de 28 grados Celsius.
+</ChatMessage>
+</Chat>
+
+Es fácil entender por qué la primera respuesta incluye Jimmy. Pero ¿por qué la segunda también empieza así?
+
+Como aprendimos [antes](/es/courses/llm-101/what-a-language-model-does), el modelo calcula probabilidades a partir de la entrada y de sus parámetros entrenados. Si solo recibe «¿Qué tiempo hace hoy en Guangzhou?», la entrada no contiene mi nombre ni mi instrucción. ¿Por qué empezaría con Jimmy?
+
+¿De dónde sale Jimmy en la segunda respuesta?
+
+## <JimmyNoteAnchor id="001">2. ¿Cómo llega tu pregunta al modelo?</JimmyNoteAnchor>
+
+JSON es el formato de intercambio de datos más común en Internet. Es fácil de leer y escribir para las personas, y de analizar y generar para las máquinas. No necesitas entenderlo por completo todavía. Basta con saber que es un formato de datos.
+
+<JimmyNote anchor="001">
+  A partir de esta lección iremos tratando más temas de desarrollo. Si te interesa, puedes leer esta parte por encima y después centrarte en [3.3](/es/courses/llm-101/ai-chat-advice) y [3.4](/es/courses/llm-101/ai-chat-tips).
+</JimmyNote>
+
+Para explicar de dónde sale Jimmy, primero debemos entender cómo un producto Chat transmite los mensajes al servidor del proveedor del modelo.
+
+Puedes imaginar ese servidor como un superordenador. Recibe la información del producto, inicia el programa del modelo, introduce el mensaje y genera una respuesta. Después la devuelve al producto, que se la muestra al usuario.
+
+El proceso se parece a enviar una carta. Pero, para recibir una respuesta, debes usar un formato específico. Si no lo sigues, el proveedor del modelo no te contestará:
+
+<ChatMessageSequence />
+
+Veamos el proceso paso a paso.
+
+Primero escribes algo como «Me llamo Jimmy. A partir de ahora, empieza todas tus respuestas con Jimmy.» y pulsas Enviar. El producto Chat no transmite ese texto tal cual al servidor. Primero lo convierte a JSON y después envía algo parecido a esto:
+
+```json
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Me llamo Jimmy. A partir de ahora, empieza todas tus respuestas con Jimmy."
+    },
+  ]
+}
+```
+
+El <JimmyNoteAnchor id="002">formato JSON</JimmyNoteAnchor> es el formato de intercambio de datos más común en Internet. Es fácil de leer y escribir para las personas, y de analizar y generar para las máquinas. Por ahora, basta con saber que es un formato de datos.
+
+<JimmyNote anchor="002">
+  Si quieres saber más sobre JSON, consulta mi otro tutorial, [JSON basics (简体中文)](/zh/courses/coding-101/what-is-json).
+</JimmyNote>
+
+Puedes imaginar esta «carta» como un formulario de solicitud. El formulario vacío tendría aproximadamente este aspecto. Si no escribes la carta de esta manera, no recibirás una respuesta:
+
+```json
+{
+  "model": "",   // ← Escribe el nombre del modelo, por ejemplo deepseek-flash
+  "messages": [
+    {
+      "role": "",   // ← Escribe el rol: user para un mensaje del usuario, assistant para una respuesta del modelo
+      "content": "",   // ← Escribe el contenido, por ejemplo "Me llamo Jimmy. A partir de ahora, empieza todas tus respuestas con Jimmy."
+    },
+  ]
+}
+```
+
+Podemos analizar este JSON línea por línea. El primer campo indica el nombre del modelo que se va a llamar. Aquí usamos deepseek-flash. Introducir otro nombre indica al servidor qué modelo debe responder. Cambiarlo por deepseek-pro le pide que use ese modelo.
+
+```json
+{
+  "model": "deepseek-flash",
+}
+```
+El segundo campo es el array messages. No necesitas estudiar los arrays todavía; basta con saber que son una estructura de datos. Este contiene todos los mensajes anteriores. En el primer envío, solo incluye uno. El campo role identifica quién lo envió: user indica un mensaje del usuario y assistant una respuesta del modelo:
+
+```json
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Me llamo Jimmy. A partir de ahora, empieza todas tus respuestas con Jimmy."
+    },
+  ]
+}
+```
+
+Tras el envío, el servidor recibe la carta y se la entrega al programa del modelo. Cuando este termina, devuelve al producto una «carta» parecida:
+
+```json
+{
+
+  "message": {
+    "role": "assistant",
+    "content": "Jimmy, entendido. A partir de ahora empezaré cada respuesta con «Jimmy». ¿De qué te gustaría hablar?"
+  }
+
+}
+```
+
+Por último, el producto extrae la información necesaria de esa «carta» y la muestra en la interfaz:
+
+<Chat>
+<ChatMessage from="assistant">
+Jimmy, entendido. A partir de ahora empezaré cada respuesta con «Jimmy». ¿De qué te gustaría hablar?
+</ChatMessage>
+</Chat>
+
+## 3. ¿Qué recibe realmente el modelo?
+
+Ahora que sabemos cómo llega tu pregunta al modelo, podemos explicar por qué el LLM sigue empezando sus respuestas con Jimmy.
+
+Cuando envías el segundo mensaje, Chat redacta una carta diferente. Incluye tu primer mensaje y la respuesta del modelo, además del segundo mensaje:
+
+```json
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "user", 
+      "content": "Me llamo Jimmy. A partir de ahora, empieza todas tus respuestas con Jimmy." // Primer mensaje del usuario
+    },
+    {
+      "role": "assistant",
+      "content": "Jimmy, entendido. A partir de ahora empezaré cada respuesta con «Jimmy». ¿De qué te gustaría hablar?" // Primera respuesta del modelo
+    },
+    {
+      "role": "user",
+      "content": "¿Qué tiempo hace hoy en Guangzhou?" // Segundo mensaje del usuario
+    }
+  ]
+}
+```
+
+Como ves, esta carta contiene el historial de la conversación. Por eso las respuestas posteriores siguen empezando con Jimmy.
+
+El modelo no te ha memorizado. Recibe todo tu historial de mensajes cada vez.
+
+## 4. ¿Para qué sirve entender esto?
+
+En [¿Qué es un token?](/es/courses/llm-101/what-is-a-token) aprendimos que cada modelo tiene una ventana de contexto máxima. Por ejemplo, la de DeepSeek-V4.1-Flash es de 128000 tokens.
+
+Como hemos explicado, los productos Chat suelen enviar también el historial. Cuanto más dura la conversación, más crece el contexto. Incluso puede superar la ventana del modelo.
+
+Ese límite puede hacer que el producto envíe una versión recortada. El modelo no recibe la parte que sobra, así que puede parecer que olvida cosas. Los productos actuales tienen formas de reducir este problema, que veremos más adelante. Sin embargo, son menos eficaces que enviar todo el contexto.
+
+Por eso, lo mejor es usar una conversación para cada tarea, en lugar de una sola para todos los asuntos. Así es menos probable que el modelo parezca olvidar información. También puede bajar el coste, porque el contexto de entrada es más corto.
+
+## 5. Reto
+
+<Achievement
+  id="chat-history-as-input"
+  title="Entender el historial de Chat"
+  question="¿El modelo ha memorizado realmente tu entrada?"
+  answer="history-in-input"
+  explanation="En este ejemplo, el producto Chat envía las preguntas y respuestas anteriores junto con la nueva pregunta. El modelo responde a partir del contenido recibido. Esto no demuestra que la conversación haya actualizado sus parámetros entrenados."
+  takeaway="Los productos Chat envían el historial junto con la nueva pregunta. En este ejemplo, Jimmy procede del contenido recibido en la llamada actual."
+>
+  <AchievementOption value="parameters-updated">
+    Sí. Esta conversación ha actualizado los parámetros entrenados del modelo, así que recuerda a Jimmy.
+  </AchievementOption>
+  <AchievementOption value="history-in-input">
+    Este ejemplo no demuestra que haya memorizado la entrada. El producto Chat envía también el historial, por lo que el modelo sigue viendo la instrucción anterior.
+  </AchievementOption>
+</Achievement>

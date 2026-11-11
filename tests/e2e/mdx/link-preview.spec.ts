@@ -75,25 +75,26 @@ test('link previews open after intent, stay hoverable, and reuse metadata', asyn
   await test.info().attach('Hover and cache evidence', { body: JSON.stringify({ requests, box, metadata }, null, 2), contentType: 'application/json' });
 });
 
-test('keyboard previews use real local metadata and Escape preserves link focus', async ({ page, request }) => {
+test('internal links skip hover and focus previews and keep keyboard navigation', async ({ page }) => {
   test.skip(process.env.CONTENT_TEST === '1', 'The local example belongs to the published LLM 101 catalog.');
-  const response = await request.get('/api/link-preview', { params: { href: '/zh/courses/llm-101' } });
-  expect(response.status()).toBe(200);
-  const local = await response.json();
-  expect(local.title).toBe('LLM 101');
-  expect(local.description).not.toBe('');
+  const requests: string[] = [];
+  page.on('request', request => { if (request.url().includes('/api/link-preview')) requests.push(request.url()); });
   await page.goto('/design/components');
   const link = page.locator('#link-previews').getByRole('link', { name: 'LLM 101 课程' });
-  await link.focus();
-  await expect(card(page)).toContainText(local.title);
-  await expect(card(page)).toContainText(local.description);
-  await evidence(page, 'link-preview-keyboard');
-  await page.keyboard.press('Escape');
+  await page.clock.install();
+  await link.hover();
+  await page.clock.runFor(600);
   await expect(card(page)).toHaveCount(0);
+  await link.focus();
+  await page.clock.runFor(600);
+  await expect(link).not.toHaveAttribute('data-link-preview');
+  await expect(card(page)).toHaveCount(0);
+  expect(requests).toEqual([]);
   await expect(link).toBeFocused();
+  await evidence(page, 'internal-link-without-preview');
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL('/zh/courses/llm-101');
-  await test.info().attach('Local preview response', { body: JSON.stringify(local, null, 2), contentType: 'application/json' });
+  await test.info().attach('Internal link preview requests', { body: JSON.stringify(requests), contentType: 'application/json' });
 });
 
 for (const failure of ['unavailable', 'upstream-error', 'network', 'timeout', 'broken-image'] as const) {

@@ -23,9 +23,10 @@ export async function HomeHeader({ locale, hero = false }: { locale: Locale; her
   const ui = await getTranslations({ locale, namespace: 'Ui' });
   const vocabulary = await getTranslations({ locale, namespace: 'Vocabulary' });
   const animationVocabulary = await getTranslations({ locale, namespace: 'AnimationVocabulary' });
+  const programmingVocabulary = await getTranslations({ locale, namespace: 'ProgrammingVocabulary' });
   const catalog = getCatalog();
   return <SiteHeader locale={locale} hero={hero} courses={catalog.courses.filter(course => course.locale === locale).map(({ url, title }) => ({ url, title }))}
-    labels={{ home: ui('home'), navigation: t('navLabel'), vocabulary: { design: vocabulary('title'), animation: animationVocabulary('title') } }}
+    labels={{ home: ui('home'), navigation: t('navLabel'), vocabulary: { design: vocabulary('title'), animation: animationVocabulary('title'), programming: programmingVocabulary('title') } }}
     shortcut={<SearchShortcut locale={locale} version={catalog.version} lessons={lessonIndex(catalog, locale)} />}>
     <AuthorDialog />
     <LanguageSwitcher locale={locale} translations={catalog.translations} />

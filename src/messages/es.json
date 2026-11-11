@@ -42,6 +42,11 @@
     "linkPreview": "Vista previa de la página",
     "linkPreviewLoading": "Cargando la vista previa…",
     "linkPreviewUnavailable": "Vista previa no disponible. Abre el enlace para ver esta página.",
+    "sideReading": "Lectura lateral: {title}",
+    "closeReading": "Cerrar la lectura lateral",
+    "readingLoading": "Cargando la lección…",
+    "readingFailed": "No se pudo cargar esta página. Inténtalo de nuevo.",
+    "retryReading": "Reintentar",
     "noHeadings": "Sin títulos",
     "code": "Código",
     "codeFoldLines": "{count, plural, one {# línea} other {# líneas}}",
@@ -340,5 +345,124 @@
     "zoom": "Ampliar la ilustración: {label}",
     "imageTitle": "Ilustración: {label}",
     "close": "Cerrar ilustración"
+  },
+  "ChatSequence": {
+    "label": "Secuencia animada de mensajes de Chat",
+    "actorsLabel": "Mensajes entre el usuario, el producto, el servidor del proveedor y el programa del modelo",
+    "actors": {
+      "user": "Tú",
+      "product": "Chat",
+      "server": "Servidor",
+      "model": "Modelo"
+    },
+    "modelStates": {
+      "idle": "Sin llamar",
+      "waiting": "En espera",
+      "running": "En ejecución",
+      "generated": "Respuesta lista"
+    },
+    "playStates": {
+      "finished": "Demostración completada",
+      "paused": "En pausa",
+      "playing": "Reproducción automática"
+    },
+    "replay": "Reiniciar",
+    "playAgain": "Repetir",
+    "resume": "Continuar",
+    "pause": "Pausar",
+    "invalidAttempt": "Formato incorrecto: el servidor rechaza la solicitud",
+    "validAttempt": "El formato esperado permite recibir una respuesta",
+    "invalidFormat": "Formato incorrecto",
+    "validFormat": "Formato correcto",
+    "inputMessage": "Hola, me llamo Jimmy.",
+    "replyMessage": "¡Hola, Jimmy!",
+    "requestLabel": "Ejemplo de solicitud JSON con la estructura esperada",
+    "responseLabel": "Ejemplo de respuesta JSON del servidor",
+    "events": {
+      "input": {
+        "label": "Escribir mensaje",
+        "caption": "Primer intento · formato incorrecto",
+        "message": "Hola, me llamo Jimmy."
+      },
+      "raw": {
+        "label": "Enviar texto sin formato",
+        "caption": "Falta la estructura esperada",
+        "message": "Hola, me llamo Jimmy."
+      },
+      "reject": {
+        "label": "Rechazar: formato incorrecto",
+        "caption": "El servidor devuelve un error de formato",
+        "message": "La solicitud no supera la comprobación de formato. El programa del modelo no se ejecuta."
+      },
+      "error": {
+        "label": "Mostrar el error",
+        "caption": "El primer intento falla",
+        "message": "El producto recibe un error. El modelo no ha generado ninguna respuesta."
+      },
+      "retry": {
+        "label": "Reenviar el mensaje",
+        "caption": "Segundo intento · formato esperado",
+        "message": "El mismo mensaje: Hola, me llamo Jimmy."
+      },
+      "request": {
+        "label": "Enviar el formato esperado",
+        "caption": "Incluir model y messages según lo previsto"
+      },
+      "invoke": {
+        "label": "Pasar al modelo",
+        "caption": "La solicitud supera la comprobación de formato",
+        "message": "El servidor entrega el contenido del mensaje al programa del modelo."
+      },
+      "generate": {
+        "label": "Generar una respuesta",
+        "caption": "El modelo genera una respuesta",
+        "message": "¡Hola, Jimmy!"
+      },
+      "response": {
+        "label": "Devolver la respuesta (JSON)",
+        "caption": "El servidor devuelve JSON al producto"
+      },
+      "display": {
+        "label": "Mostrar la respuesta",
+        "caption": "El segundo intento tiene éxito",
+        "message": "¡Hola, Jimmy!"
+      }
+    }
+  },
+  "Newton": {
+    "label": "Demostración interactiva de la segunda ley de Newton",
+    "title": "Pruébalo: segunda ley de Newton",
+    "reference": "Referencia: 4 N / 2 kg",
+    "yourSettings": "Tus ajustes",
+    "speed": "Velocidad",
+    "formula": "Aceleración = fuerza neta ÷ masa",
+    "equationExact": "La aceleración es {force} newtons divididos entre {mass} kilogramos, es decir, {acceleration} metros por segundo al cuadrado",
+    "equationApproximate": "La aceleración es {force} newtons divididos entre {mass} kilogramos, aproximadamente {acceleration} metros por segundo al cuadrado",
+    "setup": "Ambos parten del reposo, con fuerza durante 2 segundos",
+    "force": "Fuerza neta F",
+    "mass": "Masa m",
+    "forceValue": "{force} newtons",
+    "massValue": "{mass} kilogramos",
+    "pause": "Pausar",
+    "resume": "Continuar",
+    "playAgain": "Comparar de nuevo",
+    "start": "Iniciar comparación",
+    "reset": "Restablecer",
+    "insights": {
+      "zero": "Con fuerza neta cero, la aceleración es cero. El carro parte del reposo, así que no se mueve.",
+      "initial": "Cambia la fuerza neta de 4 N a 8 N y observa la aceleración.",
+      "doubleForce": "Con la misma masa, duplicar la fuerza duplica la aceleración. La velocidad aumenta 4 m/s cada segundo.",
+      "doubleMass": "Con la misma fuerza, duplicar la masa reduce la aceleración a la mitad. La velocidad aumenta 1 m/s cada segundo.",
+      "sameRatio": "La fuerza y la masa cambian en la misma proporción. La aceleración coincide con la referencia: la velocidad aumenta 2 m/s cada segundo.",
+      "other": "La velocidad aumenta unos {acceleration} m/s cada segundo. La aceleración es aproximadamente {ratio} veces la referencia."
+    },
+    "assumptions": "Solo se compara el movimiento horizontal, sin fricción. Ambos carros parten del reposo. La fuerza neta permanece constante durante 2 segundos.",
+    "status": {
+      "complete": "Comparación completada. Tras 2 segundos, tu carro va a {speed} metros por segundo; la referencia, a 4 metros por segundo.",
+      "playing": "Los dos carros empiezan a moverse a la vez.",
+      "paused": "Comparación en pausa.",
+      "ready": "Fuerza neta: {force} newtons. Masa: {mass} kilogramos. Aceleración: {acceleration} metros por segundo al cuadrado."
+    },
+    "static": "Con masa constante, duplicar la fuerza neta duplica la aceleración. Con fuerza constante, duplicar la masa reduce la aceleración a la mitad. Activa JavaScript para ajustar la fuerza y la masa y observar ambos carros."
   }
 }

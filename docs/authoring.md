@@ -25,7 +25,7 @@
 }
 ```
 
-导读课程可在 frontmatter 中设置 `section: introduction`，首页会将其放入难度分组之前的「开始之前」。`level` 仍表示课程难度；未设置 `section` 的课程继续按难度分组。当前中文导读课程「从想法到作品」位于 `content/zh/getting-started/`，卡片和总览复用首页电脑拆解动图；「学前必看」下的 1.1「关于这门课」位于 `before-you-start/about-this-course.mdx`，1.2「更新日志」位于 `before-you-start/changelog.mdx`，正文待补充。Changelog 的中文名称为「更新日志」，稳定 ID 与路径使用 `changelog`。「我的一些碎碎念」的三课位于 `musings/`，由该目录的 `meta.json` 排序；2.3「既然 AI 都能写好代码了，为何还要学习编程？」位于 `why-learn-programming-with-ai.mdx`，正文待补充。课程根目录只放介绍和模块顺序，课时放入对应模块。公开路径使用 `getting-started`，稳定标识 `courseId: ai-coding` 用于关联已有学习记录，旧课程地址通过 `config/redirects.json` 跳转。
+导读课程可在 frontmatter 中设置 `section: introduction`，首页会将其放入难度分组之前的「开始之前」。`level` 仍表示课程难度；未设置 `section` 的课程继续按难度分组。当前中文导读课程「从想法到作品」位于 `content/zh/getting-started/`，卡片和总览复用首页电脑拆解动图；「学前必看」下的 1.1「关于这门课」位于 `before-you-start/about-this-course.mdx`，1.2「致谢与参考资料」位于 `before-you-start/acknowledgements.mdx`，记录读者反馈与写作时参考的教程资料；1.3「更新日志」位于 `before-you-start/changelog.mdx`，正文待补充。Changelog 的中文名称为「更新日志」，稳定 ID 与路径使用 `changelog`。「我的一些碎碎念」的三课位于 `musings/`，由该目录的 `meta.json` 排序；2.3「既然 AI 都能写好代码了，为何还要学习编程？」位于 `why-learn-programming-with-ai.mdx`，正文待补充。课程根目录只放介绍和模块顺序，课时放入对应模块。公开路径使用 `getting-started`，稳定标识 `courseId: ai-coding` 用于关联已有学习记录，旧课程地址通过 `config/redirects.json` 跳转。
 
 课程介绍不计入课时数量。课程可以先发布介绍，再逐步添加课时。没有课时的课程保留首页卡片和总览，显示「内容更新中」，不显示开始第一课或课时统计。完全没有课程的语言会显示本地化空状态。
 
@@ -68,7 +68,15 @@ send(request);
 ```
 ````
 
-普通 Markdown 页面链接自动支持预览，无需添加组件或 import。鼠标悬停 350ms 或键盘聚焦后显示标题、摘要、域名和可用的封面；鼠标移入卡片后保持显示，Escape 关闭。站内已发布课程和课时使用本地标题与简介；外部 HTTPS 链接按需读取页面元数据并缓存。未提供元数据或读取失败时显示域名与提示，链接仍可打开。触屏点击和无 JavaScript 时直接跳转。同页锚点、邮件和下载链接保留原行为。可在 [链接预览](http://localhost:3000/design/components#link-previews) 检查效果。
+External Markdown page links show a preview after a 350ms hover or keyboard focus. The card shows the title, description, domain, and available cover. Internal links have no hover or focus card and make no preview request; lesson links use side reading where available. Touch and no-JavaScript links keep native navigation. Check the [link previews](http://localhost:3000/design/components#link-previews) for examples.
+
+Use `WebsitePreview` to share a website as a browser-framed screenshot. It requires static, nonempty `url` and `title` strings and exactly one Markdown image with meaningful localized alt text. The destination must be an absolute HTTPS URL without credentials; the screenshot must exist under `/images/`. Use a standalone block, with no import. The address bar and screenshot both open the website in a new tab. The image area is 400px high in columns at least 36rem wide and 260px in narrower columns. Readers can scroll it with a wheel, touch, or keyboard while the address bar and lesson stay in place. Images keep their aspect ratio and use the normal MDX image dimensions and lazy loading. The component works without JavaScript and sends no requests to the shared website before a reader opens it. [Screenshot sources](./references/website-previews.md) record captured pages.
+
+```mdx
+<WebsitePreview url="https://jimmywong.dev/en" title="Jimmy's personal website">
+![Personal introduction, projects, and contribution history](/images/websites/jimmy-home.webp)
+</WebsitePreview>
+```
 
 使用独立的 `<XEmbed url="..." />` 嵌入单条公开 X 帖子，使用 `<YouTube url="..." />` 嵌入单个 YouTube 视频。两个组件均无需 import，只接受必填的静态 `url` 与可选的非空 `title` 字符串，不接受子内容，不能放在行内。可在 [嵌入预览](http://localhost:3000/design/components#embeds) 检查显示。普通链接继续显示链接预览，不会自动转换为播放器。
 
@@ -98,7 +106,7 @@ Use `XProfile` for a reusable X recommendation card. Required attributes are sta
 </XProfiles>
 ```
 
-标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`JimmyNoteAnchor`、`KeyTakeaway`、`ResourceDisks`、`Chat`、`ChatMessage`、`ChatThinking`、`ChatToolCall`、`InlineCitation`、`ChatMessageSequence`、`XEmbed`、`YouTube`、`XProfile`、`XProfiles`、`Steps`、`Step`、`LLMGenerationDemo`、`MenuComparisonDemo`、`AnimationDemo`、`TokenizationDiagram`、`TokenProbabilityDiagram`、`LLMPretrainingOverview`、`LLMSingleRoundTrainingDemo`、`LLMMultiRoundTrainingDemo`、`Achievement`、`AchievementOption`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
+标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`JimmyNoteAnchor`、`KeyTakeaway`、`ResourceDisks`、`Chat`、`ChatMessage`、`ChatThinking`、`ChatToolCall`、`InlineCitation`、`ChatMessageSequence`、`XEmbed`、`YouTube`、`WebsitePreview`、`XProfile`、`XProfiles`、`Steps`、`Step`、`LLMGenerationDemo`、`MenuComparisonDemo`、`AnimationDemo`、`FrontendLayersDemo`、`FrontendInspectorDemo`、`FrontendInspectorPractice`、`TokenizationDiagram`、`TokenProbabilityDiagram`、`LLMPretrainingOverview`、`LLMSingleRoundTrainingDemo`、`LLMMultiRoundTrainingDemo`、`Achievement`、`AchievementOption`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
 
 使用 `mermaid` 代码围栏绘制流程图、时序图等图表，无需 import。图表使用 [Pele](https://pele.run/) 在服务端生成 SVG，不向浏览器加载图表引擎。图表沿用站点字体与颜色；宽图保持文字大小，在图表区域内横向滚动，支持键盘操作、放大文字和无 JavaScript 阅读。通过 `accTitle` 与 `accDescr` 提供图表标题和说明。可在 [组件预览](http://localhost:3000/design/components#mermaid) 检查效果。
 
@@ -235,7 +243,7 @@ The forecast is available on the source page. <InlineCitation url="https://www.w
 </ChatMessage>
 ```
 
-`ChatMessage` 接受必填的静态 `from="user"` 或 `from="assistant"`，以及可选的 `state="complete"` 或 `state="thinking"`；thinking 只用于 assistant。`ChatThinking` 仅接受可选的布尔值 `defaultOpen`，只能直接放在 `state="complete"`（默认值）的 assistant 消息内，且每条消息最多一个，正文不能为空。`ChatToolCall` 也只能直接放在完整回复状态的 assistant 消息内；`name`、`title` 和正文均不能为空，可选 `defaultOpen` 配置初始展开状态，不接受其他属性或行内使用。`Chat` 不接受参数；`Achievement` 和 `AchievementOption` 的字段见下方「文章成就」；`XEmbed` 和 `YouTube` 仅接受上方说明的 `url` / `title`；`InlineCitation` 仅接受 `url` / `title` / `description`。其他组件只允许静态 `title` / `type` 字符串。仅 `ChatThinking` 和 `ChatToolCall` 的 `defaultOpen` 接受布尔字面量 `{true}` / `{false}` 或无值属性；禁止 import、其他 JavaScript 表达式、原始 HTML、iframe、脚本和未知组件；`mermaid` 围栏生成静态图表，其他代码围栏里的示例不会执行。注册入口为 `src/components/mdx/components.tsx`，不要为了单篇文章绕过校验器。
+`ChatMessage` 接受必填的静态 `from="user"` 或 `from="assistant"`，以及可选的 `state="complete"` 或 `state="thinking"`；thinking 只用于 assistant。`ChatThinking` 仅接受可选的布尔值 `defaultOpen`，只能直接放在 `state="complete"`（默认值）的 assistant 消息内，且每条消息最多一个，正文不能为空。`ChatToolCall` 也只能直接放在完整回复状态的 assistant 消息内；`name`、`title` 和正文均不能为空，可选 `defaultOpen` 配置初始展开状态，不接受其他属性或行内使用。`Chat` 不接受参数；`Achievement` 和 `AchievementOption` 的字段见下方「文章成就」；`XEmbed`、`YouTube` 和 `WebsitePreview` 仅接受上方说明的 `url` / `title`；`InlineCitation` 仅接受 `url` / `title` / `description`。其他组件只允许静态 `title` / `type` 字符串。仅 `ChatThinking` 和 `ChatToolCall` 的 `defaultOpen` 接受布尔字面量 `{true}` / `{false}` 或无值属性；禁止 import、其他 JavaScript 表达式、原始 HTML、iframe、脚本和未知组件；`mermaid` 围栏生成静态图表，其他代码围栏里的示例不会执行。注册入口为 `src/components/mdx/components.tsx`，不要为了单篇文章绕过校验器。
 
 本地图片放到 `public/images/`，正文使用有意义的本语言 alt。编译器从图片读取宽高。这里的素材任何人都能访问，不能存放密钥或未公开的敏感素材。
 
@@ -299,7 +307,7 @@ Token 图解使用各语言实际输入的编码结果，不能只翻译词元�
 
 ## 互动需求
 
-中文版「AI Chat 实用技巧」在「一、多用 Artifact 功能」使用 `<NewtonSecondLawDemo />` 直接解释牛顿第二定律。组件无参数、无子内容，无需 import。顶部展示 F = ma、加速度 = 合力 ÷ 质量及同步更新的数值算式。读者可调节 0–8 N 的合力和 1–4 kg 的质量；重点反馈合力加倍时加速度加倍、质量加倍时加速度减半。两辆小车从静止开始，在无摩擦水平面上持续受力 2 秒；对照固定为 4 N、2 kg。位置按 s = at²/2、速度按 v = at 计算，使用相同空间与时间尺度。支持开始对比、暂停、继续、重置，改参数会返回起点；离屏或切至后台时暂停。减少动态效果模式直接展示 2 秒后的结果；无 JavaScript 时保留公式与控制变量的结论。沿用站点黑白配色、引用边框、偏移阴影及按钮，不请求外部接口，也不写入学习进度。
+五语版「AI Chat 实用技巧」在第三节 Artifact 功能中使用 `<NewtonSecondLawDemo />` 直接解释牛顿第二定律。组件无参数、无子内容，无需 import。顶部展示 F = ma、加速度 = 合力 ÷ 质量及同步更新的数值算式。读者可调节 0–8 N 的合力和 1–4 kg 的质量；重点反馈合力加倍时加速度加倍、质量加倍时加速度减半。两辆小车从静止开始，在无摩擦水平面上持续受力 2 秒；对照固定为 4 N、2 kg。位置按 s = at²/2、速度按 v = at 计算，使用相同空间与时间尺度。支持开始对比、暂停、继续、重置，改参数会返回起点；离屏或切至后台时暂停。减少动态效果模式直接展示 2 秒后的结果；无 JavaScript 时保留公式与控制变量的结论。沿用站点黑白配色、引用边框、偏移阴影及按钮，不请求外部接口，也不写入学习进度。
 
 中文版「AI Chat 是如何工作的？」在寄信类比段落后使用 `<ChatMessageSequence />`。这是无参数、无子内容的独立块，无需 import。组件进入可视区域后，先演示直接发送文本被服务器拒绝，模型未调用；再演示格式正确的 JSON 请求、模型生成回复、服务器返回 JSON、产品提取文本后呈现给用户。格式错误与正确分别用红叉和绿勾标识。消息气泡悬浮在当前箭头旁，尖角指向实际线条中点，不撑高图表；窄屏和放大字体时重新测量位置。演示播放一次后停止，支持暂停、继续和重新演示；离开可视区域或切到后台时暂停。仅切换离散步骤，不产生连续位移动画。无 JavaScript 时静态展示两次尝试的完整过程。内容为本地教学示例，不调用模型，也不写入学习进度。
 
@@ -345,7 +353,7 @@ Token 图解使用各语言实际输入的编码结果，不能只翻译词元�
 
 ## LLM 101 的课程范围
 
-LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程介绍、十四节中文正文，以及前两个模块全部九节课的英、日、法、西语译文。课程介绍位于 `content/<lang>/llm-101/index.mdx`，已有课时按下面三个模块组织。
+LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程介绍，以及三个模块全部十四节课的中、英、日、法、西语正文。课程介绍位于 `content/<lang>/llm-101/index.mdx`，已有课时按下面三个模块组织。
 
 | 模块目录 | 模块名称 | 已发布课时 |
 | --- | --- | --- |
@@ -355,7 +363,9 @@ LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程
 
 02 用五篇文章连接预训练、深度思考、多模态输入、开源模型与本地运行和模型选择。2.2 用预算题介绍计算草稿、SFT、强化学习、结果评分与过程评分，并解释深度思考开关和 effort 的用途与成本，不展开训练算法。2.3 通过编码器类比解释图像特征、语音转写与音频理解，区分输入和输出能力。当前练习位于 2.1（generation-vs-verification、training-target-not-truth）及 2.3（distinguish-audio-inputs）；2.2、2.4 和 2.5 没有练习。2.4 保留开源与闭源、参数量、MoE 和本地运行的问题、公式与旁注；2.5 介绍模型评测、个人选型和使用成本。译文以已 Review 的中文为准，不额外修订事实主张。
 
-所有模块用自己的 `meta.json` 排序。其他语言第一模块的四节译文放入 `model-fundamentals`，第二模块的五节译文放入 `model-training`，保持译文路径与中文原文一致；没有译文的模块不创建空目录。公开 URL 不包含模块目录。各课保留稳定的 `lessonId`、slug 和成就 ID；仅移动模块不需要重定向，也不改变学习记录。首页「马上学习」仍按 `meta.json` 的顺序进入第一课。`tests/fixtures` 中的 `ai-coding` 只用于工程验证，不属于公开课程。
+所有模块用自己的 `meta.json` 排序。其他语言第一模块的四节译文放入 `model-fundamentals`，第二模块的五节译文放入 `model-training`，第三模块的五节译文放入 `ai-applications`，保持译文路径与中文原文一致。公开 URL 不包含模块目录。各课保留稳定的 `lessonId`、slug 和成就 ID；仅移动模块不需要重定向，也不改变学习记录。首页「马上学习」仍按 `meta.json` 的顺序进入第一课。`tests/fixtures` 中的 `ai-coding` 只用于工程验证，不属于公开课程。
+
+03 的译文覆盖正文、旁注、成就、JSON 示例中的自然语言、Mermaid 标签、工具调用标题、引用说明和人物简介。保留工具名、JSON 字段、代码行数、`fold` 范围及课时和成就 ID。`ChatMessageSequence` 与 `NewtonSecondLawDemo` 分别使用 `ChatSequence` 和 `Newton` 字典，包含控件、状态、无障碍标签与无 JavaScript 说明；牛顿演示按语言格式化小数。三幅图示由 Mermaid 源码生成，没有需要重绘的中文栅格插图。人物头像保持共用。中文原稿保持不变。
 
 ### 03 的后续写作方向
 
@@ -380,22 +390,31 @@ LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程
 
 ### Agent 101 的课程边界
 
-Agent 101 是独立中级课程，已在 `content/zh/agent-101/` 发布课程介绍与首页卡片，`level` 为 `intermediate`，中文显示「中级」。课程暂未添加课时，总览使用现有「内容更新中」状态。前置能力是理解模型生成、上下文、工具调用，以及 LLM 101 的最后一课「什么是 Agent？」；不要求学习后训练。建议先完成 Coding 101。
+Agent 101 是独立中级课程，已在 `content/zh/agent-101/` 发布课程介绍、首页卡片和「学前必看」导读模块（1.1「关于这门课」）。总览显示导读课时和开始入口，其余课时尚未发布。前置能力是理解模型生成、上下文、工具调用，以及 LLM 101 的最后一课「什么是 Agent？」；不要求学习后训练。建议先完成 Coding 101。
+
+导读课说明为什么还要学习 Agent、与 LLM 101 和 Coding 101 的区别、能力清单、先修要求、权限边界和课程状态，不声明成就。
 
 建议围绕 ReAct loop、运行状态与停止条件、Coding Agent 的代码阅读与修改、终端工具与 E2E 验证、上下文管理、失败恢复和权限边界展开，以完成可验证的任务为目标。ReAct loop 是推理与行动交替的模式，不是 React 前端框架。MCP 与 Skills 的基础概念留在 LLM 101，在 Agent 101 中讲如何把它们用于持续执行的工作流。
 
 ## Coding 101 的课程结构
 
-Coding 101 以 VibeCodingNav 为贯穿项目，按以下顺序组织六个模块，每个模块包含四篇正文为空的课时文档。标题沿用已确定的大纲，`description` 暂为「内容待补充。」。
+Coding 101 以 VibeCodingNav 为贯穿项目，按以下顺序组织六个项目模块，并在最前面增加「学前必看」导读模块。标题沿用已确定的大纲；目前「学前必看」的 1.1「关于这门课」和「看懂一个网站」的 2.1「前端、后端、数据库分别做什么」已有正文，其余课时仍待补充，`description` 暂为「内容待补充。」。
 
 | 目录 | 模块 |
 | --- | --- |
+| `before-you-start/` | 学前必看 |
 | `web-foundations/` | 看懂一个网站 |
 | `frontend/` | 前端：搭出导航站 |
 | `backend/` | 后端：处理用户请求 |
 | `database/` | 数据库：保存与管理资源 |
 | `delivery/` | 把网站交付出去 |
 | `extensions/` | 拓展：做成自己的产品 |
+
+`before-you-start/about-this-course.mdx` 是 1.1「关于这门课」的导读：说明贯穿项目会做出什么、课程地图、准备事项、学习方法和自查标准，不声明成就。`web-foundations/frontend-backend-and-database.mdx` 是 2.1「前端、后端、数据库分别做什么」的正文：用餐厅分工解释三层职责，用一次搜索请求串起前端、后端和数据库，说明各层的安全和排查边界，并声明成就 `three-layers`。两课都保留稳定的课时 ID 与公开链接。
+
+2.1 在「前端」一节使用独立的 `<FrontendLayersDemo />` 渲染同一页内容的三个阶段：只有 HTML、加上 CSS、再加上 JavaScript。组件无参数、无子内容、无需 import；宽屏三栏从左到右并排，窄屏上下排列，每栏标题下直接给出该阶段的说明。三栏默认都只显示标题和「添加工具」按钮，没有工具卡片；第三栏的按钮可以点击，每点击一次就在按钮下方新增一张工具卡片，三张全部添加后按钮禁用。不发送请求，也不写入学习进度。无 JavaScript 时三栏仍完整静态显示，并提示启用 JavaScript 后按钮才会新增卡片。
+
+Use standalone `<FrontendInspectorDemo />` and `<FrontendInspectorPractice />` blocks, in that order, at the end of the frontend section in lesson 2.1. Both accept no attributes or children. The demo shows Inspect, activating the element picker, hovering and clicking the title, and editing its Elements text. Reading pauses after the key actions let readers follow the subtitles. It holds the finished input for 2.2 seconds before Enter and then keeps the changed title visible. Only play/pause and restart icons remain at the lower right, without step buttons, a visible title, or an explanatory paragraph. Short synchronized subtitles appear inside the animation as centered gray-backed white text. They guide each action, and the confirmation subtitle highlights Enter before the page title changes. It starts once when visible and provides play, pause, and replay. Reduced motion keeps static initial and result views; no JavaScript shows the edited browser as an illustration. The separate practice exposes a real title, keyboard and phone input, reset, and an escaped HTML mirror. Its text remains independent from playback. No color-editing or refresh scene is included. Neither block sends requests or writes learning progress or server content.
 
 原有 JSON、AI API 和动效三篇教程按原顺序保存在 `additional-reading/`，显示为最后一个模块「补充阅读」。正文、稳定 ID、公开链接和成就保持不变。课程根目录只保留 `index.mdx` 和模块排序配置，各模块通过自己的 `meta.json` 声明课时顺序。
 

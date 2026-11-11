@@ -10,7 +10,7 @@ export function useLessonSelection(articleRef: RefObject<HTMLElement | null>, me
 
   useEffect(() => {
     const article = articleRef.current;
-    const pane = article?.closest('[data-slot="lesson-region"]');
+    const pane = article?.closest('[data-lesson-scroll]');
     if (!article || !pane) return;
     const desktop = window.matchMedia('(hover: hover) and (pointer: fine)');
     let current: LessonSelection | null = null;

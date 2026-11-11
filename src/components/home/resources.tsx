@@ -1,7 +1,7 @@
 import { getLocale, getTranslations } from 'next-intl/server';
 import type { Locale } from '@/lib/i18n/config';
 import { localePath } from '@/lib/i18n/routing';
-import { vocabularyCollections } from '@/lib/vocabulary/collections';
+import { vocabularyCollections, vocabularyPagePaths } from '@/lib/vocabulary/collections';
 import { DiskLink, type GalleryItem } from './disk';
 
 export async function getLearningResources(locale: Locale) {
@@ -10,7 +10,7 @@ export async function getLearningResources(locale: Locale) {
     const copy = await getTranslations({ locale, namespace: collection.namespace });
     return {
       id: collection.resourceId, slug: collection.resourceId, title: copy('title'), description: copy('description'),
-      url: localePath(locale, `${collection.path}/${collection.categories[0].id}`), kind: 'resource', group: 'resources', dots: 0,
+      url: localePath(locale, vocabularyPagePaths(collection.id)[0]), kind: 'resource', group: 'resources', dots: 0,
       labels: { level: t('tool'), status: t('termCount', { count: collection.categories.reduce((total, category) => total + category.terms.length, 0) }) },
     };
   }));

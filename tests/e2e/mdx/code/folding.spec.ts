@@ -28,7 +28,9 @@ for (const scenario of [
       await page.goto(lesson);
       if (scenario.javaScriptEnabled) await page.evaluate(() => document.fonts.ready);
       if (scenario.fontSize !== 16) await page.evaluate(size => { document.documentElement.style.fontSize = `${size}px`; }, scenario.fontSize);
-      const block = page.locator('[data-component="code-block"][data-foldable]');
+      const blocks = page.locator('[data-component="code-block"][data-foldable]');
+      await expect(blocks).toHaveCount(2);
+      const block = blocks.first();
       const fold = block.locator('details');
       const trigger = fold.locator('summary');
       const hidden = fold.locator('pre');

@@ -4,10 +4,12 @@ import { localePath } from '../../../src/lib/i18n/routing';
 import { readdirSync } from 'node:fs';
 
 for (const scenario of [
-  { name: 'desktop', width: 1440, javaScriptEnabled: true },
-  { name: 'phone', width: 390, javaScriptEnabled: true },
-  { name: 'narrow phone', width: 320, javaScriptEnabled: true },
-  { name: 'without JavaScript', width: 1440, javaScriptEnabled: false },
+  { name: 'desktop', width: 1440, columns: 4, javaScriptEnabled: true },
+  { name: 'compact desktop', width: 901, columns: 4, javaScriptEnabled: true },
+  { name: 'tablet', width: 900, columns: 3, javaScriptEnabled: true },
+  { name: 'phone', width: 390, columns: 2, javaScriptEnabled: true },
+  { name: 'narrow phone', width: 320, columns: 2, javaScriptEnabled: true },
+  { name: 'without JavaScript', width: 1440, columns: 4, javaScriptEnabled: false },
 ]) {
   test(`homepage hero contains the brand and author action on ${scenario.name}`, async ({ browser, baseURL }, testInfo) => {
     const context = await browser.newContext({ baseURL, javaScriptEnabled: scenario.javaScriptEnabled,
@@ -46,6 +48,28 @@ for (const scenario of [
         expect(metrics.logoTitleGap).toBeGreaterThanOrEqual(8);
         expect(metrics.logoTitleGap).toBeLessThanOrEqual(14);
         expect(metrics.overflow).toBe(false);
+        const grids = await page.locator('[data-slot="course-grid"]').evaluateAll(elements => elements.map(element => ({
+          columns: getComputedStyle(element).gridTemplateColumns.split(' ').length,
+          bounds: element.getBoundingClientRect().toJSON(),
+          cards: [...element.querySelectorAll('.course-disk-link')].map(card => card.getBoundingClientRect().toJSON()),
+        })));
+        for (const grid of grids) {
+          expect(grid.columns).toBe(scenario.columns);
+          expect(grid.cards.filter(card => Math.abs(card.top - grid.cards[0].top) < 1)).toHaveLength(Math.min(scenario.columns, grid.cards.length));
+          expect(grid.cards[0].left).toBeCloseTo(grid.bounds.left, 1);
+          if (grid.cards.length >= scenario.columns) {
+            const row = grid.cards.slice(0, scenario.columns);
+            expect(row.at(-1)!.right).toBeCloseTo(grid.bounds.right, 1);
+            const gap = row[1].left - row[0].right;
+            for (let index = 2; index < row.length; index++) {
+              expect(row[index].left - row[index - 1].right).toBeCloseTo(gap, 1);
+            }
+          }
+          for (const card of grid.cards) {
+            expect(card.left).toBeGreaterThanOrEqual(grid.bounds.left - 1);
+            expect(card.right).toBeLessThanOrEqual(grid.bounds.right + 1);
+          }
+        }
         const logoHeight = (await logo.boundingBox())!.height;
         expect(Number(logoHeight.toFixed(3))).toBeGreaterThanOrEqual(44);
         await expect(header).toHaveCSS('border-bottom-width', '0px');
@@ -56,7 +80,7 @@ for (const scenario of [
           getComputedStyle(disk).borderImageSource.match(/url\(["']?(.*?)["']?\)/)![1]));
         expect(diskArtwork.length).toBeGreaterThan(0);
         expect(diskArtwork.every(url => loadedArtwork.get(url))).toBe(true);
-        await language.click();
+        await language.press('Enter');
         const menu = page.locator('.language-options');
         await expect(menu).toBeVisible();
         const box = (await menu.boundingBox())!;
@@ -64,10 +88,14 @@ for (const scenario of [
         expect(box.x + box.width).toBeLessThanOrEqual(scenario.width);
         expect(box.y).toBeGreaterThanOrEqual(0);
         expect(box.y + box.height).toBeLessThan((await language.boundingBox())!.y);
-        await language.click();
+        await language.press('Enter');
         await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
-        evidence.push({ locale, ...metrics });
-        if (locale === 'zh') await testInfo.attach('Homepage', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
+        evidence.push({ locale, ...metrics, grids });
+        if (locale === 'zh') {
+          const path = testInfo.outputPath('homepage.png');
+          await page.screenshot({ path, fullPage: true });
+          await testInfo.attach('Homepage', { path, contentType: 'image/png' });
+        }
       }
       await testInfo.attach('Hero and footer layout', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
     } finally { await context.close(); }

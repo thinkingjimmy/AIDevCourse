@@ -157,7 +157,7 @@ test('the relocated first lesson keeps language switching and its public URLs', 
   for (const { url, title } of translations) {
     expect((await page.goto(url))?.status()).toBe(200);
     await expect(page.locator('[data-slot="sidebar-container"] [data-sidebar="menu-button"]').first()).toHaveText(`01 ${title}`);
-    await expect(page.locator('[data-slot="sidebar-container"] [data-sidebar="menu-button"]')).toHaveCount(2);
+    await expect(page.locator('[data-slot="sidebar-container"] [data-sidebar="menu-button"]')).toHaveCount(3);
     await expect(page.locator('article h1')).toHaveText(contentDocument(url).data.title);
   }
   await page.goto(`${course}/what-a-language-model-does`);

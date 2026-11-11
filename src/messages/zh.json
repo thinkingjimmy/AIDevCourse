@@ -42,6 +42,11 @@
     "linkPreview": "页面预览",
     "linkPreviewLoading": "正在加载页面预览…",
     "linkPreviewUnavailable": "暂时无法预览，点击链接查看页面。",
+    "sideReading": "侧栏阅读：{title}",
+    "closeReading": "关闭侧栏",
+    "readingLoading": "正在加载课程…",
+    "readingFailed": "页面暂时无法加载，请重试。",
+    "retryReading": "重试",
     "noHeadings": "暂无标题",
     "code": "代码",
     "codeFoldLines": "{count} 行",
@@ -340,5 +345,124 @@
     "zoom": "放大{label}图解",
     "imageTitle": "{label}图解",
     "close": "关闭图解"
+  },
+  "ChatSequence": {
+    "label": "Chat 消息传递的自动时序演示",
+    "actorsLabel": "用户、产品、厂商服务器和模型程序之间的消息时序",
+    "actors": {
+      "user": "用户",
+      "product": "Chat 产品",
+      "server": "厂商服务器",
+      "model": "模型程序"
+    },
+    "modelStates": {
+      "idle": "未调用",
+      "waiting": "等待调用",
+      "running": "运行中",
+      "generated": "已生成回复"
+    },
+    "playStates": {
+      "finished": "演示完成",
+      "paused": "已暂停",
+      "playing": "自动演示中"
+    },
+    "replay": "重新演示",
+    "playAgain": "再次播放",
+    "resume": "继续",
+    "pause": "暂停",
+    "invalidAttempt": "格式不符，服务器拒绝请求",
+    "validAttempt": "按约定格式发送，成功返回回复",
+    "invalidFormat": "格式错误",
+    "validFormat": "格式正确",
+    "inputMessage": "你好，我叫 Jimmy。",
+    "replyMessage": "Jimmy，你好！",
+    "requestLabel": "符合约定结构的 JSON 请求示意",
+    "responseLabel": "服务器返回的 JSON 回复示意",
+    "events": {
+      "input": {
+        "label": "输入消息",
+        "caption": "第一次尝试 · 格式不符",
+        "message": "你好，我叫 Jimmy。"
+      },
+      "raw": {
+        "label": "直接发送文本",
+        "caption": "缺少约定的请求结构",
+        "message": "你好，我叫 Jimmy。"
+      },
+      "reject": {
+        "label": "拒绝：格式不符",
+        "caption": "服务器返回格式错误",
+        "message": "请求未通过格式检查，模型程序没有被调用。"
+      },
+      "error": {
+        "label": "显示错误",
+        "caption": "第一次尝试失败",
+        "message": "产品收到了错误信息，没有生成模型回复。"
+      },
+      "retry": {
+        "label": "再次发送消息",
+        "caption": "第二次尝试 · 按约定格式",
+        "message": "同一句消息：你好，我叫 Jimmy。"
+      },
+      "request": {
+        "label": "按约定格式发送",
+        "caption": "按约定包含 model 与 messages"
+      },
+      "invoke": {
+        "label": "传入消息，调用模型",
+        "caption": "请求格式通过检查",
+        "message": "服务器将消息内容交给模型程序。"
+      },
+      "generate": {
+        "label": "生成回复",
+        "caption": "模型生成回复",
+        "message": "Jimmy，你好！"
+      },
+      "response": {
+        "label": "返回回复（JSON）",
+        "caption": "服务器将 JSON 返回产品"
+      },
+      "display": {
+        "label": "显示回复",
+        "caption": "第二次尝试成功",
+        "message": "Jimmy，你好！"
+      }
+    }
+  },
+  "Newton": {
+    "label": "牛顿第二定律交互演示",
+    "title": "试一试：牛顿第二定律",
+    "reference": "对照：4 N / 2 kg",
+    "yourSettings": "你的设置",
+    "speed": "速度",
+    "formula": "加速度 = 合力 ÷ 质量",
+    "equationExact": "加速度等于 {force} 牛顿除以 {mass} 千克，等于 {acceleration} 米每二次方秒",
+    "equationApproximate": "加速度等于 {force} 牛顿除以 {mass} 千克，约等于 {acceleration} 米每二次方秒",
+    "setup": "同时从静止开始，持续受力 2 秒",
+    "force": "合力 F",
+    "mass": "质量 m",
+    "forceValue": "{force} 牛顿",
+    "massValue": "{mass} 千克",
+    "pause": "暂停",
+    "resume": "继续",
+    "playAgain": "再比一次",
+    "start": "开始对比",
+    "reset": "重置",
+    "insights": {
+      "zero": "合力为 0，加速度为 0。小车从静止开始，所以保持静止。",
+      "initial": "先把合力从 4 N 调到 8 N，看看加速度会怎样变化。",
+      "doubleForce": "合力加倍，质量不变，加速度也加倍。每秒速度增加 4 m/s。",
+      "doubleMass": "质量加倍，合力不变，加速度减半。每秒速度增加 1 m/s。",
+      "sameRatio": "合力与质量同比例变化，加速度和对照相同。每秒速度增加 2 m/s。",
+      "other": "每过 1 秒，速度增加约 {acceleration} m/s。加速度是对照的约 {ratio} 倍。"
+    },
+    "assumptions": "仅比较水平运动，忽略摩擦。两车从静止开始，合力在 2 秒内保持不变。",
+    "status": {
+      "complete": "对比完成。2 秒后，你的小车速度为 {speed} 米每秒，对照为 4 米每秒。",
+      "playing": "两辆小车同时开始运动。",
+      "paused": "对比已暂停。",
+      "ready": "合力 {force} 牛顿，质量 {mass} 千克，加速度 {acceleration} 米每二次方秒。"
+    },
+    "static": "质量不变时，合力加倍，加速度也加倍；合力不变时，质量加倍，加速度减半。启用 JavaScript 后可调节合力和质量，观察两车的运动。"
   }
 }
