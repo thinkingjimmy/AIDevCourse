@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { TrackingCallout } from '../annotations/tracking-callout';
+import { HandwrittenCallout } from '../annotations/handwritten-callout';
 import { DemoFrame, Range, ToggleDemo } from './controls';
 
 export function KerningDemo() {
@@ -26,7 +26,7 @@ export function TrackingDemo() {
         <p style={{ letterSpacing: `${spacing}em` }}>
           <span className="tracking-account-anchor" data-label={account}>
             <span className="tracking-account-label">{account}</span>
-            <TrackingCallout label={t('lookHere')} />
+            <HandwrittenCallout label={t('lookHere')} />
           </span>
         </p>
         <div>{t('profile')}</div><div className="tracking-selected">{t('security')}</div><div>{t('notifications')}</div>
@@ -37,8 +37,10 @@ export function TrackingDemo() {
 
 export function LeadingDemo() {
   const t = useTranslations('Vocabulary');
-  const [leading, setLeading] = useState(1.5);
-  return <DemoFrame controls={<Range label={t('lineHeight')} value={leading} min={1.1} max={2.2} step={0.05} onChange={setLeading} />}>
+  const [adjustedLeading, setAdjustedLeading] = useState<number>();
+  const leading = adjustedLeading ?? 1.5;
+  return <DemoFrame controls={<Range label={t('lineHeight')} value={leading} min={1.1} max={2.2} step={0.05} onChange={setAdjustedLeading}
+    thumbContent={adjustedLeading === undefined && <HandwrittenCallout className="leading-callout" label={t('tryDraggingHere')} />} />}>
     <p className="demo-reading" style={{ lineHeight: leading }}>{t('readingText')}</p>
   </DemoFrame>;
 }

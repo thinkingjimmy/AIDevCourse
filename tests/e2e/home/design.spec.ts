@@ -20,7 +20,7 @@ for (const scenario of [
       const errors: string[] = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.goto('/zh');
-      const courses = page.getByRole('region', { name: '系统课程', exact: true });
+      const courses = page.getByRole('region', { name: '入门', exact: true });
       const card = courses.getByRole('link', { name: '设计 101', exact: true });
       await expect(card).toHaveAttribute('href', course);
       await expect(card.locator('.disk-level')).toHaveText('入门');
@@ -43,6 +43,7 @@ for (const scenario of [
       const start = page.getByRole('link', { name: '开始第一课', exact: true });
       await expect(start).toHaveAttribute('href', lesson);
       await expect(page.locator('.course-disk-cover .disk-title')).toHaveText('设计 101');
+      await expect(page.locator('.course-disk-cover [data-slot="course-update-stamp"]')).toHaveText('更新中');
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       if (scenario.javaScriptEnabled) {
         const accessibility = await new AxeBuilder({ page }).include('main').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();

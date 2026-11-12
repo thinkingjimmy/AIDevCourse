@@ -3,7 +3,7 @@ import { resolve, sep } from 'node:path';
 import { courseCompletionAchievementId, identity, renderedAnchors, type ContentDocument } from './model';
 import { languageNames, type Locale } from '../i18n/config';
 import { localePath, pathLocale, stripLocale } from '../i18n/routing';
-import { vocabularyForPath } from '../vocabulary/collections';
+import { vocabularyCollections, vocabularyForPath } from '../vocabulary/collections';
 import { isProgrammingAnchor } from '../vocabulary/programming';
 
 export function publishDocuments(documents: ContentDocument[], order: Map<Locale, string[]>) {
@@ -79,7 +79,14 @@ export function publishDocuments(documents: ContentDocument[], order: Map<Locale
 
 export function validateReferences(documents: ContentDocument[], publicRoot: string) {
   const byURL = new Map(documents.map((doc) => [doc.url, doc]));
+  const courseIds = new Set(documents.filter(doc => doc.data.kind === 'course').map(doc => `${doc.locale}:${doc.data.courseId}`));
+  const dictionaryIds = new Set<string>(Object.values(vocabularyCollections).map(collection => collection.resourceId));
   for (const doc of documents) {
+    for (const id of doc.resourceDiskIds ?? []) {
+      if (!dictionaryIds.has(id) && !courseIds.has(`${doc.locale}:${id}`)) {
+        throw new Error(`${doc.file}: Unknown ResourceDisks item for ${doc.locale}: ${id}`);
+      }
+    }
     for (const link of doc.links) {
       const fail = (reason: string): never => { throw new Error(`${doc.file}: ${reason}: ${link.url}`); };
       if (/^(https?:|mailto:)/i.test(link.url) && !link.image) continue;

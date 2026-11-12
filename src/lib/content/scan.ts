@@ -52,8 +52,8 @@ export function scanContent(root: string) {
       const slug = isIndex ? [] : parts.slice(2);
       const publicSlug = isIndex ? '' : slug[slug.length - 1];
       const url = localePath(locale, `/courses/${parts[1]}${publicSlug ? `/${publicSlug}` : ''}`);
-      const { headings, links, achievements, hasJimmyNotes } = inspectMarkdown(parsed.content, file, (parsed.matter.match(/\n/g) ?? []).length);
-      documents.push({ file: relativePath(root, file), locale, courseSlug: parts[1], slug, url, data, body: parsed.content, headings, links, achievements, hasJimmyNotes, sourceUrl: '' });
+      const { headings, links, achievements, hasJimmyNotes, resourceDiskIds } = inspectMarkdown(parsed.content, file, (parsed.matter.match(/\n/g) ?? []).length);
+      documents.push({ file: relativePath(root, file), locale, courseSlug: parts[1], slug, url, data, body: parsed.content, headings, links, achievements, hasJimmyNotes, resourceDiskIds, sourceUrl: '' });
     }
     for (const page of meta.pages) {
       const entry = byName.get(page)!;

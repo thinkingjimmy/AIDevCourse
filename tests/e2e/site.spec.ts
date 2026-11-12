@@ -269,7 +269,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
       const action = page.locator('[data-slot="hero-primary-action"]');
       const first = courses.find(course => course.section === 'introduction' && course.lessons.length) ?? courses.find(course => course.id === 'llm-101')!;
       await expect(action).toHaveAttribute('href', first.url);
-      await expect(page.locator('.gallery-copy p')).toHaveText(messages.Home.heroIntro);
+      await expect(page.locator('.gallery-copy p')).toHaveCount(0);
       const title = (await page.locator('h1').boundingBox())!;
       const art = (await page.locator('[data-slot="home-macintosh"]').boundingBox())!;
       expect(art.x).toBeGreaterThan(title.x + title.width);

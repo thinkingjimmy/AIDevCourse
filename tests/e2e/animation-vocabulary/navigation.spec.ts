@@ -27,7 +27,8 @@ test('animation and design dictionaries are sibling resources on the homepage an
   await expect(page.locator('.vocabulary-term')).toHaveCount(6);
   await testInfo.attach('Animation dictionary desktop', { body: await page.screenshot(), contentType: 'image/png' });
   await page.locator('.site-header-logo').click();
-  await expect(page).toHaveURL('/zh');
+  await expect(page).toHaveURL('/zh?view=resources');
+  await expect(resources).toBeVisible();
   await page.goto('/zh/courses/getting-started/about-this-course');
   const lessonResources = page.locator('[data-component="resource-disks"]');
   await expect(lessonResources.getByRole('link', { name: '设计词典', exact: true })).toHaveCount(1);

@@ -7,13 +7,17 @@ import { cn } from '@/lib/utils';
 type WebsitePreviewProps = Omit<ComponentProps<'figure'>, 'title'> & {
   url: string;
   title: string;
+  height?: 'auto';
   children: ReactNode;
 };
 
-export function WebsitePreview({ url, title, children, className, ...props }: WebsitePreviewProps) {
+export function WebsitePreview({ url, title, height, children, className, ...props }: WebsitePreviewProps) {
   const t = useTranslations('Ui');
   const address = new URL(url);
   const label = `${title} ${t('opensInNewTab')}`;
+  const viewportHeight = height === 'auto'
+    ? 'max-h-[260px] @[36rem]/website-preview:max-h-[400px]'
+    : 'h-[260px] @[36rem]/website-preview:h-[400px]';
   return <figure {...props} data-component="website-preview"
     className={cn('not-prose @container/website-preview my-8 min-w-0 overflow-hidden rounded-sm border border-brand/35 bg-background text-foreground hover:border-brand/70', className)}>
     <a data-slot="website-toolbar" href={url} target="_blank" rel="noopener noreferrer" data-reading-standalone=""
@@ -31,7 +35,7 @@ export function WebsitePreview({ url, title, children, className, ...props }: We
       <ArrowUpRightIcon size={16} aria-hidden className="shrink-0 text-brand" />
     </a>
     <div data-slot="website-viewport" role="region" aria-label={title} tabIndex={0}
-      className="h-[260px] overflow-x-hidden overflow-y-auto overscroll-y-contain focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand @[36rem]/website-preview:h-[400px]">
+      className={cn('overflow-x-hidden overflow-y-auto overscroll-y-contain focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand', viewportHeight)}>
       <a data-slot="website-link" href={url} target="_blank" rel="noopener noreferrer" data-reading-standalone=""
         aria-label={label} className="block min-w-0 touch-manipulation no-underline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand">
         <div className="[&_p]:m-0 [&_img]:m-0 [&_img]:block [&_img]:h-auto [&_img]:w-full [&_img]:rounded-none">{children}</div>

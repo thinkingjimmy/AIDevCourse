@@ -29,8 +29,8 @@ for (const scenario of [
       await expect(homeDisk).toHaveAccessibleName('设计词典');
       const home = await homeDisk.evaluate(element => ({
         title: element.querySelector('.optical-disc-title')!.textContent,
-        meta: element.querySelector('.optical-disc-meta')!.textContent,
         description: document.getElementById(element.getAttribute('aria-describedby')!)!.textContent,
+        artwork: getComputedStyle(element.querySelector('.optical-disc-print')!).backgroundImage,
       }));
       await page.goto(lesson);
       if (scenario.size !== 16) await page.evaluate(size => { document.documentElement.style.fontSize = `${size}px`; }, scenario.size);
@@ -40,18 +40,25 @@ for (const scenario of [
       const disk = resources.getByRole('link', { name: '设计词典', exact: true });
       await expect(disk).toHaveAttribute('href', destination);
       await expect(disk).toHaveAccessibleDescription(home.description!);
-      await expect(disk.locator('.disk-title')).toHaveText(home.title!);
-      await expect(disk.locator('.disk-meta')).toHaveText(`工具${home.meta}`);
-      await expect(disk.locator('.course-disk')).toHaveCSS('border-image-source', /disks\/amber\.svg/);
-      expect(await resources.getByRole('listitem').count()).toBeGreaterThanOrEqual(1);
+      await expect(disk.locator('.optical-disc-title')).toHaveText(home.title!);
+      await expect(resources.locator('.optical-disc-meta')).toHaveCount(0);
+      expect(home.artwork).toContain('/images/home/discs/labels.avif');
+      await expect(disk.locator('.optical-disc-print')).toHaveCSS('background-image', home.artwork);
+      await expect(resources.getByRole('listitem')).toHaveCount(3);
       await resources.scrollIntoViewIfNeeded();
       const geometry = await resources.evaluate(element => {
         const frame = element.getBoundingClientRect();
-        const disk = element.querySelector('a')!.getBoundingClientRect();
-        return { left: disk.left, right: disk.right, containerLeft: frame.left, containerRight: frame.right };
+        const cards = Array.from(element.querySelectorAll('a'), link => {
+          const { left, right, top } = link.getBoundingClientRect();
+          return { left, right, top };
+        });
+        return { left: frame.left, right: frame.right, cards };
       });
-      expect(geometry.left).toBeGreaterThanOrEqual(geometry.containerLeft);
-      expect(geometry.right).toBeLessThanOrEqual(geometry.containerRight);
+      for (const card of geometry.cards) {
+        expect(card.left).toBeGreaterThanOrEqual(geometry.left);
+        expect(card.right).toBeLessThanOrEqual(geometry.right);
+      }
+      if (scenario.width === 320) expect(geometry.cards[1].top).toBe(geometry.cards[0].top);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       if (scenario.javaScriptEnabled) {
         const accessibility = await new AxeBuilder({ page }).include('[data-component="resource-disks"]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
@@ -69,51 +76,66 @@ for (const scenario of [
   });
 }
 
-test('resource disks wrap additional cards inside the article at narrow widths', async ({ page }, testInfo) => {
+test('configured resources match the homepage card styles and wrap in order', async ({ page }, testInfo) => {
   const evidence = [];
+  await page.goto('/zh');
+  const homeCourse = page.locator('[data-slot="course-grid"]').getByRole('link', { name: 'LLM 101', exact: true });
+  const home = await homeCourse.evaluate(element => ({
+    href: element.getAttribute('href')!,
+    meta: element.querySelector('.disk-meta')!.textContent!,
+    artwork: getComputedStyle(element.querySelector('[data-slot="course-disk"]')!).borderImageSource,
+  }));
+  expect(home.artwork).toContain('/images/home/disks/forest.svg');
+  await page.goto('/design/components#resource-disks');
+  const resources = page.locator('#resource-disks [data-component="resource-disks"]');
+  const links = resources.getByRole('link');
+  const course = links.first();
+  await expect(links).toHaveCount(3);
+  await expect(course).toHaveAccessibleName('LLM 101');
+  await expect(course).toHaveAttribute('href', home.href);
+  await expect(course.locator('.disk-meta')).toHaveText(home.meta);
+  await expect(course.locator('[data-slot="course-disk"]')).toHaveCSS('border-image-source', home.artwork);
+  await expect(links.nth(1)).toHaveAccessibleName('设计词典');
+  await expect(links.nth(1)).toHaveAttribute('href', destination);
+  await expect(links.nth(2)).toHaveAttribute('href', '/zh/programming-vocabulary/static-website');
+  await expect(resources.locator('[data-slot="optical-disc"]')).toHaveCount(2);
+  await expect(resources.getByText('1 词条', { exact: true })).toHaveCount(0);
   for (const width of [1440, 961, 390, 320]) {
     await page.setViewportSize({ width, height: 960 });
-    await page.goto(lesson);
-    const resources = page.locator('[data-component="resource-disks"]');
-    await page.waitForLoadState('networkidle');
-    await expect.poll(() => resources.evaluate(element => Object.keys(element).some(key => key.startsWith('__reactFiber')))).toBe(true);
-    await resources.evaluate(element => {
-      const item = element.querySelector('[data-resource-disk="vocabulary"]')!.closest('li')!.cloneNode(true);
-      element.replaceChildren(item);
-      for (let index = 0; index < 4; index++) {
-        const clone = item.cloneNode(true) as HTMLElement;
-        for (const child of clone.querySelectorAll('[id]')) child.id += `-layout-${index}`;
-        for (const attribute of ['aria-labelledby', 'aria-describedby']) {
-          const link = clone.querySelector('a')!;
-          link.setAttribute(attribute, `${link.getAttribute(attribute)}-layout-${index}`);
-        }
-        element.append(clone);
-      }
-    });
     await resources.scrollIntoViewIfNeeded();
     const geometry = await resources.evaluate(element => {
       const bounds = element.getBoundingClientRect();
-      const cards = [...element.querySelectorAll(':scope > li')].map(item => {
+      const cards = [...element.querySelectorAll(':scope > li > a')].map(item => {
         const { left, right, top, bottom } = item.getBoundingClientRect();
         return { left, right, top, bottom };
       });
       return { left: bounds.left, right: bounds.right, cards };
     });
-    expect(geometry.cards).toHaveLength(5);
-    expect(new Set(geometry.cards.map(card => card.top)).size).toBeGreaterThan(1);
+    const [first, second, third] = geometry.cards;
+    const centerY = (card: { top: number; bottom: number }) => (card.top + card.bottom) / 2;
+    expect(centerY(second)).toBeCloseTo(centerY(first), 0);
+    if (width <= 390) {
+      expect(third.top).toBeGreaterThan(Math.max(first.bottom, second.bottom));
+    } else {
+      expect(centerY(third)).toBeCloseTo(centerY(first), 0);
+    }
     for (const card of geometry.cards) {
       expect(card.left).toBeGreaterThanOrEqual(geometry.left);
       expect(card.right).toBeLessThanOrEqual(geometry.right);
     }
     for (let index = 1; index < geometry.cards.length; index++) {
       const current = geometry.cards[index], previous = geometry.cards[index - 1];
-      expect(current.top > previous.top || current.left >= previous.right).toBe(true);
+      expect(current.top >= previous.bottom || current.left >= previous.right).toBe(true);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await testInfo.attach(`Wrapping disks at ${width}px`, { body: await resources.screenshot({ animations: 'disabled' }), contentType: 'image/png' });
+    await testInfo.attach(`Mixed resource cards at ${width}px`, { body: await resources.screenshot({ animations: 'disabled' }), contentType: 'image/png' });
     evidence.push({ width, ...geometry });
   }
-  await testInfo.attach('Additional-card layout', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
+  await testInfo.attach('Configured resource layout', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
+  await course.focus();
+  await course.press('Enter');
+  await expect(page).toHaveURL('/zh/courses/llm-101');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('LLM 101');
 });
 
 test('the shared homepage resource catalog keeps localized labels and destinations', async ({ page }, testInfo) => {

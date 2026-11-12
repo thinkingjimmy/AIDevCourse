@@ -83,6 +83,27 @@ for (const action of ['back', 'reduce motion'] as const) {
   });
 }
 
+test('the blog home link returns through the PlayStation television screen', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/zh/courses/blog');
+  const freeze = await page.addStyleTag({ content: pauseCamera });
+  await page.getByRole('banner').locator('.site-header-logo').click();
+  await page.waitForFunction(() => document.documentElement.dataset.courseZoom === 'out'
+    && document.getAnimations().some(animation => animation instanceof CSSAnimation && animation.animationName === 'enter-course-window'));
+  await expect(page).toHaveURL('/zh?view=resources');
+  const bounds = (await page.locator('[data-slot="playstation-screen"]').boundingBox())!;
+  const end = await cameraFrame(page, 1);
+  expect(end.course.x + end.aperture.x * end.course.scaleX).toBeCloseTo(bounds.x, 0);
+  expect(end.course.y + end.aperture.y * end.course.scaleY).toBeCloseTo(bounds.y, 0);
+  expect(end.aperture.width * end.course.scaleX).toBeCloseTo(bounds.width, 0);
+  expect(end.aperture.height * end.course.scaleY).toBeCloseTo(bounds.height, 0);
+  await freeze.evaluate(style => style.parentNode?.removeChild(style));
+  await expect(page.locator('html')).not.toHaveAttribute('data-course-zoom');
+  await expect(page.getByRole('region', { name: '学习资料', exact: true })).toBeVisible();
+  await testInfo.attach('PlayStation return camera', { body: JSON.stringify({ bounds, end }), contentType: 'application/json' });
+});
+
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
   test(`the home button returns a direct course visit to the Mac screen at ${viewport.width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize(viewport);

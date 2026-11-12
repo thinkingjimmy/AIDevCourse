@@ -82,7 +82,11 @@ test('all 21 examples change their typography through accessible controls', asyn
 
   await setRange(card('tracking'), 'End');
   await expect(card('tracking').locator('.tracking-menu p').first()).toHaveCSS('letter-spacing', '2.4px');
+  const leadingHint = card('leading').getByText('试试拖动这里', { exact: true });
+  await expect(leadingHint).toBeVisible();
+  await testInfo.attach('Line height slider hint', { body: await card('leading').screenshot(), contentType: 'image/png' });
   await setRange(card('leading'), 'Home');
+  await expect(leadingHint).toHaveCount(0);
   const tight = await measure(card('leading').locator('.demo-reading'), 'height');
   await setRange(card('leading'), 'End');
   await expect.poll(() => measure(card('leading').locator('.demo-reading'), 'height')).toBeGreaterThan(tight);

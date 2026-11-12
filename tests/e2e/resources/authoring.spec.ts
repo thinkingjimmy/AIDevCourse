@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-test('resource disk authoring accepts standalone catalogs and rejects configuration in MDX', async ({ browserName }, testInfo) => {
+test('resource disk authoring accepts ordered catalog IDs and rejects invalid MDX', async ({ browserName }, testInfo) => {
   test.skip(browserName !== 'chromium', 'The authoring CLI has no browser-specific behavior.');
   const root = mkdtempSync(join(tmpdir(), 'aidevcourse-resource-authoring-'));
   try {
@@ -15,10 +15,15 @@ test('resource disk authoring accepts standalone catalogs and rejects configurat
     const original = readFileSync(file, 'utf8');
     const examples = [
       { name: 'standalone resources', body: '\n<ResourceDisks />\n', valid: true },
-      { name: 'multiple resource sections', body: '\n<ResourceDisks />\n\n<ResourceDisks />\n', valid: true },
+      { name: 'selected course and dictionary', body: '\n<ResourceDisks items="ai-coding, vocabulary" />\n', valid: true },
+      { name: 'multiple resource sections', body: '\n<ResourceDisks />\n\n<ResourceDisks items="vocabulary" />\n', valid: true },
       { name: 'literal example', body: '\n```mdx\n<ResourceDisks items="example" />\n```\n', valid: true },
       { name: 'inline resources', body: '\nRead <ResourceDisks /> here.\n', valid: false, error: 'must be a standalone block' },
-      { name: 'custom attributes', body: '\n<ResourceDisks items="example" />\n', valid: false, error: 'does not accept attributes' },
+      { name: 'unknown attribute', body: '\n<ResourceDisks title="Example" />\n', valid: false, error: 'Unsupported attribute' },
+      { name: 'expression', body: '\n<ResourceDisks items={["ai-coding"]} />\n', valid: false, error: 'use static strings' },
+      { name: 'empty item', body: '\n<ResourceDisks items="ai-coding, " />\n', valid: false, error: 'comma-separated list of IDs' },
+      { name: 'duplicate item', body: '\n<ResourceDisks items="vocabulary, vocabulary" />\n', valid: false, error: 'duplicate IDs' },
+      { name: 'unknown item', body: '\n<ResourceDisks items="missing-course" />\n', valid: false, error: 'Unknown ResourceDisks item for en: missing-course' },
       { name: 'custom children', body: '\n<ResourceDisks>\nCustom text\n</ResourceDisks>\n', valid: false, error: 'does not accept children' },
     ];
     const evidence = [];

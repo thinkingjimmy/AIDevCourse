@@ -17,7 +17,7 @@ export function NoteAuthor() {
       <Image src={author.avatar} alt="" width={32} height={32} sizes="2rem" className="size-8 shrink-0 rounded-sm object-cover ring-1 ring-brand/20" />
       <div className="min-w-0">
         <span className="block text-sm leading-copy font-medium text-brand" lang="en">{author.name}</span>
-        <span className="block text-xs leading-copy text-brand/80">{t('articleRole')}</span>
+        <span className="block text-xs leading-copy text-brand/90">{t('articleRole')}</span>
       </div>
     </div>
     <div data-slot="note-author-actions" className="flex shrink-0 items-center">

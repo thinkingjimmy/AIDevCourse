@@ -3,12 +3,12 @@ import { catalog, courses, llm, last, completionKey, rewardKey, celebration, bur
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published course inventory.');
 
-test('all four learning courses have one completion medal, including empty courses', async ({ page }, testInfo) => {
+test('all five learning courses have one completion medal, including empty courses', async ({ page }, testInfo) => {
   await page.goto(last.url);
   const gallery = await openGallery(page);
   const medals = gallery.locator('[data-medal="course-completion"]');
-  await expect(medals).toHaveCount(4);
-  for (const id of ['llm-101', 'coding-101', 'design-101', 'agent-101']) {
+  await expect(medals).toHaveCount(5);
+  for (const id of ['llm-101', 'coding-101', 'design-101', 'deepseek-101', 'agent-101']) {
     const course = catalog.courses.find((course) => course.locale === 'zh' && course.id === id)!;
     const medal = medals.filter({ has: page.locator(`a[href="${course.url}"]`) });
     await expect(medal).toHaveAttribute('data-earned', 'false');
@@ -17,7 +17,7 @@ test('all four learning courses have one completion medal, including empty cours
     expect(await page.evaluate((key) => localStorage.getItem(key), rewardKey(id))).toBeNull();
   }
   await expect(gallery.locator('[data-medal-course="ai-coding"][data-medal="course-completion"]')).toHaveCount(0);
-  await capture(page, testInfo, 'four-course-completion-medals');
+  await capture(page, testInfo, 'five-course-completion-medals');
 });
 
 for (const id of ['llm-101', 'coding-101']) {

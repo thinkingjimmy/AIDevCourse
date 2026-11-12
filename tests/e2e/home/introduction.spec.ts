@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { readCatalog } from '../../../src/lib/content/manifest';
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published introduction course.');
 const title = '从想法到作品';
@@ -25,14 +24,27 @@ for (const scenario of [
       const errors: string[] = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.goto('/zh');
-      const courses = page.getByRole('region', { name: '系统课程', exact: true });
-      const card = courses.getByRole('link', { name: title, exact: true });
+      const catalog = page.locator('#catalog');
+      const beginner = catalog.getByRole('region', { name: '入门', exact: true });
+      const intermediate = catalog.getByRole('region', { name: '中级', exact: true });
+      const card = beginner.getByRole('link', { name: title, exact: true });
       await expect(card).toHaveAttribute('href', url);
       await expect(card.locator('.disk-meta')).toHaveText('起步6 课');
       await expect(page.locator('[data-slot="hero-primary-action"]')).toHaveAttribute('href', url);
-      await expect(courses.getByRole('heading', { level: 3 }).first()).toHaveText(title);
-      const published = readCatalog().courses.filter(course => course.locale === 'zh' && course.id !== 'musings');
-      await expect(courses.getByRole('heading', { level: 3 })).toHaveText(published.slice(0, 9).map(course => course.title));
+      await expect(catalog.getByRole('heading', { level: 2 })).toHaveText(['入门', '中级']);
+      await expect(beginner.getByRole('heading', { level: 3 })).toHaveText([title, 'LLM 101', 'DeepSeek 101', '设计 101']);
+      await expect(intermediate.getByRole('heading', { level: 3 })).toHaveText(['Coding 101', 'Agent 101']);
+      await expect(intermediate.getByRole('link', { name: 'Coding 101', exact: true }).locator('.disk-level')).toHaveText('中级');
+      await expect(catalog.locator('[data-slot="course-update-stamp"]')).toHaveCount(3);
+      for (const name of ['设计 101', 'Coding 101', 'Agent 101']) {
+        const updatingCourse = catalog.getByRole('link', { name, exact: true });
+        const stamp = updatingCourse.locator('[data-slot="course-update-stamp"]');
+        await expect(stamp).toHaveText('更新中');
+        await expect(stamp).toHaveCSS('border-top-style', 'double');
+        await expect(stamp).not.toHaveCSS('transform', 'none');
+        await expect(updatingCourse).toHaveAccessibleDescription(/更新中$/);
+      }
+      await testInfo.attach('Homepage course categories', { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
       if (scenario.javaScriptEnabled) expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations).toEqual([]);
       await card.focus(); await card.press('Enter');
       await expect(page).toHaveURL(url);

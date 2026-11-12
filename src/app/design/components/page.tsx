@@ -11,6 +11,7 @@ import Highlights from './highlights.mdx';
 import MathExamples from './math/examples.mdx';
 import MermaidExamples from './mermaid/examples.mdx';
 import Links from './links.mdx';
+import ResourceExamples from './resources/examples.mdx';
 import Takeaways from './takeaways.mdx';
 import CodeExamples from './code/examples.mdx';
 import Embeds from './embeds/examples.mdx';
@@ -69,6 +70,10 @@ export default async function ComponentPreview({ searchParams }: { searchParams:
       <section id="link-previews" className="mt-10 border-t border-border pt-6">
         <h2 className="m-0 mb-3 text-2xl font-semibold">链接预览</h2>
         <div className="course-prose prose" lang="zh-CN"><Links components={getMDXComponents()} /></div>
+      </section>
+      <section id="resource-disks" className="mt-10 border-t border-border pt-6">
+        <h2 className="m-0 mb-3 text-2xl font-semibold">资源卡片</h2>
+        <div className="course-prose prose"><ResourceExamples components={getMDXComponents()} /></div>
       </section>
       <section id="tables" className="mt-10 border-t border-border pt-6">
         <h2 className="m-0 mb-3 text-2xl font-semibold">表格</h2>

@@ -1,6 +1,6 @@
 # Vocabulary handwriting
 
-`tracking-handwriting.woff2` is a local subset of [Xiaolai Regular v3.126](https://github.com/lxgw/kose-font/releases/tag/v3.126), distributed under the included SIL Open Font License. It covers the `lookHere` annotation in all supported vocabulary languages.
+`tracking-handwriting.woff2` is a local subset of [Xiaolai Regular v3.126](https://github.com/lxgw/kose-font/releases/tag/v3.126), distributed under the included SIL Open Font License. It covers the `lookHere` and `tryDraggingHere` annotations in all supported vocabulary languages.
 
 Rebuild from the repository root after changing the annotation copy:
 

@@ -1,7 +1,17 @@
 import { defaultLocale, isLocale, type Locale } from './config';
 
+export type HomeView = 'courses' | 'resources';
+
 export function localePath(locale: Locale, path = '/') {
   return locale === defaultLocale ? path : `/${locale}${path === '/' ? '' : path}`;
+}
+
+export function homePath(locale: Locale, view: HomeView, page = 1) {
+  const params = new URLSearchParams();
+  if (view === 'resources') params.set('view', 'resources');
+  if (page > 1) params.set('page', String(page));
+  const query = params.toString();
+  return `${localePath(locale)}${query ? `?${query}` : ''}`;
 }
 
 export function pathLocale(path: string): Locale {

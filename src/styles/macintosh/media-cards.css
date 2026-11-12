@@ -1,0 +1,119 @@
+@reference 'tailwindcss/theme.css';
+@reference '../tokens.css';
+
+@theme inline {
+  --leading-stamp: 1.1;
+}
+
+@layer components {
+  .resource-disks { --resource-card-gap: 1rem; align-items: center; gap: 1.5rem var(--resource-card-gap); }
+  .resource-disks > li { max-width: min(100%, max(120px, (100% - var(--resource-card-gap)) / 2)); }
+  .resource-disks > li:has(.optical-disc-link) { width: 166px; }
+
+  .course-disk-link, .course-disk-cover { position: relative; display: flex; width: 176px; min-height: 188px; color: #294735; text-decoration: none; }
+  .course-disk-link { max-width: 100%; border-radius: 2px; scroll-margin-block: 12px; cursor: pointer; }
+  /* Nine-slice artwork lets the paper grow with text while the shutter and corners retain their proportions. */
+  .course-disk { position: relative; display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: inherit; border: solid transparent; border-width: 76px 14px 20px; border-image-source: var(--disk-artwork); border-image-slice: 38 7 10 fill; border-image-repeat: stretch; image-rendering: pixelated; transform-origin: center top; transition: transform 180ms cubic-bezier(.2,.8,.2,1); }
+  .disk-label { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; padding: 4px 4px 3px; }
+  .disk-label-header { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 4px; }
+  .disk-brand { @apply font-mono text-diagram-caption leading-copy; color: #4b5948; }
+  .disk-update-stamp {
+    @apply text-xs/stamp font-semibold tracking-wide;
+    margin-inline-start: auto;
+    padding: 1px 3px;
+    border: 3px double currentColor;
+    color: oklch(.444 .131 31);
+    white-space: nowrap;
+    transform: rotate(-8deg);
+  }
+  .disk-title { @apply font-pixel text-lg leading-heading font-normal; display: block; margin: 5px 0 8px; text-wrap: balance; overflow-wrap: anywhere; }
+  .disk-meta { @apply text-diagram-label leading-copy; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2px 6px; margin-top: auto; padding-top: 4px; border-top: 1px solid #a5ad99; color: #465442; }
+  .disk-level { display: inline-flex; align-items: center; gap: 4px; }
+  .disk-dots { display: inline-flex; gap: 2px; }
+  .disk-dots:empty { display: none; }
+  .disk-dots i { width: 3px; height: 3px; background: currentColor; }
+  .disk-level[data-level=intermediate] { color: #805e2f; }
+
+  .optical-disc-link {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    scroll-margin-block: 12px;
+  }
+  .optical-disc {
+    position: relative;
+    container-type: inline-size;
+    width: min(100%, 166px);
+    aspect-ratio: 1;
+    filter: drop-shadow(0 1px 1.5px #15274338);
+    transition: transform 170ms cubic-bezier(.25,.68,.26,1);
+  }
+  .optical-disc-surface {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle closest-side at center, transparent 12%, #a3b1c5 12.6%, #f0f5fc 13.6%,
+        #8e9db5 14.4%, #a9b9cf 15.3%, #e3ecf9 16.1%, #91a3be 17.1%, #c4d2e5 18.3%, transparent 19.8%),
+      conic-gradient(from -22deg, #a4b2c9, #e7eef7 12%, #c5cce1 24%, #9db7c9 34%, #f2ebfa 45%,
+        #9d9fad 56%, #c2d3df 70%, #edf4fa 83%, #8798af 94%, #a4b2c9);
+    box-shadow: inset 0 0 0 .65px #4c5774aa;
+    mask-image: radial-gradient(circle closest-side at center, transparent calc(12.5% - .45px), black calc(12.5% + .15px));
+  }
+  .optical-disc-print {
+    position: absolute;
+    inset: 1.8%;
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--disc-print,
+      repeating-radial-gradient(circle, transparent 0 9px, #f1f7ff24 10px, transparent 11px),
+      conic-gradient(from -22deg, #eff5ff00, #eff5ff59 16%, #eff5ff00 34%, #eff5ff5c 47%, #eff5ff00 60%, #eff5ff7a 79%, #eff5ff00)
+      var(--disc-print-color));
+    box-shadow: inset 0 0 0 1px #e2efff5c;
+    mask-image: radial-gradient(circle closest-side at center, transparent 0 20%, black 20.8%);
+    image-rendering: pixelated;
+  }
+  .optical-disc-label {
+    position: absolute;
+    inset: 66% 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 0 8% 2%;
+    border-top: 1px solid #f1f7ff62;
+    background: color-mix(in srgb, var(--disc-print-color) 94%, transparent);
+    color: #f9fcff;
+    text-align: center;
+  }
+  .optical-disc-title { @apply m-0 font-pixel text-disc-title font-medium; text-wrap: balance; }
+  .optical-disc-brand { @apply font-mono text-disc-brand leading-none; color: #eff5ffbd; }
+  .optical-disc-meta { @apply text-xs text-muted-foreground; }
+
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .course-disk-link:hover .course-disk { transform: translateY(-6px) rotate(-2deg); }
+    .optical-disc-link:hover .optical-disc { transform: translateY(-4px); }
+  }
+  .course-disk-link:focus-visible .course-disk { transform: translateY(-4px); }
+  @media (max-width: 721px) {
+    .course-disk-link, .course-disk-cover { width: 148px; min-height: 164px; }
+    .course-disk { border-width: 64px 12px 17px; }
+    .disk-label { padding: 3px 3px 2px; }
+    .disk-label-header { column-gap: 1px; }
+    .disk-update-stamp { @apply text-diagram-label/stamp; padding-inline: 2px; }
+    .disk-title { @apply text-base leading-heading; margin: 4px 0 6px; }
+    .disk-meta { @apply text-diagram-caption leading-copy; }
+  }
+  @media (max-width: 359px) {
+    .course-disk-link, .course-disk-cover { width: 136px; min-height: 158px; }
+    .course-disk { border-width: 59px 11px 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .course-disk-link .course-disk { transform: none !important; transition: none; } }
+}

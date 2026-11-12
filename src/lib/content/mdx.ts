@@ -13,6 +13,7 @@ import type { AchievementDefinition, ContentDocument } from './model';
 import { parseXUrl, parseYouTubeUrl } from '../embeds/urls';
 import { isEmbedOnlyNote } from './note-numbers';
 import { validateCodeFolds } from './code-folds';
+import { parseResourceDiskIds } from './resource-disks';
 export const supportedComponents = ['Callout', 'JimmyNote', 'JimmyNoteAnchor', 'KeyTakeaway', 'ResourceDisks', 'Chat', 'ChatMessage', 'ChatThinking', 'ChatToolCall', 'InlineCitation', 'ChatMessageSequence', 'XEmbed', 'YouTube', 'WebsitePreview', 'XProfile', 'XProfiles', 'Steps', 'Step', 'LLMGenerationDemo', 'MenuComparisonDemo', 'NewtonSecondLawDemo', 'AnimationDemo', 'FrontendLayersDemo', 'FrontendInspectorDemo', 'FrontendInspectorPractice', 'TokenizationDiagram', 'TokenProbabilityDiagram', 'LLMPretrainingOverview', 'LLMSingleRoundTrainingDemo', 'LLMMultiRoundTrainingDemo', 'Achievement', 'AchievementOption'] as const;
 type Element = {
   name: string; attributes: { type: string; name: string; value: unknown }[];
@@ -29,6 +30,7 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
   const headings: ContentDocument['headings'] = [];
   const links: ContentDocument['links'] = [];
   const achievements: AchievementDefinition[] = [];
+  const resourceDiskIds = new Set<string>();
   const noteAnchors = new Set<string>();
   const notes = new Set<string>();
   const options = new Set<unknown>();
@@ -64,7 +66,7 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
         if (element.children.some((child) => child.type !== 'text' || child.value?.trim())) fail('AnimationDemo does not accept children');
         if (element.attributes.length !== 1 || element.attributes[0].name !== 'type' || !['stagger', 'spring', 'skeleton', 'count-up', 'typewriter', 'marquee'].includes(element.attributes[0].value as string)) fail('AnimationDemo requires one static type: stagger, spring, skeleton, count-up, typewriter, or marquee');
       }
-      if (['ResourceDisks', 'ChatMessageSequence', 'LLMPretrainingOverview', 'LLMSingleRoundTrainingDemo', 'LLMMultiRoundTrainingDemo', 'TokenProbabilityDiagram', 'NewtonSecondLawDemo', 'FrontendLayersDemo', 'FrontendInspectorDemo', 'FrontendInspectorPractice'].includes(element.name)) {
+      if (['ChatMessageSequence', 'LLMPretrainingOverview', 'LLMSingleRoundTrainingDemo', 'LLMMultiRoundTrainingDemo', 'TokenProbabilityDiagram', 'NewtonSecondLawDemo', 'FrontendLayersDemo', 'FrontendInspectorDemo', 'FrontendInspectorPractice'].includes(element.name)) {
         if (element.attributes.length) fail(`${element.name} does not accept attributes`);
         if (node.type !== 'mdxJsxFlowElement') fail(`${element.name} must be a standalone block`);
         if (element.children.some((child) => child.type !== 'text' || child.value?.trim())) fail(`${element.name} does not accept children`);
@@ -99,7 +101,8 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
         if (!toString(node).trim()) fail(element.name === 'ChatThinking' ? 'ChatThinking requires reasoning content' : 'ChatToolCall requires content');
       }
       const embed = element.name === 'XEmbed' || element.name === 'YouTube';
-      const allowed: readonly string[] = embed || element.name === 'WebsitePreview' ? ['url', 'title'] : element.name === 'XProfile' ? ['username', 'name', 'avatar', 'bio'] : element.name === 'JimmyNoteAnchor' ? ['id', 'variant'] : element.name === 'JimmyNote' ? ['anchor'] : element.name === 'Achievement' ? achievementFields : element.name === 'AchievementOption' ? ['value'] : element.name === 'ChatMessage' ? ['from', 'state'] : element.name === 'ChatToolCall' ? ['name', 'title', 'defaultOpen'] : element.name === 'ChatThinking' ? ['defaultOpen'] : element.name === 'InlineCitation' ? ['url', 'title', 'description'] : ['title', 'type'];
+      const allowed: readonly string[] = element.name === 'WebsitePreview' ? ['url', 'title', 'height']
+        : embed ? ['url', 'title'] : element.name === 'XProfile' ? ['username', 'name', 'avatar', 'bio'] : element.name === 'JimmyNoteAnchor' ? ['id', 'variant'] : element.name === 'JimmyNote' ? ['anchor'] : element.name === 'Achievement' ? achievementFields : element.name === 'AchievementOption' ? ['value'] : element.name === 'ChatMessage' ? ['from', 'state'] : element.name === 'ChatToolCall' ? ['name', 'title', 'defaultOpen'] : element.name === 'ChatThinking' ? ['defaultOpen'] : element.name === 'InlineCitation' ? ['url', 'title', 'description'] : element.name === 'ResourceDisks' ? ['items'] : ['title', 'type'];
       const attributes: Record<string, string> = {};
       for (const attribute of element.attributes) {
         if (attribute.type !== 'mdxJsxAttribute' || !allowed.includes(attribute.name)) fail(`Unsupported attribute on ${element.name}; use static ${allowed.join('/')} values`);
@@ -113,9 +116,20 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
         if (typeof attribute.value !== 'string') fail(`Unsupported attribute on ${element.name}; use static strings`);
         attributes[attribute.name] = attribute.value as string;
       }
+      if (element.name === 'ResourceDisks') {
+        if (node.type !== 'mdxJsxFlowElement') fail('ResourceDisks must be a standalone block');
+        if (element.children.some(child => child.type !== 'text' || child.value?.trim())) fail('ResourceDisks does not accept children');
+        if (attributes.items !== undefined) {
+          const ids = parseResourceDiskIds(attributes.items);
+          if (ids.some(id => !stableId.test(id))) fail('ResourceDisks items must be a comma-separated list of IDs, such as "llm-101, vocabulary"');
+          if (new Set(ids).size !== ids.length) fail('ResourceDisks items must not contain duplicate IDs');
+          ids.forEach(id => resourceDiskIds.add(id));
+        }
+      }
       if (element.name === 'WebsitePreview') {
         if (node.type !== 'mdxJsxFlowElement') fail('WebsitePreview must be a standalone block');
         for (const field of ['url', 'title']) if (!attributes[field]?.trim()) fail(`WebsitePreview requires a nonempty ${field}`);
+        if (attributes.height !== undefined && attributes.height !== 'auto') fail('WebsitePreview height must be "auto"');
         let source: URL | undefined;
         try { source = new URL(attributes.url); } catch { /* Report the URL contract below. */ }
         if (!source || !/^https:\/\//i.test(attributes.url) || source.protocol !== 'https:' || source.username || source.password) fail('WebsitePreview requires an absolute HTTPS URL without credentials');
@@ -205,5 +219,6 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
   for (const id of notes) if (!noteAnchors.has(id)) fail(`Missing JimmyNoteAnchor: ${id}`);
   for (const id of noteAnchors) if (!notes.has(id)) fail(`Missing JimmyNote: ${id}`);
   // JSX inside code fences remains ordinary text and never enters this policy.
-  return { headings, links, achievements, hasJimmyNotes: notes.size > 0, plainText: toString(tree) };
+  return { headings, links, achievements, resourceDiskIds: resourceDiskIds.size ? [...resourceDiskIds] : undefined,
+    hasJimmyNotes: notes.size > 0, plainText: toString(tree) };
 }

@@ -269,6 +269,7 @@
     "maximumState": "最大値です。幅を広げても大きくなりません"
   },
   "lookHere": "ここを見て",
+  "tryDraggingHere": "ここをドラッグ",
   "overflowProfile": {
     "name": "Alexandra Kim",
     "role": "プロダクトデザイナー · デザインシステムとユーザー体験",

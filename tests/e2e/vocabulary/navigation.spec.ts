@@ -25,8 +25,8 @@ test('resource disc opens the dictionary and returns to the homepage', async ({ 
   await expect(page.locator('.vocabulary-heading h1')).toHaveText('文字排版');
   await testInfo.attach('Typography desktop', { body: await page.screenshot(), contentType: 'image/png' });
   await page.locator('.site-header-logo').click();
-  await expect(page).toHaveURL('/zh');
-  await expect(page.getByRole('region', { name: '系统课程', exact: true })).toBeVisible();
+  await expect(page).toHaveURL('/zh?view=resources');
+  await expect(resources).toBeVisible();
 });
 
 for (const width of [1440, 390]) {
@@ -42,10 +42,10 @@ for (const width of [1440, 390]) {
     await expect(page.locator('html')).not.toHaveAttribute('data-course-zoom');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('文字排版');
     await page.locator('.site-header-logo').click();
-    await expect(page).toHaveURL('/zh');
+    await expect(page).toHaveURL('/zh?view=resources');
     await expect(page.locator('html')).not.toHaveAttribute('data-course-zoom');
     await expect(page.locator('.home-gallery')).not.toHaveAttribute('inert');
-    await expect(page.getByRole('region', { name: '系统课程', exact: true })).toBeVisible();
+    await expect(disk).toBeVisible();
     await testInfo.attach(`Dictionary round trip ${width}px`, { body: await page.screenshot(), contentType: 'image/png' });
   });
 }

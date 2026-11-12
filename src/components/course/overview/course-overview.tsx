@@ -3,6 +3,8 @@ import { getTranslations } from 'next-intl/server';
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import { groupModules, type CourseManifest } from '@/lib/content/model';
 import { HeroPrimaryAction } from '@/components/layout/page-primitives';
+import { OpticalDiscCover } from '@/components/home/disk';
+import { blogCourseId } from '@/lib/site-config';
 import { CourseDisk } from '../course-card';
 
 export async function CourseOverview({ course, reference = false }: { course: CourseManifest; reference?: boolean }) {
@@ -13,18 +15,25 @@ export async function CourseOverview({ course, reference = false }: { course: Co
   const first = course.lessons[0];
   const level = course.section === 'introduction' ? home('gettingStarted') : ui(course.level);
   const count = ui('lessonCount', { count: course.lessons.length });
+  const stamp = course.updating && course.id !== blogCourseId ? t('updatingStamp') : undefined;
   const Root = reference ? 'section' : 'main';
   const Title = reference ? 'h2' : 'h1';
   const catalogId = reference ? `reading-${course.locale}-${course.slug}-catalog` : 'course-catalog';
   return <Root id={reference ? undefined : 'main-content'} className="course-overview" tabIndex={-1}>
     <section data-slot="course-hero" className="course-overview-hero">
       <div>
-        <p className="course-overview-meta"><span>{level}</span><span aria-hidden>·</span><span>{t('free')}</span><span aria-hidden>·</span><span>{count}</span></p>
+        <p className="course-overview-meta"><span>{level}</span><span aria-hidden>·</span><span>{t('free')}</span><span aria-hidden>·</span><span>{count}</span>
+          {stamp && <span className="sr-only">{stamp}</span>}
+        </p>
         <Title className={reference ? 'm-0 mb-4 font-pixel text-title leading-heading font-normal text-brand' : undefined}>{course.title}</Title>
         <p className="course-overview-description">{course.description}</p>
         {first && <HeroPrimaryAction href={first.url}>{t('startFirst')}</HeroPrimaryAction>}
       </div>
-      <div className="course-disk-cover" aria-hidden="true"><CourseDisk course={{ ...course, lessonCount: course.lessons.length }} labels={{ level, status: first ? count : t('updating') }} /></div>
+      <div className="course-disk-cover" aria-hidden="true">
+        {course.id === blogCourseId ? <OpticalDiscCover id={course.id} title={course.title} />
+          : <CourseDisk course={{ ...course, lessonCount: course.lessons.length }}
+            labels={{ level, status: first ? count : stamp ? undefined : t('updating'), stamp }} />}
+      </div>
     </section>
     <section className="course-directory" aria-labelledby={catalogId}>
       <h2 id={catalogId}>{t('catalog')}</h2>

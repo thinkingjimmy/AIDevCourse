@@ -53,8 +53,8 @@ export function ToggleDemo({ label, value, onChange, adjusted = false, ...props 
     options={[{ value: 'off', label: t(adjusted ? 'original' : 'off') }, { value: 'on', label: t(adjusted ? 'apply' : 'on') }]} />;
 }
 
-export function Range({ label, value, min, max, step = 1, unit = '', onChange }: {
-  label: string; value: number; min: number; max: number; step?: number; unit?: string; onChange: (value: number) => void;
+export function Range({ label, value, min, max, step = 1, unit = '', onChange, thumbContent }: {
+  label: string; value: number; min: number; max: number; step?: number; unit?: string; onChange: (value: number) => void; thumbContent?: ReactNode;
 }) {
   const id = useId();
   const format = useFormatter();
@@ -62,7 +62,7 @@ export function Range({ label, value, min, max, step = 1, unit = '', onChange }:
   return <div className="vocabulary-range">
     <div><span id={`${id}-label`}>{label}</span><output htmlFor={id}>{display}</output></div>
     <Slider min={min} max={max} step={step} value={[value]} className="min-h-8"
-      thumbProps={{ id, 'aria-labelledby': `${id}-label`, 'aria-valuetext': display }}
+      thumbProps={{ id, 'aria-labelledby': `${id}-label`, 'aria-valuetext': display, children: thumbContent }}
       onValueChange={values => onChange(values[0])} />
   </div>;
 }

@@ -1,3 +1,7 @@
+import type { HomeView } from '@/lib/i18n/routing';
+
+type ScreenZoom = { direction: 'in'; glass: DOMRect } | { direction: 'out'; view: HomeView };
+
 function cameraProperties(glass: DOMRect) {
   // Root snapshots include scrollbar gutters, unlike documentElement.clientWidth.
   const width = window.innerWidth;
@@ -17,20 +21,28 @@ function cameraProperties(glass: DOMRect) {
   };
 }
 
-async function homeScreen(signal: AbortSignal) {
-  const screen = document.querySelector('[data-slot="home-macintosh"] [data-slot="mac-screen"]');
+async function homeScreen(view: HomeView, signal: AbortSignal) {
+  const playStation = view === 'resources';
+  const screen = document.querySelector(playStation
+    ? '[data-slot="home-playstation"] [data-slot="playstation-screen"]'
+    : '[data-slot="home-macintosh"] [data-slot="mac-screen"]');
   if (!screen) return;
+  const artwork = playStation ? screen.parentElement?.querySelector('img') : undefined;
+  const measure = () => {
+    const bounds = screen.getBoundingClientRect();
+    return bounds.width && bounds.height && (!artwork || (artwork.complete && artwork.naturalWidth)) ? bounds : undefined;
+  };
   const deadline = performance.now() + 300;
-  let bounds = screen.getBoundingClientRect();
-  // A direct course visit may not have loaded the external Macintosh artwork yet.
-  while (!bounds.width && !signal.aborted && performance.now() < deadline) {
+  let bounds = measure();
+  // A direct visit may return home before its device artwork is ready.
+  while (!bounds && !signal.aborted && performance.now() < deadline) {
     await new Promise(resolve => setTimeout(resolve, 16));
-    bounds = screen.getBoundingClientRect();
+    bounds = measure();
   }
-  return bounds.width && bounds.height ? bounds : undefined;
+  return bounds;
 }
 
-async function zoomScreen(direction: 'in' | 'out', navigate: () => Promise<void>, signal: AbortSignal, glass?: DOMRect) {
+async function zoomScreen(motion: ScreenZoom, navigate: () => Promise<void>, signal: AbortSignal) {
   signal.throwIfAborted();
   const root = document.documentElement;
   let camera: ReturnType<typeof cameraProperties> | undefined;
@@ -38,13 +50,13 @@ async function zoomScreen(direction: 'in' | 'out', navigate: () => Promise<void>
     camera = cameraProperties(bounds);
     for (const [name, value] of Object.entries(camera)) root.style.setProperty(name, value);
   };
-  if (glass) frame(glass);
-  root.dataset.courseZoom = direction;
+  if (motion.direction === 'in') frame(motion.glass);
+  root.dataset.courseZoom = motion.direction;
   try {
     const view = document.startViewTransition(async () => {
       await navigate();
-      if (direction === 'out') {
-        const destination = await homeScreen(signal);
+      if (motion.direction === 'out') {
+        const destination = await homeScreen(motion.view, signal);
         if (destination && !signal.aborted) frame(destination);
         else view.skipTransition();
       }
@@ -63,9 +75,9 @@ async function zoomScreen(direction: 'in' | 'out', navigate: () => Promise<void>
 }
 
 export function zoomIntoScreen(glass: DOMRect, navigate: () => Promise<void>, signal: AbortSignal) {
-  return zoomScreen('in', navigate, signal, glass);
+  return zoomScreen({ direction: 'in', glass }, navigate, signal);
 }
 
-export function zoomOutOfScreen(navigate: () => Promise<void>, signal: AbortSignal) {
-  return zoomScreen('out', navigate, signal);
+export function zoomOutOfScreen(view: HomeView, navigate: () => Promise<void>, signal: AbortSignal) {
+  return zoomScreen({ direction: 'out', view }, navigate, signal);
 }

@@ -23,10 +23,10 @@ def download(url):
 
 
 def main():
-    labels = [
-        json.loads(path.read_text())["lookHere"]
-        for path in sorted((ROOT / "src/messages/vocabulary").glob("*.json"))
-    ]
+    labels = []
+    for path in sorted((ROOT / "src/messages/vocabulary").glob("*.json")):
+        messages = json.loads(path.read_text())
+        labels.extend((messages["lookHere"], messages["tryDraggingHere"]))
     characters = set(" ".join(labels))
     font = TTFont(BytesIO(download(FONT_URL)))
     missing = characters.difference(map(chr, font.getBestCmap()))

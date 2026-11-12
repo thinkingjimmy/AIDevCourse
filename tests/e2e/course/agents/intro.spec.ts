@@ -15,7 +15,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
     await page.goto('/zh');
-    const courses = page.getByRole('region', { name: '系统课程', exact: true });
+    const courses = page.getByRole('region', { name: '中级', exact: true });
     const card = courses.getByRole('link', { name: 'Agent 101', exact: true });
     await expect(card).toHaveAttribute('href', course);
     await expect(card).toContainText('中级');
@@ -107,7 +107,7 @@ test('read the introduction and open the course on a narrow screen without JavaS
     await expect(page.locator('article > .prose')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.goto('/zh');
-    await page.getByRole('region', { name: '系统课程', exact: true }).getByRole('link', { name: 'Agent 101', exact: true }).click();
+    await page.getByRole('region', { name: '中级', exact: true }).getByRole('link', { name: 'Agent 101', exact: true }).click();
     await expect(page).toHaveURL(course);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   } finally { await context.close(); }

@@ -3,12 +3,14 @@ import type { ReactNode } from 'react';
 import { preload } from 'react-dom';
 import { usePathname } from 'next/navigation';
 import { SiteLogo } from './page-primitives';
+import { useHomeDestination } from './site-frame';
 import type { Locale } from '@/lib/i18n/config';
-import { canonicalPath, localePath, stripLocale } from '@/lib/i18n/routing';
+import { canonicalPath, homePath, stripLocale } from '@/lib/i18n/routing';
 import { vocabularyForPath, type VocabularyKind } from '@/lib/vocabulary/collections';
 import { site } from '@/lib/site-config';
 import { canAnimateNavigation, useCourseTransition } from '@/components/home/course-transition';
 import { macintoshArtwork } from '@/components/home/macintosh';
+import { playStationArtwork } from '@/components/home/device-stage';
 
 export function SiteHeader({ locale, courses, labels, shortcut, children, hero = false }: {
   locale: Locale; courses: { url: string; title: string }[];
@@ -18,17 +20,19 @@ export function SiteHeader({ locale, courses, labels, shortcut, children, hero =
   const { phase, returnHome } = useCourseTransition();
   const course = courses.find(item => path === item.url || path.startsWith(`${item.url}/`));
   const vocabulary = vocabularyForPath(stripLocale(path));
+  const view = useHomeDestination();
+  const destination = homePath(locale, view);
   const prepareHome = () => {
-    if (course || vocabulary) preload(macintoshArtwork, { as: 'image', type: 'image/svg+xml' });
+    if (course || vocabulary) preload(view === 'resources' ? playStationArtwork : macintoshArtwork, { as: 'image' });
   };
   // Prepare the return route after the current camera has finished capturing and moving.
   const prefetchHome = vocabulary ? false : course ? phase === 'idle' : undefined;
-  const logo = <SiteLogo href={localePath(locale)} prefetch={prefetchHome} aria-label={`${site.name} · ${labels.home}`} className="site-header-logo"
+  const logo = <SiteLogo href={destination} prefetch={prefetchHome} aria-label={`${site.name} · ${labels.home}`} className="site-header-logo"
     onPointerEnter={prepareHome} onPointerDown={prepareHome} onFocus={prepareHome}
     onClick={event => {
       if ((!course && !vocabulary) || !canAnimateNavigation(event)) return;
       event.preventDefault();
-      void returnHome({ source: event.currentTarget, url: localePath(locale) });
+      void returnHome({ source: event.currentTarget, url: destination, view });
     }} />;
   if (hero) return <>{logo}{shortcut}</>;
   return <header data-slot="site-header" data-course={course ? '' : undefined} data-vocabulary={vocabulary ? '' : undefined} className="site-header">

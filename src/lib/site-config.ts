@@ -1,5 +1,7 @@
 import { resolveSiteEnvironment } from '../../config/site-environment.mjs';
 
+export const blogCourseId = 'musings';
+
 export const site = {
   name: 'AIDevCourse',
   logo: '/images/brand/logo.svg',

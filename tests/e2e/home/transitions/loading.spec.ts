@@ -77,9 +77,9 @@ for (const source of ['home', 'overview', 'lesson', 'design dictionary', 'animat
         await expect(search).toHaveValue('test');
         await search.fill('');
         await page.locator('.site-header-logo').click();
-        await expect(page).toHaveURL('/zh');
+        await expect(page).toHaveURL('/zh?view=resources');
         await expectFullCamera(page, 320, testInfo, 1);
-        await expect(page.getByRole('region', { name: '系统课程', exact: true })).toBeVisible();
+        await expect(page.getByRole('region', { name: '学习资料', exact: true })).toBeVisible();
       }
     } finally { release(); }
   });

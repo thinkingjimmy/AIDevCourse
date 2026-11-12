@@ -19,6 +19,11 @@ for (const width of [1440, 320]) {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
+    const homeLayout = () => page.locator('[data-slot="home-hero"], [data-slot="home-hero-art"], #catalog').evaluateAll(elements =>
+      elements.map(element => {
+        const { x, width } = element.getBoundingClientRect();
+        return { x, width };
+      }));
     const evidence = [];
     for (const entry of pages) {
       const response = await page.goto(entry.path);
@@ -32,16 +37,27 @@ for (const width of [1440, 320]) {
       const box = (await trigger.boundingBox())!;
       expect(box.width).toBeGreaterThanOrEqual(44);
       expect(box.height).toBeGreaterThanOrEqual(44);
+      const homeBefore = entry.path === '/zh' ? await homeLayout() : undefined;
       await trigger.focus();
       await trigger.press('Enter');
       const dialog = page.getByRole('dialog', { name: messages.Author.label, exact: true });
       await expect(dialog).toBeVisible();
       await expect(dialog.getByRole('link', { name: messages.Author.website, exact: true })).toHaveAttribute('href', 'https://jimmywong.dev');
+      if (homeBefore) await expect(page.locator('body')).toHaveCSS('overflow-y', 'hidden');
+      const homeOpen = homeBefore && await homeLayout();
+      if (homeBefore) {
+        expect(homeOpen).toEqual(homeBefore);
+        await testInfo.attach('Homepage with author dialog open', { body: await page.screenshot({ animations: 'disabled' }), contentType: 'image/png' });
+      }
       await page.keyboard.press('Escape');
       await expect(dialog).toHaveCount(0);
       await expect(trigger).toBeFocused();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      evidence.push({ ...entry, trigger: box });
+      if (homeBefore) {
+        await expect(page.locator('body')).not.toHaveAttribute('data-scroll-locked');
+        await expect.poll(homeLayout).toEqual(homeBefore);
+      }
+      evidence.push({ ...entry, trigger: box, homeBefore, homeOpen });
       if (entry.path === '/zh' || entry.path.endsWith('/about-this-course')) {
         await testInfo.attach(entry.path, { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' });
       }

@@ -14,6 +14,7 @@ export type ContentDocument = {
   data: DocumentData; headings: { id: string; title: string; depth: number }[];
   links: { url: string; image: boolean; label: string }[];
   body: string; sourceUrl: string; achievements: AchievementDefinition[]; hasJimmyNotes: boolean;
+  resourceDiskIds?: string[];
 };
 export type LessonSummary = {
   id: string; title: string; description: string; url: string;
@@ -23,6 +24,7 @@ export type CourseManifest = {
   id: string; locale: Locale; slug: string; title: string; description: string; url: string;
   sourceLocale: Locale; level: 'beginner' | 'intermediate' | 'advanced';
   section?: 'introduction';
+  updating?: boolean;
   goals: string[]; audience: string; prerequisites: string[];
   lessons: LessonSummary[]; achievements: CourseAchievement[];
 };

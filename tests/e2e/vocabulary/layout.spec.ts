@@ -112,7 +112,7 @@ async function profileLastLine(page: Page) {
 async function trackingAnnotation(page: Page) {
   return page.locator('#tracking .tracking-account-anchor').evaluate(anchor => {
     const svg = anchor.querySelector('svg')!;
-    const label = anchor.querySelector<HTMLElement>('.tracking-callout > span')!;
+    const label = anchor.querySelector<HTMLElement>('.handwritten-callout > span')!;
     const bounds = anchor.getBoundingClientRect();
     const tip = new DOMPoint(0, 56).matrixTransform(svg.getScreenCTM()!);
     const tail = new DOMPoint(80, 12).matrixTransform(svg.getScreenCTM()!);

@@ -29,6 +29,8 @@
 
 课程介绍不计入课时数量。课程可以先发布介绍，再逐步添加课时。没有课时的课程保留首页卡片和总览，显示「内容更新中」，不显示开始第一课或课时统计。完全没有课程的语言会显示本地化空状态。
 
+在课程介绍的 frontmatter 设置 `updating: true`，卡带纸标右上角会显示朱砂「更新中」印章。更新完成后可移除该字段。
+
 ## 编写与检查
 
 正文使用 `==text==` 添加淡黄色荧光笔式高亮。笔触边缘略有起伏，并保留轻微叠色与笔痕；底色只覆盖文字中下部，文字颜色、字号和字重保持原样。可包住强调、链接和标题文字，也可用于 `JimmyNote` 等组件的正文。内容换行时，每一行都会保留背景。无需 import，也无需手写 `<mark>`。
@@ -70,7 +72,7 @@ send(request);
 
 External Markdown page links show a preview after a 350ms hover or keyboard focus. The card shows the title, description, domain, and available cover. Internal links have no hover or focus card and make no preview request; lesson links use side reading where available. Touch and no-JavaScript links keep native navigation. Check the [link previews](http://localhost:3000/design/components#link-previews) for examples.
 
-Use `WebsitePreview` to share a website as a browser-framed screenshot. It requires static, nonempty `url` and `title` strings and exactly one Markdown image with meaningful localized alt text. The destination must be an absolute HTTPS URL without credentials; the screenshot must exist under `/images/`. Use a standalone block, with no import. The address bar and screenshot both open the website in a new tab. The image area is 400px high in columns at least 36rem wide and 260px in narrower columns. Readers can scroll it with a wheel, touch, or keyboard while the address bar and lesson stay in place. Images keep their aspect ratio and use the normal MDX image dimensions and lazy loading. The component works without JavaScript and sends no requests to the shared website before a reader opens it. [Screenshot sources](./references/website-previews.md) record captured pages.
+Use `WebsitePreview` to share a website as a browser-framed screenshot. It requires static, nonempty `url` and `title` strings and exactly one Markdown image with meaningful localized alt text. The destination must be an absolute HTTPS URL without credentials; the screenshot must exist under `/images/`. Use a standalone block, with no import. The address bar and screenshot both open the website in a new tab. By default, the image area is 400px high in columns at least 36rem wide and 260px in narrower columns. Set `height="auto"` to fit a shorter screenshot within those limits. Readers can scroll it with a wheel, touch, or keyboard while the address bar and lesson stay in place. Images keep their aspect ratio and use the normal MDX image dimensions and lazy loading. The component works without JavaScript and sends no requests to the shared website before a reader opens it. [Screenshot sources](./references/website-previews.md) record captured pages.
 
 ```mdx
 <WebsitePreview url="https://jimmywong.dev/en" title="Jimmy's personal website">
@@ -181,7 +183,13 @@ Thanks to [ian-xiaohei-illustrations](https://github.com/helloianneo/ian-xiaohei
 </KeyTakeaway>
 ```
 
-`ResourceDisks` 在正文中显示与首页一致的学习资源磁盘，当前包含「设计词典」。独立写一行 `<ResourceDisks />` 即可，不接受参数或子内容。磁盘名称、链接、样式和词条数量与首页共用配置；后续在 `src/components/home/resources.tsx` 的资源列表中增加条目，首页和正文会同时更新。多张磁盘会按正文宽度自动换行，支持键盘操作和无 JavaScript 导航。
+`ResourceDisks` 在正文中显示与首页相同的卡片：课程用卡带，博客和词典用光盘。用 `items` 填写逗号分隔的 ID，显示顺序与填写顺序一致。
+
+```mdx
+<ResourceDisks items="llm-101, vocabulary" />
+```
+
+课程和博客使用各自 frontmatter 的 `courseId`，例如 `llm-101` 和 `musings`。词典的 ID 是 `vocabulary`、`animation-vocabulary`、`programming-vocabulary`。不填 `items` 时显示三个词典。组件须单独成行，不接受子内容；`pnpm content:check` 会检查重复 ID 和当前语言中不存在的项目。正文光盘不显示下方的数量标签。卡片会按正文宽度自动换行。效果可见[组件预览](http://localhost:3000/design/components#resource-disks)。
 
 `ChatMessage` 用于文章里的静态对话示例，参考 [shadcn Message](https://ui.shadcn.com/docs/ai-elements/radix/message) 的布局。组件复用引用块的黑色直角边框和右下偏移阴影，并保留内边距；`from="user"` 显示右侧灰色气泡及圆形用户图标头像，`from="assistant"` 显示左侧浅色描边气泡及机器人头像。两种头像共用浅灰底和灰色图标。头像随消息角色自动显示，无需配置图片。正文支持多段 Markdown、强调和链接，无需 import 或 JavaScript。
 
@@ -243,7 +251,7 @@ The forecast is available on the source page. <InlineCitation url="https://www.w
 </ChatMessage>
 ```
 
-`ChatMessage` 接受必填的静态 `from="user"` 或 `from="assistant"`，以及可选的 `state="complete"` 或 `state="thinking"`；thinking 只用于 assistant。`ChatThinking` 仅接受可选的布尔值 `defaultOpen`，只能直接放在 `state="complete"`（默认值）的 assistant 消息内，且每条消息最多一个，正文不能为空。`ChatToolCall` 也只能直接放在完整回复状态的 assistant 消息内；`name`、`title` 和正文均不能为空，可选 `defaultOpen` 配置初始展开状态，不接受其他属性或行内使用。`Chat` 不接受参数；`Achievement` 和 `AchievementOption` 的字段见下方「文章成就」；`XEmbed`、`YouTube` 和 `WebsitePreview` 仅接受上方说明的 `url` / `title`；`InlineCitation` 仅接受 `url` / `title` / `description`。其他组件只允许静态 `title` / `type` 字符串。仅 `ChatThinking` 和 `ChatToolCall` 的 `defaultOpen` 接受布尔字面量 `{true}` / `{false}` 或无值属性；禁止 import、其他 JavaScript 表达式、原始 HTML、iframe、脚本和未知组件；`mermaid` 围栏生成静态图表，其他代码围栏里的示例不会执行。注册入口为 `src/components/mdx/components.tsx`，不要为了单篇文章绕过校验器。
+`ChatMessage` 接受必填的静态 `from="user"` 或 `from="assistant"`，以及可选的 `state="complete"` 或 `state="thinking"`；thinking 只用于 assistant。`ChatThinking` 仅接受可选的布尔值 `defaultOpen`，只能直接放在 `state="complete"`（默认值）的 assistant 消息内，且每条消息最多一个，正文不能为空。`ChatToolCall` 也只能直接放在完整回复状态的 assistant 消息内；`name`、`title` 和正文均不能为空，可选 `defaultOpen` 配置初始展开状态，不接受其他属性或行内使用。`Chat` 不接受参数；`Achievement` 和 `AchievementOption` 的字段见下方「文章成就」；`XEmbed`、`YouTube` 和 `WebsitePreview` 接受上方说明的 `url` / `title`。`WebsitePreview` 可用 `height="auto"` 让短截图撑起预览区域。`InlineCitation` 仅接受 `url` / `title` / `description`。其他组件只允许静态 `title` / `type` 字符串。仅 `ChatThinking` 和 `ChatToolCall` 的 `defaultOpen` 接受布尔字面量 `{true}` / `{false}` 或无值属性；禁止 import、其他 JavaScript 表达式、原始 HTML、iframe、脚本和未知组件；`mermaid` 围栏生成静态图表，其他代码围栏里的示例不会执行。注册入口为 `src/components/mdx/components.tsx`，不要为了单篇文章绕过校验器。
 
 本地图片放到 `public/images/`，正文使用有意义的本语言 alt。编译器从图片读取宽高。这里的素材任何人都能访问，不能存放密钥或未公开的敏感素材。
 
@@ -395,6 +403,12 @@ Agent 101 是独立中级课程，已在 `content/zh/agent-101/` 发布课程介
 导读课说明为什么还要学习 Agent、与 LLM 101 和 Coding 101 的区别、能力清单、先修要求、权限边界和课程状态，不声明成就。
 
 建议围绕 ReAct loop、运行状态与停止条件、Coding Agent 的代码阅读与修改、终端工具与 E2E 验证、上下文管理、失败恢复和权限边界展开，以完成可验证的任务为目标。ReAct loop 是推理与行动交替的模式，不是 React 前端框架。MCP 与 Skills 的基础概念留在 LLM 101，在 Agent 101 中讲如何把它们用于持续执行的工作流。
+
+### DeepSeek 101 的课程边界
+
+DeepSeek 101 是入门课程，已在 `content/zh/deepseek-101/` 发布课程介绍、首页卡片和三个模块：「学前必看」（1.1「关于本课程」，`lessonId: about-this-course`）、「DeepSeek Chat」（2.1「认识 DeepSeek Chat」，`lessonId: what-is-deepseek-chat`）、「DeepSeek Harness」（3.1「认识 DeepSeek Harness」，`lessonId: what-is-deepseek-harness`）。总览显示三节课和开始入口，其余课时尚未发布。课程不要求模型训练经验；动手接 API 的章节建议已有基础编程能力。
+
+导读课说明为什么单独学 DeepSeek、课程主题（对话产品、API、开放模型、本地部署与结果验证）、适合谁、先修要求、学习方法和课程状态，不声明成就。课程更新期间 `meta.json` 只列已有目录；新增课时按模块建目录并补 `meta.json`，保持 `lessonId` 稳定。
 
 ## Coding 101 的课程结构
 

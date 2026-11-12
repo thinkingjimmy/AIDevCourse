@@ -115,43 +115,37 @@ async function insertOpticalDisc(home: HTMLElement, source: HTMLElement, origina
   const host = home.getBoundingClientRect();
   const start = original.getBoundingClientRect();
   const slot = tray.getBoundingClientRect();
-  const diameter = original.offsetWidth;
-  const x = slot.left + slot.width / 2 - start.left - diameter / 2;
-  const y = slot.top + slot.height * .47 - start.top - diameter / 2;
+  const diameter = start.width;
+  const seatLeft = (slot.width - diameter) / 2;
+  const seatTop = slot.height * .46 - diameter / 2;
+  const x = slot.left + seatLeft - start.left;
+  const y = slot.top + seatTop - start.top;
   const scale = slot.width * .8 / diameter;
   const pose = (dx: number, dy: number, tilt: number, spin: number, size: number) =>
     `translate3d(${dx}px,${dy}px,0) perspective(600px) rotateX(${tilt}deg) rotateZ(${spin}deg) scale(${size})`;
-  const seated = pose(x, y, 65, 0, scale);
+  const drawerClosed = { transform: 'translateY(-100%)' };
+  const drawerOpen = { transform: 'translateY(0)' };
   const flight = visualClone(original);
   flight.classList.add('flying-optical-disc');
   Object.assign(flight.style, { left: `${start.left - host.left}px`, top: `${start.top - host.top}px`, width: `${diameter}px`, height: `${diameter}px` });
   home.appendChild(flight);
   source.dataset.inDrive = '';
   try {
-    const [lift, open] = await Promise.all([
+    const [lift] = await Promise.all([
       move(flight, [
         { transform: pose(0, 0, 0, 0, 1), offset: 0 },
         { transform: pose(x * .13, y * .13 - 14, 14, 18, .9), offset: .25 },
         { transform: pose(x, y - 11, 57, 10, scale * 1.08), offset: .82 },
-        { transform: seated, offset: 1 },
+        { transform: pose(x, y, 65, 0, scale), offset: 1 },
       ], 560, signal, 'cubic-bezier(.24,.68,.24,1)'),
-      move(bed, [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], 270, signal),
+      move(bed, [drawerClosed, drawerOpen], 270, signal),
     ]);
+    // Keep the seated disc on the drawer so the drive lip hides both together.
+    Object.assign(flight.style, { left: `${seatLeft}px`, top: `${seatTop}px`, transform: pose(0, 0, 65, 0, scale) });
+    bed.appendChild(flight);
     phase('inserting');
     lift.cancel();
-    open.cancel();
-    await Promise.all([
-      move(flight, [
-        { transform: seated, opacity: 1, offset: 0 },
-        { transform: seated, opacity: 1, offset: .22 },
-        { transform: pose(x, y - slot.height * .47, 89, 0, scale * .94), opacity: 0, offset: 1 },
-      ], 350, signal, 'cubic-bezier(.4,0,.6,1)'),
-      move(bed, [
-        { transform: 'scaleY(1)', offset: 0 },
-        { transform: 'scaleY(1)', offset: .22 },
-        { transform: 'scaleY(0)', offset: 1 },
-      ], 350, signal, 'cubic-bezier(.4,0,.6,1)'),
-    ]);
+    await move(bed, [drawerOpen, { ...drawerOpen, offset: .18 }, drawerClosed], 290, signal, 'cubic-bezier(.4,0,.6,1)');
     return screen.getBoundingClientRect();
   } finally {
     flight.remove();

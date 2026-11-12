@@ -1,13 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import type { KeyboardEvent, MouseEvent } from 'react';
+import type { HomeView } from '@/lib/i18n/routing';
 import { Macintosh } from './macintosh';
 
-export type HomeView = 'courses' | 'resources';
 export type SwitchDirection = -1 | 1;
 export type HomeOrbit = { animations: Animation[]; start: number; end: number };
 
-const playStationArtwork = '/images/home/pixel-playstation.webp';
+export const playStationArtwork = '/images/home/pixel-playstation.webp';
 const halfTurn = Math.PI;
 
 function restAngle(view: HomeView) { return view === 'resources' ? halfTurn : 0; }
@@ -27,8 +27,8 @@ function deviceFrame(device: HomeView, angle: number) {
 }
 
 function motionFrame(element: Element) {
-  const { transform, opacity, zIndex } = getComputedStyle(element);
-  return { transform, opacity, zIndex };
+  const { transform, opacity, visibility, zIndex } = getComputedStyle(element);
+  return { transform, opacity, visibility, zIndex };
 }
 
 export function orbitDevices(home: HTMLElement, from: HomeView, to: HomeView, direction: SwitchDirection, previous?: HomeOrbit) {
@@ -48,12 +48,20 @@ export function orbitDevices(home: HTMLElement, from: HomeView, to: HomeView, di
     return { element: device, poses };
   });
   const offset = Math.min(32, home.clientWidth * .07) * direction;
-  const slide = (distance: number) => ({ transform: `translateX(${distance}px)`, opacity: 0 });
-  const resting = { transform: 'translateX(0)', opacity: 1 };
-  const outgoing = home.querySelector(`[data-gallery-view="${from}"]`);
-  const incoming = home.querySelector(`[data-gallery-view="${to}"]`);
-  if (outgoing) frames.push({ element: outgoing as HTMLElement, poses: [previous ? motionFrame(outgoing) : resting, slide(-offset)] });
-  if (incoming) frames.push({ element: incoming as HTMLElement, poses: [previous ? motionFrame(incoming) : slide(offset), resting] });
+  const slide = (distance: number) => ({ transform: `translateX(${distance}px)`, opacity: 0, visibility: 'hidden' });
+  const resting = { transform: 'translateX(0)', opacity: 1, visibility: 'visible' };
+  const handoff = .28;
+  const outgoing = home.querySelector<HTMLElement>(`[data-gallery-view="${from}"]`);
+  const incoming = home.querySelector<HTMLElement>(`[data-gallery-view="${to}"]`);
+  if (outgoing) {
+    const start = previous ? motionFrame(outgoing) : resting;
+    const end = slide(-offset);
+    frames.push({ element: outgoing, poses: [start, { ...end, offset: handoff }, end] });
+  }
+  if (incoming) {
+    const start = previous ? motionFrame(incoming) : slide(offset);
+    frames.push({ element: incoming, poses: [start, { ...start, offset: handoff }, resting] });
+  }
   previous?.animations.forEach(animation => animation.cancel());
   return { start, end, animations: frames.map(({ element, poses }) => element.animate(poses, timing)) };
 }
@@ -71,21 +79,26 @@ function PlayStation({ title, status }: { title?: string; status?: string }) {
 
 export function HomeDeviceStage({ view, title, status, href, labels, onSwitch, onKeyDown }: {
   view: HomeView; title?: string; status?: string; href: string;
-  labels: { group: string; previous: string; next: string };
+  labels: { group: string; previous: string; next: string; rear: string };
   onSwitch: (event: MouseEvent<HTMLAnchorElement>, direction: SwitchDirection) => void;
   onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => void;
 }) {
   const angle = restAngle(view);
+  const rear = view === 'courses' ? 'resources' : 'courses';
   return <div data-slot="home-hero-art" className="gallery-computer" role="group" aria-label={labels.group} onKeyDown={onKeyDown}>
     <Link className="gallery-view-arrow" data-direction="previous" href={href} aria-label={labels.previous}
       scroll={false} prefetch={false} onClick={event => onSwitch(event, -1)}><span aria-hidden>&lt;</span></Link>
-    <div className="gallery-device-stage" aria-hidden>
-      <div className="gallery-device" data-home-device="courses" style={deviceFrame('courses', angle)}>
+    <div className="gallery-device-stage">
+      <div className="gallery-device" data-home-device="courses" data-front={view === 'courses' ? '' : undefined} style={deviceFrame('courses', angle)} aria-hidden>
         <Macintosh title={view === 'courses' ? title : undefined} status={status} />
       </div>
-      <div className="gallery-device" data-home-device="resources" style={deviceFrame('resources', angle)}>
+      <div className="gallery-device" data-home-device="resources" data-front={view === 'resources' ? '' : undefined} style={deviceFrame('resources', angle)} aria-hidden>
         <PlayStation title={view === 'resources' ? title : undefined} status={status} />
       </div>
+      <Link className="gallery-device-switch" data-slot="rear-device-switch" data-switch-view={rear}
+        style={{ transform: deviceFrame(rear, angle).transform }}
+        href={href} aria-label={`${rear === 'resources' ? 'PS2' : 'Macintosh'} · ${labels.rear}`}
+        scroll={false} prefetch={false} onClick={event => onSwitch(event, -1)} />
     </div>
     <Link className="gallery-view-arrow" data-direction="next" href={href} aria-label={labels.next}
       scroll={false} prefetch={false} onClick={event => onSwitch(event, 1)}><span aria-hidden>&gt;</span></Link>

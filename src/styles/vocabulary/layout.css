@@ -35,7 +35,7 @@
   .vocabulary-grid { gap: 16px; }
   .vocabulary-native-directory { display: block; position: relative; }
   .vocabulary-native-directory summary { @apply text-sm; padding: 12px 0; cursor: pointer; }
-  .vocabulary-native-directory nav { position: absolute; top: 100%; left: 0; z-index: 30; width: 240px; max-height: 60dvh; overflow: auto; border: 1px solid var(--color-border); background: var(--color-background); box-shadow: 2px 2px 0 #31564b30; }
+  .vocabulary-native-directory nav { position: absolute; top: 100%; left: 0; z-index: 30; width: 240px; max-height: 60dvh; overflow: auto; border: 1px solid var(--color-border); background: var(--color-background); box-shadow: 2px 2px 0 var(--color-window-shadow); }
   .vocabulary-native-directory a { @apply text-sm; display: block; padding: 12px; }
   .vocabulary-native-directory strong { @apply text-sm font-semibold; display: block; padding: 12px; }
 }

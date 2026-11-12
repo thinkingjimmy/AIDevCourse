@@ -1,14 +1,14 @@
 'use client';
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { canonicalPath } from '@/lib/i18n/routing';
+import { canonicalPath, type HomeView } from '@/lib/i18n/routing';
 import { insertDisk, type DiskEntry, type DiskPhase } from './disk-motion';
 import { zoomIntoScreen, zoomOutOfScreen } from './screen-zoom';
 
-type HomeEntry = Omit<DiskEntry, 'home'>;
+type HomeEntry = Omit<DiskEntry, 'home'> & { view: HomeView };
 type Transition = {
   controller: AbortController;
-  entry: HomeEntry & { home?: HTMLElement };
+  entry: Omit<DiskEntry, 'home'> & { home?: HTMLElement };
   onRouteCommit?: () => void;
   timeout?: ReturnType<typeof setTimeout>;
 };
@@ -32,8 +32,8 @@ export function canAnimateNavigation(event: MouseEvent<HTMLAnchorElement>) {
     && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-export function CourseTransitionProvider({ children, cancelLabel, openingLabel, openingResourceLabel }: {
-  children: ReactNode; cancelLabel: string; openingLabel: string; openingResourceLabel: string;
+export function CourseTransitionProvider({ children, openingLabel, openingResourceLabel }: {
+  children: ReactNode; openingLabel: string; openingResourceLabel: string;
 }) {
   const router = useRouter();
   const pathname = canonicalPath(usePathname());
@@ -86,7 +86,7 @@ export function CourseTransitionProvider({ children, cancelLabel, openingLabel, 
     active.current = transition;
     router.prefetch(entry.url);
     try {
-      await zoomOutOfScreen(() => navigate(transition), transition.controller.signal);
+      await zoomOutOfScreen(entry.view, () => navigate(transition), transition.controller.signal);
     } catch {
       if (active.current === transition && !transition.onRouteCommit) await navigate(transition);
     } finally {
@@ -97,7 +97,8 @@ export function CourseTransitionProvider({ children, cancelLabel, openingLabel, 
   useLayoutEffect(() => {
     const transition = active.current;
     if (!transition) return;
-    if (pathname !== transition.entry.url) { reset(); return; }
+    const [destination] = transition.entry.url.split(/[?#]/, 1);
+    if (pathname !== destination) { reset(); return; }
     clearTimeout(transition.timeout);
     transition.onRouteCommit?.();
   }, [pathname, reset]);
@@ -129,6 +130,5 @@ export function CourseTransitionProvider({ children, cancelLabel, openingLabel, 
   }, [reset, router]);
   return <Context value={{ phase, openCourse, returnHome }}>{children}
     <span className="sr-only" role="status" aria-live="polite">{phase === 'idle' ? '' : opening}</span>
-    {(phase === 'lifting' || phase === 'inserting') && <button type="button" className="disk-cancel" onClick={() => reset(true)}>{cancelLabel}</button>}
   </Context>;
 }

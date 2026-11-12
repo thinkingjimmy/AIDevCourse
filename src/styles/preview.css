@@ -23,6 +23,7 @@ html.design {
   --mono: var(--font-geist-mono), "PingFang SC", "Noto Sans SC", ui-monospace, monospace;
   --font-site-sans: var(--sans);
   --font-site-mono: var(--mono);
+  --font-site-pixel: var(--font-geist-pixel), var(--font-site-sans);
   @apply scroll-pt-18;
 }
 html.design *, html.design *::before, html.design *::after { @apply box-border; }

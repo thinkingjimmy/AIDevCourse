@@ -11,10 +11,11 @@
 /* Reserve the untracked label width so the annotation stays still. */
 .tracking-account-anchor::before { @apply tracking-normal; content: attr(data-label); visibility: hidden; white-space: nowrap; }
 .tracking-account-label { position: absolute; top: 0; left: 0; white-space: nowrap; }
-.tracking-callout { @apply tracking-normal; position: absolute; bottom: calc(100% + 4px); left: 50%; width: 128px; height: 56px; color: #e11d48; pointer-events: none; }
-.tracking-callout > span { @apply text-lg leading-snug font-normal; position: absolute; top: -20px; left: 80px; white-space: nowrap; transform: translateX(-50%) rotate(-6deg); transform-origin: center; }
-.tracking-callout svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.tracking-callout path { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.handwritten-callout { @apply tracking-normal text-rose-700; position: absolute; bottom: calc(100% + 4px); left: 50%; width: 128px; height: 56px; pointer-events: none; }
+.handwritten-callout > span { @apply text-lg leading-snug font-normal; position: absolute; top: -20px; left: 62.5%; white-space: nowrap; transform: translateX(-50%) rotate(-6deg); transform-origin: center; }
+.handwritten-callout svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.handwritten-callout path { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.leading-callout { width: 64px; height: 28px; }
 .tracking-menu { @apply text-sm; width: min(240px,100%); padding: 14px 12px; border: 1px solid var(--color-border); border-radius: 12px; }
 .tracking-menu p { @apply text-xs font-medium text-muted-foreground; padding: 0 8px; margin: 0 0 8px; white-space: nowrap; }
 .tracking-menu > div { padding: 5px 8px; }
@@ -29,7 +30,7 @@
 .metrics-sample { width: min(100%,240px); }
 .metrics-label { @apply text-xs leading-normal font-normal text-brand; margin: 0 0 8px; font-family: var(--font-site-sans); }
 .metrics-plot { position: relative; height: 144px; }
-.metrics-baseline,.metrics-guide { position: absolute; left: 0; right: 0; height: 1px; background: #31564b55; }
+.metrics-baseline,.metrics-guide { position: absolute; left: 0; right: 0; height: 1px; background: var(--color-window-rule); }
 .metrics-baseline { top: 112px; }
 .metrics-guide { background: none; border-top: 1px dashed var(--color-brand); }
 .metrics-baseline span { @apply text-xs leading-normal font-normal; position: absolute; top: 8px; left: 0; color: var(--color-brand); font-family: var(--font-site-sans); }

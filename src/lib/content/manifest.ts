@@ -40,7 +40,7 @@ export function readCatalog(options: { root?: string; publicRoot?: string } = {}
     }
     courses.push({ id: course.courseId, locale: document.locale, slug: document.courseSlug, title: course.title,
       description: course.description, url: document.url, sourceLocale: course.sourceLocale, level: course.level, section: course.section,
-      goals: course.goals, audience: course.audience, prerequisites: course.prerequisites,
+      updating: course.updating, goals: course.goals, audience: course.audience, prerequisites: course.prerequisites,
       lessons, achievements });
   }
   courses.sort((a, b) => (scan.order.get(a.locale)?.indexOf(visible.find((doc) => doc.url === a.url)!.file) ?? 0) -

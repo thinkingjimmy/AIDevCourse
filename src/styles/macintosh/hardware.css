@@ -4,13 +4,13 @@
     grid-row: 1;
     justify-self: end;
     display: grid;
-    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    grid-template-columns: var(--gallery-arrow-size) minmax(0, 1fr) var(--gallery-arrow-size);
     align-items: center;
-    gap: 5px;
-    width: min(100%, clamp(280px, 52.5svh, 472px));
+    gap: var(--gallery-arrow-gap);
+    width: min(100%, var(--gallery-art-width));
   }
   .gallery-device-stage { grid-area: 1 / 2; position: relative; isolation: isolate; aspect-ratio: 100 / 96; }
-  .gallery-device {
+  .gallery-device, .gallery-device-switch {
     position: absolute;
     bottom: 0;
     left: 4%;
@@ -18,6 +18,23 @@
     aspect-ratio: 165 / 181;
     pointer-events: none;
   }
+  /* Use the silhouettes for hit testing where the devices overlap. */
+  :is([data-home-device='courses'], [data-switch-view='courses']) {
+    --device-hit-area: polygon(30% 1%, 86% 1%, 92% 10%, 92% 65%, 100% 71%, 100% 98%, 0 99%, 0 92%, 9% 80%, 17% 75%, 14% 68%, 14% 12%, 22% 5%);
+  }
+  :is([data-home-device='resources'], [data-switch-view='resources']) {
+    --device-hit-area: polygon(29% 7%, 88% 7%, 95% 24%, 96% 49%, 90% 73%, 100% 78%, 98% 94%, 44% 97%, 40% 100%, 1% 99%, 3% 89%, 7% 79%, 5% 67%, 5% 22%, 8% 16%, 13% 13%);
+  }
+  .gallery-device[data-front]::after, .gallery-device-switch::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    clip-path: var(--device-hit-area);
+    pointer-events: auto;
+  }
+  .gallery-device-switch { z-index: 1; cursor: pointer; border-radius: 3px; }
+  .gallery-device-switch:focus-visible { outline-color: var(--color-brand); }
+  .home-gallery[data-home-switching] .gallery-device-switch::before { pointer-events: none; }
   .gallery-device::before {
     content: '';
     position: absolute;
@@ -28,8 +45,8 @@
   }
   .gallery-view-arrow {
     display: grid;
-    width: 44px;
-    height: 44px;
+    width: var(--gallery-arrow-size);
+    height: var(--gallery-arrow-size);
     place-items: center;
     cursor: pointer;
     text-decoration: none;
@@ -81,15 +98,13 @@
   .playstation-greeting { @apply font-pixel text-device-greeting leading-none font-normal; text-shadow: 0 0 12px #709eef85; }
   .playstation-screen .pixel-screen-title { @apply text-device-label; }
   .playstation-screen .pixel-screen-status { color: #a4badc; }
-  .playstation-tray { position: absolute; top: 82.4%; left: 55.9%; width: 24.4%; height: 11.5%; }
+  .playstation-tray { position: absolute; top: 82.4%; left: 55.9%; width: 24.4%; height: 11.5%; overflow: hidden; }
   .playstation-tray-bed {
     position: absolute;
     inset: 0;
-    transform: scaleY(0);
-    transform-origin: top;
+    transform: translateY(-100%);
     background: #252630;
-    border: 1px solid #15151d;
-    box-shadow: inset 0 -4px #15151d, inset 0 1px #5d5d70;
+    box-shadow: inset 0 0 0 1px #15151d, inset 0 -3px #15151d;
     clip-path: polygon(2% 0, 98% 0, 100% 91%, 97% 100%, 3% 100%, 0 91%);
   }
   .playstation-tray-bed::before {
@@ -108,13 +123,10 @@
     background: #656575;
   }
   @media (max-width: 721px) {
-    .gallery-computer { width: 100%; grid-template-columns: repeat(2, 44px); justify-content: space-between; row-gap: 0; }
+    .gallery-computer { width: 100%; grid-template-columns: repeat(2, var(--gallery-arrow-size)); justify-content: space-between; row-gap: 0; }
     .gallery-device-stage { grid-column: 1 / -1; }
     .gallery-view-arrow[data-direction='previous'] { grid-area: 2 / 1; }
     .gallery-view-arrow[data-direction='next'] { grid-area: 2 / 2; }
-  }
-  @media (max-height: 600px) and (min-width: 722px) {
-    .gallery-computer { width: min(100%, max(226px, 50svh)); }
   }
   @media (max-width: 721px) { .pixel-screen-status { display: none; } }
 }

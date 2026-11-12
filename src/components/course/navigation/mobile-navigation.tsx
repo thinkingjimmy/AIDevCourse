@@ -8,10 +8,11 @@ import { MedalIcon } from '@phosphor-icons/react/dist/ssr/Medal';
 import { AchievementGallery } from '@/components/progress/achievement-gallery';
 import { useAchievements } from '@/components/progress/achievement-provider';
 import type { Locale } from '@/lib/i18n/config';
-import { localePath } from '@/lib/i18n/routing';
+import { homePath } from '@/lib/i18n/routing';
 import { author } from '@/lib/site-config';
 import { AuthorDialog } from '@/components/author/author-card';
 import { useSidebar } from '@/components/navigation/sidebar';
+import { useHomeDestination } from '@/components/layout/site-frame';
 import { ModuleTree } from './module-tree';
 
 export function CourseMobileNavigation({ locale }: { locale: Locale }) {
@@ -20,10 +21,11 @@ export function CourseMobileNavigation({ locale }: { locale: Locale }) {
   const authorText = useTranslations('Author');
   const { openMobile, mobileDialogId, setOpenMobile } = useSidebar();
   const { ready } = useAchievements();
+  const homeView = useHomeDestination();
   return <nav data-slot="mobile-course-navigation" aria-label={ui('navigation')}
     className="mobile-course-navigation fixed inset-x-4 bottom-[calc(12px+env(safe-area-inset-bottom))] z-40 mx-auto hidden max-w-96 grid-cols-4 gap-1 rounded-full p-1.5 text-foreground max-[961px]:grid min-[961px]:hidden">
     <Glass aria-hidden data-theme="light" className="mobile-navigation-glass" />
-    <Link href={localePath(locale)} className="mobile-navigation-item" aria-label={ui('home')}>
+    <Link href={homePath(locale, homeView)} className="mobile-navigation-item" aria-label={ui('home')}>
       <HouseIcon size={24} aria-hidden /><span>{ui('home')}</span>
     </Link>
     <button type="button" data-slot="mobile-sidebar-trigger" data-section="contents" className="mobile-navigation-item [@media(scripting:none)]:hidden"

@@ -1,5 +1,5 @@
 .author-window-overlay {
-  background: radial-gradient(#31564b24 .65px, transparent .65px) 0 0 / 4px 4px, color-mix(in srgb, var(--color-background) 78%, transparent);
+  background: radial-gradient(color-mix(in srgb, var(--color-brand) 14%, transparent) .65px, transparent .65px) 0 0 / 4px 4px, color-mix(in srgb, var(--color-background) 78%, transparent);
   backdrop-filter: blur(4px);
 }
 .author-window {
@@ -11,26 +11,26 @@
   border-radius: 2px;
   background: var(--color-background);
   color: var(--color-brand);
-  box-shadow: 4px 4px 0 #31564b40;
+  box-shadow: 4px 4px 0 color-mix(in srgb, var(--color-brand) 25%, transparent);
 }
-.author-window-bar { display: flex; flex-shrink: 0; align-items: center; gap: 6px; min-height: 48px; padding: 0 6px 0 14px; border-bottom: 1px solid var(--color-brand); background: #f1f4ec; }
+.author-window-bar { display: flex; flex-shrink: 0; align-items: center; gap: 6px; min-height: 48px; padding: 0 6px 0 14px; border-bottom: 1px solid var(--color-brand); background: var(--color-window-hover); }
 .author-window-title { margin: 0; padding: 0; gap: 10px; }
 .author-window-title::before, .author-window-title::after { min-width: 12px; }
 .author-window-title span { max-width: none; overflow: visible; white-space: normal; text-wrap: balance; }
 .author-window-close { width: 44px; height: 44px; flex-shrink: 0; border-radius: 2px; color: var(--color-brand); }
-.author-window-close > span { display: grid; width: 22px; height: 22px; place-items: center; border: 1px solid currentColor; background: var(--color-background); box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #31564b30; }
-.author-window-close:hover > span { background: #dfe7d7; }
+.author-window-close > span { display: grid; width: 22px; height: 22px; place-items: center; border: 1px solid currentColor; background: var(--color-background); box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 var(--color-window-shadow); }
+.author-window-close:hover > span { background: var(--color-brand-soft); }
 .author-window-close:focus-visible { outline: 2px solid var(--color-brand); outline-offset: -4px; }
 .author-window-body { padding: 20px; }
-.author-window-avatar { border: 1px solid #31564b70; border-radius: 2px; background: #e6eade; box-shadow: 2px 2px 0 #31564b24; }
-.author-window-muted { color: #58665d; }
-.author-window-action { border: 1px solid #31564b70; border-radius: 2px; background: var(--color-background); color: var(--color-brand); box-shadow: 2px 2px 0 #31564b24; }
-.author-window-action:hover { background: #e8ede4; }
-.author-window-action:active { box-shadow: inset 1px 1px 0 #31564b30; }
+.author-window-avatar { border: 1px solid var(--color-window-rule); border-radius: 2px; background: var(--color-window-wallpaper); box-shadow: 2px 2px 0 var(--color-window-shadow); }
+.author-window-muted { color: var(--color-muted-foreground); }
+.author-window-action { border: 1px solid var(--color-window-rule); border-radius: 2px; background: var(--color-background); color: var(--color-brand); box-shadow: 2px 2px 0 var(--color-window-shadow); }
+.author-window-action:hover { background: var(--color-window-panel); }
+.author-window-action:active { box-shadow: inset 1px 1px 0 var(--color-window-shadow); }
 .author-window-primary { border-color: var(--color-brand); background: var(--color-brand); color: var(--color-background); }
-.author-window-primary:hover { background: #28483e; color: var(--color-background); }
-.author-window-wechat { border: 1px solid #31564b50; border-radius: 2px; background: #edf1e7; }
-.author-window-wechat > img, .author-window-wechat > [role=img] { border: 1px solid #31564b30; border-radius: 2px; background: var(--color-background); color: #58665d; }
+.author-window-primary:hover { background: color-mix(in srgb, var(--color-brand) 85%, black); color: var(--color-background); }
+.author-window-wechat { border: 1px solid var(--color-window-rule); border-radius: 2px; background: var(--color-window-hover); }
+.author-window-wechat > img, .author-window-wechat > [role=img] { border: 1px solid var(--color-window-shadow); border-radius: 2px; background: var(--color-background); color: var(--color-muted-foreground); }
 .author-window-wechat p { color: var(--color-brand); }
 @media (max-width: 359px) {
   .author-window-body { padding: 16px; }

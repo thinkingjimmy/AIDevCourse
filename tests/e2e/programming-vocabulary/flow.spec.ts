@@ -77,20 +77,20 @@ for (const scenario of [
       await expect(demo.locator('.static-site-files code')).toHaveText(['index.html', 'style.css', 'script.js']);
       const responses = demo.locator('[data-slot="server-deliveries"]');
       const clicks = demo.locator('[data-slot="browser-clicks"]');
-      await expect(responses).toHaveText('HTML 响应：1 次');
-      await expect(clicks).toHaveText('浏览器计数：0');
+      await expect(responses).toHaveText('服务器送出网页：1 次');
+      await expect(clicks).toHaveText('页面上的数字：0');
       if (scenario.javaScriptEnabled) {
         await expect(demo).toHaveAttribute('data-ready', 'true');
         await demo.locator('[data-action="click"]').click();
         await demo.locator('[data-action="click"]').press('Enter');
-        await expect(clicks).toHaveText('浏览器计数：2');
-        await expect(responses).toHaveText('HTML 响应：1 次');
+        await expect(clicks).toHaveText('页面上的数字：2');
+        await expect(responses).toHaveText('服务器送出网页：1 次');
         await capture('browser-only-interaction');
         await demo.locator('[data-action="visit"]').click();
-        await expect(clicks).toHaveText('浏览器计数：0');
-        await expect(responses).toHaveText('HTML 响应：2 次');
+        await expect(clicks).toHaveText('页面上的数字：0');
+        await expect(responses).toHaveText('服务器送出网页：2 次');
         await demo.locator('[data-action="reset"]').click();
-        await expect(responses).toHaveText('HTML 响应：1 次');
+        await expect(responses).toHaveText('服务器送出网页：1 次');
       } else {
         await expect(demo.locator('[data-action="click"]')).toBeHidden();
         await expect(demo.locator('noscript p')).toHaveText(copy.demo.noJs);

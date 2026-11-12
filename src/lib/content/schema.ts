@@ -9,6 +9,7 @@ export const courseSchema = z.object({
   ...common, sourceLocale: z.enum(locales),
   level: z.enum(['beginner', 'intermediate', 'advanced']),
   section: z.literal('introduction').optional(),
+  updating: z.boolean().optional(),
   goals: z.array(text).min(1), audience: text, prerequisites: z.array(text).min(1),
 }).strict().transform((data) => ({ ...data, kind: 'course' as const }));
 export const lessonSchema = z.object({
