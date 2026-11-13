@@ -28,8 +28,7 @@ test('model selection follows training and precedes chat', async ({ page: overvi
   const tokens = '/zh/courses/llm-101/what-is-a-token';
   const chat = '/zh/courses/llm-101/how-ai-chat-works';
   const tools = '/zh/courses/llm-101/what-is-a-tool';
-  const chatUses = '/zh/courses/llm-101/ai-chat-advice';
-  const artifacts = '/zh/courses/llm-101/ai-chat-tips';
+  const systemPrompt = '/zh/courses/llm-101/system-prompt-in-chat';
   const agents = '/zh/courses/llm-101/what-is-an-agent';
   const selection = '/zh/courses/llm-101/how-to-choose-a-language-model';
   const thinking = '/zh/courses/llm-101/how-model-thinking-works';
@@ -39,7 +38,7 @@ test('model selection follows training and precedes chat', async ({ page: overvi
   await overview.goto(coursePath('zh'));
   const links = overview.locator('section[aria-labelledby="course-catalog"] a');
   const order = await links.evaluateAll((elements) => elements.map((element) => element.getAttribute('href')));
-  expect(order).toEqual([generation, tokens, sampling, probability, training, thinking, multimodal, modelBasics, selection, chat, tools, chatUses, artifacts, agents]);
+  expect(order).toEqual([generation, tokens, sampling, probability, training, thinking, multimodal, modelBasics, selection, chat, tools, systemPrompt, agents]);
   await links.filter({ hasText: title }).click();
   const page = overview;
   await expect(page).toHaveURL(new RegExp(`${training}$`));
@@ -108,7 +107,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     const storageKey = 'lac:v1:llm-101:achievement:chat-history-as-input';
     await page.goto(coursePath('zh'));
     const links = page.locator('section[aria-labelledby="course-catalog"] a');
-    await expect(links).toHaveCount(14);
+    await expect(links).toHaveCount(13);
     await expect(links.nth(9)).toHaveAttribute('href', chat);
     await expect(links.nth(9)).toContainText('AI Chat 是如何工作的？');
     await page.goto(selection);

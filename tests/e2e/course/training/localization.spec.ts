@@ -34,7 +34,7 @@ test.describe('Localized model training', () => {
       await page.goto(path(locale));
       const catalog = page.locator('section[aria-labelledby="course-catalog"]');
       await expect(catalog.locator('h3')).toHaveCount(3);
-      await expect(catalog.locator('a')).toHaveCount(14);
+      await expect(catalog.locator('a')).toHaveCount(13);
       expect(await catalog.locator('ol').nth(1).locator('a').evaluateAll((links) => links.map((link) => link.getAttribute('href')))).toEqual(slugs.map((slug) => path(locale, slug)));
       await expect(catalog.locator('ol').nth(1).locator('li a > span:first-child')).toHaveText(['2.1', '2.2', '2.3', '2.4', '2.5']);
       const evidence = [];

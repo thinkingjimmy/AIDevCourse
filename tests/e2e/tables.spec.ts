@@ -31,7 +31,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
         const row = getComputedStyle(element.querySelector('tr')!);
         return { background: wrapper.backgroundColor, border: wrapper.borderTopColor, radius: wrapper.borderRadius, header: header.backgroundColor, heading: header.color, divider: row.borderBottomColor };
       });
-      expect(styles).toEqual({ background: 'rgb(255, 255, 255)', border: 'rgb(228, 228, 231)', radius: '0px', header: 'rgb(244, 244, 245)', heading: 'rgb(9, 9, 11)', divider: 'rgb(228, 228, 231)' });
+      expect(styles).toEqual({ background: 'rgb(255, 255, 255)', border: 'rgb(228, 228, 231)', radius: '4px', header: 'rgb(244, 244, 245)', heading: 'rgb(9, 9, 11)', divider: 'rgb(228, 228, 231)' });
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       const geometry = await table.evaluate((element) => {
         const container = element.parentElement!;
@@ -114,4 +114,18 @@ test('Published candidate table shows all five columns within the article', asyn
   await container.screenshot({ path, style: 'header { visibility: hidden; }' });
   await test.info().attach('Published candidate table', { path, contentType: 'image/png' });
   await test.info().attach('Published table geometry', { body: JSON.stringify(geometry, null, 2), contentType: 'application/json' });
+});
+
+test('A row with fewer cells spans the remaining columns', async ({ page }) => {
+  expect((await page.goto('/zh/courses/coding-101/frontend-backend-and-database'))?.status()).toBe(200);
+  const table = page.locator('article table').filter({ has: page.getByRole('columnheader', { name: '是否需要数据库' }) });
+  await expect(table).toHaveCount(1);
+  const lastRow = table.locator('tbody tr').last();
+  await expect(lastRow.locator('td')).toHaveCount(2);
+  await expect(lastRow.locator('td').last()).toHaveAttribute('colspan', '2');
+  await expect(lastRow.locator('td').last()).toContainText('这个要看情况');
+  const widths = await lastRow.evaluate((row) => (row instanceof HTMLTableRowElement ? [...row.cells].map((cell) => cell.getBoundingClientRect().width) : []));
+  expect(widths[1]).toBeGreaterThan(widths[0]);
+  const container = table.locator('..');
+  expect(await container.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
 });

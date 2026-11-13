@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { mockEmbeds } from '../embeds/fixtures';
 
-const lesson = '/zh/courses/llm-101/ai-chat-tips';
+const lesson = '/zh/courses/deepseek-101/ai-chat-tips';
 const usernames = ['karpathy', 'poteto', 'theo', 'mattpocockuk', 'op7418', 'trq212', 'lennysan', 'dotey'];
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published AI chat tips lesson.');
 

@@ -86,7 +86,7 @@ for (const action of ['back', 'reduce motion'] as const) {
 test('the blog home link returns through the PlayStation television screen', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/zh/courses/blog');
+  await page.goto('/zh/blog');
   const freeze = await page.addStyleTag({ content: pauseCamera });
   await page.getByRole('banner').locator('.site-header-logo').click();
   await page.waitForFunction(() => document.documentElement.dataset.courseZoom === 'out'
@@ -100,7 +100,7 @@ test('the blog home link returns through the PlayStation television screen', asy
   expect(end.aperture.height * end.course.scaleY).toBeCloseTo(bounds.height, 0);
   await freeze.evaluate(style => style.parentNode?.removeChild(style));
   await expect(page.locator('html')).not.toHaveAttribute('data-course-zoom');
-  await expect(page.getByRole('region', { name: '学习资料', exact: true })).toBeVisible();
+  await expect(page.getByRole('region', { name: '博客', exact: true })).toBeVisible();
   await testInfo.attach('PlayStation return camera', { body: JSON.stringify({ bounds, end }), contentType: 'application/json' });
 });
 

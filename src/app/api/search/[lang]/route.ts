@@ -10,7 +10,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ lan
   if (!isLocale(lang)) return new Response('Not found', { status: 404 });
   const catalog = getCatalog();
   const indexes = await Promise.all(catalog.documents.filter((doc) => doc.locale === lang).map(async (doc) => {
-    const article = getArticle(lang, doc.courseSlug, doc.data.kind === 'lesson' ? [doc.slug.at(-1)!] : []);
+    const article = getArticle(doc);
     if (!article) throw new Error(`Missing compiled article: ${doc.url}`);
     return { id: doc.url, url: doc.url, title: doc.data.title, description: doc.data.description,
       breadcrumbs: [catalog.courses.find((course) => course.locale === lang && course.id === doc.data.courseId)!.title],

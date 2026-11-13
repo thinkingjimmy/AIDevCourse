@@ -1,6 +1,8 @@
 'use client';
-import type { ReactNode } from 'react';
-import { SidebarHeader, SidebarTrigger } from './sidebar';
+import { useRef, useState, type ComponentProps, type ReactNode } from 'react';
+import Link from 'next/link';
+import { Tooltip } from 'radix-ui';
+import { SidebarHeader, SidebarMenuSubButton, SidebarTrigger } from './sidebar';
 
 export const directoryStyles = {
   title: 'block min-w-0 rounded-md p-2 min-[961px]:pl-5 text-base leading-snug font-semibold text-foreground max-[961px]:flex max-[961px]:min-h-11 max-[961px]:items-center',
@@ -23,4 +25,37 @@ export function DirectoryHeader({ title, toggleLabel, children }: { title: React
     </div>
     {children}
   </SidebarHeader>;
+}
+
+export function DirectoryNavigation({ label, children }: { label: string; children: ReactNode }) {
+  return <Tooltip.Provider delayDuration={350}>
+    <nav aria-label={label} className={directoryStyles.tree}>{children}</nav>
+  </Tooltip.Provider>;
+}
+
+export function DirectoryLink({ label, number, announceNumber = true, isActive = false, children, ...props }:
+  Omit<ComponentProps<typeof Link>, 'aria-current'> & { label: string; number: string; announceNumber?: boolean; isActive?: boolean }) {
+  const text = useRef<HTMLSpanElement>(null);
+  const [open, setOpen] = useState(false);
+  return <Tooltip.Root open={open} onOpenChange={next => {
+    const title = text.current;
+    setOpen(next && !!title && title.scrollWidth > title.clientWidth && getComputedStyle(title).overflowX === 'hidden');
+  }}>
+    <Tooltip.Trigger asChild>
+      <SidebarMenuSubButton asChild isActive={isActive} className={directoryStyles.link}>
+        <Link {...props} aria-current={isActive ? 'page' : undefined}>
+          <span className={directoryStyles.number} aria-hidden={announceNumber ? undefined : true}>{number}{' '}</span>
+          <span ref={text} className={directoryStyles.label}>{label}</span>
+          {children}
+        </Link>
+      </SidebarMenuSubButton>
+    </Tooltip.Trigger>
+    <Tooltip.Portal>
+      <Tooltip.Content role="presentation" data-slot="directory-title-tooltip" side="right" sideOffset={8} collisionPadding={16} hideWhenDetached
+        className="quote-frame z-40 w-max max-w-[min(20rem,var(--radix-tooltip-content-available-width))] px-3 py-2 text-sm leading-copy font-normal text-brand wrap-anywhere">
+        {/* Screen readers already get the full title from the link. */}
+        <span aria-hidden>{label}</span>
+      </Tooltip.Content>
+    </Tooltip.Portal>
+  </Tooltip.Root>;
 }

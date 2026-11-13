@@ -1,0 +1,109 @@
+---
+courseId: llm-101
+lessonId: system-prompt-in-chat
+title: "How does the system prompt get into the chat?"
+description: "Starting from the request sent to the model, learn what the system prompt is, how it is placed in every request as the first message in messages, and how it affects the model’s answers."
+---
+
+In the previous lesson, we covered [What is a tool?](/courses/llm-101/what-is-a-tool) and learned that a model can request that a program perform external abilities such as web search. But that is only one part of the request. In this lesson, we step back in the flow: what does the model actually receive before it starts generating an answer?
+
+One thing is easy to confuse, so let us clear it up first: the list of available tools is sent to the model through a separate `tools` field in the request, not inside the system prompt. This lesson looks at another hidden piece of the same request: the system message, which is the system prompt.
+
+## 1. What is the system prompt?
+
+The system prompt is an instruction that a Chat product’s developers write in advance. It is not shown in the chat window, but on every request it is sent to the model as the first message in messages, together with your question and the conversation history.
+
+You can think of it as the product’s default setup: it decides what identity the model uses, what tone it speaks in, and what rules it follows when answering. Different products write different things, and users usually cannot see the exact content.
+
+## 2. How is the system prompt put into the request?
+
+Go back to the JSON we saw in [How does AI Chat work?](/courses/llm-101/how-ai-chat-works): the messages array uses role to identify who said what. This time, look at the first message:
+
+```json
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful AI assistant. Please answer in English, use a friendly tone, and keep answers concise."
+    },
+    {
+      "role": "user",
+      "content": "Write a leave request email for me."
+    }
+  ]
+}
+```
+
+This message with role system does not come from your input, and you will not see it in the interface. You only see your own question and the model’s reply. The system prompt stays hidden behind them.
+
+And it is not sent only on the first turn. When you add “Make it more formal.”, the product rebuilds the whole array, and the system message is still at the front:
+
+```json
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful AI assistant. Please answer in English, use a friendly tone, and keep answers concise."
+    },
+    {
+      "role": "user",
+      "content": "Write a leave request email for me."
+    },
+    {
+      "role": "assistant",
+      "content": "Okay, here is a draft leave request email: ..."
+    },
+    {
+      "role": "user",
+      "content": "Make it more formal."
+    }
+  ]
+}
+```
+
+This is the same principle as the conversation history described earlier: the model does not remember anything on its own. Each turn, it receives a whole set of content that the product has assembled again.
+
+## 3. What usually goes into a system prompt?
+
+Different products write different things, but they usually cover these categories:
+
+- Identity and tone: what role the model should play and what style it should speak in.
+- Language and format: which language to answer in, and whether to use lists, tables, or a particular structure.
+- Safety and boundaries: which questions to refuse, and how to handle sensitive topics.
+- Tool usage rules: when to call a tool and how to handle the results it returns. Which tools are available and how each one works are usually sent in a separate `tools` field in the request, not in the system prompt.
+
+Some products also let you write your own “custom instructions” or “system prompt”, which is sent together with the product’s own content. How they are combined, and whether you can change them, varies by product.<JimmyNoteAnchor id="001">System Prompt</JimmyNoteAnchor>
+
+<JimmyNote anchor="001">
+  If a product updates, the content of the system prompt may change too. This is one reason the same question can get different answers at different times. Like your question, it consumes tokens and counts toward the [context window](/courses/llm-101/what-is-a-token).
+</JimmyNote>
+
+## 4. What does this mean for you?
+
+- You usually cannot see the exact content of the system prompt. You can only infer a product’s settings from the model’s answers.
+- The same question gets a different style of answer on different products, partly because they each carry a different system prompt.
+- The system prompt is only part of the input, and it does not guarantee that the model will follow it. If you want an answer in a particular format or with particular requirements, it is best to write them in your own question.
+- The safety rules of the model and the application are mostly decided by the product. You still need to check important things yourself. Do not fully trust a result just because the product “seems to have rules”.
+
+## 5. Achievement challenge
+
+<Achievement
+  id="system-prompt-in-messages"
+  title="See where the system prompt sits"
+  question="How does a Chat product usually give the system prompt to the model?"
+  answer="system-message"
+  explanation="The system prompt is a message with role system that the product adds to messages when it sends a request. It is usually first, and it is sent again with the conversation history on every turn. It is not content written into the model’s parameters during training, and it is not sent only once."
+  takeaway="The system prompt is a system message that the product adds to every request. You cannot see it, but it affects how the model answers."
+>
+  <AchievementOption value="training-data">
+    It is written into the model’s training data, which is why users cannot see it in the chat window.
+  </AchievementOption>
+  <AchievementOption value="system-message">
+    It is placed at the front of the messages array as a message with role system, and it is sent again on every request.
+  </AchievementOption>
+  <AchievementOption value="first-turn-only">
+    It is sent only once, in the first request, and the model remembers the instruction afterward.
+  </AchievementOption>
+</Achievement>

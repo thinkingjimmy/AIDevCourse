@@ -1,6 +1,6 @@
 # X profile sources
 
-The recommendations in `ai-chat-tips` preserve the original account order. Chinese biographies summarize the public profiles and linked work. They are editorial descriptions, not verbatim X biographies. Names and avatar URLs were checked on November 8, 2026, through the public FXTwitter profile endpoint (`https://api.fxtwitter.com/{username}`) and the sources below.
+The recommendations in `deepseek-101/deepseek-chat/ai-chat-tips` preserve the original account order. Chinese biographies summarize the public profiles and linked work. They are editorial descriptions, not verbatim X biographies. Names and avatar URLs were checked on November 8, 2026, through the public FXTwitter profile endpoint (`https://api.fxtwitter.com/{username}`) and the sources below.
 
 Avatars are 200 × 200 JPEG copies from X's public image CDN, stored in `public/images/profiles/x/`. Profile cards use local images and native profile links. They do not fetch profile data or load X widgets. Update the lesson metadata and the matching image when refreshing a recommendation.
 

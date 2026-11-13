@@ -1,5 +1,5 @@
 'use client';
-import { localePath } from '@/lib/i18n/routing';
+import { blogRoot, localePath } from '@/lib/i18n/routing';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/overlays/dialog';
@@ -37,7 +37,10 @@ export default function SearchDialog({ locale, version, lessons, onClose, onFocu
         const response = await client.search(query.trim());
         if (cancelled) return;
         setResultQuery(query.trim());
-        setResults(query.trim() ? response.filter((result) => result.url.startsWith(localePath(locale, '/courses/'))).slice(0, 10) : []);
+        const coursePrefix = localePath(locale, '/courses/');
+        const blogPrefix = localePath(locale, blogRoot);
+        setResults(query.trim() ? response.filter(({ url }) =>
+          url.startsWith(coursePrefix) || url === blogPrefix || url.startsWith(`${blogPrefix}/`)).slice(0, 10) : []);
         setState('ready');
       } catch { if (!cancelled) { setResultQuery(query.trim()); setResults([]); setState('error'); } }
     }, query ? 100 : 0);

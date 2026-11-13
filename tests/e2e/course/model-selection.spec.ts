@@ -95,8 +95,8 @@ test('three modules expose ordered lessons through the catalog, sidebar, and sea
   const catalog = page.locator('section[aria-labelledby="course-catalog"]');
   await expect(catalog.locator('h3')).toHaveText(['01大语言模型的工作原理', '02模型的训练与能力', '03AI 应用的工作原理']);
   const groups = catalog.locator('ol');
-  for (const [index, count] of [4, 5, 5].entries()) await expect(groups.nth(index).getByRole('listitem')).toHaveCount(count);
-  const parts = ['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2', '3.3', '3.4', '3.5'];
+  for (const [index, count] of [4, 5, 4].entries()) await expect(groups.nth(index).getByRole('listitem')).toHaveCount(count);
+  const parts = ['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '2.3', '2.4', '2.5', '3.1', '3.2', '3.3', '3.4'];
   await expect(catalog.locator('li a > span:first-child')).toHaveText(parts);
   await expect(groups.nth(1).getByRole('link').nth(1)).toHaveAttribute('href', `${course}/how-model-thinking-works`);
   await expect(groups.nth(1).getByRole('link').nth(2)).toHaveAttribute('href', `${course}/how-models-see-and-hear`);

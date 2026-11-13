@@ -108,6 +108,8 @@ async function insertOpticalDisc(home: HTMLElement, source: HTMLElement, origina
   const image = screen?.parentElement?.querySelector('img');
   if (!screen || !tray || !bed || !image?.complete || !image.naturalWidth || !tray.getBoundingClientRect().width || !original.offsetWidth) return null;
 
+  const surface = original.firstElementChild;
+  const rotation = surface && getComputedStyle(surface).transform;
   home.inert = true;
   phase('lifting');
   await bringScreenIntoView(screen, tray.getBoundingClientRect(), signal);
@@ -127,6 +129,7 @@ async function insertOpticalDisc(home: HTMLElement, source: HTMLElement, origina
   const drawerOpen = { transform: 'translateY(0)' };
   const flight = visualClone(original);
   flight.classList.add('flying-optical-disc');
+  if (rotation && flight.firstElementChild instanceof HTMLElement) flight.firstElementChild.style.transform = rotation;
   Object.assign(flight.style, { left: `${start.left - host.left}px`, top: `${start.top - host.top}px`, width: `${diameter}px`, height: `${diameter}px` });
   home.appendChild(flight);
   source.dataset.inDrive = '';

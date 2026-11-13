@@ -4,7 +4,7 @@
 
 A beginner course about large language models and coding with AI. Learn the basic concepts, then use AI to build simple websites and applications. No programming experience is required.
 
-The course is open source and still in progress. Chinese has the most complete lessons. Course introductions and all fourteen LLM 101 lessons are available in English, Japanese, French, and Spanish. Other courses have limited translations.
+The course is open source and still in progress. Chinese has the most complete lessons. Course introductions and all thirteen LLM 101 lessons are available in English, Japanese, French, and Spanish. Other courses have limited translations.
 
 ## Start learning
 
@@ -17,7 +17,7 @@ Start with [关于这门课 — About this course](./content/zh/getting-started/
 | LLM 101 | Language models, training, chat, tools, and agents | All three modules in five languages |
 | Coding 101 | Build a website with AI, from the frontend to deployment | In progress; most lessons are placeholders |
 | 设计 101 | Design basics | Lessons in preparation |
-| DeepSeek 101 | DeepSeek Chat, Harness, API, and practical usage | In progress; three introductory lessons available |
+| DeepSeek 101 | DeepSeek Chat, Harness, API, and practical usage | In progress; five lessons available, two of them translated |
 | Agent 101 | Build on the introductory agent concepts | Lessons in preparation |
 
 The site includes interactive examples, design, animation, and programming dictionaries, and achievement exercises. It saves your learning progress in your browser. You can read without an account or a model API key.

@@ -1,12 +1,11 @@
 'use client';
 import type { MouseEvent } from 'react';
-import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown';
-import { directoryStyles } from '@/components/navigation/directory-presentation';
+import { DirectoryLink, DirectoryNavigation, directoryStyles } from '@/components/navigation/directory-presentation';
 import {
   SidebarContent, SidebarGroup, SidebarMenu, SidebarMenuItem,
-  SidebarMenuSub, SidebarMenuSubItem, SidebarMenuSubButton,
+  SidebarMenuSub, SidebarMenuSubItem,
 } from '@/components/navigation/sidebar';
 import type { Locale } from '@/lib/i18n/config';
 import { localePath } from '@/lib/i18n/routing';
@@ -33,18 +32,14 @@ export function VocabularyDirectoryContents({ category: activeCategory, collecti
   const termLink = (id: DictionaryTermId, index: number, categoryIndex: number) => {
     const category = categories[categoryIndex];
     const current = collection !== 'programming' && category.id === activeCategory.id;
-    return <SidebarMenuSubButton asChild className={directoryStyles.link} isActive={selected === id}>
-      <Link href={current ? `#${id}` : localePath(locale, vocabularyTermPath(collection, category.id, id))} aria-current={selected === id ? 'page' : undefined}
-        prefetch={false} onClick={event => { if (current || selected === id) select(event, id); }}>
-        <span className={directoryStyles.number} aria-hidden>{categoryIndex + 1}.{index + 1}</span>
-        <span className={directoryStyles.label}>{t(`terms.${id}.title`)}</span>
-      </Link>
-    </SidebarMenuSubButton>;
+    return <DirectoryLink href={current ? `#${id}` : localePath(locale, vocabularyTermPath(collection, category.id, id))}
+      label={t(`terms.${id}.title`)} number={`${categoryIndex + 1}.${index + 1}`} announceNumber={false} isActive={selected === id}
+      prefetch={false} onClick={event => { if (current || selected === id) select(event, id); }} />;
   };
 
   return <SidebarContent className="w-full group-data-[collapsible=icon]:hidden">
     <SidebarGroup className={directoryStyles.group}>
-      <nav aria-label={t('title')} className={directoryStyles.tree}>
+      <DirectoryNavigation label={t('title')}>
         {normalized ? <>
           <p className="px-3 pb-2 text-caption text-sidebar-foreground" role="status">{t('resultsCount', { count: matches.length })}</p>
           <SidebarMenu>{matches.map(term => <SidebarMenuItem key={term.id}>{termLink(term.id, term.index, term.categoryIndex)}</SidebarMenuItem>)}</SidebarMenu>
@@ -60,7 +55,7 @@ export function VocabularyDirectoryContents({ category: activeCategory, collecti
             </SidebarMenuSub>
           </details>
         </SidebarMenuItem></SidebarMenu>)}
-      </nav>
+      </DirectoryNavigation>
     </SidebarGroup>
   </SidebarContent>;
 }

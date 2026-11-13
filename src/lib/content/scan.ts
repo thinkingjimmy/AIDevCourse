@@ -4,7 +4,7 @@ import { frontmatter } from 'fumadocs-core/content/md/frontmatter';
 import { courseSchema, lessonSchema, metaSchema } from './schema';
 import { inspectMarkdown } from './mdx';
 import { isLocale, type Locale } from '../i18n/config';
-import { localePath } from '../i18n/routing';
+import { coursePath } from '../i18n/routing';
 import type { ContentDocument } from './model';
 import { contentMode } from '../../../config/content-mode.mjs';
 const relativePath = (root: string, path: string) => relative(root, path).replaceAll('\\', '/');
@@ -51,7 +51,7 @@ export function scanContent(root: string) {
       if (!ordered || !meta.pages.includes(name)) throw new Error(`${file}: content missing from explicit directory order`);
       const slug = isIndex ? [] : parts.slice(2);
       const publicSlug = isIndex ? '' : slug[slug.length - 1];
-      const url = localePath(locale, `/courses/${parts[1]}${publicSlug ? `/${publicSlug}` : ''}`);
+      const url = coursePath(locale, parts[1], publicSlug);
       const { headings, links, achievements, hasJimmyNotes, resourceDiskIds } = inspectMarkdown(parsed.content, file, (parsed.matter.match(/\n/g) ?? []).length);
       documents.push({ file: relativePath(root, file), locale, courseSlug: parts[1], slug, url, data, body: parsed.content, headings, links, achievements, hasJimmyNotes, resourceDiskIds, sourceUrl: '' });
     }

@@ -16,7 +16,7 @@ import { ReadingFailure } from './reader';
 import { readingPaths, readingPrefix, type ReadingPane, type ReadingSearch } from './model';
 
 export async function loadLessonContent(doc: ContentDocument, reference = false) {
-  const article = getArticle(doc.locale, doc.courseSlug, [doc.slug.at(-1)!]);
+  const article = getArticle(doc);
   if (!article || doc.data.kind !== 'lesson') throw new Error('Lesson unavailable');
   const { body: Body, toc } = await article.load();
   const scope = reference ? { prefix: readingPrefix(doc.url), pageUrl: doc.url } : undefined;

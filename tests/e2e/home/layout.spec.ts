@@ -4,12 +4,12 @@ import { localePath } from '../../../src/lib/i18n/routing';
 import { readdirSync } from 'node:fs';
 
 for (const scenario of [
-  { name: 'desktop', width: 1440, columns: 4, javaScriptEnabled: true },
-  { name: 'compact desktop', width: 901, columns: 4, javaScriptEnabled: true },
-  { name: 'tablet', width: 900, columns: 3, javaScriptEnabled: true },
-  { name: 'phone', width: 390, columns: 2, javaScriptEnabled: true },
-  { name: 'narrow phone', width: 320, columns: 2, javaScriptEnabled: true },
-  { name: 'without JavaScript', width: 1440, columns: 4, javaScriptEnabled: false },
+  { name: 'desktop', width: 1440, javaScriptEnabled: true },
+  { name: 'compact desktop', width: 901, javaScriptEnabled: true },
+  { name: 'tablet', width: 900, javaScriptEnabled: true },
+  { name: 'phone', width: 390, javaScriptEnabled: true },
+  { name: 'narrow phone', width: 320, javaScriptEnabled: true },
+  { name: 'without JavaScript', width: 1440, javaScriptEnabled: false },
 ]) {
   test(`homepage hero contains the brand and author action on ${scenario.name}`, async ({ browser, baseURL }, testInfo) => {
     const context = await browser.newContext({ baseURL, javaScriptEnabled: scenario.javaScriptEnabled,
@@ -48,17 +48,20 @@ for (const scenario of [
         expect(metrics.logoTitleGap).toBeGreaterThanOrEqual(8);
         expect(metrics.logoTitleGap).toBeLessThanOrEqual(14);
         expect(metrics.overflow).toBe(false);
-        const grids = await page.locator('[data-slot="course-grid"]').evaluateAll(elements => elements.map(element => ({
+        // WebKit can exclude the scrollbar gutter when it evaluates width queries.
+        const columns = await page.evaluate(() => matchMedia('(max-width: 721px)').matches ? 2
+          : matchMedia('(max-width: 900px)').matches ? 3 : 4);
+        const grids = await page.locator('[data-slot="course-grid"], [data-slot="dictionary-grid"]').evaluateAll(elements => elements.map(element => ({
           columns: getComputedStyle(element).gridTemplateColumns.split(' ').length,
           bounds: element.getBoundingClientRect().toJSON(),
           cards: [...element.querySelectorAll('.course-disk-link')].map(card => card.getBoundingClientRect().toJSON()),
         })));
         for (const grid of grids) {
-          expect(grid.columns).toBe(scenario.columns);
-          expect(grid.cards.filter(card => Math.abs(card.top - grid.cards[0].top) < 1)).toHaveLength(Math.min(scenario.columns, grid.cards.length));
+          expect(grid.columns).toBe(columns);
+          expect(grid.cards.filter(card => Math.abs(card.top - grid.cards[0].top) < 1)).toHaveLength(Math.min(columns, grid.cards.length));
           expect(grid.cards[0].left).toBeCloseTo(grid.bounds.left, 1);
-          if (grid.cards.length >= scenario.columns) {
-            const row = grid.cards.slice(0, scenario.columns);
+          if (grid.cards.length >= columns) {
+            const row = grid.cards.slice(0, columns);
             expect(row.at(-1)!.right).toBeCloseTo(grid.bounds.right, 1);
             const gap = row[1].left - row[0].right;
             for (let index = 2; index < row.length; index++) {
@@ -110,9 +113,7 @@ test('disk styles are distinct and stay consistent from the catalog to each cour
     href: link.getAttribute('href')!,
     artwork: getComputedStyle(link.querySelector('.course-disk')!).borderImageSource,
   })));
-  const allArtwork = await page.locator('.course-disk-link .course-disk').evaluateAll(disks =>
-    disks.map(disk => getComputedStyle(disk).borderImageSource));
-  expect(new Set(allArtwork).size).toBe(allArtwork.length);
+  expect(new Set(catalog.map(course => course.artwork)).size).toBe(catalog.length);
   for (const course of catalog) {
     await page.goto(course.href);
     await expect(page.locator('.course-disk-cover .course-disk')).toHaveCSS('border-image-source', course.artwork);

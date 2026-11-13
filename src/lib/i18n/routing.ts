@@ -1,9 +1,16 @@
 import { defaultLocale, isLocale, type Locale } from './config';
 
 export type HomeView = 'courses' | 'resources';
+export const blogSlug = 'blog';
+export const blogRoot = `/${blogSlug}`;
 
 export function localePath(locale: Locale, path = '/') {
   return locale === defaultLocale ? path : `/${locale}${path === '/' ? '' : path}`;
+}
+
+export function coursePath(locale: Locale, course: string, article = '') {
+  const root = course === blogSlug ? blogRoot : `/courses/${course}`;
+  return localePath(locale, article ? `${root}/${article}` : root);
 }
 
 export function homePath(locale: Locale, view: HomeView, page = 1) {

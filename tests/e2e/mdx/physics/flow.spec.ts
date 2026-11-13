@@ -17,7 +17,7 @@ async function clickControl(control: Locator) {
 }
 
 for (const locale of locales) {
-  const lesson = localePath(locale, '/courses/llm-101/ai-chat-tips');
+  const lesson = localePath(locale, '/courses/deepseek-101/ai-chat-tips');
   const messages = JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
   const copy = messages.Newton;
   const number = (value: number) => new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(value);

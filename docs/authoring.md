@@ -95,7 +95,7 @@ X 接受 `x.com` 和 `twitter.com` 的帖子链接，包括移动端域名与 `/
 
 X 使用官方组件，在接近视口时加载，全页共用一次脚本。脚本加载最多等待 10 秒，单条帖子整体最多等待 15 秒；失败时显示本地化提示。YouTube 使用隐私增强播放器，延迟加载，不自动播放，支持全屏与移动端内联播放；窄屏保留至少 200px 高度。X 仅在加载失败或无 JavaScript 时显示原站链接；加载成功后使用帖子自带的查看入口。YouTube 始终保留原站链接。嵌入会直接连接相应平台，受平台隐私政策及可用性影响；隐私增强模式不表示完全没有网络请求或跟踪。构建不请求平台接口，也不需要 API 密钥。
 
-Use `XProfile` for a reusable X recommendation card. Required attributes are static, nonempty `username`, `name`, `avatar`, and `bio` strings. Use a username without `@` (1–15 letters, numbers, or underscores) and an existing local `/images/` avatar. The whole card opens `https://x.com/{username}` in a new tab. It supports keyboard navigation and works without JavaScript. `XProfile` must be a standalone block with no children. Wrap one or more cards in `XProfiles` for a two-column layout when the content area is at least 36rem wide; narrower areas use one column. `XProfiles` accepts only direct `XProfile` children and has no attributes. Keep names, biographies, and image sources current; [profile sources](./references/x-profiles.md) record the first set used in `ai-chat-tips`.
+Use `XProfile` for a reusable X recommendation card. Required attributes are static, nonempty `username`, `name`, `avatar`, and `bio` strings. Use a username without `@` (1–15 letters, numbers, or underscores) and an existing local `/images/` avatar. The whole card opens `https://x.com/{username}` in a new tab. It supports keyboard navigation and works without JavaScript. `XProfile` must be a standalone block with no children. Wrap one or more cards in `XProfiles` for a two-column layout when the content area is at least 36rem wide; narrower areas use one column. `XProfiles` accepts only direct `XProfile` children and has no attributes. Keep names, biographies, and image sources current; [profile sources](./references/x-profiles.md) record the first set used in `deepseek-101/deepseek-chat/ai-chat-tips`.
 
 ```mdx
 <XProfiles>
@@ -108,7 +108,9 @@ Use `XProfile` for a reusable X recommendation card. Required attributes are sta
 </XProfiles>
 ```
 
-标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`JimmyNoteAnchor`、`KeyTakeaway`、`ResourceDisks`、`Chat`、`ChatMessage`、`ChatThinking`、`ChatToolCall`、`InlineCitation`、`ChatMessageSequence`、`XEmbed`、`YouTube`、`WebsitePreview`、`XProfile`、`XProfiles`、`Steps`、`Step`、`LLMGenerationDemo`、`MenuComparisonDemo`、`AnimationDemo`、`FrontendLayersDemo`、`FrontendInspectorDemo`、`FrontendInspectorPractice`、`TokenizationDiagram`、`TokenProbabilityDiagram`、`LLMPretrainingOverview`、`LLMSingleRoundTrainingDemo`、`LLMMultiRoundTrainingDemo`、`Achievement`、`AchievementOption`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
+标题从 frontmatter 渲染为唯一 h1，正文从 `##` 开始。支持普通 Markdown、表格、围栏代码、图片，以及 `Callout`、`JimmyNote`、`JimmyNoteAnchor`、`KeyTakeaway`、`ResourceDisks`、`Chat`、`ChatMessage`、`ChatThinking`、`ChatToolCall`、`InlineCitation`、`ChatMessageSequence`、`XEmbed`、`YouTube`、`WebsitePreview`、`XProfile`、`XProfiles`、`Steps`、`Step`、`LLMGenerationDemo`、`MenuComparisonDemo`、`AnimationDemo`、`FrontendLayersDemo`、`FrontendInspectorDemo`、`FrontendInspectorPractice`、`TokenizationDiagram`、`TokenProbabilityDiagram`、`LLMPretrainingOverview`、`LLMSingleRoundTrainingDemo`、`LLMMultiRoundTrainingDemo`、`HoverGardenDemo`、`Achievement`、`AchievementOption`。`.md` 与 `.mdx` 均通过统一 MDX 管线，同路径只能保留一种扩展名。
+
+Markdown 表格的单元格不支持 HTML 或组件，但行尾留空的单元格会自动并入前一个单元格，用来表达跨列合并。表格的列数由表头决定；一行只写两列内容的三列表格，其第二个单元格会横跨后两列。纵向合并（rowspan）暂不支持，需要纵向合并时请拆成多行或改用正文说明。
 
 使用 `mermaid` 代码围栏绘制流程图、时序图等图表，无需 import。图表使用 [Pele](https://pele.run/) 在服务端生成 SVG，不向浏览器加载图表引擎。图表沿用站点字体与颜色；宽图保持文字大小，在图表区域内横向滚动，支持键盘操作、放大文字和无 JavaScript 阅读。通过 `accTitle` 与 `accDescr` 提供图表标题和说明。可在 [组件预览](http://localhost:3000/design/components#mermaid) 检查效果。
 
@@ -183,13 +185,13 @@ Thanks to [ian-xiaohei-illustrations](https://github.com/helloianneo/ian-xiaohei
 </KeyTakeaway>
 ```
 
-`ResourceDisks` 在正文中显示与首页相同的卡片：课程用卡带，博客和词典用光盘。用 `items` 填写逗号分隔的 ID，显示顺序与填写顺序一致。
+`ResourceDisks` 复用首页的课程和词典软盘。博客总览入口用一张带标题的光盘。用 `items` 填写逗号分隔的 ID，显示顺序与填写顺序一致。
 
 ```mdx
 <ResourceDisks items="llm-101, vocabulary" />
 ```
 
-课程和博客使用各自 frontmatter 的 `courseId`，例如 `llm-101` 和 `musings`。词典的 ID 是 `vocabulary`、`animation-vocabulary`、`programming-vocabulary`。不填 `items` 时显示三个词典。组件须单独成行，不接受子内容；`pnpm content:check` 会检查重复 ID 和当前语言中不存在的项目。正文光盘不显示下方的数量标签。卡片会按正文宽度自动换行。效果可见[组件预览](http://localhost:3000/design/components#resource-disks)。
+课程和博客使用各自 frontmatter 的 `courseId`，例如 `llm-101` 和 `musings`。词典的 ID 是 `vocabulary`、`animation-vocabulary`、`programming-vocabulary`。不填 `items` 时显示三个词典。组件须单独成行，不接受子内容；`pnpm content:check` 会检查重复 ID 和当前语言中不存在的项目。正文词典卡片显示标题和类型。卡片会按正文宽度自动换行。效果可见[组件预览](http://localhost:3000/design/components#resource-disks)。
 
 `ChatMessage` 用于文章里的静态对话示例，参考 [shadcn Message](https://ui.shadcn.com/docs/ai-elements/radix/message) 的布局。组件复用引用块的黑色直角边框和右下偏移阴影，并保留内边距；`from="user"` 显示右侧灰色气泡及圆形用户图标头像，`from="assistant"` 显示左侧浅色描边气泡及机器人头像。两种头像共用浅灰底和灰色图标。头像随消息角色自动显示，无需配置图片。正文支持多段 Markdown、强调和链接，无需 import 或 JavaScript。
 
@@ -296,7 +298,7 @@ Token 图解使用各语言实际输入的编码结果，不能只翻译词元�
 
 ## 发布、下架与改 URL
 
-课程文件列入对应 `meta.json` 后即公开。检查 meta 完整，执行 check / build / 生产 E2E。请按 [部署指南](./deployment.md) 发布通过检查的提交。
+课程文件列入对应 `meta.json` 后即公开。博客按从旧到新维护目录顺序。博客总览和文章使用 `/zh/blog` 和 `/zh/blog/{article}`，英文去掉语言前缀。PS2 首页倒序取最近六篇已发布文章，摘要使用各篇的 `description`。检查 meta 完整，执行 check / build / 生产 E2E。请按 [部署指南](./deployment.md) 发布通过检查的提交。
 
 下架时删除该语言的文件，并同步删除仍引用它的译文；目录中不再保留已删除的条目。原文文件不能在译文仍引用时直接移除。没有课时的课程介绍可以继续公开，并显示内容更新状态。
 
@@ -361,23 +363,23 @@ Token 图解使用各语言实际输入的编码结果，不能只翻译词元�
 
 ## LLM 101 的课程范围
 
-LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程介绍，以及三个模块全部十四节课的中、英、日、法、西语正文。课程介绍位于 `content/<lang>/llm-101/index.mdx`，已有课时按下面三个模块组织。
+LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程介绍，以及三个模块全部十三节课的中、英、日、法、西语正文。课程介绍位于 `content/<lang>/llm-101/index.mdx`，已有课时按下面三个模块组织。
 
 | 模块目录 | 模块名称 | 已发布课时 |
 | --- | --- | --- |
 | `model-fundamentals` | 大语言模型的工作原理 | 1.1 生成回答；1.2 Token；1.3 采样与回答的随机性；1.4 从参数与候选分数理解 Token 概率 |
 | `model-training` | 模型的训练与能力 | 2.1 模型是如何预训练的；2.2 模型的「深度思考」是怎么回事；2.3 模型是如何看图和听声音的；2.4 开源模型、参数量与本地运行；2.5 如何选择适合自己的大语言模型 |
-| `ai-applications` | AI 应用的工作原理 | 3.1 AI Chat 是如何工作的；3.2 Tool 是什么；3.3 使用 AI Chat 的几个建议；3.4 AI Chat 实用技巧；3.5 什么是 Agent |
+| `ai-applications` | AI 应用的工作原理 | 3.1 AI Chat 是如何工作的；3.2 Tool 是什么；3.3 System Prompt 是如何放进 Chat 里的？；3.4 什么是 Agent |
 
 02 用五篇文章连接预训练、深度思考、多模态输入、开源模型与本地运行和模型选择。2.2 用预算题介绍计算草稿、SFT、强化学习、结果评分与过程评分，并解释深度思考开关和 effort 的用途与成本，不展开训练算法。2.3 通过编码器类比解释图像特征、语音转写与音频理解，区分输入和输出能力。当前练习位于 2.1（generation-vs-verification、training-target-not-truth）及 2.3（distinguish-audio-inputs）；2.2、2.4 和 2.5 没有练习。2.4 保留开源与闭源、参数量、MoE 和本地运行的问题、公式与旁注；2.5 介绍模型评测、个人选型和使用成本。译文以已 Review 的中文为准，不额外修订事实主张。
 
-所有模块用自己的 `meta.json` 排序。其他语言第一模块的四节译文放入 `model-fundamentals`，第二模块的五节译文放入 `model-training`，第三模块的五节译文放入 `ai-applications`，保持译文路径与中文原文一致。公开 URL 不包含模块目录。各课保留稳定的 `lessonId`、slug 和成就 ID；仅移动模块不需要重定向，也不改变学习记录。首页「马上学习」仍按 `meta.json` 的顺序进入第一课。`tests/fixtures` 中的 `ai-coding` 只用于工程验证，不属于公开课程。
+所有模块用自己的 `meta.json` 排序。其他语言第一模块的四节译文放入 `model-fundamentals`，第二模块的五节译文放入 `model-training`，第三模块的四节译文放入 `ai-applications`，保持译文路径与中文原文一致。公开 URL 不包含模块目录。各课保留稳定的 `lessonId`、slug 和成就 ID；仅移动模块不需要重定向，也不改变学习记录。首页「马上学习」仍按 `meta.json` 的顺序进入第一课。`tests/fixtures` 中的 `ai-coding` 只用于工程验证，不属于公开课程。
 
-03 的译文覆盖正文、旁注、成就、JSON 示例中的自然语言、Mermaid 标签、工具调用标题、引用说明和人物简介。保留工具名、JSON 字段、代码行数、`fold` 范围及课时和成就 ID。`ChatMessageSequence` 与 `NewtonSecondLawDemo` 分别使用 `ChatSequence` 和 `Newton` 字典，包含控件、状态、无障碍标签与无 JavaScript 说明；牛顿演示按语言格式化小数。三幅图示由 Mermaid 源码生成，没有需要重绘的中文栅格插图。人物头像保持共用。中文原稿保持不变。
+03 的译文覆盖正文、旁注、成就、JSON 示例中的自然语言、Mermaid 标签、工具调用标题和引用说明。保留工具名、JSON 字段、代码行数、`fold` 范围及课时和成就 ID。`ChatMessageSequence` 使用 `ChatSequence` 字典，包含控件、状态、无障碍标签与无 JavaScript 说明。三幅图示由 Mermaid 源码生成，没有需要重绘的中文栅格插图。中文原稿保持不变。已迁到 DeepSeek 101 的「使用 AI Chat 的几个建议」与「AI Chat 实用技巧」同样保留五语译文；`NewtonSecondLawDemo` 使用 `Newton` 字典并保留人物简介。
 
 ### 03 的后续写作方向
 
-下表记录已发布课时和后续写作方向。3.1 至 3.4 与末课「什么是 Agent？」已发布，其余尚未发布。Agent 入门当前编号为 3.5，后续课时加入时仍放在 LLM 101 最后；未发布方向暂不编号。只有完成正文后才加入 `meta.json`；不创建空课时或指向未发布内容的链接。
+下表记录已发布课时和后续写作方向。3.1 至 3.3 与末课「什么是 Agent？」已发布，其余尚未发布。Agent 入门当前编号为 3.4，后续课时加入时仍放在 LLM 101 最后；未发布方向暂不编号。只有完成正文后才加入 `meta.json`；不创建空课时或指向未发布内容的链接。
 
 每篇采用「实际问题 → 简单原理 → Chat 操作练习 → 检查结果」的顺序。使用方法放在对应教程中，避免单独重复一套产品使用手册。具体产品的按钮、配额或界面操作以写作时的实际产品为准。
 
@@ -385,14 +387,13 @@ LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程
 | --- | --- | --- |
 | 3.1 | AI Chat 是如何工作的 | 在同一对话和新对话中提问，对比哪些历史信息进入输入 |
 | 3.2 | Tool 是什么 | 查询天气并检查调用记录、预报日期、来源和返回结果；成就 ID 为 `tool-request-vs-execution` |
-| 3.3 | 使用 AI Chat 的几个建议 | 通过尝试、补充上下文、引导提问和复述来改进回答，认识能力边界；保留成就 ID `use-chat-with-source-material` |
-| 3.4 | AI Chat 实用技巧 | 生成交互教程或数据看板，描述交互要求、逐步修改并核对结果；保留牛顿第二定律演示 |
+| 3.3 | System Prompt 是如何放进 Chat 里的 | 理解 System Prompt 是什么、它作为 messages 的第一条如何随每轮请求发送，并区分它与请求里单独的 `tools` 字段；成就 ID 为 `system-prompt-in-messages` |
 | 待定 | 提示词如何影响回答 | 写清目标、对象、限制和示例，比较输出并修改要求 |
 | 待定 | 上下文与记忆 | 判断何时继续对话、何时新建对话，以及如何保存必要背景 |
 | 待定 | 文件、知识库与 RAG | 上传资料并要求引用原文，核对回答是否有依据 |
 | 待定 | MCP | 理解应用如何连接外部工具与资料，在支持的产品中检查连接与授权 |
 | 待定 | Skills | 理解可复用的任务指令、资料和脚本，尝试安装或使用一个适合任务的 Skill |
-| 末课（当前 3.5） | 什么是 Agent？ | 区分一次回答与连续执行，认识 Agent 的目标、工具、检查与停止条件，为 Agent 101 建立前置概念 |
+| 末课（当前 3.4） | 什么是 Agent？ | 区分一次回答与连续执行，认识 Agent 的目标、工具、检查与停止条件，为 Agent 101 建立前置概念 |
 
 权限、敏感资料、来源核对和结果验证随练习一起讲解。MCP、Skills 和工具调用分别解释职责，不画成必须依次安装的层级。
 
@@ -406,7 +407,9 @@ Agent 101 是独立中级课程，已在 `content/zh/agent-101/` 发布课程介
 
 ### DeepSeek 101 的课程边界
 
-DeepSeek 101 是入门课程，已在 `content/zh/deepseek-101/` 发布课程介绍、首页卡片和三个模块：「学前必看」（1.1「关于本课程」，`lessonId: about-this-course`）、「DeepSeek Chat」（2.1「认识 DeepSeek Chat」，`lessonId: what-is-deepseek-chat`）、「DeepSeek Harness」（3.1「认识 DeepSeek Harness」，`lessonId: what-is-deepseek-harness`）。总览显示三节课和开始入口，其余课时尚未发布。课程不要求模型训练经验；动手接 API 的章节建议已有基础编程能力。
+DeepSeek 101 是入门课程，已在 `content/zh/deepseek-101/` 发布课程介绍、首页卡片和三个模块：「学前必看」（1.1「关于本课程」，`lessonId: about-this-course`）、「DeepSeek Chat」（2.1「认识 DeepSeek Chat」，`lessonId: what-is-deepseek-chat`；2.2「使用 AI Chat 的几个建议」，`lessonId: what-can-you-do-with-ai-chat`；2.3「AI Chat 实用技巧」，`lessonId: how-to-use-ai-artifacts`）、「DeepSeek Harness」（3.1「认识 DeepSeek Harness」，`lessonId: what-is-deepseek-harness`）。总览显示五节课和开始入口，其余课时尚未发布。课程不要求模型训练经验；动手接 API 的章节建议已有基础编程能力。
+
+2.2 与 2.3 从 LLM 101 的第三模块迁入，保留原来的 `lessonId`、正文与成就 ID，只把 `courseId` 改为 `deepseek-101`，并按模块顺序补进 DeepSeek Chat 的 `meta.json`。跨课程迁移改变了公开 URL，旧地址写入 `config/redirects.json`；成就记录按课程命名空间保存，旧课程的已解锁记录不会自动迁移。英文、日文、法文和西班牙文已发布 DeepSeek 101 课程介绍与这两节译文，课程介绍标记为更新中。
 
 导读课说明为什么单独学 DeepSeek、课程主题（对话产品、API、开放模型、本地部署与结果验证）、适合谁、先修要求、学习方法和课程状态，不声明成就。课程更新期间 `meta.json` 只列已有目录；新增课时按模块建目录并补 `meta.json`，保持 `lessonId` 稳定。
 
@@ -424,7 +427,7 @@ Coding 101 以 VibeCodingNav 为贯穿项目，按以下顺序组织六个项目
 | `delivery/` | 把网站交付出去 |
 | `extensions/` | 拓展：做成自己的产品 |
 
-`before-you-start/about-this-course.mdx` 是 1.1「关于这门课」的导读：说明贯穿项目会做出什么、课程地图、准备事项、学习方法和自查标准，不声明成就。`web-foundations/frontend-backend-and-database.mdx` 是 2.1「前端、后端、数据库分别做什么」的正文：用餐厅分工解释三层职责，用一次搜索请求串起前端、后端和数据库，说明各层的安全和排查边界，并声明成就 `three-layers`。两课都保留稳定的课时 ID 与公开链接。
+`before-you-start/about-this-course.mdx` 是 1.1「关于这门课」的导读：说明贯穿项目会做出什么、课程地图、准备事项、学习方法和自查标准，不声明成就。1.1 在「还需要像从前那样学习编程吗」一节使用独立的 `<HoverGardenDemo />` 展示 hover 交互效果：奶油色点阵画布上，指针经过范围内的点会随机发芽，点与点之间不显示连线——花茎从点上长出，以一条由粗到细的自然弧线向上延伸，茎上互生披针形叶片（带明暗渐变和叶脉）。顶端开出粉色波斯菊、黄色金鸡菊、紫色紫菀或白色雏菊（每种花色对应固定的花瓣数、圆润程度和花心颜色；花瓣带渐变、描边和脉纹，花朵略带倾斜透视），或只留花苞。花瓣逐片展开形成绽放动效。所有花种共用同一尺寸范围，大小随机、与颜色无关，部分花茎会分出侧枝再开一朵小花。花头高度错落，空间不足时先上下移位、再缩小填空，始终保持间距，不互相覆盖。指针离开后植物便收回，每次悬停长出的植物形态都不同。组件无参数、无子内容、无需 import，用 Canvas 和 `requestAnimationFrame` 实现。不发送请求，也不写入学习进度。减少动态效果时生长立即完成、无缓动；无 JavaScript 时显示静态花草示意图。`web-foundations/frontend-backend-and-database.mdx` 是 2.1「前端、后端、数据库分别做什么」的正文：用餐厅分工解释三层职责，用一次搜索请求串起前端、后端和数据库，说明各层的安全和排查边界，并声明成就 `three-layers`。两课都保留稳定的课时 ID 与公开链接。
 
 2.1 在「前端」一节使用独立的 `<FrontendLayersDemo />` 渲染同一页内容的三个阶段：只有 HTML、加上 CSS、再加上 JavaScript。组件无参数、无子内容、无需 import；宽屏三栏从左到右并排，窄屏上下排列，每栏标题下直接给出该阶段的说明。三栏默认都只显示标题和「添加工具」按钮，没有工具卡片；第三栏的按钮可以点击，每点击一次就在按钮下方新增一张工具卡片，三张全部添加后按钮禁用。不发送请求，也不写入学习进度。无 JavaScript 时三栏仍完整静态显示，并提示启用 JavaScript 后按钮才会新增卡片。
 

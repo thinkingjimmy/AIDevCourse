@@ -96,7 +96,13 @@
     text-align: center;
   }
   .playstation-greeting { @apply font-pixel text-device-greeting leading-none font-normal; text-shadow: 0 0 12px #709eef85; }
-  .playstation-screen .pixel-screen-title { @apply text-device-label; }
+  .playstation-screen .pixel-screen-title {
+    @apply text-device-label;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
   .playstation-screen .pixel-screen-status { color: #a4badc; }
   .playstation-tray { position: absolute; top: 82.4%; left: 55.9%; width: 24.4%; height: 11.5%; overflow: hidden; }
   .playstation-tray-bed {

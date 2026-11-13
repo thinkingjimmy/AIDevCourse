@@ -5,11 +5,12 @@ import AxeBuilder from '@axe-core/playwright';
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published blog course.');
 
-const course = '/zh/courses/blog';
+const course = '/zh/blog';
 const lessons = [
   {
     slug: 'no-loyalty-to-ai-coding-tools',
     title: '没人对 AI 编程工具有忠诚度：聊聊 2026 年 Stack Overflow 开发者调查',
+    description: '最近在看 Stack Overflow 的 2026 年开发者调查报告，发现了一些有趣的趋势。',
     opening: '又到年底了，各大分析机构陆续发布与 AI 相关的 2026 年终总结。',
     closing: '此处我也分享下我的实际感受：',
     notes: [
@@ -25,6 +26,7 @@ const lessons = [
   {
     slug: 'enterprise-ai-adoption-roi',
     title: '用 AI 的 ROI 不一定高，但老板们的自信肯定上来了 —— 从 Wharton、KPMG 与 Pax8 报告看企业 AI 落地现状',
+    description: '对照 Wharton、KPMG 与 Pax8 的企业 AI 报告，探讨影子 AI、自研 Agent、ROI、人工复核成本和数据控制，以及管理层与一线员工的认知差距。',
     opening: '上一篇分享了开发者视角的 AI 数据，今天换个角度，聊聊企业端的真实情况。或许对正在做产品的开发者或创业的朋友有帮助。',
     closing: '数据控制我觉得是企业的头号需求，复核则是被低估的隐形成本。未来会如何演进？我觉得兜兜转转之后，未来企业级 AI 或许又会重演历史，走回到私有化部署 + 自动化护栏监控（Automated Monitoring）的地步？',
     notes: [
@@ -58,13 +60,57 @@ for (const scenario of [
         await testInfo.attach(name, { path, contentType: 'image/png' });
       };
       await page.goto('/zh?view=resources');
-      const resources = page.getByRole('region', { name: '学习资料', exact: true });
-      const card = resources.getByRole('link', { name: '博客', exact: true });
-      await expect(card).toHaveAttribute('href', course);
-      await expect(card.locator('.optical-disc-meta')).toHaveText('2 篇文章');
+      const blog = page.getByRole('region', { name: '博客', exact: true });
+      const cards = blog.locator('[data-blog-article]');
+      const newestFirst = [...lessons].reverse();
+      await expect(blog).toHaveAttribute('data-compact', '');
+      await expect(cards).toHaveCount(newestFirst.length);
+      for (const [index, lesson] of newestFirst.entries()) {
+        const card = cards.nth(index);
+        await expect(card).toHaveAttribute('href', `${course}/${lesson.slug}`);
+        await expect(card).toHaveAccessibleName(lesson.title);
+        await expect(card).toHaveAccessibleDescription(lesson.description);
+        await expect(card.locator('p')).toHaveText(lesson.description);
+        await expect(card.locator('p')).toHaveCSS('-webkit-line-clamp', '3');
+        await expect(card.locator('.optical-disc-surface')).toHaveCSS('animation-name', 'none');
+      }
+      const cardLayout = await cards.evaluateAll(elements => elements.map(card => {
+        const disc = card.querySelector('[data-slot="optical-disc"]')!.getBoundingClientRect();
+        const title = card.querySelector('h3')!.getBoundingClientRect();
+        return { disc: disc.toJSON(), title: title.toJSON() };
+      }));
+      for (const { disc, title } of cardLayout) {
+        expect(disc.height).toBeCloseTo(disc.width, 1);
+        expect(disc.top).toBeCloseTo(title.top, 1);
+        expect(disc.right).toBeLessThan(title.left);
+      }
+      const [newer, older] = cardLayout;
+      if (scenario.width > 680) {
+        expect(newer.title.top).toBeCloseTo(older.title.top, 1);
+        expect(newer.title.right).toBeLessThan(older.disc.left);
+      } else {
+        expect(older.disc.top).toBeGreaterThan(newer.disc.bottom);
+        expect(older.disc.left).toBeCloseTo(newer.disc.left, 1);
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await capture('blog-on-ps2');
+      await testInfo.attach('Blog card layout', { body: JSON.stringify(cardLayout, null, 2), contentType: 'application/json' });
+      if (scenario.javaScriptEnabled) {
+        await page.waitForFunction(() => document.documentElement.style.getPropertyValue('--home-masthead-height'));
+        await cards.first().focus();
+        const screen = page.locator('[data-slot="playstation-screen"]');
+        await expect(screen.locator('.pixel-screen-title')).toHaveText(newestFirst[0].title);
+        expect(await screen.evaluate(element => {
+          const screen = element.getBoundingClientRect();
+          const title = element.querySelector('.pixel-screen-title')!.getBoundingClientRect();
+          return title.top >= screen.top && title.bottom <= screen.bottom;
+        })).toBe(true);
+      }
+      const overview = blog.locator('.blog-section-header').getByRole('link', { name: '博客总览', exact: true });
+      await expect(overview).toHaveAttribute('href', course);
+      await expect(blog.locator('.blog-more-row')).toHaveCount(0);
       await expect(page.locator('[data-slot="hero-primary-action"]')).toHaveAttribute('href', '/zh/courses/getting-started');
-      await card.focus();
-      await card.press('Enter');
+      await overview.press('Enter');
       await expect(page).toHaveURL(course);
       await expect(page.locator('main h1')).toHaveText('博客');
       const entries = page.locator('section[aria-labelledby="course-catalog"] ol a');
@@ -181,3 +227,35 @@ for (const scenario of [
     } finally { await context.close(); }
   });
 }
+
+test('blog links, redirects, search, and sitemap use the blog route', async ({ page, request, baseURL }, testInfo) => {
+  const paths = [course, ...lessons.map(lesson => `${course}/${lesson.slug}`)];
+  const sitemap = await (await request.get('/sitemap.xml')).text();
+  const evidence = [];
+  for (const path of paths) {
+    const legacyPath = path.replace('/zh/blog', '/zh/courses/blog');
+    const redirect = await request.get(`${legacyPath}?from=archive`, { maxRedirects: 0 });
+    expect(redirect.status()).toBe(308);
+    const location = new URL(redirect.headers().location, baseURL);
+    expect(location.pathname + location.search).toBe(`${path}?from=archive`);
+    expect((await page.goto(path))?.status()).toBe(200);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${path}$`));
+    await expect(page.locator('link[hreflang="zh-Hans"]')).toHaveAttribute('href', new RegExp(`${path}$`));
+    expect(sitemap).toMatch(new RegExp(`<loc>[^<]+${path}</loc>`));
+    expect(sitemap).not.toContain(legacyPath);
+    evidence.push({ legacyPath, path, redirectStatus: redirect.status() });
+  }
+  expect((await request.get('/zh/blog/missing-article')).status()).toBe(404);
+  expect((await request.get('/blog')).status()).toBe(404);
+
+  await page.goto(course);
+  await expect(page.locator('[data-slot="site-window"]')).toHaveAttribute('data-variant', 'course');
+  await page.waitForLoadState('networkidle');
+  await page.keyboard.press('Control+k');
+  await page.getByRole('dialog').getByRole('textbox').fill('Pax8');
+  const articlePath = `${course}/enterprise-ai-adoption-roi`;
+  await page.locator(`.search-result[href^="${articlePath}"]`).first().click();
+  await expect.poll(() => new URL(page.url()).pathname).toBe(articlePath);
+  await expect(page.locator('article h1')).toHaveText(lessons[1].title);
+  await testInfo.attach('Canonical blog routes', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
+});

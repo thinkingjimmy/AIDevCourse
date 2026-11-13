@@ -1,11 +1,63 @@
 [
   {
+    "source": "/zh/courses/blog",
+    "destination": "/zh/blog"
+  },
+  {
+    "source": "/zh/courses/blog/no-loyalty-to-ai-coding-tools",
+    "destination": "/zh/blog/no-loyalty-to-ai-coding-tools"
+  },
+  {
+    "source": "/zh/courses/blog/enterprise-ai-adoption-roi",
+    "destination": "/zh/blog/enterprise-ai-adoption-roi"
+  },
+  {
     "source": "/zh/courses/llm-101/what-can-you-do-with-ai-chat",
-    "destination": "/zh/courses/llm-101/ai-chat-advice"
+    "destination": "/zh/courses/deepseek-101/ai-chat-advice"
   },
   {
     "source": "/zh/courses/llm-101/how-to-use-ai-artifacts",
-    "destination": "/zh/courses/llm-101/ai-chat-tips"
+    "destination": "/zh/courses/deepseek-101/ai-chat-tips"
+  },
+  {
+    "source": "/courses/llm-101/ai-chat-advice",
+    "destination": "/courses/deepseek-101/ai-chat-advice"
+  },
+  {
+    "source": "/courses/llm-101/ai-chat-tips",
+    "destination": "/courses/deepseek-101/ai-chat-tips"
+  },
+  {
+    "source": "/zh/courses/llm-101/ai-chat-advice",
+    "destination": "/zh/courses/deepseek-101/ai-chat-advice"
+  },
+  {
+    "source": "/zh/courses/llm-101/ai-chat-tips",
+    "destination": "/zh/courses/deepseek-101/ai-chat-tips"
+  },
+  {
+    "source": "/ja/courses/llm-101/ai-chat-advice",
+    "destination": "/ja/courses/deepseek-101/ai-chat-advice"
+  },
+  {
+    "source": "/ja/courses/llm-101/ai-chat-tips",
+    "destination": "/ja/courses/deepseek-101/ai-chat-tips"
+  },
+  {
+    "source": "/fr/courses/llm-101/ai-chat-advice",
+    "destination": "/fr/courses/deepseek-101/ai-chat-advice"
+  },
+  {
+    "source": "/fr/courses/llm-101/ai-chat-tips",
+    "destination": "/fr/courses/deepseek-101/ai-chat-tips"
+  },
+  {
+    "source": "/es/courses/llm-101/ai-chat-advice",
+    "destination": "/es/courses/deepseek-101/ai-chat-advice"
+  },
+  {
+    "source": "/es/courses/llm-101/ai-chat-tips",
+    "destination": "/es/courses/deepseek-101/ai-chat-tips"
   },
   {
     "source": "/zh/courses/ai-coding",

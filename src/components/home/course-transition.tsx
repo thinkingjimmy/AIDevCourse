@@ -14,7 +14,7 @@ type Transition = {
 };
 const Context = createContext<{
   phase: DiskPhase;
-  openCourse: (entry: DiskEntry) => Promise<void>;
+  openDisk: (entry: DiskEntry, openingLabel: string) => Promise<void>;
   returnHome: (entry: HomeEntry) => Promise<void>;
 } | null>(null);
 export function useCourseTransition() {
@@ -32,14 +32,12 @@ export function canAnimateNavigation(event: MouseEvent<HTMLAnchorElement>) {
     && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-export function CourseTransitionProvider({ children, openingLabel, openingResourceLabel }: {
-  children: ReactNode; openingLabel: string; openingResourceLabel: string;
-}) {
+export function CourseTransitionProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = canonicalPath(usePathname());
   const active = useRef<Transition | null>(null);
   const [phase, setPhase] = useState<DiskPhase>('idle');
-  const [opening, setOpening] = useState(openingLabel);
+  const [opening, setOpening] = useState('');
   const reset = useCallback((restoreFocus = false) => {
     const transition = active.current;
     if (!transition) return;
@@ -59,11 +57,11 @@ export function CourseTransitionProvider({ children, openingLabel, openingResour
     transition.timeout = setTimeout(() => window.location.assign(transition.entry.url), 8000);
     router.push(transition.entry.url);
   }), [router]);
-  const openCourse = useCallback(async (entry: DiskEntry) => {
+  const openDisk = useCallback(async (entry: DiskEntry, openingLabel: string) => {
     if (active.current) return;
     const transition: Transition = { controller: new AbortController(), entry };
     active.current = transition;
-    setOpening(entry.source.hasAttribute('data-resource-disk') ? openingResourceLabel : openingLabel);
+    setOpening(openingLabel);
     router.prefetch(entry.url);
     try {
       const origin = await insertDisk(entry, transition.controller.signal, setPhase);
@@ -79,7 +77,7 @@ export function CourseTransitionProvider({ children, openingLabel, openingResour
     } finally {
       if (active.current === transition) reset();
     }
-  }, [navigate, openingLabel, openingResourceLabel, reset, router]);
+  }, [navigate, reset, router]);
   const returnHome = useCallback(async (entry: HomeEntry) => {
     if (active.current) return;
     const transition: Transition = { controller: new AbortController(), entry };
@@ -128,7 +126,7 @@ export function CourseTransitionProvider({ children, openingLabel, openingResour
       reset();
     };
   }, [reset, router]);
-  return <Context value={{ phase, openCourse, returnHome }}>{children}
+  return <Context value={{ phase, openDisk, returnHome }}>{children}
     <span className="sr-only" role="status" aria-live="polite">{phase === 'idle' ? '' : opening}</span>
   </Context>;
 }

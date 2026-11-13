@@ -4,7 +4,7 @@ import AxeBuilder from '@axe-core/playwright';
 const course = '/zh/courses/agent-101';
 const llmCourse = '/zh/courses/llm-101';
 const lesson = `${llmCourse}/what-is-an-agent`;
-const previous = `${llmCourse}/ai-chat-tips`;
+const previous = `${llmCourse}/system-prompt-in-chat`;
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published Agent introduction.');
 
@@ -42,9 +42,9 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     await expect(page.locator('article > .prose')).toContainText('为什么还要学 Agent');
     await page.goto(llmCourse);
     const entries = page.locator('section[aria-labelledby="course-catalog"] li a');
-    await expect(entries).toHaveCount(14);
+    await expect(entries).toHaveCount(13);
     await expect(entries.last()).toHaveAttribute('href', lesson);
-    await expect(entries.last()).toContainText('3.5什么是 Agent？');
+    await expect(entries.last()).toContainText('3.4什么是 Agent？');
     await page.locator(`section[aria-labelledby="course-catalog"] a[href="${previous}"]`).click();
     await page.getByRole('button', { name: '标记为已完成', exact: true }).click();
     await expect(page).toHaveURL(lesson);
@@ -54,7 +54,7 @@ for (const viewport of [{ name: 'desktop', width: 1440, height: 960 }, { name: '
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${lesson}$`));
     if (viewport.width < 961) await page.locator('[data-slot="mobile-sidebar-trigger"]').click();
     const sidebar = page.locator(viewport.width < 961 ? '[data-mobile="true"]' : '[data-slot="sidebar-inner"]');
-    await expect(sidebar.locator('a[aria-current="page"]')).toContainText('3.5 什么是 Agent？');
+    await expect(sidebar.locator('a[aria-current="page"]')).toContainText('3.4 什么是 Agent？');
     if (viewport.width < 961) await page.keyboard.press('Escape');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     const accessibility = await new AxeBuilder({ page }).include('article').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();

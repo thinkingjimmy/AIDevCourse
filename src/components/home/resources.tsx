@@ -15,20 +15,20 @@ export const getGalleryCatalog = cache(async (locale: Locale) => {
     getTranslations({ locale, namespace: 'Ui' }),
     getTranslations({ locale, namespace: 'Vocabulary' }),
   ]);
-  const resources: GalleryItem[] = await Promise.all(Object.values(vocabularyCollections).map(async collection => {
+  const dictionaries: GalleryItem[] = await Promise.all(Object.values(vocabularyCollections).map(async collection => {
     const copy = await getTranslations({ locale, namespace: collection.namespace });
     return {
       id: collection.resourceId, slug: collection.resourceId, title: copy('title'), description: copy('description'),
-      url: localePath(locale, vocabularyPagePaths(collection.id)[0]), kind: 'resource', group: 'resources', dots: 0,
+      url: localePath(locale, vocabularyPagePaths(collection.id)[0]), kind: 'dictionary', group: 'dictionaries', dots: 0,
       labels: { level: vocabulary('tool'), status: vocabulary('termCount', { count: collection.categories.reduce((total, category) => total + category.terms.length, 0) }) },
     };
   }));
   const courses: GalleryItem[] = [];
+  let blogDisk: GalleryItem | undefined;
   for (const { id, slug, title, description, url, level, section, updating, lessons } of getCourses(locale)) {
     const item = { id, slug, title, description, url };
     if (id === blogCourseId) {
-      resources.unshift({ ...item, kind: 'resource', group: 'resources', dots: 0,
-        labels: { level: '', status: home('articleCount', { count: lessons.length }) } });
+      blogDisk = { ...item, kind: 'resource', group: 'resources', dots: 0, labels: { level: '' } };
       continue;
     }
     const introduction = section === 'introduction';
@@ -39,13 +39,13 @@ export const getGalleryCatalog = cache(async (locale: Locale) => {
         status: lessons.length ? ui('lessonCount', { count: lessons.length }) : stamp ? undefined : course('updating'),
         stamp } });
   }
-  return { label: vocabulary('resources'), items: { courses, resources } };
+  return { label: vocabulary('resources'), items: { courses, dictionaries }, blogDisk };
 });
 
 export async function ResourceDisks({ items }: { items?: string }) {
-  const { label, items: { courses, resources } } = await getGalleryCatalog(await getLocale() as Locale);
-  const catalog = [...courses, ...resources];
-  const selected = items === undefined ? resources.filter(item => item.id !== blogCourseId)
+  const { label, items: { courses, dictionaries }, blogDisk } = await getGalleryCatalog(await getLocale() as Locale);
+  const catalog = [...courses, ...dictionaries, ...(blogDisk ? [blogDisk] : [])];
+  const selected = items === undefined ? dictionaries
     : parseResourceDiskIds(items).flatMap(id => catalog.find(item => item.id === id) ?? []);
   if (!selected.length) return null;
   return <ul data-component="resource-disks" role="list" aria-label={label}

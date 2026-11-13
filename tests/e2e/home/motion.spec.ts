@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { readCatalog } from '../../../src/lib/content/manifest';
+import { vocabularyCollections } from '../../../src/lib/vocabulary/collections';
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published disk catalog.');
 const courseUrl = '/zh/courses/llm-101';
@@ -172,13 +173,21 @@ for (const interruption of ['viewport', 'motion preference'] as const) {
 
 test('invalid or out-of-range catalog pages stay within the published catalog', async ({ page }, testInfo) => {
   const courses = readCatalog().courses.filter(course => course.locale === 'zh' && course.id !== 'musings');
-  const publishedUrls = courses.map(course => course.url);
-  const visibleUrls = () => page.locator('[data-course-disk]').evaluateAll(links => links.map(link => link.getAttribute('href')));
+  const diskCount = courses.length + Object.keys(vocabularyCollections).length;
+  const lastPageNumber = Math.ceil(diskCount / 9);
+  const disks = page.locator('[data-gallery-view="courses"]').locator('[data-course-disk], [data-dictionary-disk]');
+  const visibleUrls = () => disks.evaluateAll(links => links.map(link => link.getAttribute('href')));
+  await page.goto('/zh');
+  const firstPage = await visibleUrls();
+  expect(firstPage).toHaveLength(Math.min(diskCount, 9));
   for (const value of ['0', '-1', 'NaN', '1.5', 'Infinity', '1&page=2']) {
     await page.goto(`/zh?page=${value}`);
-    expect(await visibleUrls()).toEqual(publishedUrls.slice(0, 9));
+    expect(await visibleUrls()).toEqual(firstPage);
   }
-  await page.goto(`/zh?page=${courses.length + 1}`);
-  expect(await visibleUrls()).toEqual(publishedUrls.slice(Math.floor((courses.length - 1) / 9) * 9));
+  await page.goto(`/zh?page=${lastPageNumber}`);
+  const lastPage = await visibleUrls();
+  expect(lastPage).toHaveLength(diskCount - 9 * (lastPageNumber - 1));
+  await page.goto(`/zh?page=${lastPageNumber + 1}`);
+  expect(await visibleUrls()).toEqual(lastPage);
   await testInfo.attach('Catalog bounds', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
 });

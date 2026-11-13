@@ -23,18 +23,26 @@ export default async function HomePage({ params, searchParams }: Props) {
     getTranslations({ locale: lang, namespace: 'Ui' }),
     getGalleryCatalog(lang),
   ]);
-  const courses = getCourses(lang).filter(item => item.id !== blogCourseId);
+  const publishedCourses = getCourses(lang);
+  const courses = publishedCourses.filter(item => item.id !== blogCourseId);
+  const blogCourse = publishedCourses.find(item => item.id === blogCourseId);
+  const blog = blogCourse && {
+    title: blogCourse.title, url: blogCourse.url,
+    // Blog metadata lists articles in publication order.
+    articles: blogCourse.lessons.slice(-6).reverse().map(({ id, title, description, url }) => ({ id, title, description, url })),
+  };
   const startingCourse = courses.find(item => item.section === 'introduction' && item.lessons.length)
     ?? courses.find(item => item.id === 'llm-101') ?? courses.find(item => item.lessons.length) ?? courses[0];
   const { page, view } = await searchParams;
   const views = { courses: t('coursesView'), resources: t('resourcesView') };
   const directions = (view: string) => ({ previous: t('previousView', { view }), next: t('nextView', { view }) });
   return <HomeGallery locale={lang} initialView={view === 'resources' ? 'resources' : 'courses'} initialPage={Number(page)}
-    startUrl={startingCourse?.url ?? localePath(lang, '/about')} items={items}
+    startUrl={startingCourse?.url ?? localePath(lang, '/about')} items={items} blog={blog}
     labels={{ title: t('title'), start: courses.length ? t('start') : course('aboutSite'),
       opening: { courses: t('openingCourse'), resources: t('openingResource') },
       previous: t('previousPage'), next: t('nextPage'), pagination: t('pagination'), views,
-      courseCategories: { beginner: ui('beginner'), intermediate: ui('intermediate') },
+      macGroups: { beginner: ui('beginner'), intermediate: ui('intermediate'), dictionaries: t('dictionaries') },
+      blogOverview: t('blogOverview'), emptyResources: t('emptyResources'),
       switchView: t('switchView'), switchTo: { courses: directions(views.courses), resources: directions(views.resources) },
     }}>{!courses.length && <EmptyCourses locale={lang} />}</HomeGallery>;
 }

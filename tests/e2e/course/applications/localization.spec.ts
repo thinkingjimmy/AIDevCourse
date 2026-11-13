@@ -5,12 +5,12 @@ import { readCatalog } from '../../../../src/lib/content/manifest';
 import { languageNames } from '../../../../src/lib/i18n/config';
 import { capture, locales, mockEmbeds, path, slugs } from './helpers';
 
-const headingCounts = [5, 4, 5, 5, 4];
-const noteCounts = [2, 2, 1, 1, 2];
+const headingCounts = [5, 4, 5, 4];
+const noteCounts = [2, 2, 1, 2];
 const exercises = [
   ['chat-history-as-input', 'history-in-input'],
   ['tool-request-vs-execution', 'current-date-from-input-or-tool'],
-  ['use-chat-with-source-material', 'provide-and-check'],
+  ['system-prompt-in-messages', 'system-message'],
 ];
 
 test.describe('Localized AI applications', () => {
@@ -22,7 +22,7 @@ test.describe('Localized AI applications', () => {
     const documents = readCatalog().documents;
     const getDocument = (slug: string) => documents.find((entry) => entry.url === path(locale, slug))!;
 
-    test(`${locale}: read five lessons, use tools, and retain achievements across languages`, async ({ page, request }) => {
+    test(`${locale}: read four lessons, use tools, and retain achievements across languages`, async ({ page, request }) => {
       test.setTimeout(90000);
       await page.setViewportSize({ width: 1536, height: 960 });
       await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -44,9 +44,9 @@ test.describe('Localized AI applications', () => {
       await page.goto(path(locale));
       const catalog = page.locator('section[aria-labelledby="course-catalog"]');
       await expect(catalog.locator('h3')).toHaveCount(3);
-      await expect(catalog.locator('a')).toHaveCount(14);
+      await expect(catalog.locator('a')).toHaveCount(13);
       expect(await catalog.locator('ol').nth(2).locator('a').evaluateAll((links) => links.map((link) => link.getAttribute('href')))).toEqual(slugs.map((slug) => path(locale, slug)));
-      await expect(catalog.locator('ol').nth(2).locator('li a > span:first-child')).toHaveText(['3.1', '3.2', '3.3', '3.4', '3.5']);
+      await expect(catalog.locator('ol').nth(2).locator('li a > span:first-child')).toHaveText(['3.1', '3.2', '3.3', '3.4']);
       const evidence = [];
       for (const [index, slug] of slugs.entries()) {
         const navigation = index === 0 ? catalog : page.locator('[data-slot="sidebar-container"]');
@@ -65,7 +65,7 @@ test.describe('Localized AI applications', () => {
           await expect(link.locator('small')).toHaveCount(0);
         }
         await page.keyboard.press('Escape');
-        if (index === 1 || index === 4) {
+        if (index === 1 || index === 3) {
           const diagrams = page.locator('[data-component="mermaid"]');
           await expect(diagrams).toHaveCount(index === 1 ? 2 : 1);
           for (const [number, diagram] of (await diagrams.all()).entries()) {
@@ -74,7 +74,7 @@ test.describe('Localized AI applications', () => {
             const text = (await diagram.textContent())!;
             if (locale !== 'ja') expect(text).not.toMatch(/\p{Script=Han}/u);
             else expect(text).not.toMatch(/服务器|返回|工具调用|用户|盗梦空间|黑客帝国/);
-            if (index === 4) expect(text).toMatch(/3969/);
+            if (index === 3) expect(text).toMatch(/3969/);
             await capture(diagram, `${locale}-${slug}-diagram-${number}`);
             await test.info().attach(`${locale}-${slug}-diagram-${number}-svg`, {
               body: await diagram.locator('svg').evaluate((svg) => svg.outerHTML), contentType: 'image/svg+xml',
@@ -132,22 +132,6 @@ test.describe('Localized AI applications', () => {
             await expect(page).toHaveURL(path(locale, slug));
           }
         }
-        if (index === 3) {
-          const profiles = page.locator('[data-component="x-profile"]');
-          await expect(profiles).toHaveCount(8);
-          for (const profile of await profiles.all()) {
-            await expect(profile).toHaveAttribute('title', messages.Ui.viewOnX + messages.Ui.opensInNewTab);
-            await profile.scrollIntoViewIfNeeded();
-            await expect.poll(() => profile.locator('img').evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-            await expect(profile.locator('[data-slot="profile-bio"]')).not.toBeEmpty();
-          }
-          const embed = page.locator('[data-embed="x"]');
-          await embed.scrollIntoViewIfNeeded();
-          await expect(embed).toHaveAttribute('data-state', 'unavailable');
-          await expect(embed.getByRole('status')).toHaveText(messages.Ui.embedUnavailable);
-          await expect(embed.getByRole('link')).toHaveText(messages.Ui.viewOnX);
-          await capture(page.locator('[data-component="x-profiles"]'), `${locale}-profiles`);
-        }
         const exercise = exercises[index];
         await expect(page.locator('[data-achievement]')).toHaveCount(exercise ? 1 : 0);
         if (exercise) {
@@ -189,7 +173,7 @@ test.describe('Localized AI applications', () => {
         const context = await browser.newContext({ baseURL, javaScriptEnabled, reducedMotion: 'reduce', viewport: { width: 320, height: 960 } });
         try {
           const page = await context.newPage();
-          for (const slug of [slugs[1], slugs[2], slugs[4]]) {
+          for (const slug of [slugs[1], slugs[2], slugs[3]]) {
             expect((await page.goto(path(locale, slug)))?.status()).toBe(200);
             if (javaScriptEnabled) await page.evaluate(() => { document.documentElement.style.fontSize = '20px'; });
             await expect(page.locator('article h1')).toHaveText(getDocument(slug).data.title);

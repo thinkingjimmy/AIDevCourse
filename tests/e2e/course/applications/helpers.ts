@@ -3,7 +3,7 @@ import { localePath } from '../../../../src/lib/i18n/routing';
 import type { Locale } from '../../../../src/lib/i18n/config';
 
 export const locales = ['en', 'ja', 'fr', 'es'] as const;
-export const slugs = ['how-ai-chat-works', 'what-is-a-tool', 'ai-chat-advice', 'ai-chat-tips', 'what-is-an-agent'];
+export const slugs = ['how-ai-chat-works', 'what-is-a-tool', 'system-prompt-in-chat', 'what-is-an-agent'];
 export const path = (locale: Locale, slug?: string) => localePath(locale, `/courses/llm-101${slug ? `/${slug}` : ''}`);
 
 export async function mockEmbeds(page: Page) {

@@ -1,6 +1,7 @@
 {
   "title": "コース",
   "pages": [
-    "llm-101"
+    "llm-101",
+    "deepseek-101"
   ]
 }

@@ -3,8 +3,7 @@
   "pages": [
     "how-ai-chat-works",
     "what-is-a-tool",
-    "ai-chat-advice",
-    "ai-chat-tips",
+    "system-prompt-in-chat",
     "what-is-an-agent"
   ]
 }

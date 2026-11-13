@@ -8,9 +8,9 @@ import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr/CheckCircle';
 import { canonicalPath } from '@/lib/i18n/routing';
 import { groupModules } from '@/lib/content/model';
 import { cn } from '@/lib/utils';
-import { directoryStyles } from '@/components/navigation/directory-presentation';
+import { DirectoryLink, DirectoryNavigation, directoryStyles } from '@/components/navigation/directory-presentation';
 import { useLearning } from '@/components/progress/progress-provider';
-import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from '@/components/navigation/sidebar';
+import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubItem } from '@/components/navigation/sidebar';
 
 const closedModules: Record<string, boolean> = {};
 const openByCourse = new Map<string, Record<string, boolean>>();
@@ -67,7 +67,7 @@ export function ModuleTree({ staticMode = false, showOverview = true }: { static
   }, [currentModule, setOpen]);
   return <SidebarGroup className={directoryStyles.group}>
     {showOverview && <CourseOverviewLink className="mb-1" />}
-    <nav aria-label={ui('menu')} className={directoryStyles.tree}>
+    <DirectoryNavigation label={ui('menu')}>
       {groups.map((group, index) => {
         const expanded = staticMode || (open[group.module] ?? group.module === currentModule);
         const title = <>
@@ -83,20 +83,16 @@ export function ModuleTree({ staticMode = false, showOverview = true }: { static
               {group.lessons.map(({ lesson, part }) => {
                 const current = pathname === lesson.url;
                 return <SidebarMenuSubItem key={lesson.id}>
-                  <SidebarMenuSubButton asChild isActive={current} className={directoryStyles.link}>
-                    <Link href={lesson.url} aria-current={current ? 'page' : undefined}>
-                      <span className={directoryStyles.number}>{part}{' '}</span>
-                      <span className={directoryStyles.label}>{lesson.title}</span>
-                      {Object.hasOwn(learning.completed, lesson.id) && <CheckCircleIcon data-slot="lesson-completed" size={16} weight="fill" role="img" aria-label={ui('completed')} className="ml-auto shrink-0 text-brand" />}
-                    </Link>
-                  </SidebarMenuSubButton>
+                  <DirectoryLink href={lesson.url} label={lesson.title} number={part} isActive={current}>
+                    {Object.hasOwn(learning.completed, lesson.id) && <CheckCircleIcon data-slot="lesson-completed" size={16} weight="fill" role="img" aria-label={ui('completed')} className="ml-auto shrink-0 text-brand" />}
+                  </DirectoryLink>
                 </SidebarMenuSubItem>;
               })}
             </SidebarMenuSub>}
           </SidebarMenuItem>
         </SidebarMenu>;
       })}
-    </nav>
+    </DirectoryNavigation>
   </SidebarGroup>;
 }
 

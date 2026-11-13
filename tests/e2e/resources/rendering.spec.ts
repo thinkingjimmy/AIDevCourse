@@ -23,14 +23,14 @@ for (const scenario of [
       const page = await context.newPage();
       const errors: string[] = [];
       page.on('pageerror', error => errors.push(error.message));
-      await page.goto('/zh?view=resources');
+      await page.goto('/zh');
       await page.waitForLoadState('networkidle');
-      const homeDisk = page.locator('[data-resource-disk="vocabulary"]');
+      const homeDisk = page.locator('[data-dictionary-disk="vocabulary"]');
       await expect(homeDisk).toHaveAccessibleName('设计词典');
       const home = await homeDisk.evaluate(element => ({
-        title: element.querySelector('.optical-disc-title')!.textContent,
+        title: element.querySelector('.disk-title')!.textContent,
         description: document.getElementById(element.getAttribute('aria-describedby')!)!.textContent,
-        artwork: getComputedStyle(element.querySelector('.optical-disc-print')!).backgroundImage,
+        artwork: getComputedStyle(element.querySelector('[data-slot="course-disk"]')!).borderImageSource,
       }));
       await page.goto(lesson);
       if (scenario.size !== 16) await page.evaluate(size => { document.documentElement.style.fontSize = `${size}px`; }, scenario.size);
@@ -40,10 +40,10 @@ for (const scenario of [
       const disk = resources.getByRole('link', { name: '设计词典', exact: true });
       await expect(disk).toHaveAttribute('href', destination);
       await expect(disk).toHaveAccessibleDescription(home.description!);
-      await expect(disk.locator('.optical-disc-title')).toHaveText(home.title!);
-      await expect(resources.locator('.optical-disc-meta')).toHaveCount(0);
-      expect(home.artwork).toContain('/images/home/discs/labels.avif');
-      await expect(disk.locator('.optical-disc-print')).toHaveCSS('background-image', home.artwork);
+      await expect(disk.locator('.disk-title')).toHaveText(home.title!);
+      await expect(resources.getByText(/^\d+ 词条$/)).toHaveCount(0);
+      expect(home.artwork).toContain('/images/home/disks/amber.svg');
+      await expect(disk.locator('[data-slot="course-disk"]')).toHaveCSS('border-image-source', home.artwork);
       await expect(resources.getByRole('listitem')).toHaveCount(3);
       await resources.scrollIntoViewIfNeeded();
       const geometry = await resources.evaluate(element => {
@@ -98,7 +98,7 @@ test('configured resources match the homepage card styles and wrap in order', as
   await expect(links.nth(1)).toHaveAccessibleName('设计词典');
   await expect(links.nth(1)).toHaveAttribute('href', destination);
   await expect(links.nth(2)).toHaveAttribute('href', '/zh/programming-vocabulary/static-website');
-  await expect(resources.locator('[data-slot="optical-disc"]')).toHaveCount(2);
+  await expect(resources.locator('[data-slot="course-disk"]')).toHaveCount(3);
   await expect(resources.getByText('1 词条', { exact: true })).toHaveCount(0);
   for (const width of [1440, 961, 390, 320]) {
     await page.setViewportSize({ width, height: 960 });
@@ -138,19 +138,26 @@ test('configured resources match the homepage card styles and wrap in order', as
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('LLM 101');
 });
 
-test('the shared homepage resource catalog keeps localized labels and destinations', async ({ page }, testInfo) => {
+test('dictionary disks keep localized labels and destinations on the homepage', async ({ page }, testInfo) => {
   const evidence = [];
   const count = vocabularyCategories.reduce((total, category) => total + category.terms.length, 0);
   for (const locale of locales) {
     const copy = JSON.parse(readFileSync(`src/messages/vocabulary/${locale}.json`, 'utf8'));
+    const { Home } = JSON.parse(readFileSync(`src/messages/${locale}.json`, 'utf8'));
     await page.context().clearCookies();
-    await page.goto(`${localePath(locale)}?view=resources`);
-    const disk = page.locator('[data-resource-disk="vocabulary"]');
+    await page.goto(localePath(locale));
+    const group = page.getByRole('region', { name: Home.dictionaries, exact: true });
+    const disk = group.locator('[data-dictionary-disk="vocabulary"]');
     await expect(disk).toHaveAccessibleName(copy.title);
     await expect(disk).toHaveAccessibleDescription(copy.description);
     await expect(disk).toHaveAttribute('href', localePath(locale, '/vocabulary/typography'));
-    await expect(disk.locator('.optical-disc-meta')).toHaveText(copy.termCount.replace('{count}', String(count)));
+    await expect(disk.getByText(copy.termCount.replace('{count}', String(count)), { exact: true })).toBeVisible();
     evidence.push({ locale, title: copy.title, url: await disk.getAttribute('href') });
+    if (locale !== 'zh') {
+      await page.goto(`${localePath(locale)}?view=resources`);
+      await expect(page.getByText(Home.emptyResources, { exact: true })).toBeVisible();
+      await expect(group).toBeHidden();
+    }
   }
-  await testInfo.attach('Localized resource catalog', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
+  await testInfo.attach('Localized dictionary catalog', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
 });

@@ -1,0 +1,109 @@
+---
+courseId: llm-101
+lessonId: system-prompt-in-chat
+title: "Comment le System Prompt est-il intégré dans Chat ?"
+description: "En partant de la requête envoyée au modèle, découvrez ce qu’est le System Prompt, comment il est placé comme premier message de messages à chaque requête, et comment il influence les réponses du modèle."
+---
+
+Dans la leçon précédente, nous avons vu [Qu’est-ce qu’un outil ?](/fr/courses/llm-101/what-is-a-tool) et appris qu’un modèle peut demander à un programme d’exécuter des capacités externes comme la recherche web. Mais ce n’est qu’une partie de la requête. Dans cette leçon, nous revenons en arrière dans le flux : que reçoit réellement le modèle avant de commencer à générer une réponse ?
+
+Écartons d’abord une confusion fréquente : la liste des outils disponibles est envoyée au modèle via un champ `tools` séparé dans la requête, et non dans le System Prompt. Cette leçon porte sur une autre partie invisible de la même requête : le message system, c’est-à-dire le System Prompt.
+
+## 1. Qu’est-ce que le System Prompt ?
+
+Le System Prompt (prompt système) est une instruction que les développeurs d’un produit Chat rédigent à l’avance. Il ne s’affiche pas dans la fenêtre de conversation, mais à chaque requête, il est envoyé au modèle comme premier message de messages, avec votre question et l’historique de la conversation.
+
+Vous pouvez le voir comme les réglages par défaut du produit : il détermine l’identité du modèle, son ton et les règles qu’il suit pour répondre. Les produits écrivent des contenus différents, et les utilisateurs ne voient généralement pas le contenu exact.
+
+## 2. Comment le System Prompt est-il placé dans la requête ?
+
+Revenez au JSON vu dans [Comment fonctionne AI Chat ?](/fr/courses/llm-101/how-ai-chat-works) : le tableau messages utilise role pour indiquer qui parle. Cette fois, regardez le premier message.
+
+```json
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "Tu es un assistant IA serviable. Réponds en français, avec un ton amical et des réponses aussi concises que possible."
+    },
+    {
+      "role": "user",
+      "content": "Aide-moi à écrire un e-mail de demande de congé."
+    }
+  ]
+}
+```
+
+Ce message dont le role est system ne vient pas de votre saisie, et vous ne le voyez pas dans l’interface. Vous ne voyez que votre question et la réponse du modèle ; le System Prompt reste caché derrière.
+
+Et il n’est pas envoyé uniquement au premier tour. Quand vous ajoutez ensuite « Un peu plus formel », le produit recompose tout le tableau, et le message system reste en tête :
+
+```json
+{
+  "model": "deepseek-flash",
+  "messages": [
+    {
+      "role": "system",
+      "content": "Tu es un assistant IA serviable. Réponds en français, avec un ton amical et des réponses aussi concises que possible."
+    },
+    {
+      "role": "user",
+      "content": "Aide-moi à écrire un e-mail de demande de congé."
+    },
+    {
+      "role": "assistant",
+      "content": "D’accord, voici un brouillon d’e-mail de demande de congé : …"
+    },
+    {
+      "role": "user",
+      "content": "Un peu plus formel."
+    }
+  ]
+}
+```
+
+C’est la même logique que pour l’historique évoqué plus haut : le modèle ne se souvient de rien par lui-même. À chaque tour, il reçoit l’ensemble du contenu que le produit a reconstitué.
+
+## 3. Que contient généralement un System Prompt ?
+
+Le contenu varie selon les produits, mais il comprend souvent ces catégories :
+
+- Identité et ton : quel rôle le modèle doit jouer et dans quel style il doit parler.
+- Langue et format : dans quelle langue répondre, et s’il faut utiliser des listes, des tableaux ou une structure particulière.
+- Sécurité et limites : quelles questions refuser et comment traiter les sujets sensibles.
+- Règles d’usage des outils : quand appeler un outil et comment traiter les résultats renvoyés. Quels outils sont disponibles et comment chacun fonctionne figurent généralement dans un champ `tools` séparé de la requête, pas dans le System Prompt.
+
+Certains produits vous permettent aussi d’écrire votre propre « instruction personnalisée » ou « prompt système » ; le produit l’envoie avec le contenu qu’il prévoit déjà. La façon de les fusionner et la possibilité de les modifier varient selon les produits.<JimmyNoteAnchor id="001">System Prompt</JimmyNoteAnchor>
+
+<JimmyNote anchor="001">
+  Après une mise à jour du produit, le contenu du System Prompt peut aussi changer : c’est l’une des raisons pour lesquelles une même question reçoit des réponses différentes selon le moment. Comme votre question, il occupe des tokens et compte dans la [fenêtre de contexte](/fr/courses/llm-101/what-is-a-token).
+</JimmyNote>
+
+## 4. Qu’est-ce que cela implique pour vous ?
+
+- Vous ne voyez généralement pas le contenu exact du System Prompt ; vous ne pouvez que déduire les réglages du produit à partir des réponses du modèle.
+- Si une même question donne un style de réponse différent selon le produit, c’est en partie pour cette raison : chacun embarque son propre System Prompt.
+- Le System Prompt n’est qu’une partie de l’entrée et ne garantit pas que le modèle lui obéira. Si vous voulez une réponse dans un format ou selon une exigence précise, mieux vaut l’écrire directement dans votre question.
+- Les règles de sécurité du modèle et de l’application dépendent surtout du produit. Pour les sujets importants, c’est toujours à vous de vérifier : ne faites pas entièrement confiance au résultat sous prétexte que le produit « semble avoir des règles ».
+
+## 5. Défi
+
+<Achievement
+  id="system-prompt-in-messages"
+  title="Comprendre la place du System Prompt"
+  question="Comment un produit Chat transmet-il généralement le System Prompt au modèle ?"
+  answer="system-message"
+  explanation="Le System Prompt est un message dont le role est system, ajouté par le produit dans messages au moment de l’envoi. Il figure généralement en premier, et il est renvoyé à chaque tour avec l’historique. Il ne s’agit pas d’un contenu inscrit dans les paramètres pendant l’entraînement, et il n’est pas envoyé une seule fois."
+  takeaway="Le System Prompt est un message système que le produit ajoute à chaque requête. Vous ne le voyez pas, mais il influence la façon dont le modèle répond."
+>
+  <AchievementOption value="training-data">
+    Il a été inscrit dans les données d’entraînement du modèle, c’est pourquoi l’utilisateur ne le voit pas dans la fenêtre de conversation.
+  </AchievementOption>
+  <AchievementOption value="system-message">
+    Il est placé en tête du tableau messages comme un message dont le role est system, et il est renvoyé à chaque requête.
+  </AchievementOption>
+  <AchievementOption value="first-turn-only">
+    Il n’est envoyé qu’une fois, au premier tour, puis le modèle se souvient de cette instruction.
+  </AchievementOption>
+</Achievement>

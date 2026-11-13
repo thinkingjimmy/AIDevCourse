@@ -19,7 +19,13 @@ test('pixel arrows switch devices, theme, and media and return to the selected v
   const rear = (await playStation.boundingBox())!;
   expect(rear.x).toBeLessThan(front.x);
   expect(rear.y).toBeLessThan(front.y);
-  await testInfo.attach('Mac and pixel arrows', { body: await page.screenshot(), contentType: 'image/png' });
+  const macCatalog = page.locator('[data-gallery-view="courses"]');
+  await expect(macCatalog.getByRole('heading', { level: 2 })).toHaveText(['入门', '中级', '词典']);
+  const dictionaries = macCatalog.getByRole('region', { name: '词典', exact: true });
+  await expect(dictionaries.getByRole('heading', { level: 3 })).toHaveText(['设计词典', '动画词典', '编程术语词典']);
+  await expect(dictionaries.locator('[data-slot="course-disk"]')).toHaveCount(3);
+  await expect(dictionaries.locator('.disk-dots i')).toHaveCount(0);
+  await testInfo.attach('Mac course and dictionary disks', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
 
   await arrow.click();
   await expect(page).toHaveURL('/zh?view=resources');
@@ -30,27 +36,36 @@ test('pixel arrows switch devices, theme, and media and return to the selected v
   const activeDevice = (await playStation.boundingBox())!;
   expect(activeDevice.x).toBeCloseTo(front.x, 0);
   expect(activeDevice.y).toBeCloseTo(front.y, 0);
-  const resources = page.getByRole('region', { name: '学习资料', exact: true });
-  await expect(resources.getByRole('heading', { level: 3 })).toHaveText(['博客', '设计词典', '动画词典', '编程术语词典']);
-  await expect(page.getByRole('region', { name: /^(入门|中级)$/ })).toHaveCount(0);
-  const discs = await resources.locator('.optical-disc-surface').evaluateAll(elements => elements.map(element => {
+  const blog = page.getByRole('region', { name: '博客', exact: true });
+  const article = blog.locator('[data-blog-article="enterprise-ai-adoption-roi"]');
+  const disc = article.locator('.optical-disc-surface');
+  await expect(blog.locator('[data-blog-article]')).toHaveCount(2);
+  await expect(page.getByRole('region', { name: /^(入门|中级|词典)$/ })).toHaveCount(0);
+  const discs = await blog.locator('.optical-disc-surface').evaluateAll(elements => elements.map(element => {
     const { width, height } = element.getBoundingClientRect();
     return { width, height, radius: getComputedStyle(element).borderTopLeftRadius };
   }));
-  expect(discs).toEqual(Array.from({ length: 4 }, () => ({ width: 166, height: 166, radius: '50%' })));
-  await testInfo.attach('PS2 and printed discs', { body: await page.screenshot(), contentType: 'image/png' });
+  expect(discs).toEqual(Array.from({ length: 2 }, () => ({ width: 103, height: 103, radius: '50%' })));
+  await testInfo.attach('PS2 and blog articles', { body: await page.screenshot(), contentType: 'image/png' });
+  await expect(disc).toHaveCSS('animation-play-state', 'paused');
+  await article.hover();
+  await expect(disc).toHaveCSS('animation-play-state', 'running');
+  await expect.poll(() => disc.evaluate(element => Number(element.getAnimations()[0]?.currentTime))).toBeGreaterThan(100);
+  await expect(blog.locator('[data-blog-article="no-loyalty-to-ai-coding-tools"] .optical-disc-surface')).toHaveCSS('animation-play-state', 'paused');
+  await blog.getByRole('heading', { name: '博客', exact: true, level: 2 }).hover();
+  await expect(disc).toHaveCSS('animation-play-state', 'paused');
 
   const canZoom = await page.evaluate(() => typeof document.startViewTransition === 'function');
-  await resources.getByRole('link', { name: '设计词典', exact: true }).click();
+  await article.click();
   if (canZoom) {
     await expect(gallery).toHaveAttribute('data-disk-phase', 'lifting');
     await expect(page.locator('.flying-optical-disc')).toBeVisible();
   }
-  await expect(page).toHaveURL('/zh/vocabulary/typography');
+  await expect(page).toHaveURL('/zh/blog/enterprise-ai-adoption-roi');
   await expect(page.locator('html')).not.toHaveAttribute('data-course-zoom');
   await page.goBack();
   await expect(page).toHaveURL('/zh?view=resources');
-  await expect(resources).toBeVisible();
+  await expect(blog).toBeVisible();
   await expect(gallery).not.toHaveAttribute('inert');
   const backArrow = page.getByRole('link', { name: '向左切到课程', exact: true });
   await backArrow.hover();
@@ -99,7 +114,7 @@ test('the disc seats in the PS2 tray and slides into the drive', async ({ page }
       frame = requestAnimationFrame(record);
     });
   });
-  await page.getByRole('link', { name: '设计词典', exact: true }).click();
+  await page.locator('[data-blog-article="enterprise-ai-adoption-roi"]').click();
   const frames = await insertion;
   await testInfo.attach('PS2 tray geometry during insertion', { body: JSON.stringify(frames, null, 2), contentType: 'application/json' });
   expect(frames.length).toBeGreaterThanOrEqual(2);
@@ -110,7 +125,7 @@ test('the disc seats in the PS2 tray and slides into the drive', async ({ page }
   expect(retracted.bottom).toBeLessThan(seated.bottom / 2);
   expect(retracted.height).toBeCloseTo(seated.height, 0);
   expect(retracted.opacity).toBe('1');
-  await expect(page).toHaveURL('/zh/vocabulary/typography');
+  await expect(page).toHaveURL('/zh/blog/enterprise-ai-adoption-roi');
   await expect(page.locator('html')).not.toHaveAttribute('data-course-zoom');
 });
 
@@ -222,40 +237,40 @@ test('the view links work without JavaScript', async ({ browser, baseURL }) => {
     await page.goto('/zh');
     await page.getByRole('link', { name: '向右切到学习资料', exact: true }).click();
     await expect(page).toHaveURL('/zh?view=resources');
-    const blog = page.getByRole('region', { name: '学习资料', exact: true }).getByRole('link', { name: '博客', exact: true });
-    await expect(blog).toBeVisible();
+    const article = page.getByRole('region', { name: '博客', exact: true }).locator('[data-blog-article="enterprise-ai-adoption-roi"]');
+    await expect(article).toBeVisible();
     await page.getByRole('link', { name: '向左切到课程', exact: true }).click();
     await expect(page).toHaveURL('/zh');
     await expect(page.getByRole('region', { name: '入门', exact: true })).toBeVisible();
     await page.getByRole('link', { name: 'PS2 · 学习资料', exact: true }).press('Enter');
-    await blog.click();
-    await expect(page).toHaveURL('/zh/courses/blog');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('博客');
+    await article.press('Enter');
+    await expect(page).toHaveURL('/zh/blog/enterprise-ai-adoption-roi');
+    await expect(page.locator('article h1')).toContainText('用 AI 的 ROI');
   } finally { await context.close(); }
 });
 
-test('blog and dictionary pages keep the PS2 theme and return link without JavaScript', async ({ browser, baseURL }) => {
+test('blog and dictionary pages return to their home devices without JavaScript', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 1440, height: 900 } });
   try {
     const page = await context.newPage();
-    for (const [path, destination] of [
-      ['/zh/courses/blog', '/zh?view=resources'],
-      ['/zh/courses/blog/no-loyalty-to-ai-coding-tools', '/zh?view=resources'],
-      ['/zh/vocabulary/typography', '/zh?view=resources'],
-      ['/zh/animation-vocabulary/entrances-and-exits', '/zh?view=resources'],
-      ['/zh/programming-vocabulary/static-website', '/zh?view=resources'],
-      ['/fr/vocabulary/typography', '/fr?view=resources'],
+    for (const [path, destination, grid] of [
+      ['/zh/blog', '/zh?view=resources', 'blog-grid'],
+      ['/zh/blog/no-loyalty-to-ai-coding-tools', '/zh?view=resources', 'blog-grid'],
+      ['/zh/vocabulary/typography', '/zh', 'dictionary-grid'],
+      ['/zh/animation-vocabulary/entrances-and-exits', '/zh', 'dictionary-grid'],
+      ['/zh/programming-vocabulary/static-website', '/zh', 'dictionary-grid'],
+      ['/fr/vocabulary/typography', '/fr', 'dictionary-grid'],
     ]) {
       await page.goto(path);
       const header = page.getByRole('banner');
       const logo = header.locator('.site-header-logo');
       await expect(page.locator('[data-slot="site-window"]')).toHaveCSS('background-color', 'rgb(244, 247, 253)');
       await expect(header).toHaveCSS('border-bottom-color', 'rgb(53, 84, 134)');
-      if (path === '/zh/courses/blog') await expect(page.locator('.course-overview-hero [data-slot="optical-disc"]')).toBeVisible();
+      if (path === '/zh/blog') await expect(page.locator('.course-overview-hero [data-slot="optical-disc"]')).toBeVisible();
       await expect(logo).toHaveAttribute('href', destination);
       await logo.click();
       await expect(page).toHaveURL(destination);
-      await expect(page.locator('[data-slot="resource-grid"]')).toBeVisible();
+      await expect(page.locator(`[data-slot="${grid}"]`)).toBeVisible();
     }
   } finally { await context.close(); }
 });

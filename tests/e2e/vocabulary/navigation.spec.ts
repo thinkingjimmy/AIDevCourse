@@ -8,14 +8,14 @@ import { vocabularyCategories } from '../../../src/lib/vocabulary/catalog';
 test.use({ viewport: { width: 1440, height: 960 }, reducedMotion: 'reduce' });
 const path = '/zh/vocabulary/typography';
 
-test('resource disc opens the dictionary and returns to the homepage', async ({ page }, testInfo) => {
-  await page.goto('/zh?view=resources');
-  const resources = page.getByRole('region', { name: '学习资料', exact: true });
-  const disk = resources.getByRole('link', { name: '设计词典', exact: true });
+test('a Mac disk opens the dictionary and returns to the homepage', async ({ page }, testInfo) => {
+  await page.goto('/zh');
+  const dictionaries = page.getByRole('region', { name: '词典', exact: true });
+  const disk = dictionaries.getByRole('link', { name: '设计词典', exact: true });
   await expect(disk).toHaveAttribute('href', path);
   const count = vocabularyCategories.reduce((total, category) => total + category.terms.length, 0);
-  await expect(disk.locator('.optical-disc-meta')).toHaveText(`${count} 词条`);
-  await testInfo.attach('Learning resources disc', { body: await resources.screenshot(), contentType: 'image/png' });
+  await expect(disk.getByText(`${count} 词条`, { exact: true })).toBeVisible();
+  await testInfo.attach('Mac dictionary disks', { body: await dictionaries.screenshot(), contentType: 'image/png' });
   await disk.focus();
   await disk.press('Enter');
   await expect(page).toHaveURL(path);
@@ -25,28 +25,28 @@ test('resource disc opens the dictionary and returns to the homepage', async ({ 
   await expect(page.locator('.vocabulary-heading h1')).toHaveText('文字排版');
   await testInfo.attach('Typography desktop', { body: await page.screenshot(), contentType: 'image/png' });
   await page.locator('.site-header-logo').click();
-  await expect(page).toHaveURL('/zh?view=resources');
-  await expect(resources).toBeVisible();
+  await expect(page).toHaveURL('/zh');
+  await expect(dictionaries).toBeVisible();
 });
 
 for (const width of [1440, 390]) {
-  test(`dictionary disc insertion and return complete at ${width}px`, async ({ page }, testInfo) => {
+  test(`dictionary disk insertion and return complete at ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: 900 });
     await page.emulateMedia({ reducedMotion: 'no-preference' });
-    await page.goto('/zh?view=resources');
-    const disk = page.locator('[data-resource-disk="vocabulary"]');
+    await page.goto('/zh');
+    const disk = page.locator('[data-dictionary-disk="vocabulary"]');
     await disk.click();
     await expect(page.locator('.home-gallery')).toHaveAttribute('data-disk-phase', 'lifting');
-    await expect(page.locator('.flying-optical-disc')).toBeVisible();
+    await expect(page.locator('.flying-course-disk')).toBeVisible();
     await expect(page).toHaveURL(path);
     await expect(page.locator('html')).not.toHaveAttribute('data-course-zoom');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('文字排版');
     await page.locator('.site-header-logo').click();
-    await expect(page).toHaveURL('/zh?view=resources');
+    await expect(page).toHaveURL('/zh');
     await expect(page.locator('html')).not.toHaveAttribute('data-course-zoom');
     await expect(page.locator('.home-gallery')).not.toHaveAttribute('inert');
     await expect(disk).toBeVisible();
-    await testInfo.attach(`Dictionary round trip ${width}px`, { body: await page.screenshot(), contentType: 'image/png' });
+    await testInfo.attach(`Dictionary round trip ${width}px`, { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
   });
 }
 

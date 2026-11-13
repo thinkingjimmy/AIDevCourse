@@ -170,7 +170,7 @@ test.describe('English URL policy', () => {
     await page.getByRole('link', { name: 'English', exact: true }).click();
     expect(new URL(page.url()).pathname).toBe('/');
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-    await expect(page.getByRole('banner').locator('[data-slot="author-dialog-trigger"]')).toHaveText('👋');
+    await expect(page.getByRole('banner').locator('[data-slot="author-dialog-trigger"]')).toHaveText('About the author');
     await expect(page.locator('header a[href="/about"]')).toHaveCount(0);
     await page.goto('/about');
     await expect(page).toHaveURL(/\/about$/);

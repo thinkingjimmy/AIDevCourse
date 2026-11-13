@@ -3,7 +3,7 @@ import { expect, test, type Page, type TestInfo } from '@playwright/test';
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published disk catalog.');
 test.use({ reducedMotion: 'no-preference', video: 'on' });
 
-type Camera = { start: number; ready?: number; finished?: number; skipped?: number; duration?: number };
+type Camera = { start: number; ready?: number; finished?: number; skipped?: number; duration?: number; completedTime?: number };
 type MotionWindow = Window & { cameras?: Camera[] };
 
 async function recordCamera(page: Page) {
@@ -20,6 +20,7 @@ async function recordCamera(page: Page) {
         const movement = document.getAnimations().find(animation => animation instanceof CSSAnimation
           && animation.animationName === 'enter-course-window');
         camera.duration = Number(movement?.effect?.getTiming().duration);
+        void movement?.finished.then(() => { camera.completedTime = Number(movement.currentTime); }, () => {});
       }, () => { camera.skipped = performance.now(); });
       void transition.finished.then(() => { camera.finished = performance.now(); });
       return transition;
@@ -34,7 +35,8 @@ async function expectFullCamera(page: Page, duration: number, testInfo: TestInfo
   expect(camera.skipped).toBeUndefined();
   expect(camera.ready).toBeDefined();
   expect(camera.duration).toBe(duration);
-  expect(camera.finished! - camera.ready!).toBeGreaterThanOrEqual(duration - 40);
+  // A browser can start its animation timeline before it resolves the transition's ready promise.
+  expect(camera.completedTime).toBe(duration);
   await expect(page.locator('[data-course-zoom],.home-gallery[inert]')).toHaveCount(0);
 }
 
@@ -53,13 +55,13 @@ for (const source of ['home', 'overview', 'lesson', 'design dictionary', 'animat
       await route.continue();
     });
     try {
-      await page.goto(dictionary ? '/zh?view=resources' : entering ? '/zh' : '/zh/courses/llm-101');
+      await page.goto(entering ? '/zh' : '/zh/courses/llm-101');
       if (source === 'lesson') {
         await page.locator('[data-slot="hero-primary-action"]').click();
         await expect(page.locator('article h1')).toBeVisible();
       }
       const original = page.url();
-      const trigger = dictionary ? `[data-resource-disk="${dictionary}"]`
+      const trigger = dictionary ? `[data-dictionary-disk="${dictionary}"]`
         : entering ? '[data-course-disk="llm-101"]' : '.site-header-logo';
       await page.locator(trigger).click();
       await page.waitForFunction(() => (window as MotionWindow).cameras?.length === 1);
@@ -77,9 +79,9 @@ for (const source of ['home', 'overview', 'lesson', 'design dictionary', 'animat
         await expect(search).toHaveValue('test');
         await search.fill('');
         await page.locator('.site-header-logo').click();
-        await expect(page).toHaveURL('/zh?view=resources');
+        await expect(page).toHaveURL('/zh');
         await expectFullCamera(page, 320, testInfo, 1);
-        await expect(page.getByRole('region', { name: '学习资料', exact: true })).toBeVisible();
+        await expect(page.getByRole('region', { name: '词典', exact: true })).toBeVisible();
       }
     } finally { release(); }
   });

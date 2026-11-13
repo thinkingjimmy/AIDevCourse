@@ -19,7 +19,6 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   setRequestLocale(lang);
   const messages = await getMessages({ locale: lang });
   const ui = await getTranslations({ locale: lang, namespace: 'Ui' });
-  const home = await getTranslations({ locale: lang, namespace: 'Home' });
   const clientMessages = Object.fromEntries(['Ui', 'Language', 'Search', 'Course', 'Achievement', 'Author', 'Generation', 'MenuComparison', 'Training', 'Pretraining', 'ChatSequence', 'Newton'].map((namespace) => [namespace, messages[namespace]]));
   const courses = getCourses(lang);
   const lessonPaths = courses.flatMap((course) => course.lessons.map((lesson) => lesson.url));
@@ -29,7 +28,7 @@ export default async function LocaleLayout({ children, params }: { children: Rea
     <Providers locale={lang} messages={clientMessages} translations={fumadocsMessages(messages.Ui as Record<string, string>)}>
       <AchievementProvider courses={getAchievementCourses(lang)}>
         <a href="#main-content" className="fixed -top-[100px] left-4 z-[100] bg-foreground px-[18px] py-3 text-white focus:top-3">{ui('skip')}</a>
-        <CourseTransitionProvider openingLabel={home('openingCourse')} openingResourceLabel={home('openingResource')}>
+        <CourseTransitionProvider>
           <SiteFrame lessonPaths={lessonPaths} blogPath={blogPath} header={<HomeHeader locale={lang} />} homeHeader={<HomeHeader locale={lang} hero />} footer={<HomeFooter locale={lang} />} errorPage={<MissingPage locale={lang} />}>
             <noscript><p className="nojs-notice relative z-[2] border-b border-border bg-surface px-6 py-2 text-center text-sm">{ui('noJs')}</p></noscript>
             {children}

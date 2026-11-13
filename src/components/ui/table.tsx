@@ -2,7 +2,7 @@ import type { ComponentProps } from 'react';
 import { cn } from '@/lib/utils';
 
 export function Table({ className, ...props }: ComponentProps<'table'>) {
-  return <div tabIndex={0} data-slot="table-container" className="not-prose relative w-full overflow-x-auto border border-border bg-background focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring">
+  return <div tabIndex={0} data-slot="table-container" className="not-prose relative w-full overflow-x-auto rounded-sm border border-border bg-background focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring">
     <table {...props} data-slot="table" className={cn('w-full caption-bottom border-collapse text-sm leading-body text-strong', className)} />
   </div>;
 }

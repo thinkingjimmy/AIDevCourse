@@ -3,6 +3,51 @@ import { readCatalog } from '../../../../src/lib/content/manifest';
 
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published sidebar navigation.');
 
+test('truncated sidebar titles reveal their full text on hover and keyboard focus', async ({ page, browserName }, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto('/zh/courses/llm-101/what-a-language-model-does');
+  await page.evaluate(() => document.fonts.ready);
+  const sidebar = page.locator('[data-slot="sidebar-inner"]');
+  const title = '大语言模型是如何生成回答的？';
+  const longLink = sidebar.getByRole('link', { name: `1.1 ${title}`, exact: true });
+  const shortLink = sidebar.getByRole('link', { name: '1.2 什么是 Token？', exact: true });
+  const tooltip = page.locator('[data-slot="directory-title-tooltip"]');
+  const clipped = (link: Locator) => link.locator('> span').nth(1).evaluate(element => element.scrollWidth > element.clientWidth);
+  expect(await clipped(longLink)).toBe(true);
+  expect(await clipped(shortLink)).toBe(false);
+
+  const row = (await longLink.boundingBox())!;
+  await longLink.hover();
+  await expect(tooltip).toBeVisible();
+  await expect(tooltip).toHaveText(title);
+  await expect(longLink).toHaveAccessibleDescription('');
+  expect(await longLink.boundingBox()).toEqual(row);
+  const popup = (await tooltip.boundingBox())!;
+  expect(popup.x).toBeGreaterThan(row.x + row.width);
+  await tooltip.hover();
+  await expect(tooltip).toBeVisible();
+  const screenshot = testInfo.outputPath('full-sidebar-title.png');
+  await page.screenshot({ path: screenshot, animations: 'disabled' });
+  await testInfo.attach('Full sidebar title', { path: screenshot, contentType: 'image/png' });
+  await testInfo.attach('Sidebar title placement', { body: JSON.stringify({ row, popup }, null, 2), contentType: 'application/json' });
+
+  await page.mouse.move(900, 80);
+  await expect(tooltip).toHaveCount(0);
+  await sidebar.locator('[data-sidebar="menu-button"]').first().focus();
+  const tab = browserName === 'webkit' ? 'Alt+Tab' : 'Tab';
+  await page.keyboard.press(tab);
+  await expect(longLink).toBeFocused();
+  await expect(tooltip).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(tooltip).toHaveCount(0);
+  await expect(longLink).toBeFocused();
+  await page.keyboard.press(tab);
+  await expect(shortLink).toBeFocused();
+  await expect(tooltip).toHaveCount(0);
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL('/zh/courses/llm-101/what-is-a-token');
+});
+
 for (const width of [1440, 390]) {
   test(`sidebar hover uses green without replacing the active chapter at ${width}px`, async ({ page, browserName }, testInfo) => {
     await page.setViewportSize({ width, height: 960 });
