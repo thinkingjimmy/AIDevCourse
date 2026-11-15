@@ -6,6 +6,7 @@
 | --- | --- | --- | --- | --- |
 | Jimmy's personal website | `http://localhost:3000/en` | [jimmywong.dev/en](https://jimmywong.dev/en) | `public/images/websites/jimmy-home.webp` | November 10, 2026; Chromium; 960 × 840 CSS pixels; 2× scale; light theme; WebP quality 88 |
 | DeepSeek homepage | `https://www.deepseek.com/en/` | [deepseek.com/en](https://www.deepseek.com/en/) | `public/images/websites/deepseek-home-en-hero.webp` | November 12, 2026. Chromium, 1440 × 620 CSS pixels, 2× scale, light theme, WebP quality 88. |
+| ArtCraft homepage | `https://getartcraft.com/` | [getartcraft.com](https://getartcraft.com/) | `public/images/websites/artcraft-home.webp` | November 14, 2026; Chromium; 1280 × 800 CSS pixels; 2× scale; light theme; WebP quality 88 |
 
 The screenshot of Jimmy's site preserves the rendered page content. Local development controls are hidden during capture. Fonts and network requests finish before capture. The destination was checked through its HTTPS redirect to `https://www.jimmywong.dev/en`.
 

@@ -71,7 +71,7 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
         if (node.type !== 'mdxJsxFlowElement') fail(`${element.name} must be a standalone block`);
         if (element.children.some((child) => child.type !== 'text' || child.value?.trim())) fail(`${element.name} does not accept children`);
       }
-      if (['Chat', 'KeyTakeaway', 'XProfiles'].includes(element.name) && element.attributes.length) fail(`${element.name} does not accept attributes`);
+      if (['KeyTakeaway', 'XProfiles'].includes(element.name) && element.attributes.length) fail(`${element.name} does not accept attributes`);
       if (element.name === 'XProfiles') {
         if (node.type !== 'mdxJsxFlowElement') fail('XProfiles must be a standalone block');
         const profiles = element.children.filter(child => child.type !== 'text' || child.value?.trim());
@@ -102,6 +102,7 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
       }
       const embed = element.name === 'XEmbed' || element.name === 'YouTube';
       const allowed: readonly string[] = element.name === 'WebsitePreview' ? ['url', 'title', 'height']
+        : element.name === 'Chat' ? ['input']
         : embed ? ['url', 'title'] : element.name === 'XProfile' ? ['username', 'name', 'avatar', 'bio'] : element.name === 'JimmyNoteAnchor' ? ['id', 'variant'] : element.name === 'JimmyNote' ? ['anchor'] : element.name === 'Achievement' ? achievementFields : element.name === 'AchievementOption' ? ['value'] : element.name === 'ChatMessage' ? ['from', 'state'] : element.name === 'ChatToolCall' ? ['name', 'title', 'defaultOpen'] : element.name === 'ChatThinking' ? ['defaultOpen'] : element.name === 'InlineCitation' ? ['url', 'title', 'description'] : element.name === 'ResourceDisks' ? ['items'] : ['title', 'type'];
       const attributes: Record<string, string> = {};
       for (const attribute of element.attributes) {
@@ -115,6 +116,10 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
         }
         if (typeof attribute.value !== 'string') fail(`Unsupported attribute on ${element.name}; use static strings`);
         attributes[attribute.name] = attribute.value as string;
+      }
+      if (element.name === 'Chat' && attributes.input !== undefined) {
+        if (node.type !== 'mdxJsxFlowElement') fail('Chat with input must be a standalone block');
+        if (!attributes.input.trim()) fail('Chat input must contain text');
       }
       if (element.name === 'ResourceDisks') {
         if (node.type !== 'mdxJsxFlowElement') fail('ResourceDisks must be a standalone block');

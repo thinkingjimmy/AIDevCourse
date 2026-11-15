@@ -1,13 +1,19 @@
 ---
 courseId: llm-101
 lessonId: system-prompt-in-chat
-title: "How does the system prompt get into the chat?"
-description: "Starting from the request sent to the model, learn what the system prompt is, how it is placed in every request as the first message in messages, and how it affects the model’s answers."
+title: "Why do some chats have an identity and role?"
+description: "Starting from the differences in identity and tone between Chat products, learn what the system prompt is, how it is placed in every request, and how it affects the model’s answers."
 ---
 
-In the previous lesson, we covered [What is a tool?](/courses/llm-101/what-is-a-tool) and learned that a model can request that a program perform external abilities such as web search. But that is only one part of the request. In this lesson, we step back in the flow: what does the model actually receive before it starts generating an answer?
+Have you noticed that the same language model seems like a different person in different products?
 
-One thing is easy to confuse, so let us clear it up first: the list of available tools is sent to the model through a separate `tools` field in the request, not inside the system prompt. This lesson looks at another hidden piece of the same request: the system message, which is the system prompt.
+- Emotional companion products reply gently and patiently, and respond to your feelings first.
+- Vertical assistants for law or medicine choose their words carefully and remind you not to treat them as professional advice.
+- Customer service bots use fixed scripts and guide you through a process step by step.
+
+The model itself has not changed: the parameters and training data are the same. What changes is an instruction that the product quietly adds to the front of every request. It defines what role the model plays, what tone it uses, which boundaries it respects, and how it organizes answers, and users usually cannot see it. That instruction is the system prompt.
+
+In this lesson, we will take it apart: what the system prompt is, how it is put into every request, and why the same model can show a completely different “personality.” We will also clarify how it differs from the tool list in the previous lesson: the tool list travels in a separate `tools` field in the request, not inside the system prompt.
 
 ## 1. What is the system prompt?
 

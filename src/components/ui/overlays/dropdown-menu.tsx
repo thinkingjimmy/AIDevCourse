@@ -4,9 +4,12 @@ import type { ComponentProps } from 'react';
 import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui';
 import { cn } from '@/lib/utils';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
+import { CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';
 
 export const DropdownMenu = DropdownMenuPrimitive.Root;
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
+export const DropdownMenuGroup = DropdownMenuPrimitive.Group;
+export const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 export const DropdownMenuSub = DropdownMenuPrimitive.Sub;
 
 const contentClass = 'z-[80] min-w-40 max-h-[var(--radix-dropdown-menu-content-available-height)] max-w-[calc(100vw-24px)] overflow-y-auto rounded-md border border-border bg-background p-1 text-foreground shadow-md outline-none';
@@ -29,6 +32,19 @@ export function DropdownMenuItem({ className, ...props }: ComponentProps<typeof 
     data-slot="dropdown-menu-item"
     className={cn(itemClass, className)}
   />;
+}
+
+export function DropdownMenuLabel({ className, ...props }: ComponentProps<typeof DropdownMenuPrimitive.Label>) {
+  return <DropdownMenuPrimitive.Label data-slot="dropdown-menu-label" className={cn('px-3 py-1.5 text-sm font-medium text-reading', className)} {...props} />;
+}
+
+export function DropdownMenuRadioItem({ className, children, ...props }: ComponentProps<typeof DropdownMenuPrimitive.RadioItem>) {
+  return <DropdownMenuPrimitive.RadioItem data-slot="dropdown-menu-radio-item" className={cn(itemClass, 'justify-between', className)} {...props}>
+    {children}
+    <span className="flex size-4 shrink-0 items-center justify-center" aria-hidden>
+      <DropdownMenuPrimitive.ItemIndicator><CheckIcon size={14} weight="bold" className="text-brand" /></DropdownMenuPrimitive.ItemIndicator>
+    </span>
+  </DropdownMenuPrimitive.RadioItem>;
 }
 
 export function DropdownMenuSubTrigger({ className, children, onPointerLeave, ...props }: ComponentProps<typeof DropdownMenuPrimitive.SubTrigger>) {

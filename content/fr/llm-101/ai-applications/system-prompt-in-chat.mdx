@@ -1,13 +1,19 @@
 ---
 courseId: llm-101
 lessonId: system-prompt-in-chat
-title: "Comment le System Prompt est-il intégré dans Chat ?"
-description: "En partant de la requête envoyée au modèle, découvrez ce qu’est le System Prompt, comment il est placé comme premier message de messages à chaque requête, et comment il influence les réponses du modèle."
+title: "Pourquoi certains chats ont-ils une identité et un rôle ?"
+description: "En partant des différences d’identité et de ton entre les produits Chat, découvrez ce qu’est le System Prompt, comment il est placé dans chaque requête et comment il influence les réponses du modèle."
 ---
 
-Dans la leçon précédente, nous avons vu [Qu’est-ce qu’un outil ?](/fr/courses/llm-101/what-is-a-tool) et appris qu’un modèle peut demander à un programme d’exécuter des capacités externes comme la recherche web. Mais ce n’est qu’une partie de la requête. Dans cette leçon, nous revenons en arrière dans le flux : que reçoit réellement le modèle avant de commencer à générer une réponse ?
+Avez-vous remarqué que le même modèle de langage semble être une personne différente selon le produit ?
 
-Écartons d’abord une confusion fréquente : la liste des outils disponibles est envoyée au modèle via un champ `tools` séparé dans la requête, et non dans le System Prompt. Cette leçon porte sur une autre partie invisible de la même requête : le message system, c’est-à-dire le System Prompt.
+- Les produits de compagnie émotionnelle répondent avec douceur et patience, et réagissent d’abord à vos émotions.
+- Les assistants spécialisés dans le droit ou la médecine choisissent leurs mots avec prudence et vous rappellent de ne pas les prendre pour un avis professionnel.
+- Les robots de service client utilisent des scripts fixes et vous guident étape par étape.
+
+Le modèle lui-même n’a pas changé : les paramètres et les données d’entraînement sont les mêmes. Ce qui change, c’est une instruction que le produit ajoute discrètement au début de chaque requête. Elle définit le rôle que joue le modèle, le ton qu’il adopte, les limites qu’il respecte et la façon dont il structure ses réponses, et les utilisateurs ne la voient généralement pas. Cette instruction, c’est le System Prompt.
+
+Dans cette leçon, nous allons l’examiner : ce qu’est le System Prompt, comment il est placé dans chaque requête, et pourquoi le même modèle peut afficher une « personnalité » complètement différente. Nous préciserons aussi sa différence avec la liste des outils de la leçon précédente : cette liste passe par un champ `tools` séparé de la requête, et non par le System Prompt.
 
 ## 1. Qu’est-ce que le System Prompt ?
 

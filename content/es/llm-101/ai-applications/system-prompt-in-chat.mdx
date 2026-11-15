@@ -1,13 +1,19 @@
 ---
 courseId: llm-101
 lessonId: system-prompt-in-chat
-title: "¿Cómo se incluye el System Prompt en Chat?"
-description: "Partiendo de la solicitud que se envía al modelo, descubre qué es el System Prompt, cómo se coloca como primer mensaje de messages en cada solicitud y cómo influye en las respuestas del modelo."
+title: "¿Por qué algunos chats tienen una identidad y un rol?"
+description: "Partiendo de las diferencias de identidad y tono entre los productos Chat, descubre qué es el System Prompt, cómo se coloca en cada solicitud y cómo influye en las respuestas del modelo."
 ---
 
-En la lección anterior vimos [¿Qué es una herramienta?](/es/courses/llm-101/what-is-a-tool) y aprendimos que un modelo puede pedir a un programa que ejecute capacidades externas como la búsqueda web. Pero eso es solo una parte de la solicitud. En esta lección retrocedemos en el flujo: ¿qué recibe realmente el modelo antes de empezar a generar una respuesta?
+¿Has notado que el mismo modelo de lenguaje parece una persona distinta según el producto?
 
-Aclaremos primero una confusión habitual: la lista de herramientas disponibles se envía al modelo mediante un campo `tools` aparte en la solicitud, no dentro del System Prompt. Esta lección trata de otra parte invisible de la misma solicitud: el mensaje system, es decir, el System Prompt.
+- Los productos de compañía emocional responden con dulzura y paciencia, y reaccionan primero a tus emociones.
+- Los asistentes verticales de derecho o medicina eligen las palabras con cuidado y te recuerdan que no los tomes como una opinión profesional.
+- Los bots de atención al cliente usan guiones fijos y te guían paso a paso.
+
+El modelo en sí no ha cambiado: los parámetros y los datos de entrenamiento son los mismos. Lo que cambia es una instrucción que el producto añade discretamente al principio de cada solicitud. Define qué papel adopta el modelo, qué tono usa, qué límites respeta y cómo organiza las respuestas, y los usuarios normalmente no pueden verla. Esa instrucción es el System Prompt.
+
+En esta lección vamos a desmontarlo: qué es el System Prompt, cómo se coloca en cada solicitud y por qué el mismo modelo puede mostrar una «personalidad» completamente distinta. También aclararemos su diferencia con la lista de herramientas de la lección anterior: esa lista viaja en un campo `tools` aparte de la solicitud, no dentro del System Prompt.
 
 ## 1. ¿Qué es el System Prompt?
 

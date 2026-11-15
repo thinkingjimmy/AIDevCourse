@@ -1,6 +1,6 @@
 import { localePath } from '../src/lib/i18n/routing';
 import { defineConfig, defineCollections } from 'fumadocs-mdx/config';
-import { rehypeToc } from 'fumadocs-core/mdx-plugins';
+import { rehypeToc, remarkStructureDefaultOptions } from 'fumadocs-core/mdx-plugins';
 import { readCatalog } from '../src/lib/content/manifest';
 import { contentRoot } from '../src/lib/content/scan';
 import { documentSchema } from '../src/lib/content/schema';
@@ -37,6 +37,18 @@ export default defineConfig({
   mdxOptions: {
     // Keep interactive heading components in the article, not module-level TOC exports.
     remarkHeadingOptions: { generateToc: true },
+    remarkStructureOptions: {
+      mdxTypes: (node) => remarkStructureDefaultOptions.mdxTypes(node) || (node.name === 'Chat' && node.attributes.length > 0),
+      stringify: {
+        stringify(node, _parent, _state, _info, context) {
+          if (node.type !== 'mdxJsxFlowElement' || node.name !== 'Chat') return undefined;
+          const input = node.attributes.find(attribute => attribute.type === 'mdxJsxAttribute' && attribute.name === 'input')?.value;
+          const content = typeof input === 'string' ? input.trim() : '';
+          if (content) context.addContent({ content, heading: undefined });
+          return undefined;
+        },
+      },
+    },
     valueToExport: ['toc'],
     remarkPlugins: (plugins) => [remarkMark, remarkMath, remarkValidateMath, remarkValidateCodeFolds, remarkNumberJimmyNotes, remarkMermaid, ...plugins],
     // Render math before Shiki can treat its generated code nodes as a programming language.

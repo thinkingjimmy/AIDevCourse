@@ -7,6 +7,7 @@ const url = '/zh/courses/getting-started';
 const lessonUrl = `${url}/about-this-course`;
 const changelogUrl = `${url}/changelog`;
 const acknowledgementsUrl = `${url}/acknowledgements`;
+const faqUrl = `${url}/faq`;
 const programmingTitle = '既然 AI 都能写好代码了，为何还要学习编程？';
 const programmingUrl = `${url}/why-learn-programming-with-ai`;
 
@@ -29,9 +30,9 @@ for (const scenario of [
       const intermediate = catalog.getByRole('region', { name: '中级', exact: true });
       const card = beginner.getByRole('link', { name: title, exact: true });
       await expect(card).toHaveAttribute('href', url);
-      await expect(card.locator('.disk-meta')).toHaveText('起步6 课');
+      await expect(card.locator('.disk-meta')).toHaveText('起步7 课');
       await expect(page.locator('[data-slot="hero-primary-action"]')).toHaveAttribute('href', url);
-      await expect(catalog.getByRole('heading', { level: 2 })).toHaveText(['入门', '中级']);
+      await expect(catalog.getByRole('heading', { level: 2 })).toHaveText(['入门', '中级', '词典']);
       await expect(beginner.getByRole('heading', { level: 3 })).toHaveText([title, 'LLM 101', 'DeepSeek 101', '设计 101']);
       await expect(intermediate.getByRole('heading', { level: 3 })).toHaveText(['Coding 101', 'Agent 101']);
       await expect(intermediate.getByRole('link', { name: 'Coding 101', exact: true }).locator('.disk-level')).toHaveText('中级');
@@ -53,8 +54,9 @@ for (const scenario of [
       await expect(page.getByRole('heading', { name: '课程目录', exact: true })).toBeVisible();
       await expect(page.locator('.course-directory-group h3')).toHaveText([/01\s*学前必看/, /02\s*我的一些碎碎念/]);
       await expect(page.getByRole('link', { name: '1.1 关于这门课', exact: true })).toHaveAttribute('href', lessonUrl);
-      await expect(page.getByRole('link', { name: '1.2 致谢与参考资料', exact: true })).toHaveAttribute('href', acknowledgementsUrl);
-      await expect(page.getByRole('link', { name: '1.3 更新日志', exact: true })).toHaveAttribute('href', changelogUrl);
+      await expect(page.getByRole('link', { name: '1.2 常见问题（FAQ）', exact: true })).toHaveAttribute('href', faqUrl);
+      await expect(page.getByRole('link', { name: '1.3 致谢与参考资料', exact: true })).toHaveAttribute('href', acknowledgementsUrl);
+      await expect(page.getByRole('link', { name: '1.4 更新日志', exact: true })).toHaveAttribute('href', changelogUrl);
       await expect(page.getByRole('link', { name: '2.1 AI 时代，我们到底要学什么?', exact: true })).toHaveAttribute('href', `${url}/what-to-learn-in-the-ai-era`);
       await expect(page.getByRole('link', { name: '2.2 很焦虑怎么办？', exact: true })).toHaveAttribute('href', `${url}/what-to-do-when-anxious`);
       await expect(page.getByRole('link', { name: `2.3 ${programmingTitle}`, exact: true })).toHaveAttribute('href', programmingUrl);
@@ -62,7 +64,7 @@ for (const scenario of [
       await expect(page.getByRole('heading', { name: /你将学会|适合谁学/ })).toHaveCount(0);
       await testInfo.attach('Independent course directory', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
       for (const lesson of [
-        { number: '1.3', title: '更新日志', url: changelogUrl, evidence: 'Changelog placeholder' },
+        { number: '1.4', title: '更新日志', url: changelogUrl, evidence: 'Changelog placeholder' },
         { number: '2.3', title: programmingTitle, url: programmingUrl, evidence: 'Programming lesson placeholder' },
       ]) {
         await page.getByRole('link', { name: `${lesson.number} ${lesson.title}`, exact: true }).click();
@@ -88,7 +90,7 @@ for (const scenario of [
         await expect(sidebar.locator('.course-navigation > ul > li > p')).toHaveText(['01 学前必看', '02 我的一些碎碎念']);
       }
       await expect(sidebar.locator('[data-sidebar="menu-sub-button"]')).toHaveText([
-        '1.1 关于这门课', '1.2 致谢与参考资料', '1.3 更新日志', '2.1 AI 时代，我们到底要学什么?', '2.2 很焦虑怎么办？', `2.3 ${programmingTitle}`,
+        '1.1 关于这门课', '1.2 常见问题（FAQ）', '1.3 致谢与参考资料', '1.4 更新日志', '2.1 AI 时代，我们到底要学什么?', '2.2 很焦虑怎么办？', `2.3 ${programmingTitle}`,
       ]);
       await expect(sidebar.locator('a[aria-current="page"]')).toHaveText('1.1 关于这门课');
       await testInfo.attach('Reordered course navigation', { body: await sidebar.screenshot({ animations: 'disabled' }), contentType: 'image/png' });
@@ -110,7 +112,7 @@ test('untranslated introduction courses stay out of the catalog', async ({ page 
   for (const path of ['/', '/ja', '/fr', '/es']) {
     await page.goto(path);
     await expect(page.locator('[data-course-disk="ai-coding"]')).toHaveCount(0);
-    await expect(page.locator('#catalog').getByRole('heading', { level: 2 })).toHaveCount(1);
+    await expect(page.locator('#catalog').getByRole('heading', { level: 2 })).toHaveCount(2);
     await expect(page.getByRole('link', { name: 'LLM 101', exact: true })).toBeVisible();
   }
   await testInfo.attach('Localized catalog', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });

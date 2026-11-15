@@ -25,7 +25,7 @@
 }
 ```
 
-导读课程可在 frontmatter 中设置 `section: introduction`，首页会将其放入难度分组之前的「开始之前」。`level` 仍表示课程难度；未设置 `section` 的课程继续按难度分组。当前中文导读课程「从想法到作品」位于 `content/zh/getting-started/`，卡片和总览复用首页电脑拆解动图；「学前必看」下的 1.1「关于这门课」位于 `before-you-start/about-this-course.mdx`，1.2「致谢与参考资料」位于 `before-you-start/acknowledgements.mdx`，记录读者反馈与写作时参考的教程资料；1.3「更新日志」位于 `before-you-start/changelog.mdx`，正文待补充。Changelog 的中文名称为「更新日志」，稳定 ID 与路径使用 `changelog`。「我的一些碎碎念」的三课位于 `musings/`，由该目录的 `meta.json` 排序；2.3「既然 AI 都能写好代码了，为何还要学习编程？」位于 `why-learn-programming-with-ai.mdx`，正文待补充。课程根目录只放介绍和模块顺序，课时放入对应模块。公开路径使用 `getting-started`，稳定标识 `courseId: ai-coding` 用于关联已有学习记录，旧课程地址通过 `config/redirects.json` 跳转。
+导读课程可在 frontmatter 中设置 `section: introduction`，首页会将其放入难度分组之前的「开始之前」。`level` 仍表示课程难度；未设置 `section` 的课程继续按难度分组。当前中文导读课程「从想法到作品」位于 `content/zh/getting-started/`，卡片和总览复用首页电脑拆解动图；「学前必看」下的 1.1「关于这门课」位于 `before-you-start/about-this-course.mdx`；1.2「常见问题（FAQ）」位于 `before-you-start/faq.mdx`，记录写作原因、是否推出付费教程等常见问题；1.3「致谢与参考资料」位于 `before-you-start/acknowledgements.mdx`，记录读者反馈与写作时参考的教程资料；1.4「更新日志」位于 `before-you-start/changelog.mdx`，正文待补充。Changelog 的中文名称为「更新日志」，稳定 ID 与路径使用 `changelog`。「我的一些碎碎念」的三课位于 `musings/`，由该目录的 `meta.json` 排序；2.3「既然 AI 都能写好代码了，为何还要学习编程？」位于 `why-learn-programming-with-ai.mdx`，正文待补充。课程根目录只放介绍和模块顺序，课时放入对应模块。公开路径使用 `getting-started`，稳定标识 `courseId: ai-coding` 用于关联已有学习记录，旧课程地址通过 `config/redirects.json` 跳转。
 
 课程介绍不计入课时数量。课程可以先发布介绍，再逐步添加课时。没有课时的课程保留首页卡片和总览，显示「内容更新中」，不显示开始第一课或课时统计。完全没有课程的语言会显示本地化空状态。
 
@@ -209,6 +209,12 @@ An LLM generates text from the context you provide.
 </Chat>
 ```
 
+`Chat` 的可选 `input` 参数用 shadcn 的多行输入框展示待发送的指令。单独成块的 `<Chat input="…" />` 只显示输入区。在标签内加入 `ChatMessage` 时，输入区显示在对话底部。`input` 接受非空纯文本。读者可以选择和复制文字，也可以用 [shadcn Model Selector](https://ui.shadcn.com/docs/ai-elements/radix/model-selector) 切换示例里的 DeepSeek 模型。关闭 JavaScript 时显示默认型号。附件和发送按钮处于禁用状态。
+
+```mdx
+<Chat input="如果你需要更多信息才能更好地回答此问题，你可以向我提问，向我索要更多信息。" />
+```
+
 `ChatMessage` 的 `state` 配置决定显示状态。默认 `state="complete"` 显示正常回复气泡；`from="assistant" state="thinking"` 使用 [shadcn Radix Reasoning](https://ui.shadcn.com/docs/ai-elements/radix/reasoning) 的官方 `TraceLine`，以 running 状态显示旋转指示和 Thinking 文字，保留 LLM 头像。它不带消息气泡，也不接受正文，只展示文章里的思考状态示意，不调用模型。系统开启减少动态效果时停止旋转；无 JavaScript 时仍可阅读。
 
 ```mdx
@@ -369,7 +375,7 @@ LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程
 | --- | --- | --- |
 | `model-fundamentals` | 大语言模型的工作原理 | 1.1 生成回答；1.2 Token；1.3 采样与回答的随机性；1.4 从参数与候选分数理解 Token 概率 |
 | `model-training` | 模型的训练与能力 | 2.1 模型是如何预训练的；2.2 模型的「深度思考」是怎么回事；2.3 模型是如何看图和听声音的；2.4 开源模型、参数量与本地运行；2.5 如何选择适合自己的大语言模型 |
-| `ai-applications` | AI 应用的工作原理 | 3.1 AI Chat 是如何工作的；3.2 Tool 是什么；3.3 System Prompt 是如何放进 Chat 里的？；3.4 什么是 Agent |
+| `ai-applications` | AI 应用的工作原理 | 3.1 AI Chat 是如何工作的；3.2 Tool 是什么；3.3 为什么有些 Chat 会有身份和角色？；3.4 什么是 Agent |
 
 02 用五篇文章连接预训练、深度思考、多模态输入、开源模型与本地运行和模型选择。2.2 用预算题介绍计算草稿、SFT、强化学习、结果评分与过程评分，并解释深度思考开关和 effort 的用途与成本，不展开训练算法。2.3 通过编码器类比解释图像特征、语音转写与音频理解，区分输入和输出能力。当前练习位于 2.1（generation-vs-verification、training-target-not-truth）及 2.3（distinguish-audio-inputs）；2.2、2.4 和 2.5 没有练习。2.4 保留开源与闭源、参数量、MoE 和本地运行的问题、公式与旁注；2.5 介绍模型评测、个人选型和使用成本。译文以已 Review 的中文为准，不额外修订事实主张。
 
@@ -387,7 +393,7 @@ LLM 101 是无需编程或训练经验的入门课程。当前发布五语课程
 | --- | --- | --- |
 | 3.1 | AI Chat 是如何工作的 | 在同一对话和新对话中提问，对比哪些历史信息进入输入 |
 | 3.2 | Tool 是什么 | 查询天气并检查调用记录、预报日期、来源和返回结果；成就 ID 为 `tool-request-vs-execution` |
-| 3.3 | System Prompt 是如何放进 Chat 里的 | 理解 System Prompt 是什么、它作为 messages 的第一条如何随每轮请求发送，并区分它与请求里单独的 `tools` 字段；成就 ID 为 `system-prompt-in-messages` |
+| 3.3 | 为什么有些 Chat 会有身份和角色 | 从情感陪伴、垂直助手与客服产品的回答差异切入，理解 System Prompt 是什么、作为 messages 的第一条如何随每轮请求发送，并区分它与请求里单独的 `tools` 字段；成就 ID 为 `system-prompt-in-messages` |
 | 待定 | 提示词如何影响回答 | 写清目标、对象、限制和示例，比较输出并修改要求 |
 | 待定 | 上下文与记忆 | 判断何时继续对话、何时新建对话，以及如何保存必要背景 |
 | 待定 | 文件、知识库与 RAG | 上传资料并要求引用原文，核对回答是否有依据 |

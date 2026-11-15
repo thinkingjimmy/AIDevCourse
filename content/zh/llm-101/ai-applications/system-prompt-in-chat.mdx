@@ -1,13 +1,19 @@
 ---
 courseId: llm-101
 lessonId: system-prompt-in-chat
-title: System Prompt 是如何放进 Chat 里的？
-description: 从发送给模型的请求出发，了解 System Prompt 是什么、它作为 messages 里的第一条消息如何被放进每一次请求，以及它如何影响模型的回答。
+title: 为什么有些 Chat 会有身份和角色？
+description: 从不同 Chat 产品的身份和语气差异出发，了解 System Prompt 是什么、它如何被放进每一次请求，以及它如何影响模型的回答。
 ---
 
-上一课我们讲了 [Tool 是什么？](/zh/courses/llm-101/what-is-a-tool)，知道了模型可以请求程序执行搜索这类外部能力。不过那只是请求里的一部分。这一课我们把流程往前挪一步：模型在开始生成回答之前，到底收到了什么？
+除了一些平台型的 Chat 产品比如 DeepSeek Chat 或者 ChatGPT，你可能用过一些专门做某个领域的 Chat，比如：
 
-先说明一个容易混淆的地方：可用工具的清单，是通过请求里单独的 `tools` 字段发送的，并不在 System Prompt 里。这一课要看的是请求里另一条同样隐藏的内容——system 消息，也就是 System Prompt。
+- 情感陪伴类产品，回答温柔、耐心，会先回应你的情绪。
+- 法律、医疗这类垂直助手，措辞谨慎，会提醒你别把它当成专业意见。
+- 客服机器人，话术固定，按流程一步步引导你。
+
+为何这些 Chat 产品会有不同的身份和语气？
+
+模型其实没有任何变化，与之前在[AI Chat 是如何工作的？](/zh/courses/llm-101/how-ai-chat-works) 课程里分享的实现让模型记住你的方式类似，要想 Chat 产品里模型的回复有不同的身份和语气，就需要用到 System Prompt。
 
 ## 一、System Prompt 是什么？
 
@@ -17,7 +23,7 @@ System Prompt（系统提示词）是 Chat 产品的开发者在产品里预先�
 
 ## 二、System Prompt 是怎么被放进请求的？
 
-回到 [AI Chat 是如何工作的？](/zh/courses/llm-101/how-ai-chat-works) 里看过的 JSON：messages 数组用 role 区分消息是谁说的。这次我们留意一下第一条消息：
+回到 [AI Chat 是如何工作的？](/zh/courses/llm-101/how-ai-chat-works) 里看过的 JSON：messages 数组用 role 区分消息是谁说的。 System Prompt 就是 role 为 system 的消息:
 
 ```json
 {
@@ -35,7 +41,7 @@ System Prompt（系统提示词）是 Chat 产品的开发者在产品里预先�
 }
 ```
 
-这条 role 为 system 的消息并不来自你的输入，你也不会在界面上看到它。你只看到自己的提问和模型的回复，System Prompt 一直藏在后面。
+但需要注意，这条 role 为 system 的消息和 user 以及 assistant 消息不同，它并不来自用户的输入，用户也不会在界面上看到它。用户只看到自己的提问和模型的回复。
 
 而且它并不是只在第一轮发送。你接着补充一句「再正式一点」时，产品会重新组装整个数组，system 消息仍然排在最前面：
 
@@ -63,31 +69,22 @@ System Prompt（系统提示词）是 Chat 产品的开发者在产品里预先�
 }
 ```
 
-这和前面说的历史消息是同一个道理：模型不会自己记住什么，它每一轮收到的都是产品重新拼好的一整份内容。
-
 ## 三、System Prompt 里一般写了什么？
 
-不同产品写的内容不一样，通常会包括这几类：
+不同产品写的内容不一样，通常会包括这<JimmyNoteAnchor id="001">几类</JimmyNoteAnchor>：
 
 - 身份和语气：让模型扮演什么角色、用什么风格说话。
 - 语言和格式：用哪种语言回答，要不要用列表、表格或特定的结构。
 - 安全与边界：哪些问题要拒绝，遇到敏感话题怎么处理。
 - 工具的使用规则：什么情况下该调用工具、怎么处理工具返回的结果。至于有哪些工具可用、每个工具怎么用，通常放在请求里单独的 `tools` 字段中，不在 System Prompt 里。
 
-有些产品还允许你自己写一段「自定义指令」或「系统提示词」，它会和产品自带的内容一起发送。至于怎么合并、能不能改，不同产品并不一样。<JimmyNoteAnchor id="001">System Prompt</JimmyNoteAnchor>
+有些产品还允许你自己写一段「自定义指令」或「系统提示词」，它会和产品自带的内容一起发送。至于怎么合并、能不能改，不同产品并不一样。
 
 <JimmyNote anchor="001">
   产品更新后，System Prompt 的内容也可能变化，这是同一个问题在不同时间得到不同回答的原因之一。它和你的提问一样会占用 Token，也会算在[上下文窗口](/zh/courses/llm-101/what-is-a-token)里。
 </JimmyNote>
 
-## 四、这对你意味着什么？
-
-- 你通常看不到 System Prompt 的具体内容，只能从模型的回答里推测产品的设定。
-- 同样的提问在不同产品上回答风格不同，一部分原因就在这里：它们各自带着不同的 System Prompt。
-- System Prompt 只是输入的一部分，并不能保证模型一定照做。如果你希望回答符合某种格式或要求，最好直接写在自己的提问里。
-- 模型和应用的安全规则更多由产品决定。重要的事情仍然需要你自己核对，不要因为产品「看起来有规则」就完全信任结果。
-
-## 五、成就挑战
+## 四、成就挑战
 
 <Achievement
   id="system-prompt-in-messages"
