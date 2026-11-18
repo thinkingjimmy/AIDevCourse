@@ -1,6 +1,6 @@
 'use client';
 import type { ComponentProps } from 'react';
-import { Slider as SliderPrimitive } from 'radix-ui';
+import * as SliderPrimitive from 'radix-ui/slider';
 import { cn } from '@/lib/utils';
 
 export function Slider({ className, defaultValue, value, min = 0, max = 100, thumbProps, ...props }:

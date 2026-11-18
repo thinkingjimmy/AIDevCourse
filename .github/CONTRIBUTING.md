@@ -26,7 +26,7 @@ Open [localhost:3000/zh](http://localhost:3000/zh). No database, model API key, 
 
 Development also accepts this computer's current IPv4 addresses, so local-network previews can load client resources and hot reload. Other origins remain blocked.
 
-Development uses Turbopack with a persistent disk cache. Articles compile on demand; the homepage and course directories read the validated catalog without loading article bodies. Unchanged content reuses its validation result. Development enables memory eviction after cache snapshots and garbage collection for unused compiler work. Body edits and achievement declarations support hot reload. Restart after changing frontmatter, file paths, or `meta.json` order. Fonts are installed through pinned Fontsource packages; development and builds do not download fonts from Google.
+Turbopack caches development builds on disk. The homepage and course directories read the validated catalog. Lessons compile when first opened. The content watcher updates the catalog when you edit a lesson, change its frontmatter, or reorder entries in `meta.json`. The site uses fonts from pinned Fontsource packages.
 
 English routes have no language prefix. Other languages use `/zh`, `/ja`, `/fr`, and `/es`. Design studies are at `/design`, and writing components are at `/design/components`. The design and animation dictionaries start at `/vocabulary/typography` and `/animation-vocabulary/entrances-and-exits`.
 
@@ -55,10 +55,10 @@ Install browser binaries with `pnpm exec playwright install chromium firefox web
 - Update relevant setup, architecture, or authoring guidance when behavior changes.
 - Keep keyboard access, native links, narrow-screen reading, reduced motion, and storage failure behavior intact.
 - Preserve tutorial wording unless the change explicitly addresses that content. Keep unrelated content corrections in their own Issue or pull request.
-- Use the [authoring guide](../docs/authoring.md) for content changes. Translate interface messages in all five dictionaries. Preserve stable course and lesson IDs.
+- Use the [authoring guide](../docs/guides/authoring.md) for content changes. Translate interface messages in all five dictionaries. Preserve stable course and lesson IDs.
 - Submit only content and artwork you have permission to distribute under the repository license.
 
-The [architecture guide](../docs/architecture.md) explains module boundaries. The [requirements](../docs/requirements.md) describe current product behavior. See the [deployment guide](../docs/deployment.md) for publishing, environment settings, and rollback.
+The [architecture guide](../docs/reference/architecture.md) explains module boundaries. The [requirements](../docs/reference/requirements.md) describe current product behavior. See the [deployment guide](../docs/guides/deployment.md) for publishing, environment settings, and rollback.
 
 ## Validate
 
@@ -83,7 +83,7 @@ E2E starts its own server on port **3310**; set `E2E_PORT` if needed. Repeatable
 
 Use `CONTENT_TEST=1 E2E_DEV=1 pnpm test:e2e tests/e2e/development/content.spec.ts --project=chromium --workers=1` to check development content refresh and cache invalidation. These checks temporarily edit fixture content and create a temporary image; they restore both. Development E2E evidence uses the `dev-public` and `dev-fixtures` report directories.
 
-`pnpm measure:startup` creates a temporary `dev-profile-*` directory, shares installed dependencies, and starts its own local server. It moves the source copy into its report directory when finished. It does not stop an existing server or change its cache. Set `STARTUP_RUNS` (1–10), `STARTUP_LABEL`, or `STARTUP_IDLE_MS` (1000–60000) to change the measurements; use `STARTUP_SOURCE` to compare another checkout or a previous source snapshot. Reported memory sums RSS for the dev process tree, so shared pages can be counted more than once. Keep `.next/dev` between normal sessions to reuse the disk cache.
+`pnpm measure:startup` starts an isolated server with an empty cache, then restarts it with the same cache. Each session requests the Chinese homepage, the Getting Started course directory, and the FAQ. It repeats the homepage and FAQ requests to measure compiled routes. The JSON report records time to response headers, time to the full HTML, and process memory. The temporary source copy moves into the report directory when the run ends. Set `STARTUP_RUNS` (1–10), `STARTUP_LABEL`, or `STARTUP_IDLE_MS` (1000–60000) to change the measurements. Use `STARTUP_SOURCE` to compare another checkout or a saved source copy. Memory sums RSS for the dev process tree and can count shared pages more than once. Keep `.next/dev` between normal sessions to reuse the disk cache.
 
 During development, run only E2E cases for the changed modules. CI and release checks run the complete public and fixture matrices in Chromium, Firefox, and WebKit. Before a release, run:
 

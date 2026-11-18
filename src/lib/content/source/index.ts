@@ -1,12 +1,15 @@
 import 'server-only';
 import { cache } from 'react';
-import { readCatalogSnapshot } from '@catalog-reader';
+import snapshot from '@catalog';
+import type { Catalog } from '../model';
 import { globalAchievementCourses } from '../model';
 import type { Locale } from '../../i18n/config';
 import { coursePath } from '../../i18n/routing';
-// MDX hot reloads independently of the catalog generated at startup.
-export const getCatalog = cache(readCatalogSnapshot);
-export function getCourses(lang: Locale) { return getCatalog().courses.filter((course) => course.locale === lang); }
+export function getCatalog(): Catalog {
+  if ('error' in snapshot) throw new Error(String(snapshot.error));
+  return snapshot as Catalog;
+}
+export const getCourses = cache((lang: Locale) => getCatalog().courses.filter(course => course.locale === lang));
 export function getAchievementCourses(lang: Locale) { return globalAchievementCourses(getCatalog(), lang); }
 export function getCourse(lang: Locale, slug: string) { return getCourses(lang).find((course) => course.slug === slug); }
 export function getLesson(lang: Locale, course: string, slug: string[]) {

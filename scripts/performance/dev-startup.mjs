@@ -1,10 +1,11 @@
 import { spawn, execFileSync } from 'node:child_process';
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, renameSync, symlinkSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { cpus, platform, release, arch } from 'node:os';
 import { basename, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { setTimeout as delay } from 'node:timers/promises';
+import { createDevWorkspace } from './workspace.mjs';
 
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const source = resolve(process.env.STARTUP_SOURCE || root);
@@ -17,19 +18,17 @@ if (!Number.isInteger(idleMs) || idleMs < 1000 || idleMs > 60000) throw new Erro
 const artifacts = join(root, '.artifacts/performance/dev-startup');
 mkdirSync(artifacts, { recursive: true });
 const directory = mkdtempSync(join(artifacts, `${label}-`));
-const workspace = mkdtempSync(join(root, 'dev-profile-'));
-for (const name of ['src', 'config', 'content', 'public']) cpSync(join(source, name), join(workspace, name), { recursive: true });
-for (const name of ['package.json', 'pnpm-lock.yaml', 'tsconfig.json', '.gitignore']) cpSync(join(source, name), join(workspace, name));
-cpSync(join(source, 'next.config.mjs'), join(workspace, 'next.startup.mjs'));
-// A previous benchmark workspace already has a small configuration wrapper.
-if (readFileSync(join(workspace, 'next.startup.mjs'), 'utf8').includes("from './next.startup.mjs'")) {
-  cpSync(join(source, 'next.startup.mjs'), join(workspace, 'next.startup.mjs'));
-}
-symlinkSync(join(root, 'node_modules'), join(workspace, 'node_modules'), 'dir');
-// The isolated copy shares installed dependencies, so Turbopack must resolve within their common root.
-writeFileSync(join(workspace, 'next.config.mjs'), `import config from './next.startup.mjs';\nexport default { ...config, turbopack: { ...config.turbopack, root: ${JSON.stringify(root)} } };\n`);
+const workspace = createDevWorkspace(root, source);
 
 const packageJson = JSON.parse(readFileSync(join(source, 'package.json'), 'utf8'));
+const course = '/zh/courses/getting-started';
+const faq = `${course}/faq`;
+const homeTitle = JSON.parse(readFileSync(join(source, 'src/messages/zh.json'), 'utf8')).Home.title;
+const pages = [
+  { path: '/zh', marker: homeTitle }, { path: '/zh', marker: homeTitle },
+  { path: course, marker: 'data-slot="course-hero"' },
+  { path: faq, marker: 'data-slot="lesson-reading-group"' }, { path: faq, marker: 'data-slot="lesson-reading-group"' },
+];
 const report = {
   measuredAt: new Date().toISOString(), label, source, workspace, command: 'pnpm dev', script: packageJson.scripts.dev,
   methodology: `Sequential isolated sessions on the same port: an empty framework cache, then restarts with the same cache. Each session idles for ${idleMs}ms before shutdown to allow cache persistence. Readiness includes pnpm overhead. Requests read the full HTML response. Memory is the sum of RSS for pnpm and its descendants, sampled every second; shared pages can be counted more than once. The active dev server and its cache are not changed.`,
@@ -112,14 +111,17 @@ async function measure(run, port) {
       child.once('exit', code => { clearTimeout(timeout); reject(new Error(`Development server exited with code ${code}; see ${logPath}`)); });
     });
     memory.readyRssBytes = sample();
-    for (const path of ['/zh', '/zh', '/zh/courses/llm-101', '/zh/courses/llm-101/what-a-language-model-does']) {
+    for (const { path, marker } of pages) {
       const requestStarted = performance.now();
       const response = await fetch(`http://127.0.0.1:${port}${path}`, { signal: AbortSignal.timeout(120000), redirect: 'error' });
+      const ttfbMs = Math.round(performance.now() - requestStarted);
       const body = await response.text();
-      const result = { path, status: response.status, ms: Math.round(performance.now() - requestStarted), bytes: Buffer.byteLength(body), rssBytes: sample() };
+      const result = { path, status: response.status, ttfbMs, ms: Math.round(performance.now() - requestStarted), bytes: Buffer.byteLength(body), rssBytes: sample() };
       entry.requests.push(result);
       console.log(`${entry.cache} ${run}/${repetitions}: ${path} HTTP ${result.status}, ${result.ms}ms`);
-      if (!response.ok || !body.includes('</html>')) throw new Error(`Incomplete response for ${path}; see ${logPath}`);
+      if (!response.ok || !body.includes('<html lang="zh-Hans"') || !body.includes(marker) || !body.includes('</html>')) {
+        throw new Error(`Expected a complete Chinese page at ${path}; see ${logPath}`);
+      }
     }
     entry.homeFromLaunchMs = entry.readyMs + entry.requests[0].ms;
     await delay(idleMs);

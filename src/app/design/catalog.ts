@@ -1,7 +1,6 @@
 import { cache } from 'react';
 import { join } from 'node:path';
-import { scanContent } from '@/lib/content/scan';
-import type { ContentDocument } from '@/lib/content/model';
+import { scanContent, type SourceDocument } from '@/lib/content/scan';
 
 export const levelLabel = { beginner: '入门', intermediate: '进阶', advanced: '高级' } as const;
 
@@ -43,7 +42,7 @@ function proseParagraphs(body: string) {
   return paragraphs;
 }
 
-function lessonFrom(doc: ContentDocument, moduleTitle: string, index: number): DesignLesson {
+function lessonFrom(doc: SourceDocument, moduleTitle: string, index: number): DesignLesson {
   if (doc.data.kind !== 'lesson') throw new Error(`Expected a lesson: ${doc.file}`);
   const paragraphs = proseParagraphs(doc.body);
   const quote = doc.body.split('\n').find((line) => line.startsWith('> '))?.slice(2).trim() ?? '';

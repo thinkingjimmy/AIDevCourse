@@ -1,7 +1,7 @@
 'use client';
 
 import type { ComponentProps } from 'react';
-import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui';
+import * as DropdownMenuPrimitive from 'radix-ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { CheckIcon } from '@phosphor-icons/react/dist/ssr/Check';

@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 import Link, { type LinkProps } from 'fumadocs-core/link';
-import { HoverCard } from 'radix-ui';
+import * as HoverCard from 'radix-ui/hover-card';
 import { useLocale, useTranslations } from 'next-intl';
 import { GlobeIcon } from '@phosphor-icons/react/dist/ssr/Globe';
 import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';

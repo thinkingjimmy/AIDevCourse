@@ -3,6 +3,7 @@
       name: '@local/dsh-tutorial-review'
       config:
         root: /Users/jimmywong/Documents/aidevcourse
+        siteUrl: http://localhost:3000
         locale: zh
         provider: deepseek-account
         model: deepseek-flash

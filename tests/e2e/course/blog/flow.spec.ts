@@ -38,6 +38,12 @@ const lessons = [
     images: [],
   },
 ];
+const comparison = {
+  slug: 'gpt-6-2-vs-opus-5-5',
+  title: 'GPT6.2 评测：对比 Opus 5.5',
+  description: '内容待补充。',
+};
+const catalogSlugs = [...lessons.map(lesson => lesson.slug), 'ai-era-saas', comparison.slug];
 const digest = (body: Buffer) => createHash('sha256').update(body).digest('hex');
 
 for (const scenario of [
@@ -62,18 +68,26 @@ for (const scenario of [
       await page.goto('/zh?view=resources');
       const blog = page.getByRole('region', { name: '博客', exact: true });
       const cards = blog.locator('[data-blog-article]');
-      const newestFirst = [...lessons].reverse();
-      await expect(blog).toHaveAttribute('data-compact', '');
+      const newestFirst = [...catalogSlugs].reverse();
+      await expect(blog).not.toHaveAttribute('data-compact');
       await expect(cards).toHaveCount(newestFirst.length);
-      for (const [index, lesson] of newestFirst.entries()) {
+      for (const [index, slug] of newestFirst.entries()) {
         const card = cards.nth(index);
-        await expect(card).toHaveAttribute('href', `${course}/${lesson.slug}`);
+        await expect(card).toHaveAttribute('href', `${course}/${slug}`);
+        await expect(card.locator('h3')).not.toBeEmpty();
+        await expect(card.locator('p')).not.toBeEmpty();
+        await expect(card.locator('p')).toHaveCSS('-webkit-line-clamp', '2');
+        await expect(card.locator('.optical-disc-surface')).toHaveCSS('animation-name', 'none');
+      }
+      for (const lesson of lessons) {
+        const card = blog.locator(`[data-blog-article="${lesson.slug}"]`);
         await expect(card).toHaveAccessibleName(lesson.title);
         await expect(card).toHaveAccessibleDescription(lesson.description);
         await expect(card.locator('p')).toHaveText(lesson.description);
-        await expect(card.locator('p')).toHaveCSS('-webkit-line-clamp', '3');
-        await expect(card.locator('.optical-disc-surface')).toHaveCSS('animation-name', 'none');
       }
+      const comparisonCard = blog.locator(`[data-blog-article="${comparison.slug}"]`);
+      await expect(comparisonCard).toHaveAccessibleName(comparison.title);
+      await expect(comparisonCard).toHaveAccessibleDescription(comparison.description);
       const cardLayout = await cards.evaluateAll(elements => elements.map(card => {
         const disc = card.querySelector('[data-slot="optical-disc"]')!.getBoundingClientRect();
         const title = card.querySelector('h3')!.getBoundingClientRect();
@@ -99,26 +113,31 @@ for (const scenario of [
         await page.waitForFunction(() => document.documentElement.style.getPropertyValue('--home-masthead-height'));
         await cards.first().focus();
         const screen = page.locator('[data-slot="playstation-screen"]');
-        await expect(screen.locator('.pixel-screen-title')).toHaveText(newestFirst[0].title);
+        await expect(screen.locator('.pixel-screen-title')).toHaveText(comparison.title);
         expect(await screen.evaluate(element => {
           const screen = element.getBoundingClientRect();
           const title = element.querySelector('.pixel-screen-title')!.getBoundingClientRect();
           return title.top >= screen.top && title.bottom <= screen.bottom;
         })).toBe(true);
       }
-      const overview = blog.locator('.blog-section-header').getByRole('link', { name: '博客总览', exact: true });
-      await expect(overview).toHaveAttribute('href', course);
-      await expect(blog.locator('.blog-more-row')).toHaveCount(0);
+      const more = blog.getByRole('link', { name: 'More · 博客', exact: true });
+      await expect(more).toHaveAttribute('href', course);
+      await expect(blog.locator('.blog-more-row')).toHaveCount(1);
       await expect(page.locator('[data-slot="hero-primary-action"]')).toHaveAttribute('href', '/zh/courses/getting-started');
-      await overview.press('Enter');
+      await more.press('Enter');
       await expect(page).toHaveURL(course);
       await expect(page.locator('main h1')).toHaveText('博客');
-      const entries = page.locator('section[aria-labelledby="course-catalog"] ol a');
-      await expect(entries).toHaveCount(2);
-      for (const [index, lesson] of lessons.entries()) {
-        await expect(entries.nth(index)).toHaveAttribute('href', `${course}/${lesson.slug}`);
-        await expect(entries.nth(index)).toContainText(lesson.title);
+      const directory = page.locator('section[aria-labelledby="course-catalog"]');
+      await expect(directory.getByRole('heading', { level: 3 })).toHaveCount(0);
+      const entries = directory.locator('ol a');
+      await expect(entries.locator('span:first-child')).toHaveText(catalogSlugs.map((_, i) => String(i + 1)));
+      await expect(entries).toHaveCount(catalogSlugs.length);
+      for (const [index, slug] of catalogSlugs.entries()) {
+        await expect(entries.nth(index)).toHaveAttribute('href', `${course}/${slug}`);
       }
+      await expect(entries.nth(0)).toContainText(lessons[0].title);
+      await expect(entries.nth(1)).toContainText(lessons[1].title);
+      await expect(entries.nth(3)).toContainText(comparison.title);
       await capture('blog-directory');
       await page.getByRole('link', { name: '开始第一课', exact: true }).click();
 
@@ -220,6 +239,11 @@ for (const scenario of [
           if (index === 0) await entries.nth(1).click();
         }
       }
+      if (scenario.javaScriptEnabled) await expect(page).toHaveURL(`${course}/ai-era-saas`);
+      await page.goto(`${course}/${comparison.slug}`);
+      await expect(page.locator('article h1')).toHaveText(comparison.title);
+      await expect(page.locator('article > .prose p').first()).not.toBeEmpty();
+      await page.goto(course);
       await expect(page).toHaveURL(course);
       expect(context.pages()).toHaveLength(1);
       expect(errors).toEqual([]);
@@ -229,7 +253,7 @@ for (const scenario of [
 }
 
 test('blog links, redirects, search, and sitemap use the blog route', async ({ page, request, baseURL }, testInfo) => {
-  const paths = [course, ...lessons.map(lesson => `${course}/${lesson.slug}`)];
+  const paths = [course, ...catalogSlugs.map(slug => `${course}/${slug}`)];
   const sitemap = await (await request.get('/sitemap.xml')).text();
   const evidence = [];
   for (const path of paths) {

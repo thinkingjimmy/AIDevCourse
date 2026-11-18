@@ -1,6 +1,6 @@
 # 部署与回滚
 
-仓库提供 Vercel 标准 Next.js 配置和 GitHub Actions 工作流。实际部署状态以远程项目、CI 结果和发布记录为准。产品范围见 [需求说明](./requirements.md)。
+仓库提供 Vercel 标准 Next.js 配置和 GitHub Actions 工作流。实际部署状态以远程项目、CI 结果和发布记录为准。产品范围见 [需求说明](../reference/requirements.md)。
 
 ## 环境
 

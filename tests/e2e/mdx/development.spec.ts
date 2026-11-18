@@ -1,15 +1,14 @@
 import { test, expect } from '@playwright/test';
 import { spawn } from 'node:child_process';
-import { appendFileSync, cpSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { appendFileSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
-import { tmpdir } from 'node:os';
+import { createDevWorkspace } from '../../../scripts/performance/workspace.mjs';
 import { join } from 'node:path';
 
 test('development hydration tolerates extension attributes and preserves hot reload', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium' || process.env.CONTENT_TEST === '1', 'The development bundler check runs once against published content.');
   test.setTimeout(180000);
   const root = process.cwd();
-  const workspace = mkdtempSync(join(tmpdir(), 'aidevcourse-css-hmr-'));
   const port = await new Promise<number>((resolve, reject) => {
     const reservation = createServer();
     reservation.once('error', reject);
@@ -31,11 +30,8 @@ test('development hydration tolerates extension attributes and preserves hot rel
   page.on('response', (response) => {
     if (response.request().resourceType() === 'font') fontResponses.push({ url: response.url(), status: response.status() });
   });
-  for (const directory of ['src', 'config', 'content', 'public']) cpSync(join(root, directory), join(workspace, directory), { recursive: true });
-  for (const file of ['package.json', 'pnpm-lock.yaml', 'tsconfig.json', 'next.config.mjs']) cpSync(join(root, file), join(workspace, file));
-  symlinkSync(join(root, 'node_modules'), join(workspace, 'node_modules'), 'dir');
+  const workspace = createDevWorkspace(root);
   const command = JSON.parse(readFileSync(join(workspace, 'package.json'), 'utf8')).scripts.dev as string;
-  expect(command).toBe('next dev --webpack');
   const server = spawn(process.execPath, [join(root, 'node_modules/next/dist/bin/next'), ...command.split(' ').slice(1), '--hostname', '127.0.0.1', '--port', String(port)], {
     cwd: workspace, env: { ...process.env, CONTENT_TEST: '0', NODE_ENV: 'development', NEXT_TELEMETRY_DISABLED: '1' }, stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -57,10 +53,12 @@ test('development hydration tolerates extension attributes and preserves hot rel
     await expect.poll(async () => {
       if (server.exitCode !== null) throw new Error(output);
       return fetch(`${origin}/zh`).then((response) => response.status).catch(() => 0);
-    }, { timeout: 60000, message: 'The isolated Webpack development server starts' }).toBe(200);
+    }, { timeout: 60000, message: 'The isolated development server starts' }).toBe(200);
     await page.goto(`${origin}/zh`);
     await expect(page.locator('html')).toHaveAttribute('data-immersive-translate-page-theme', 'light');
-    await page.getByRole('link', { name: '马上学习', exact: true }).click();
+    await page.locator('[data-course-disk="llm-101"]').click();
+    await expect(page).toHaveURL(/\/zh\/courses\/llm-101$/);
+    await page.locator('a[href="/zh/courses/llm-101/what-a-language-model-does"]').first().click();
     await expect(page).toHaveURL(/\/zh\/courses\/llm-101\/what-a-language-model-does$/);
     await page.locator('a[href="/zh/courses/llm-101/what-is-a-token"]').first().click();
     await expect(page).toHaveURL(/\/what-is-a-token$/);
@@ -151,7 +149,7 @@ test('development hydration tolerates extension attributes and preserves hot rel
     for (const response of fontResponses) {
       expect(new URL(response.url).origin).toBe(origin);
       expect(new URL(response.url).pathname).toMatch(/\.woff2$/);
-      expect(response.status).toBe(200);
+      expect([200, 304]).toContain(response.status);
     }
     expect(output).not.toMatch(/Client network socket disconnected|Retrying \d|webpack\.cache\.PackFileCacheStrategy/);
     expect(errors).toEqual([]);

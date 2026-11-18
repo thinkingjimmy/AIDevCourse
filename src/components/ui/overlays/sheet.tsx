@@ -1,6 +1,6 @@
 'use client';
 import type { ComponentProps } from 'react';
-import { Dialog as SheetPrimitive } from 'radix-ui';
+import * as SheetPrimitive from 'radix-ui/dialog';
 import { cn } from '@/lib/utils';
 
 export const Sheet = SheetPrimitive.Root;

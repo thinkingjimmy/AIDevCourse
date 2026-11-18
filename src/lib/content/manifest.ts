@@ -1,11 +1,11 @@
 import { createHash } from 'node:crypto';
 import { join } from 'node:path';
-import { scanContent, contentRoot } from './scan';
+import { scanContent, contentRoot, type InspectionCache } from './scan';
 import { publishDocuments, validateReferences } from './validate';
 import { courseCompletionAchievementId, identity, renderedAnchors, type Catalog, type CourseAchievement, type CourseManifest, type LessonSummary } from './model';
 
-export function readCatalog(options: { root?: string; publicRoot?: string } = {}): Catalog {
-  const scan = scanContent(options.root ?? contentRoot());
+export function readCatalog(options: { root?: string; publicRoot?: string; inspections?: InspectionCache } = {}) {
+  const scan = scanContent(options.root ?? contentRoot(), options.inspections);
   const visible = publishDocuments(scan.documents, scan.order);
   validateReferences(visible, options.publicRoot ?? join(process.cwd(), 'public'));
   const courses: CourseManifest[] = [];
@@ -45,6 +45,6 @@ export function readCatalog(options: { root?: string; publicRoot?: string } = {}
   }
   courses.sort((a, b) => (scan.order.get(a.locale)?.indexOf(visible.find((doc) => doc.url === a.url)!.file) ?? 0) -
     (scan.order.get(b.locale)?.indexOf(visible.find((doc) => doc.url === b.url)!.file) ?? 0));
-  const version = createHash('sha256').update(JSON.stringify(visible)).digest('hex').slice(0, 12);
-  return { documents: visible, courses, translations, version };
+  const version = createHash('sha256').update(JSON.stringify(visible)).update(JSON.stringify(courses)).digest('hex').slice(0, 12);
+  return { documents: visible, courses, translations, version } satisfies Catalog;
 }

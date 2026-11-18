@@ -6,7 +6,6 @@ import type { Locale } from '@/lib/i18n/config';
 import { pageMetadata } from '@/lib/metadata';
 import { LessonToc } from '../outline/lesson-toc';
 import { LessonRegion } from '../course-layout';
-import { loadLessonContent, loadReadingPanes } from './content';
 import { LessonReader } from './reader';
 import type { ReadingSearch } from './model';
 
@@ -20,9 +19,11 @@ export async function LessonPage({ locale, course, lesson, searchParams }: {
 }) {
   const doc = getLesson(locale, course, lesson);
   if (!doc || doc.data.kind !== 'lesson') notFound();
-  const t = await getTranslations({ locale, namespace: 'Course' });
+  const [t, { loadLessonContent, loadReadingPanes }, search] = await Promise.all([
+    getTranslations({ locale, namespace: 'Course' }), import('./content'), searchParams,
+  ]);
   const [{ content, toc: headings }, reading] = await Promise.all([
-    loadLessonContent(doc), loadReadingPanes(await searchParams, doc.url, locale),
+    loadLessonContent(doc), loadReadingPanes(search, doc.url, locale),
   ]);
   const toc = (headings ?? []).filter(item => item.depth === 2);
   const hasToc = toc.length > 0;

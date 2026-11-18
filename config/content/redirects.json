@@ -12,6 +12,14 @@
     "destination": "/zh/blog/enterprise-ai-adoption-roi"
   },
   {
+    "source": "/zh/courses/blog/gpt-6-2-vs-opus-5-5",
+    "destination": "/zh/blog/gpt-6-2-vs-opus-5-5"
+  },
+  {
+    "source": "/zh/courses/blog/ai-era-saas",
+    "destination": "/zh/blog/ai-era-saas"
+  },
+  {
     "source": "/zh/courses/llm-101/what-can-you-do-with-ai-chat",
     "destination": "/zh/courses/deepseek-101/ai-chat-advice"
   },

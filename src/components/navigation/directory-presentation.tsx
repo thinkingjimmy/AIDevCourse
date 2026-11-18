@@ -1,7 +1,7 @@
 'use client';
 import { useRef, useState, type ComponentProps, type ReactNode } from 'react';
 import Link from 'next/link';
-import { Tooltip } from 'radix-ui';
+import * as Tooltip from 'radix-ui/tooltip';
 import { SidebarHeader, SidebarMenuSubButton, SidebarTrigger } from './sidebar';
 
 export const directoryStyles = {

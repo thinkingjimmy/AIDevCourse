@@ -1,59 +1,63 @@
-[简体中文](./docs/README.zh.md) · **English**
-
 # AIDevCourse
 
-A beginner course about large language models and coding with AI. Learn the basic concepts, then use AI to build simple websites and applications. No programming experience is required.
+**English** · [简体中文](./docs/README.zh-CN.md)
 
-The course is open source and still in progress. Chinese has the most complete lessons. Course introductions and all thirteen LLM 101 lessons are available in English, Japanese, French, and Spanish. Other courses have limited translations.
+AIDevCourse is an open-source course for people learning how language models work and how to build software with AI. Follow a model as it picks its next token, then explore how a browser, a server, and a database work together in a web app. You can start without programming experience.
 
-## Start learning
+**[Open the course](https://ai-dev-course.vercel.app/?lang=en)** · [Read the first LLM lesson](https://ai-dev-course.vercel.app/courses/llm-101/what-a-language-model-does)
 
-Start with [关于这门课 — About this course](./content/zh/getting-started/before-you-start/about-this-course.mdx) to understand the learning path.
+## What to read
 
-| Course | What it covers | Status |
-| --- | --- | --- |
-| 从想法到作品 | Where to start and how to learn | Available; more lessons to come |
-| 博客 | Jimmy's observations on AI tools and enterprise adoption | Two articles available |
-| LLM 101 | Language models, training, chat, tools, and agents | All three modules in five languages |
-| Coding 101 | Build a website with AI, from the frontend to deployment | In progress; most lessons are placeholders |
-| 设计 101 | Design basics | Lessons in preparation |
-| DeepSeek 101 | DeepSeek Chat, Harness, API, and practical usage | In progress; five lessons available, two of them translated |
-| Agent 101 | Build on the introductory agent concepts | Lessons in preparation |
+| If you want to… | Start here |
+| --- | --- |
+| Understand tokens, model training, and tool calls | [LLM 101](./content/en/llm-101/) |
+| Try DeepSeek Chat on a practical task | [DeepSeek 101](./content/en/deepseek-101/) |
+| Learn how a web app fits together | [Coding 101 · Chinese](./content/zh/coding-101/web-foundations/frontend-backend-and-database.mdx) |
+| Choose a learning path | [About this course · Chinese](./content/zh/getting-started/before-you-start/about-this-course.mdx) |
 
-The site includes interactive examples, design, animation, and programming dictionaries, and achievement exercises. It saves your learning progress in your browser. You can read without an account or a model API key.
+Jimmy also writes about developer tools and how companies use AI. [Read the blog (Chinese)](./content/zh/blog/)
 
-## About the author
-
-Created by [Jimmy](https://jimmywong.dev). Follow these channels for course updates and more about AI:
-
-[X](https://x.com/thinkingjimmy) · [Bilibili](https://space.bilibili.com/1409205119) · [小红书](https://www.xiaohongshu.com/user/profile/6073d38d00000000010068a6)
-
-## Questions and corrections
-
-You can help improve the course without writing code. Use Chinese or English, and check existing Issues before opening a new one.
-
-- **Questions:** [Ask a question](https://github.com/thinkingjimmy/aidevcourse/issues/new?template=01-question.yml) about a lesson or the project. Share what you want to understand. [Browse questions](https://github.com/thinkingjimmy/aidevcourse/issues?q=is%3Aissue%20label%3Aquestion).
-- **Corrections:** [Suggest a correction](https://github.com/thinkingjimmy/aidevcourse/issues/new?template=02-correction.yml) for a typo or inaccurate explanation. Include the page and the relevant passage. [Browse corrections](https://github.com/thinkingjimmy/aidevcourse/issues?q=is%3Aissue%20label%3Acorrection).
-
-For other suggestions or site problems, [open an Issue](https://github.com/thinkingjimmy/aidevcourse/issues/new/choose). To contribute content or code, read the [contribution guide](./.github/CONTRIBUTING.md).
+The site includes interactive examples, exercises, and dictionaries for design, animation, and programming. It saves reading progress in your browser. Chinese has the widest coverage. LLM 101 is available in Chinese, English, Japanese, French, and Spanish. Translation coverage varies by course.
 
 ## Run locally
 
-Use Node **24.x** and pnpm **10.30.3** from a local copy of this repository:
+Use Node.js **24.x** and pnpm **10.30.3**. Local reading works without an account, a database, or an API key.
 
 ```bash
+git clone https://github.com/thinkingjimmy/AIDevCourse.git
+cd AIDevCourse
 pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open [localhost:3000/zh](http://localhost:3000/zh). No database or third-party credentials are required.
+Open the [local site](http://localhost:3000/). To try an edit, save a lesson in `content/` and open its page. The development server updates the lesson as you work.
 
-Setup, commands, and verification steps are in the [contribution guide](./.github/CONTRIBUTING.md). See the [authoring guide](./docs/authoring.md) for lessons and translations, the [architecture guide](./docs/architecture.md) for implementation, and the [deployment guide](./docs/deployment.md) for publishing. The authoring and deployment guides are in Chinese.
+| Command | Purpose |
+| --- | --- |
+| `pnpm content:check` | Validate lesson metadata, ordering, and internal links |
+| `pnpm check` | Run repository, code, content, and translation checks |
+| `pnpm build` | Build the production site |
+| `pnpm start` | Serve the production build locally |
 
-Licensed under [MIT](./LICENSES/MIT.txt).
+## Find your way around
 
-## Acknowledgments
+| Path | What lives here |
+| --- | --- |
+| [content/](./content/) | Markdown and MDX courses, organized by language |
+| [src/](./src/) | Next.js routes, React components, interface translations, and styles |
+| [public/](./public/) | Images, fonts, and other files served by the site |
+| [config/](./config/) | Fumadocs configuration, catalog generation, and redirects |
+| [scripts/](./scripts/) and [tests/](./tests/) | Development commands, browser tests, and test fixtures |
+| [docs/guides/](./docs/guides/) and [docs/reference/](./docs/reference/) | Authoring and deployment guides, architecture, and product requirements |
 
-Thanks to [Index’s Vocabulary](https://index.how/to/articulate) for the design-term references and inspiration for the interactive typography and color examples.
+## Contribute
 
-Thanks to [Emil Kowalski’s Animation Vocabulary](https://animations.dev/vocabulary#entrances-and-exits) for the entrance and exit terminology. The interactive examples are implemented locally.
+If a lesson is unclear, include its link and the passage in your issue. Questions and corrections are welcome in English or Chinese. [Ask a question](https://github.com/thinkingjimmy/AIDevCourse/issues/new?template=01-question.yml) · [Suggest a correction](https://github.com/thinkingjimmy/AIDevCourse/issues/new?template=02-correction.yml)
+
+For a content change, start with the authoring guide and its course and lesson templates. For a code change, the contribution guide covers setup and verification. [Authoring guide (Chinese)](./docs/guides/authoring.md) · [Templates](./docs/templates/) · [Contributing](./.github/CONTRIBUTING.md) · [Security policy](./.github/SECURITY.md)
+
+## Author and license
+
+Jimmy maintains AIDevCourse. Follow his updates on [X](https://x.com/thinkingjimmy), [Bilibili](https://space.bilibili.com/1409205119), or [Xiaohongshu](https://www.xiaohongshu.com/user/profile/6073d38d00000000010068a6). [Jimmy’s website](https://jimmywong.dev) · [MIT license](./LICENSES/MIT.txt)
+
+The design dictionary draws on Index’s terminology and examples. The animation dictionary draws on Emil Kowalski’s vocabulary for entrances and exits. [Index’s Vocabulary](https://index.how/to/articulate) · [Animation Vocabulary](https://animations.dev/vocabulary#entrances-and-exits)

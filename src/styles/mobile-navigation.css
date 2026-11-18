@@ -1,53 +1,52 @@
-.mobile-course-navigation > .mobile-navigation-glass.lg-glass {
-  @apply pointer-events-none absolute inset-0 rounded-[inherit];
-  --lg-glass: var(--mobile-glass-tint);
-  --lg-blur: 24px;
-  box-shadow: var(--mobile-glass-shadow);
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .mobile-course-navigation > .mobile-navigation-glass.lg-glass {
-    background-image: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
-
-@media (prefers-contrast: more) {
-  .mobile-course-navigation > .mobile-navigation-glass.lg-glass { outline: 1px solid var(--color-foreground); }
-}
-
 @layer components {
+  .mobile-course-navigation,
+  .mobile-navigation-panel {
+    @apply rounded-[3px] border border-brand bg-background text-brand;
+    box-shadow: 3px 3px 0 var(--color-window-shadow);
+  }
+  .mobile-course-navigation {
+    @apply fixed z-40 mx-auto hidden max-w-96 grid-cols-4 gap-1 p-1 max-[961px]:grid min-[961px]:hidden;
+    right: max(16px, env(safe-area-inset-right));
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    left: max(16px, env(safe-area-inset-left));
+  }
   .mobile-course-navigation > noscript { @apply hidden; }
   @media (scripting: none) {
     .mobile-course-navigation > noscript { @apply contents; }
   }
   .mobile-navigation-item {
-    @apply relative flex min-h-14 min-w-0 touch-manipulation flex-col items-center justify-center gap-1 rounded-full px-1 py-1.5 text-xs leading-tight font-medium text-reading no-underline transition-[background-color,color,transform] duration-150 ease-out focus-visible:-outline-offset-2;
+    @apply relative flex min-h-13 min-w-0 touch-manipulation flex-col items-center justify-center gap-1 rounded-[2px] border border-transparent px-1 py-1.5 text-xs leading-tight font-medium text-brand no-underline transition-[background-color,border-color,box-shadow,transform] duration-150 ease-out focus-visible:-outline-offset-2;
   }
+  .mobile-navigation-item > svg { @apply size-[22px]; }
   .mobile-navigation-item > span:last-child { @apply max-w-full truncate; }
   .mobile-navigation-item[data-section='contents'],
   [data-slot='mobile-native-menu'][open] > summary {
-    @apply bg-foreground/6 text-foreground;
+    @apply border-(--color-window-rule) bg-sidebar-active;
+    box-shadow: inset 0 -2px 0 var(--color-brand);
   }
-  .mobile-course-navigation:has([data-state='open']) .mobile-navigation-item[data-section='contents'] { @apply bg-transparent text-reading; }
-  .mobile-course-navigation .mobile-navigation-item[data-state='open'] { @apply bg-foreground/8 text-foreground; }
-  .mobile-navigation-item:active { @apply scale-95 bg-foreground/10; }
+  .mobile-course-navigation:has([data-state='open']) .mobile-navigation-item[data-section='contents'] {
+    @apply border-transparent bg-transparent shadow-none;
+  }
+  .mobile-course-navigation .mobile-navigation-item[data-state='open'] {
+    @apply border-(--color-window-rule) bg-sidebar-active;
+    box-shadow: inset 0 -2px 0 var(--color-brand);
+  }
+  .mobile-navigation-item:not(:disabled):active {
+    @apply scale-[0.96] bg-sidebar-active;
+  }
   @media (hover: hover) and (pointer: fine) {
-    .mobile-navigation-item:hover { @apply bg-foreground/6 text-foreground; }
+    .mobile-navigation-item:not(:disabled):hover { @apply bg-sidebar-accent; }
+    .mobile-navigation-item:is([data-section='contents'], [data-state='open']):hover { @apply bg-sidebar-active; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .mobile-navigation-item:active { @apply scale-100; }
-  }
-  @media (prefers-reduced-transparency: reduce) {
-    .mobile-course-navigation { --mobile-glass-tint: var(--color-surface); }
+    .mobile-navigation-item:not(:disabled):active { @apply scale-100; }
   }
   @media (prefers-contrast: more) {
-    .mobile-course-navigation { --mobile-glass-tint: var(--color-background); }
+    .mobile-course-navigation,
+    .mobile-navigation-panel { @apply border-foreground; }
     .mobile-navigation-item { @apply text-foreground; }
-  }
-  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .mobile-course-navigation { --mobile-glass-tint: var(--color-surface); }
+    .mobile-course-navigation .mobile-navigation-item:is([data-section='contents'], [data-state='open']),
+    [data-slot='mobile-native-menu'][open] > summary { @apply border-foreground; }
   }
   [data-mobile='true'][data-side='bottom'] { animation: mobile-sheet-enter 200ms cubic-bezier(0.2, 0.8, 0.2, 1); }
   @media (width < 961px) {

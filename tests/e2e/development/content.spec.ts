@@ -60,3 +60,35 @@ test('asset removal invalidates a warm catalog and restoring it recovers the rou
     await testInfo.attach('Asset invalidation responses', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
   }
 });
+
+test('adding and removing a lesson updates its URL and course directory', async ({ page, request }, testInfo) => {
+  const directory = 'tests/fixtures/zh/ai-coding/foundations';
+  const meta = join(directory, 'meta.json');
+  const original = readFileSync(meta, 'utf8');
+  const slug = `catalog-${randomUUID()}`;
+  const path = join(directory, `${slug}.mdx`);
+  const course = '/zh/courses/ai-coding';
+  const url = `${course}/${slug}`;
+  const title = 'Catalog update check';
+  try {
+    await page.goto(course);
+    expect((await request.get(url)).status()).toBe(404);
+    const order = JSON.parse(original);
+    order.pages.push(slug);
+    writeFileSync(path, `---\ncourseId: ai-coding\nlessonId: ${slug}\ntitle: ${title}\ndescription: Development fixture\n---\n\n## Live content\n`);
+    writeFileSync(meta, JSON.stringify(order));
+    const link = page.getByRole('link', { name: new RegExp(title) }).first();
+    await expect(link).toBeVisible();
+    await link.click();
+    await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Live content' })).toBeVisible();
+    await testInfo.attach('New lesson at its published URL', { body: await page.screenshot(), contentType: 'image/png' });
+    await page.goto(course);
+    await expect(link).toBeVisible();
+  } finally {
+    writeFileSync(meta, original);
+    if (existsSync(path)) unlinkSync(path);
+  }
+  await expect.poll(async () => (await request.get(url)).status()).toBe(404);
+  await expect(page.getByRole('link', { name: new RegExp(title) })).toHaveCount(0);
+});

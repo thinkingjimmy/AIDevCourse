@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Tooltip } from 'radix-ui';
+import * as Tooltip from 'radix-ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useActiveHeading } from './use-active-heading';
 

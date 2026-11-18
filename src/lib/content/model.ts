@@ -13,7 +13,7 @@ export type ContentDocument = {
   file: string; locale: Locale; courseSlug: string; slug: string[]; url: string;
   data: DocumentData; headings: { id: string; title: string; depth: number }[];
   links: { url: string; image: boolean; label: string }[];
-  body: string; sourceUrl: string; achievements: AchievementDefinition[]; hasJimmyNotes: boolean;
+  sourceUrl: string; achievements: AchievementDefinition[]; hasJimmyNotes: boolean;
   resourceDiskIds?: string[];
 };
 export type LessonSummary = {
@@ -62,6 +62,8 @@ export function groupModules(lessons: LessonSummary[]) {
     const entry = { lesson, number: index + 1, part: '' };
     if (group) group.lessons.push(entry); else groups.push({ module: lesson.module, title: lesson.moduleTitle, lessons: [entry] });
   });
-  groups.forEach((group, groupIndex) => group.lessons.forEach((entry, lessonIndex) => { entry.part = `${groupIndex + 1}.${lessonIndex + 1}`; }));
+  groups.forEach((group, groupIndex) => group.lessons.forEach((entry, lessonIndex) => {
+    entry.part = group.module ? `${groupIndex + 1}.${lessonIndex + 1}` : String(entry.number);
+  }));
   return groups;
 }

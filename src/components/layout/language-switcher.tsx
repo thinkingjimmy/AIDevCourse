@@ -12,9 +12,9 @@ import { isDictionaryTerm, vocabularyForPath } from '@/lib/vocabulary/collection
 import { isProgrammingAnchor } from '@/lib/vocabulary/programming';
 type LanguageProps = { locale: Locale; translations: Catalog['translations'] };
 const languageFlags: Record<Locale, string> = { en: '🇺🇸', zh: '🇨🇳', ja: '🇯🇵', fr: '🇫🇷', es: '🇪🇸' };
-export function HomeLanguageSwitcher(props: LanguageProps) {
+export function HomeLanguageSwitcher({ locale }: Pick<LanguageProps, 'locale'>) {
   const path = canonicalPath(usePathname());
-  return stripLocale(path) === '/' ? <LanguageSwitcher {...props} side="top" /> : null;
+  return stripLocale(path) === '/' ? <LanguageSwitcher locale={locale} translations={{}} side="top" /> : null;
 }
 export function LanguageSwitcher({ locale, translations, side = 'bottom' }: LanguageProps & { side?: 'top' | 'bottom' }) {
   const t = useTranslations('Language');

@@ -6,7 +6,7 @@ import { inspectMarkdown } from './mdx';
 import { isLocale, type Locale } from '../i18n/config';
 import { coursePath } from '../i18n/routing';
 import type { ContentDocument } from './model';
-import { contentMode } from '../../../config/content-mode.mjs';
+import { contentMode } from '../../../config/content/content-mode.mjs';
 const relativePath = (root: string, path: string) => relative(root, path).replaceAll('\\', '/');
 export function contentRoot() {
   // Literal roots keep filesystem tracing inside content instead of the entire repository.
@@ -14,8 +14,11 @@ export function contentRoot() {
     ? join(process.cwd(), 'tests/fixtures')
     : join(process.cwd(), 'content');
 }
-export function scanContent(root: string) {
-  const documents: ContentDocument[] = [];
+export type InspectionCache = Map<string, { body: string; offset: number; result: ReturnType<typeof inspectMarkdown> }>;
+export type SourceDocument = ContentDocument & { body: string };
+
+export function scanContent(root: string, inspections?: InspectionCache) {
+  const documents: SourceDocument[] = [];
   const order = new Map<Locale, string[]>();
   const labels = new Map<string, string>();
   function walk(dir: string, locale: Locale, ordered = true) {
@@ -52,8 +55,13 @@ export function scanContent(root: string) {
       const slug = isIndex ? [] : parts.slice(2);
       const publicSlug = isIndex ? '' : slug[slug.length - 1];
       const url = coursePath(locale, parts[1], publicSlug);
-      const { headings, links, achievements, hasJimmyNotes, resourceDiskIds } = inspectMarkdown(parsed.content, file, (parsed.matter.match(/\n/g) ?? []).length);
-      documents.push({ file: relativePath(root, file), locale, courseSlug: parts[1], slug, url, data, body: parsed.content, headings, links, achievements, hasJimmyNotes, resourceDiskIds, sourceUrl: '' });
+      const path = relativePath(root, file);
+      const offset = (parsed.matter.match(/\n/g) ?? []).length;
+      const cached = inspections?.get(path);
+      const result = cached?.body === parsed.content && cached.offset === offset
+        ? cached.result : inspectMarkdown(parsed.content, file, offset);
+      inspections?.set(path, { body: parsed.content, offset, result });
+      documents.push({ file: path, locale, courseSlug: parts[1], slug, url, data, body: parsed.content, ...result, sourceUrl: '' });
     }
     for (const page of meta.pages) {
       const entry = byName.get(page)!;
@@ -67,6 +75,10 @@ export function scanContent(root: string) {
     if (!isLocale(entry.name)) throw new Error(`${root}: unsupported language directory ${entry.name}`);
     order.set(entry.name, []);
     walk(join(root, entry.name), entry.name);
+  }
+  if (inspections) {
+    const present = new Set(documents.map(doc => doc.file));
+    for (const path of inspections.keys()) if (!present.has(path)) inspections.delete(path);
   }
   return { documents, order, labels };
 }

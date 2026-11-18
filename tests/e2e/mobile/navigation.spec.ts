@@ -23,7 +23,7 @@ for (const width of [320, 390]) {
       await page.goto(lesson);
       const navigation = page.locator(navigationSelector);
       await expect(navigation).toBeVisible();
-      await expect(navigation.locator('.mobile-navigation-glass')).not.toHaveCSS('background-image', 'none');
+      await expect(navigation).toHaveCSS('background-color', 'rgb(253, 253, 252)');
       await expect(navigation.locator(':scope > a, :scope > button')).toHaveCount(4);
       await expect(page.locator('[data-slot="mobile-course-header"]')).toHaveCount(0);
       const geometry = await navigation.locator(':scope > a, :scope > button').evaluateAll((controls) => controls.map((control) => {
@@ -33,7 +33,7 @@ for (const width of [320, 390]) {
       expect(geometry.every((control) => control.width >= 44 && control.height >= 44)).toBe(true);
       const pane = page.locator('[data-slot="lesson-region"]');
       await pane.evaluate(element => element.scrollTo(0, 480));
-      await capture(page, `glass-navigation-reading-${width}`);
+      await capture(page, `window-navigation-reading-${width}`);
       const accessibility = await new AxeBuilder({ page }).include(navigationSelector).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
       expect(accessibility.violations).toEqual([]);
 
@@ -43,7 +43,7 @@ for (const width of [320, 390]) {
       await expect(sheet).toHaveAttribute('data-side', 'bottom');
       await expect(sheet.locator('a[aria-current="page"]')).toContainText('模型是如何预训练的？');
       await expect(sheet.getByRole('button', { name: '关闭', exact: true })).toBeInViewport();
-      await capture(page, `glass-navigation-contents-${width}`);
+      await capture(page, `window-navigation-contents-${width}`);
       await sheet.getByRole('button', { name: '关闭', exact: true }).tap();
       await expect(sheet).toHaveCount(0);
       await expect(contents).toBeFocused();
@@ -53,7 +53,7 @@ for (const width of [320, 390]) {
       const gallery = page.locator('[data-course-achievements]');
       await expect(gallery).toBeVisible();
       await expect(gallery.locator('[data-medal]').first()).toBeVisible();
-      await capture(page, `glass-navigation-achievements-${width}`);
+      await capture(page, `window-navigation-achievements-${width}`);
       await gallery.getByRole('button', { name: '关闭', exact: true }).tap();
       await expect(achievements).toBeFocused();
 
@@ -62,14 +62,14 @@ for (const width of [320, 390]) {
       const authorDialog = page.locator('[data-author-dialog]');
       await expect(authorDialog).toBeVisible();
       await expect(authorDialog.locator('[data-slot="author-card"]')).toBeVisible();
-      await capture(page, `glass-navigation-author-${width}`);
+      await capture(page, `window-navigation-author-${width}`);
       await page.keyboard.press('Escape');
       await expect(author).toBeFocused();
 
       await pane.evaluate(element => element.scrollTo(0, element.scrollHeight));
       const articleEnd = await page.locator('article').evaluate((element) => element.getBoundingClientRect().bottom);
       expect(articleEnd).toBeLessThan((await navigation.boundingBox())!.y);
-      await capture(page, `glass-navigation-article-end-${width}`);
+      await capture(page, `window-navigation-article-end-${width}`);
       await navigation.getByRole('link', { name: '首页', exact: true }).tap();
       await expect(page).toHaveURL('/zh');
       expect(errors).toEqual([]);
@@ -99,7 +99,7 @@ test('mobile navigation fits all five languages with enlarged text and reduced m
     const labelsFit = await controls.locator('> span:last-child').evaluateAll((labels) => labels.every((label) => label.scrollWidth <= label.clientWidth));
     expect(labelsFit).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await capture(page, `glass-navigation-${locale}-large-text`);
+    await capture(page, `window-navigation-${locale}-large-text`);
     await navigation.getByRole('button', { name: copy.Ui.menu, exact: true }).click();
     const sheet = page.locator('[data-mobile="true"]');
     await expect(sheet.getByRole('button', { name: copy.Ui.close, exact: true })).toBeInViewport();
@@ -109,7 +109,7 @@ test('mobile navigation fits all five languages with enlarged text and reduced m
   }
 });
 
-test('mobile glass respects reduced transparency and increased contrast', async ({ page, browserName }) => {
+test('mobile navigation respects reduced transparency and increased contrast', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium', 'CDP supplies reduced-transparency media emulation.');
   await page.setViewportSize({ width: 390, height: 844 });
   const session = await page.context().newCDPSession(page);
@@ -118,10 +118,47 @@ test('mobile glass respects reduced transparency and increased contrast', async 
     { name: 'prefers-contrast', value: 'more' },
   ] });
   await page.goto(lesson);
-  const glass = page.locator('.mobile-navigation-glass');
-  await expect(glass).toHaveCSS('backdrop-filter', 'none');
-  await expect(glass).toHaveCSS('background-color', 'rgb(253, 253, 252)');
-  await expect(glass).toHaveCSS('outline-style', 'solid');
-  await capture(page, 'glass-navigation-reduced-transparency');
+  const navigation = page.locator(navigationSelector);
+  await expect(navigation).toHaveCSS('backdrop-filter', 'none');
+  await expect(navigation).toHaveCSS('background-color', 'rgb(253, 253, 252)');
+  await expect(navigation).toHaveCSS('border-color', 'rgb(9, 9, 11)');
+  await expect(navigation.locator('[data-section="contents"]')).toHaveCSS('border-color', 'rgb(9, 9, 11)');
+  const accessibility = await new AxeBuilder({ page }).include(navigationSelector).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+  expect(accessibility.violations).toEqual([]);
+  await capture(page, 'window-navigation-increased-contrast');
   await session.detach();
+});
+
+test('mobile navigation follows course and blog themes at the desktop boundary', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const { path, theme, color } of [
+    { path: lesson, theme: 'course', color: 'rgb(49, 86, 75)' },
+    { path: '/zh/blog/no-loyalty-to-ai-coding-tools', theme: 'blog', color: 'rgb(53, 84, 134)' },
+  ]) {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(path);
+    const navigation = page.locator(navigationSelector);
+    const controls = navigation.locator(':scope > a, :scope > button');
+    await expect(navigation).toBeVisible();
+    await expect(navigation).toHaveCSS('border-color', color);
+    await expect(controls.locator(':scope > svg')).toHaveCount(4);
+    for (const control of await controls.all()) await expect(control).toHaveCSS('color', color);
+    const contents = navigation.locator('[data-section="contents"]');
+    await contents.focus();
+    await expect(contents).toHaveCSS('outline-style', 'solid');
+    const accessibility = await new AxeBuilder({ page }).include(navigationSelector).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+    expect(accessibility.violations).toEqual([]);
+    await capture(page, `window-navigation-${theme}-theme`);
+
+    await contents.press('Enter');
+    await expect(page.locator('[data-mobile="true"]')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(contents).toBeFocused();
+    await page.setViewportSize({ width: 960, height: 844 });
+    await expect(navigation).toBeVisible();
+    await page.setViewportSize({ width: 961, height: 844 });
+    await expect(navigation).toBeHidden();
+    await expect(page.locator('[data-slot="sidebar-container"]')).toBeVisible();
+    await capture(page, `window-navigation-${theme}-desktop`);
+  }
 });

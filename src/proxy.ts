@@ -17,6 +17,7 @@ export async function proxy(request: NextRequest) {
     target.pathname = stripLocale(path);
     return NextResponse.redirect(target, 308);
   }
+  if (path === '/embed' || path.startsWith('/embed/')) return NextResponse.next();
   if (isNegotiatedPath(path)) {
     const choice = request.nextUrl.searchParams.get('lang');
     const locale = isLocale(choice) ? choice : negotiateLocale(request.cookies.get(localeCookie)?.value, request.headers.get('accept-language') ?? '');

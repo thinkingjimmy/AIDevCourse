@@ -3,7 +3,7 @@
  * module only wraps existing text ranges in <mark> elements after mount.
  */
 
-export function highlightAnnotations(container, annotations) {
+export function highlightAnnotations(container, annotations, labels = {}) {
   clearAnnotationMarks(container);
   if (!annotations.length) return () => {};
   const stream = collectTextStream(container);
@@ -59,17 +59,17 @@ export function highlightAnnotations(container, annotations) {
 
   for (const match of markMatches) {
     if (match.annotation.kind === 'assist') {
-      match.display = '✦';
+      match.display = labels.assist || '✦';
       match.markClass = ' tr-annotation-assist';
       match.kind = 'assist';
     } else if (match.annotation.kind === 'link') {
       const type = match.annotation.linkType === 'external' ? 'external' : 'internal';
-      match.display = type === 'external' ? '外' : '内';
+      match.display = type === 'external' ? labels.external || '外' : labels.internal || '内';
       match.markClass = ` tr-annotation-link tr-annotation-link-${type}`;
       match.kind = `link-${type}`;
     } else {
       const type = match.annotation.issueType === 'typo' ? 'typo' : 'grammar';
-      match.display = type === 'typo' ? '错' : '句';
+      match.display = type === 'typo' ? labels.typo || '错' : labels.grammar || '句';
       match.markClass = ` tr-annotation-proof tr-annotation-proof-${type}`;
       match.kind = type === 'typo' ? 'proofread-typo' : 'proofread-grammar';
     }

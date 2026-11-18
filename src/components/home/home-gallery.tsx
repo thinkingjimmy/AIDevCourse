@@ -1,20 +1,21 @@
 'use client';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ComponentProps, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ComponentProps, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft';
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import { BlogArticleLink, DiskLink, opticalDiscArtwork, type BlogArticle, type GalleryItem } from './disk';
 import { AuthorDialog } from '@/components/author/author-card';
-import { HeroPrimaryAction } from '@/components/layout/page-primitives';
-import { useHomeHeader } from '@/components/layout/site-frame';
+import { HeroPrimaryAction, SiteLogo } from '@/components/layout/page-primitives';
+import { site } from '@/lib/site-config';
 import type { Locale } from '@/lib/i18n/config';
 import { homePath, type HomeView } from '@/lib/i18n/routing';
 import { canAnimateNavigation, useCourseTransition } from './course-transition';
 import { HomeDeviceStage, orbitDevices, type HomeOrbit, type SwitchDirection } from './device-stage';
+import { CourseCategories, categoryHeadingId } from './catalog/categories';
 
 export type GalleryLabels = {
-  title: string; start: string; opening: Record<HomeView, string>;
+  title: string; home: string; start: string; opening: Record<HomeView, string>;
   previous: string; next: string; pagination: string; views: Record<HomeView, string>; switchView: string;
   macGroups: { beginner: string; intermediate: string; dictionaries: string };
   blogOverview: string; emptyResources: string;
@@ -34,9 +35,9 @@ export function HomeGallery({ items, blog, locale, initialView, initialPage, lab
   labels: GalleryLabels; startUrl: string; children?: ReactNode;
 }) {
   const root = useRef<HTMLDivElement>(null);
-  const masthead = useRef<HTMLElement>(null);
+  const masthead = useRef<HTMLDivElement>(null);
+  const courseCatalog = useRef<HTMLDivElement>(null);
   const orbit = useRef<HomeOrbit>(undefined);
-  const header = useHomeHeader();
   const search = useSearchParams();
   const [selected, setSelected] = useState<{ view: HomeView; title: string; opening: string }>();
   const [switching, setSwitching] = useState<GallerySwitch>();
@@ -45,23 +46,27 @@ export function HomeGallery({ items, blog, locale, initialView, initialPage, lab
   const view = switching?.to ?? routeView;
   const nextView = view === 'courses' ? 'resources' : 'courses';
   const coursesActive = view === 'courses';
+  const showCourses = coursesActive || switching?.from === 'courses';
+  const showResources = !coursesActive || switching?.from === 'resources';
   const compactBlog = blog && blog.articles.length > 0 && blog.articles.length <= 2;
   const pageValues = search?.getAll('page');
   const requestedPage = pageValues ? pageValues.length === 1 ? Number(pageValues[0]) : 1 : initialPage;
   const page = Number.isSafeInteger(requestedPage) ? Math.max(1, requestedPage) : 1;
-  const orderedMacItems = [
+  const orderedMacItems = useMemo(() => [
     ...items.courses.filter(isBeginner).sort((a, b) => beginnerRank(a.id) - beginnerRank(b.id)),
     ...items.courses.filter(item => !isBeginner(item)),
     ...items.dictionaries,
-  ];
+  ], [items]);
   const pages = Math.max(1, Math.ceil(orderedMacItems.length / pageSize));
   const coursePage = Math.min(pages, switching?.from === 'courses' ? switching.fromPage : switching ? 1 : page);
-  const visibleMacItems = orderedMacItems.slice((coursePage - 1) * pageSize, coursePage * pageSize);
-  const courseGroups = [
-    { id: 'beginner', title: labels.macGroups.beginner, cards: visibleMacItems.filter(isBeginner) },
-    { id: 'intermediate', title: labels.macGroups.intermediate, cards: visibleMacItems.filter(item => item.kind === 'course' && !isBeginner(item)) },
-    { id: 'dictionaries', title: labels.macGroups.dictionaries, cards: visibleMacItems.filter(item => item.kind === 'dictionary') },
-  ];
+  const courseGroups = useMemo(() => {
+    const visibleMacItems = orderedMacItems.slice((coursePage - 1) * pageSize, coursePage * pageSize);
+    return [
+      { id: 'beginner', title: labels.macGroups.beginner, cards: visibleMacItems.filter(isBeginner) },
+      { id: 'intermediate', title: labels.macGroups.intermediate, cards: visibleMacItems.filter(item => item.kind === 'course' && !isBeginner(item)) },
+      { id: 'dictionaries', title: labels.macGroups.dictionaries, cards: visibleMacItems.filter(item => item.kind === 'dictionary') },
+    ].filter(group => group.cards.length);
+  }, [orderedMacItems, coursePage, labels.macGroups]);
 
   useLayoutEffect(() => {
     const element = masthead.current;
@@ -152,47 +157,53 @@ export function HomeGallery({ items, blog, locale, initialView, initialPage, lab
   };
 
   return <div ref={root} className="home-gallery" data-disk-phase={phase} data-home-view={view} data-home-switching={switching ? '' : undefined}>
-    {Boolean(blog?.articles.length) && <link rel="preload" as="image" href={opticalDiscArtwork} type="image/avif" fetchPriority="low" />}
-    <header ref={masthead} data-slot="home-hero" className="gallery-hero">
-      <div className="gallery-copy">
-        <div className="gallery-heading">
-          {header}
-          <h1>{labels.title}</h1>
+    {showResources && Boolean(blog?.articles.length) && <link rel="preload" as="image" href={opticalDiscArtwork} type="image/avif" fetchPriority="low" />}
+    <div ref={masthead} className="gallery-masthead">
+      <header data-slot="home-hero" className="gallery-hero">
+        <div className="gallery-copy">
+          <div className="gallery-heading">
+            <SiteLogo href={pageUrl('courses')} aria-label={`${site.name} · ${labels.home}`} className="site-header-logo" />
+            <h1>{labels.title}</h1>
+          </div>
+          <div className="gallery-actions">
+            <HeroPrimaryAction href={startUrl} className="max-[721px]:w-auto">{labels.start}</HeroPrimaryAction>
+            <AuthorDialog variant="text" />
+          </div>
         </div>
-        <div className="gallery-actions">
-          <HeroPrimaryAction href={startUrl} className="max-[721px]:w-auto">{labels.start}</HeroPrimaryAction>
-          <AuthorDialog variant="text" />
-        </div>
-      </div>
-      <HomeDeviceStage view={view} title={selected?.view === view ? selected.title : undefined}
-        status={phase === 'idle' ? undefined : selected?.opening}
-        href={pageUrl(nextView)} labels={{ group: labels.switchView, rear: labels.views[nextView], ...labels.switchTo[nextView] }}
-        onSwitch={handleSwitch} onKeyDown={handleDirectionKey} />
-    </header>
+        <HomeDeviceStage view={view} title={selected?.view === view ? selected.title : undefined}
+          status={phase === 'idle' ? undefined : selected?.opening}
+          href={pageUrl(nextView)} labels={{ group: labels.switchView, rear: labels.views[nextView], ...labels.switchTo[nextView] }}
+          onSwitch={handleSwitch} onKeyDown={handleDirectionKey} />
+      </header>
+      {coursesActive && courseGroups.length > 0 && <CourseCategories key={coursePage} groups={courseGroups}
+        label={labels.views.courses} catalog={courseCatalog} collectionEnabled={!switching && phase === 'idle'} />}
+    </div>
     <span className="sr-only" role="status">{labels.views[view]}</span>
     <main id="main-content" tabIndex={-1} className="home-courses">
       <div id="catalog" className="disk-catalog">
-        <div className="disk-group" data-gallery-view="courses"
-          hidden={!coursesActive && switching?.from !== 'courses'} inert={!coursesActive}>
-          {children}
-          {courseGroups.filter(group => group.cards.length).map(({ id, title, cards }) =>
-            <section key={id} aria-labelledby={`home-${id}-title`}>
-              <h2 id={`home-${id}-title`} className="disk-group-title">{title}</h2>
-              <div data-slot={id === 'dictionaries' ? 'dictionary-grid' : 'course-grid'} className="disk-grid">
-                {cards.map(item => <DiskLink key={item.id} item={item} showDictionaryCount
-                  {...mediaLinkEvents(item, 'courses', labels.opening[item.kind === 'course' ? 'courses' : 'resources'])} />)}
-              </div>
-            </section>,
-          )}
-          {pages > 1 && <nav className="disk-pagination" aria-label={labels.pagination}>
-            {coursePage > 1 ? <Link href={pageUrl('courses', coursePage - 1)} aria-label={labels.previous} scroll={false}><ArrowLeftIcon size={16} aria-hidden /></Link> : <span aria-hidden><ArrowLeftIcon size={16} /></span>}
-            <span aria-live="polite">{String(coursePage).padStart(2, '0')} / {String(pages).padStart(2, '0')}</span>
-            {coursePage < pages ? <Link href={pageUrl('courses', coursePage + 1)} aria-label={labels.next} scroll={false}><ArrowRightIcon size={16} aria-hidden /></Link> : <span aria-hidden><ArrowRightIcon size={16} /></span>}
-          </nav>}
+        <div ref={courseCatalog} className="disk-group" data-gallery-view="courses"
+          hidden={!showCourses} inert={!coursesActive}>
+          {showCourses && <>
+            {children}
+            {courseGroups.map(({ id, title, cards }) =>
+              <section key={id} aria-labelledby={categoryHeadingId(id)}>
+                <h2 id={categoryHeadingId(id)} className="disk-group-title" tabIndex={-1}>{title}</h2>
+                <div data-slot={id === 'dictionaries' ? 'dictionary-grid' : 'course-grid'} className="disk-grid">
+                  {cards.map(item => <DiskLink key={item.id} item={item} showDictionaryCount
+                    {...mediaLinkEvents(item, 'courses', labels.opening[item.kind === 'course' ? 'courses' : 'resources'])} />)}
+                </div>
+              </section>,
+            )}
+            {pages > 1 && <nav className="disk-pagination" aria-label={labels.pagination}>
+              {coursePage > 1 ? <Link href={pageUrl('courses', coursePage - 1)} aria-label={labels.previous} scroll={false}><ArrowLeftIcon size={16} aria-hidden /></Link> : <span aria-hidden><ArrowLeftIcon size={16} /></span>}
+              <span aria-live="polite">{String(coursePage).padStart(2, '0')} / {String(pages).padStart(2, '0')}</span>
+              {coursePage < pages ? <Link href={pageUrl('courses', coursePage + 1)} aria-label={labels.next} scroll={false}><ArrowRightIcon size={16} aria-hidden /></Link> : <span aria-hidden><ArrowRightIcon size={16} /></span>}
+            </nav>}
+          </>}
         </div>
         <div className="disk-group" data-gallery-view="resources"
-          hidden={coursesActive && switching?.from !== 'resources'} inert={coursesActive}>
-          <section className="home-blog" aria-labelledby="home-blog-title" data-compact={compactBlog ? '' : undefined}>
+          hidden={!showResources} inert={coursesActive}>
+          {showResources && <section className="home-blog" aria-labelledby="home-blog-title" data-compact={compactBlog ? '' : undefined}>
             <header className="blog-section-header">
               <h2 id="home-blog-title" className="disk-group-title">{blog?.title ?? labels.views.resources}</h2>
               {compactBlog && <Link className="blog-overview-link" href={blog.url}>
@@ -211,7 +222,7 @@ export function HomeGallery({ items, blog, locale, initialView, initialPage, lab
                 </Link>
               </div>}
             </> : <p className="text-sm text-muted-foreground">{labels.emptyResources}</p>}
-          </section>
+          </section>}
         </div>
       </div>
     </main>

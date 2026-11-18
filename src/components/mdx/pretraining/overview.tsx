@@ -1,6 +1,6 @@
 'use client';
 
-import { Tabs } from 'radix-ui';
+import * as Tabs from 'radix-ui/tabs';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { TrainingFrame } from '../llm-training/shared';

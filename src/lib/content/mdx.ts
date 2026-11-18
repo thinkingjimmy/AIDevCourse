@@ -225,5 +225,5 @@ export function inspectMarkdown(body: string, file: string, lineOffset = 0) {
   for (const id of noteAnchors) if (!notes.has(id)) fail(`Missing JimmyNote: ${id}`);
   // JSX inside code fences remains ordinary text and never enters this policy.
   return { headings, links, achievements, resourceDiskIds: resourceDiskIds.size ? [...resourceDiskIds] : undefined,
-    hasJimmyNotes: notes.size > 0, plainText: toString(tree) };
+    hasJimmyNotes: notes.size > 0 };
 }

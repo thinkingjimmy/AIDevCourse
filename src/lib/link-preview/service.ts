@@ -1,6 +1,6 @@
 import 'server-only';
 import { unstable_cache } from 'next/cache';
-import catalog from '@catalog';
+import { getCatalog } from '../content/source';
 import { site } from '../site-config';
 import { fetchRemotePreview } from './remote';
 import type { LinkPreviewData } from './model';
@@ -11,6 +11,7 @@ function normalize(href: string) {
   return url;
 }
 
+const catalog = getCatalog();
 const allowed = new Set(catalog.documents.flatMap((document) => document.links
   .filter((link) => !link.image && /^https:\/\//i.test(link.url))
   .map((link) => normalize(link.url).href)));

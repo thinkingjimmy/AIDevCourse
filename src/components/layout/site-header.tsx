@@ -12,9 +12,9 @@ import { canAnimateNavigation, useCourseTransition } from '@/components/home/cou
 import { macintoshArtwork } from '@/components/home/macintosh';
 import { playStationArtwork } from '@/components/home/device-stage';
 
-export function SiteHeader({ locale, courses, labels, shortcut, children, hero = false }: {
+export function SiteHeader({ locale, courses, labels, children }: {
   locale: Locale; courses: { url: string; title: string }[];
-  labels: { home: string; navigation: string; vocabulary: Record<VocabularyKind, string> }; shortcut: ReactNode; children: ReactNode; hero?: boolean;
+  labels: { home: string; navigation: string; vocabulary: Record<VocabularyKind, string> }; children: ReactNode;
 }) {
   const path = canonicalPath(usePathname());
   const { phase, returnHome } = useCourseTransition();
@@ -34,13 +34,11 @@ export function SiteHeader({ locale, courses, labels, shortcut, children, hero =
       event.preventDefault();
       void returnHome({ source: event.currentTarget, url: destination, view });
     }} />;
-  if (hero) return <>{logo}{shortcut}</>;
   return <header data-slot="site-header" data-course={course ? '' : undefined} data-vocabulary={vocabulary ? '' : undefined} className="site-header">
     <div className="site-header-inner">
       {logo}
       {(course || vocabulary) && <div className="mac-window-heading"><span>{course?.title ?? (vocabulary && labels.vocabulary[vocabulary.id])}</span></div>}
       <nav className="site-header-tools" aria-label={labels.navigation}>{children}</nav>
-      {!vocabulary && shortcut}
     </div>
   </header>;
 }

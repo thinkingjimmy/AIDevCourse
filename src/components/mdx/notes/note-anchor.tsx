@@ -1,7 +1,7 @@
 'use client';
 
 import type { HTMLAttributes } from 'react';
-import { Popover } from 'radix-ui';
+import * as Popover from 'radix-ui/popover';
 import { useTranslations } from 'next-intl';
 import { XIcon } from '@phosphor-icons/react/dist/ssr/X';
 import { Button } from '@/components/ui/button';

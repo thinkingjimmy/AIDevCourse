@@ -12,7 +12,7 @@ async function move(element: Element, frames: Keyframe[], duration: number, sign
   return animation;
 }
 
-function visualClone(element: HTMLElement) {
+export function visualClone(element: HTMLElement) {
   const clone = element.cloneNode(true) as HTMLElement;
   clone.removeAttribute('id');
   clone.querySelectorAll('[id]').forEach(item => item.removeAttribute('id'));

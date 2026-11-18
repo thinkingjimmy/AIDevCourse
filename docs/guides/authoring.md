@@ -1,21 +1,21 @@
 # 作者与译者指南
 
-课程只从 `content/<lang>/` 编译。网站页面无需逐篇修改。当前产品行为见 [需求说明](./requirements.md)，数据流见 [架构说明](./architecture.md)。
+课程只从 `content/<lang>/` 编译。网站页面无需逐篇修改。当前产品行为见 [需求说明](../reference/requirements.md)，数据流见 [架构说明](../reference/architecture.md)。
 
 ## 本地启动
 
-使用 Node 24.x 与 pnpm 10.30.3，执行 `pnpm install --frozen-lockfile`。`pnpm dev` 与部署展示同一份课程。新增文件、修改 frontmatter 或 meta 后重启开发服务以刷新公开清单；正文编辑支持热更新。
+使用 Node 24.x 与 pnpm 10.30.3，执行 `pnpm install --frozen-lockfile`。`pnpm dev` 与部署展示同一份课程。新增或移除课时、修改正文、frontmatter 或 meta.json 后，开发服务会自动校验并刷新课程目录和路由。
 
 `CONTENT_TEST=1` 仅用于非公开工程验收，连接 Vercel 时会直接拒绝启动。
 
-开发服务使用 Webpack，以避免 Turbopack 热更新时丢失 CSS 分块。更新启动命令后，重启 `pnpm dev` 并刷新浏览器一次。外链页面拒绝抓取或没有可用元数据时，预览接口返回空内容，卡片显示不可预览提示；这不影响点击跳转。本机 DNS 代理返回虚拟 IP 时，服务通过 Cloudflare HTTPS DNS 查询真实地址，并继续拦截内网地址。
+开发服务使用 Turbopack。外链页面拒绝抓取或没有可用元数据时，预览接口返回空内容，卡片显示不可预览提示；这不影响点击跳转。本机 DNS 代理返回虚拟 IP 时，服务通过 Cloudflare HTTPS DNS 查询真实地址，并继续拦截内网地址。
 
 ## 新增原文课程
 
-1. 在 `content/zh/<course>/` 建立目录，复制 [课程模板](./templates/course-original.mdx) 为 `index.mdx`。更换所有示例文字与 ID；课程原文也可以使用其他受支持语言。
+1. 在 `content/zh/<course>/` 建立目录，复制 [课程模板](../templates/course-original.mdx) 为 `index.mdx`。更换所有示例文字与 ID；课程原文也可以使用其他受支持语言。
 2. 填写 `sourceLocale`、本语言标题、简介、难度、目标 `goals`、受众 `audience` 和前置要求 `prerequisites`。课程总览由这些字段和课时目录生成，课程文件无需正文。写入 `content/` 并列入 `meta.json` 的文件即公开。
 3. 为课程与每一层模块新增 `meta.json`，在语言根 meta 的 `pages` 中加入课程目录。每层 `pages` 只写直接成员的 ASCII 文件名或目录名，不带扩展名。
-4. 从 [课时模板](./templates/lesson-original.mdx) 新增课时。`courseId` 匹配课程，`lessonId` 永久代表这一逻辑课时；修改标题、排序或路径时保留 ID。
+4. 从 [课时模板](../templates/lesson-original.mdx) 新增课时。`courseId` 匹配课程，`lessonId` 永久代表这一逻辑课时；修改标题、排序或路径时保留 ID。
 5. 在模块 meta 中按教学顺序列出课时。课程 meta 包含 `index` 和各模块。不要通过文件名排序、通配符或数字前缀推断顺序。
 
 ```json
@@ -25,7 +25,7 @@
 }
 ```
 
-导读课程可在 frontmatter 中设置 `section: introduction`，首页会将其放入难度分组之前的「开始之前」。`level` 仍表示课程难度；未设置 `section` 的课程继续按难度分组。当前中文导读课程「从想法到作品」位于 `content/zh/getting-started/`，卡片和总览复用首页电脑拆解动图；「学前必看」下的 1.1「关于这门课」位于 `before-you-start/about-this-course.mdx`；1.2「常见问题（FAQ）」位于 `before-you-start/faq.mdx`，记录写作原因、是否推出付费教程等常见问题；1.3「致谢与参考资料」位于 `before-you-start/acknowledgements.mdx`，记录读者反馈与写作时参考的教程资料；1.4「更新日志」位于 `before-you-start/changelog.mdx`，正文待补充。Changelog 的中文名称为「更新日志」，稳定 ID 与路径使用 `changelog`。「我的一些碎碎念」的三课位于 `musings/`，由该目录的 `meta.json` 排序；2.3「既然 AI 都能写好代码了，为何还要学习编程？」位于 `why-learn-programming-with-ai.mdx`，正文待补充。课程根目录只放介绍和模块顺序，课时放入对应模块。公开路径使用 `getting-started`，稳定标识 `courseId: ai-coding` 用于关联已有学习记录，旧课程地址通过 `config/redirects.json` 跳转。
+导读课程可在 frontmatter 中设置 `section: introduction`，首页会将其放入难度分组之前的「开始之前」。`level` 仍表示课程难度；未设置 `section` 的课程继续按难度分组。当前中文导读课程「从想法到作品」位于 `content/zh/getting-started/`，卡片和总览复用首页电脑拆解动图；「学前必看」下的 1.1「关于这门课」位于 `before-you-start/about-this-course.mdx`；1.2「常见问题（FAQ）」位于 `before-you-start/faq.mdx`，记录写作原因、是否推出付费教程等常见问题；1.3「致谢与参考资料」位于 `before-you-start/acknowledgements.mdx`，记录读者反馈与写作时参考的教程资料；1.4「更新日志」位于 `before-you-start/changelog.mdx`，正文待补充。Changelog 的中文名称为「更新日志」，稳定 ID 与路径使用 `changelog`。「我的一些碎碎念」的三课位于 `musings/`，由该目录的 `meta.json` 排序；2.3「既然 AI 都能写好代码了，为何还要学习编程？」位于 `why-learn-programming-with-ai.mdx`，正文待补充。课程根目录只放介绍和模块顺序，课时放入对应模块。公开路径使用 `getting-started`，稳定标识 `courseId: ai-coding` 用于关联已有学习记录，旧课程地址通过 `config/content/redirects.json` 跳转。
 
 课程介绍不计入课时数量。课程可以先发布介绍，再逐步添加课时。没有课时的课程保留首页卡片和总览，显示「内容更新中」，不显示开始第一课或课时统计。完全没有课程的语言会显示本地化空状态。
 
@@ -72,7 +72,7 @@ send(request);
 
 External Markdown page links show a preview after a 350ms hover or keyboard focus. The card shows the title, description, domain, and available cover. Internal links have no hover or focus card and make no preview request; lesson links use side reading where available. Touch and no-JavaScript links keep native navigation. Check the [link previews](http://localhost:3000/design/components#link-previews) for examples.
 
-Use `WebsitePreview` to share a website as a browser-framed screenshot. It requires static, nonempty `url` and `title` strings and exactly one Markdown image with meaningful localized alt text. The destination must be an absolute HTTPS URL without credentials; the screenshot must exist under `/images/`. Use a standalone block, with no import. The address bar and screenshot both open the website in a new tab. By default, the image area is 400px high in columns at least 36rem wide and 260px in narrower columns. Set `height="auto"` to fit a shorter screenshot within those limits. Readers can scroll it with a wheel, touch, or keyboard while the address bar and lesson stay in place. Images keep their aspect ratio and use the normal MDX image dimensions and lazy loading. The component works without JavaScript and sends no requests to the shared website before a reader opens it. [Screenshot sources](./references/website-previews.md) record captured pages.
+Use `WebsitePreview` to share a website as a browser-framed screenshot. It requires static, nonempty `url` and `title` strings and exactly one Markdown image with meaningful localized alt text. The destination must be an absolute HTTPS URL without credentials; the screenshot must exist under `/images/`. Use a standalone block, with no import. The address bar and screenshot both open the website in a new tab. By default, the image area is 400px high in columns at least 36rem wide and 260px in narrower columns. Set `height="auto"` to fit a shorter screenshot within those limits. Readers can scroll it with a wheel, touch, or keyboard while the address bar and lesson stay in place. Images keep their aspect ratio and use the normal MDX image dimensions and lazy loading. The component works without JavaScript and sends no requests to the shared website before a reader opens it. [Screenshot sources](../reference/website-previews.md) record captured pages.
 
 ```mdx
 <WebsitePreview url="https://jimmywong.dev/en" title="Jimmy's personal website">
@@ -95,7 +95,7 @@ X 接受 `x.com` 和 `twitter.com` 的帖子链接，包括移动端域名与 `/
 
 X 使用官方组件，在接近视口时加载，全页共用一次脚本。脚本加载最多等待 10 秒，单条帖子整体最多等待 15 秒；失败时显示本地化提示。YouTube 使用隐私增强播放器，延迟加载，不自动播放，支持全屏与移动端内联播放；窄屏保留至少 200px 高度。X 仅在加载失败或无 JavaScript 时显示原站链接；加载成功后使用帖子自带的查看入口。YouTube 始终保留原站链接。嵌入会直接连接相应平台，受平台隐私政策及可用性影响；隐私增强模式不表示完全没有网络请求或跟踪。构建不请求平台接口，也不需要 API 密钥。
 
-Use `XProfile` for a reusable X recommendation card. Required attributes are static, nonempty `username`, `name`, `avatar`, and `bio` strings. Use a username without `@` (1–15 letters, numbers, or underscores) and an existing local `/images/` avatar. The whole card opens `https://x.com/{username}` in a new tab. It supports keyboard navigation and works without JavaScript. `XProfile` must be a standalone block with no children. Wrap one or more cards in `XProfiles` for a two-column layout when the content area is at least 36rem wide; narrower areas use one column. `XProfiles` accepts only direct `XProfile` children and has no attributes. Keep names, biographies, and image sources current; [profile sources](./references/x-profiles.md) record the first set used in `deepseek-101/deepseek-chat/ai-chat-tips`.
+Use `XProfile` for a reusable X recommendation card. Required attributes are static, nonempty `username`, `name`, `avatar`, and `bio` strings. Use a username without `@` (1–15 letters, numbers, or underscores) and an existing local `/images/` avatar. The whole card opens `https://x.com/{username}` in a new tab. It supports keyboard navigation and works without JavaScript. `XProfile` must be a standalone block with no children. Wrap one or more cards in `XProfiles` for a two-column layout when the content area is at least 36rem wide; narrower areas use one column. `XProfiles` accepts only direct `XProfile` children and has no attributes. Keep names, biographies, and image sources current; [profile sources](../reference/x-profiles.md) record the first set used in `deepseek-101/deepseek-chat/ai-chat-tips`.
 
 ```mdx
 <XProfiles>
@@ -282,7 +282,7 @@ pnpm build
 
 ## 新增译文
 
-在目标语言建立相同课程、模块与课时路径，复制 [课程译文模板](./templates/course-translation.mdx) 和 [课时译文模板](./templates/lesson-translation.mdx)。保留原文的 `courseId`、`lessonId`、`sourceLocale` 和 ASCII 路径；翻译标题、正文、简介、目录名称、alt 与相关 UI 内容。
+在目标语言建立相同课程、模块与课时路径，复制 [课程译文模板](../templates/course-translation.mdx) 和 [课时译文模板](../templates/lesson-translation.mdx)。保留原文的 `courseId`、`lessonId`、`sourceLocale` 和 ASCII 路径；翻译标题、正文、简介、目录名称、alt 与相关 UI 内容。
 
 目标语言 meta 只列已有文件，顺序是原文顺序的子序列。系统按稳定身份关联译文，不使用人工修订号判断内容是否同步。
 
@@ -304,11 +304,11 @@ Token 图解使用各语言实际输入的编码结果，不能只翻译词元�
 
 ## 发布、下架与改 URL
 
-课程文件列入对应 `meta.json` 后即公开。博客按从旧到新维护目录顺序。博客总览和文章使用 `/zh/blog` 和 `/zh/blog/{article}`，英文去掉语言前缀。PS2 首页倒序取最近六篇已发布文章，摘要使用各篇的 `description`。检查 meta 完整，执行 check / build / 生产 E2E。请按 [部署指南](./deployment.md) 发布通过检查的提交。
+课程文件列入对应 `meta.json` 后即公开。博客文章直接放在 `content/zh/blog/`。在该目录的 `meta.json` 中保留 `index` 作为第一项，然后按从旧到新的顺序列出文章文件名（省略扩展名）。博客总览和文章使用 `/zh/blog` 和 `/zh/blog/{article}`，英文去掉语言前缀。PS2 首页倒序取最近六篇已发布文章，摘要使用各篇的 `description`。检查 meta 完整，执行 check / build / 生产 E2E。请按 [部署指南](./deployment.md) 发布通过检查的提交。
 
 下架时删除该语言的文件，并同步删除仍引用它的译文；目录中不再保留已删除的条目。原文文件不能在译文仍引用时直接移除。没有课时的课程介绍可以继续公开，并显示内容更新状态。
 
-已发布 URL 变化时同步所有语言的相对路径，保持稳定 ID，并在 `config/redirects.json` 添加旧 URL 到实际公开新 URL 的映射。不能有链式跳转、环、动态匹配或外部目标。
+已发布 URL 变化时同步所有语言的相对路径，保持稳定 ID，并在 `config/content/redirects.json` 添加旧 URL 到实际公开新 URL 的映射。不能有链式跳转、环、动态匹配或外部目标。
 
 ```json
 [
@@ -319,7 +319,7 @@ Token 图解使用各语言实际输入的编码结果，不能只翻译词元�
 ]
 ```
 
-上面的 JSON 只说明字段形状。真实迁移写在 `config/redirects.json`，目标必须已经公开。只有发生 URL 迁移时才追加条目，不要用示例覆盖现有映射。
+上面的 JSON 只说明字段形状。真实迁移写在 `config/content/redirects.json`，目标必须已经公开。只有发生 URL 迁移时才追加条目，不要用示例覆盖现有映射。
 
 ## 互动需求
 
@@ -341,7 +341,7 @@ Token 图解使用各语言实际输入的编码结果，不能只翻译词元�
 
 ### 文章成就
 
-新增成就只需在文章 MDX 中填写题目和选项，无需修改 TSX、注册组件或维护成就总数。开发环境修改成就声明后会热更新；文章定义与课程成就清单在请求中读取最新内容并统一校验，无需重启 `pnpm dev`。生产环境仍使用构建时生成的清单。
+新增成就只需在文章 MDX 中填写题目和选项，无需修改 TSX、注册组件或维护成就总数。开发环境修改成就声明后会热更新；开发服务在文件变更时统一校验文章定义与课程成就清单，无需重启 `pnpm dev`。生产环境仍使用构建时生成的清单。
 
 ```mdx
 <Achievement
@@ -365,7 +365,7 @@ Token 图解使用各语言实际输入的编码结果，不能只翻译词元�
 
 「再试一次」显示为成就标题首行最右侧的回转箭头图标，保留本地化的无障碍名称和悬停提示。每次主动答对，包括重试答对，都会从屏幕左右底角连续三波向上撒花，约三秒后结束。桌面共 240 片、窄屏共 160 片，使用八种鲜亮颜色和不同大小的方片、圆片与彩带，喷射范围覆盖屏幕中上部。答错、刷新恢复与标签页同步不播放；系统启用减少动态效果时也不播放。重试、离开页面或切换到减少动态效果会清理动画。这些行为由通用组件提供，不需要增加 MDX 参数。
 
-计分考试、自建视频播放器、其他交互练习和提示词对比暂不实现。现有组件不足时，先记录真实材料、输入、状态、失败处理和验收条件，并更新 [需求说明](./requirements.md)。不要提前创建空组件。
+计分考试、自建视频播放器、其他交互练习和提示词对比暂不实现。现有组件不足时，先记录真实材料、输入、状态、失败处理和验收条件，并更新 [需求说明](../reference/requirements.md)。不要提前创建空组件。
 
 ## LLM 101 的课程范围
 
@@ -415,7 +415,7 @@ Agent 101 是独立中级课程，已在 `content/zh/agent-101/` 发布课程介
 
 DeepSeek 101 是入门课程，已在 `content/zh/deepseek-101/` 发布课程介绍、首页卡片和三个模块：「学前必看」（1.1「关于本课程」，`lessonId: about-this-course`）、「DeepSeek Chat」（2.1「认识 DeepSeek Chat」，`lessonId: what-is-deepseek-chat`；2.2「使用 AI Chat 的几个建议」，`lessonId: what-can-you-do-with-ai-chat`；2.3「AI Chat 实用技巧」，`lessonId: how-to-use-ai-artifacts`）、「DeepSeek Harness」（3.1「认识 DeepSeek Harness」，`lessonId: what-is-deepseek-harness`）。总览显示五节课和开始入口，其余课时尚未发布。课程不要求模型训练经验；动手接 API 的章节建议已有基础编程能力。
 
-2.2 与 2.3 从 LLM 101 的第三模块迁入，保留原来的 `lessonId`、正文与成就 ID，只把 `courseId` 改为 `deepseek-101`，并按模块顺序补进 DeepSeek Chat 的 `meta.json`。跨课程迁移改变了公开 URL，旧地址写入 `config/redirects.json`；成就记录按课程命名空间保存，旧课程的已解锁记录不会自动迁移。英文、日文、法文和西班牙文已发布 DeepSeek 101 课程介绍与这两节译文，课程介绍标记为更新中。
+2.2 与 2.3 从 LLM 101 的第三模块迁入，保留原来的 `lessonId`、正文与成就 ID，只把 `courseId` 改为 `deepseek-101`，并按模块顺序补进 DeepSeek Chat 的 `meta.json`。跨课程迁移改变了公开 URL，旧地址写入 `config/content/redirects.json`；成就记录按课程命名空间保存，旧课程的已解锁记录不会自动迁移。英文、日文、法文和西班牙文已发布 DeepSeek 101 课程介绍与这两节译文，课程介绍标记为更新中。
 
 导读课说明为什么单独学 DeepSeek、课程主题（对话产品、API、开放模型、本地部署与结果验证）、适合谁、先修要求、学习方法和课程状态，不声明成就。课程更新期间 `meta.json` 只列已有目录；新增课时按模块建目录并补 `meta.json`，保持 `lessonId` 稳定。
 

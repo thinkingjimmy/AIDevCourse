@@ -6,20 +6,28 @@
  * annotations. Nothing is cached: every request rescans the directory, so a
  * browser refresh sees new or edited tutorials immediately.
  */
-import { readFile, readdir, stat } from 'node:fs/promises';
+import { chmod, mkdir, readFile, readdir, rename, stat, unlink, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { dirname, extname, isAbsolute, join, normalize, relative, resolve, sep } from 'node:path';
+import { basename, dirname, extname, isAbsolute, join, normalize, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+
+const execFileAsync = promisify(execFile);
 
 const PLUGIN_ROOT = dirname(fileURLToPath(import.meta.url));
 const EXTERNAL_SOURCES_PATH = join(PLUGIN_ROOT, 'external-sources.json');
 const ROUTE_PREFIX = '/api/tutorial-review/';
 const MANIFEST_PATH = `${ROUTE_PREFIX}manifest`;
 const DOC_PATH = `${ROUTE_PREFIX}doc`;
+const SAVE_PATH = `${ROUTE_PREFIX}save`;
 const ASSET_PATH = `${ROUTE_PREFIX}asset`;
 const ASSIST_PATH = `${ROUTE_PREFIX}assist`;
+const WEBSITE_PATH = `${ROUTE_PREFIX}website-preview`;
 
-const MAX_BODY_BYTES = 262144;
+const MAX_BODY_BYTES = 1048576;
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+const WEBSITE_IMAGE_DIR = 'images/websites';
 const DEFAULT_PROVIDER = 'deepseek-account';
 const DEFAULT_MODEL = 'deepseek-flash';
 
@@ -42,6 +50,7 @@ export function apply(ctx, config = {}) {
   const contentRoot = join(root, 'content', locale);
   const annotationRoot = join(PLUGIN_ROOT, 'annotations', locale);
   const publicRoot = join(root, 'public');
+  const siteUrl = typeof config.siteUrl === 'string' && config.siteUrl.trim() ? config.siteUrl.trim().replace(/\/+$/, '') : 'http://localhost:3000';
   const provider = typeof config.provider === 'string' ? config.provider.trim() : '';
   const model = typeof config.model === 'string' ? config.model.trim() : '';
 
@@ -65,7 +74,7 @@ export function apply(ctx, config = {}) {
     }
   };
 
-  const onPost = (handler) => async (req, res) => {
+  const onPost = (handler, limit = MAX_BODY_BYTES) => async (req, res) => {
     if (rejectCrossSite(req, res)) return;
     if ((req.method || 'GET') !== 'POST') {
       res.writeHead(405, { allow: 'POST', 'content-type': 'text/plain; charset=utf-8' });
@@ -73,7 +82,7 @@ export function apply(ctx, config = {}) {
       return;
     }
     try {
-      const body = await readJsonBody(req, MAX_BODY_BYTES);
+      const body = await readJsonBody(req, limit);
       await handler(body, req, res);
     } catch (error) {
       if (res.headersSent) {
@@ -93,7 +102,7 @@ export function apply(ctx, config = {}) {
     path: MANIFEST_PATH,
     handler: onRequest(async (_url, _req, res) => {
       const manifest = await buildManifest({ root, contentRoot, annotationRoot, locale });
-      sendJson(res, 200, manifest);
+      sendJson(res, 200, { ...manifest, siteUrl });
     }),
   });
 
@@ -114,9 +123,16 @@ export function apply(ctx, config = {}) {
       const [source, info] = await Promise.all([readFile(file, 'utf8'), stat(file)]);
       const meta = parseFrontmatter(source);
       const annotations = await readAnnotations(annotationRoot, lessonId);
+      const courseId = lessonId.split('/')[0] || '';
+      const siteSlug = meta.lessonId || lessonId.split('/').pop() || lessonId;
+      const localePrefix = locale === 'en' ? '' : `/${locale}`;
+      const sitePath = courseId === 'blog'
+        ? `${localePrefix}/blog/${encodeURIComponent(siteSlug)}`
+        : `/embed/${encodeURIComponent(locale)}/${encodeURIComponent(courseId)}/${encodeURIComponent(siteSlug)}`;
       sendJson(res, 200, {
         lessonId,
-        courseId: lessonId.split('/')[0] || '',
+        courseId,
+        sitePath,
         section: lessonId.split('/').slice(1, -1).join('/'),
         title: meta.title || firstHeading(source) || lessonId.split('/').pop() || lessonId,
         description: meta.description || '',
@@ -124,6 +140,57 @@ export function apply(ctx, config = {}) {
         bytes: info.size,
         mtime: info.mtime.toISOString(),
         annotations,
+      });
+    }),
+  });
+
+  const disposeSave = ctx.webServer.register({
+    kind: 'exact',
+    path: SAVE_PATH,
+    handler: onPost(async (body, _req, res) => {
+      const lessonId = normalizeLessonId(body?.lessonId);
+      if (!lessonId) {
+        sendJson(res, 400, { error: 'bad-path', message: 'A lesson path is required.' });
+        return;
+      }
+      const file = lessonFile(contentRoot, lessonId);
+      if (!file) {
+        sendJson(res, 404, { error: 'not-found', message: 'No such tutorial.' });
+        return;
+      }
+      if (typeof body?.source !== 'string') {
+        sendJson(res, 400, { error: 'bad-source', message: 'The tutorial source must be a string.' });
+        return;
+      }
+      const source = body.source;
+      const expectedMtime = typeof body?.expectedMtime === 'string' ? body.expectedMtime : '';
+      const before = await stat(file);
+      if (expectedMtime && before.mtime.toISOString() !== expectedMtime) {
+        sendJson(res, 409, {
+          error: 'conflict',
+          message: 'The file changed on disk after it was opened. Reload it before saving.',
+          mtime: before.mtime.toISOString(),
+        });
+        return;
+      }
+      const temp = `${file}.dsh-save-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.tmp`;
+      try {
+        await writeFile(temp, source, 'utf8');
+        await chmod(temp, before.mode);
+        await rename(temp, file);
+      } catch (error) {
+        await unlink(temp).catch(() => {});
+        throw error;
+      }
+      const after = await stat(file);
+      const meta = parseFrontmatter(source);
+      sendJson(res, 200, {
+        ok: true,
+        lessonId,
+        mtime: after.mtime.toISOString(),
+        bytes: after.size,
+        title: meta.title || firstHeading(source) || lessonId.split('/').pop() || lessonId,
+        description: meta.description || '',
       });
     }),
   });
@@ -168,12 +235,97 @@ export function apply(ctx, config = {}) {
     }),
   });
 
+  const disposeWebsite = ctx.webServer.register({
+    kind: 'exact',
+    path: WEBSITE_PATH,
+    handler: onPost(async (body, _req, res) => {
+      const action = body?.action;
+      const websiteDir = join(publicRoot, WEBSITE_IMAGE_DIR);
+      await mkdir(websiteDir, { recursive: true });
+      if (action === 'upload') {
+        const match = /^data:(image\/(png|jpeg|webp|gif));base64,([A-Za-z0-9+/=\s]+)$/.exec(String(body?.dataUrl || ''));
+        if (!match) {
+          const error = new Error('Unsupported image payload');
+          error.status = 400;
+          throw error;
+        }
+        const ext = match[2] === 'jpeg' ? 'jpg' : match[2];
+        const buffer = Buffer.from(match[3].replace(/\s+/g, ''), 'base64');
+        if (buffer.byteLength === 0) {
+          const error = new Error('Empty image');
+          error.status = 400;
+          throw error;
+        }
+        if (buffer.byteLength > 6 * 1024 * 1024) {
+          const error = new Error('Image is too large (max 6 MB)');
+          error.status = 413;
+          throw error;
+        }
+        const name = safeFileSlug(body?.filename || 'website');
+        const file = join(websiteDir, `${name}-${Date.now()}.${ext}`);
+        await writeFile(file, buffer);
+        sendJson(res, 200, { ok: true, path: `/${WEBSITE_IMAGE_DIR}/${basename(file)}`, bytes: buffer.byteLength });
+        return;
+      }
+      if (action === 'screenshot') {
+        let parsed;
+        try {
+          parsed = new URL(String(body?.url || '').trim());
+        } catch {
+          parsed = null;
+        }
+        if (!parsed || parsed.protocol !== 'https:' || parsed.username || parsed.password) {
+          const error = new Error('A valid HTTPS URL is required for screenshots');
+          error.status = 400;
+          throw error;
+        }
+        const name = safeFileSlug(parsed.hostname.replace(/\./g, '-'));
+        const file = join(websiteDir, `${name}-${Date.now()}.png`);
+        const script = join(PLUGIN_ROOT, 'scripts', 'capture-website.mjs');
+        try {
+          await execFileAsync(process.execPath, [script, parsed.toString(), file], {
+            cwd: root,
+            env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' },
+            timeout: 90000,
+            maxBuffer: 2 * 1024 * 1024,
+          });
+        } catch (error) {
+          const message = error?.stderr ? String(error.stderr).trim().slice(0, 300) : error instanceof Error ? error.message : String(error);
+          const wrapped = new Error(`Screenshot failed: ${message}`);
+          wrapped.status = 502;
+          throw wrapped;
+        }
+        const info = await stat(file).catch(() => null);
+        if (!info || !info.isFile() || info.size === 0) {
+          const error = new Error('Screenshot was not created');
+          error.status = 502;
+          throw error;
+        }
+        sendJson(res, 200, { ok: true, path: `/${WEBSITE_IMAGE_DIR}/${basename(file)}`, bytes: info.size });
+        return;
+      }
+      const error = new Error('Unknown website preview action');
+      error.status = 400;
+      throw error;
+    }, MAX_IMAGE_BYTES),
+  });
+
   ctx.effect(() => () => {
     disposeManifest();
     disposeDoc();
+    disposeSave();
     disposeAssist();
     disposeAsset();
+    disposeWebsite();
   }, 'tutorial-review: routes');
+}
+
+function safeFileSlug(value) {
+  return String(value || 'website')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 48) || 'website';
 }
 
 function sanitizeLocale(value) {

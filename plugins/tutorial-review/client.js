@@ -25052,7 +25052,7 @@
   }
 
   // src/highlight.js
-  function highlightAnnotations(container, annotations) {
+  function highlightAnnotations(container, annotations, labels = {}) {
     clearAnnotationMarks(container);
     if (!annotations.length) return () => {
     };
@@ -25100,17 +25100,17 @@
     }
     for (const match of markMatches) {
       if (match.annotation.kind === "assist") {
-        match.display = "\u2726";
+        match.display = labels.assist || "\u2726";
         match.markClass = " tr-annotation-assist";
         match.kind = "assist";
       } else if (match.annotation.kind === "link") {
         const type = match.annotation.linkType === "external" ? "external" : "internal";
-        match.display = type === "external" ? "\u5916" : "\u5185";
+        match.display = type === "external" ? labels.external || "\u5916" : labels.internal || "\u5185";
         match.markClass = ` tr-annotation-link tr-annotation-link-${type}`;
         match.kind = `link-${type}`;
       } else {
         const type = match.annotation.issueType === "typo" ? "typo" : "grammar";
-        match.display = type === "typo" ? "\u9519" : "\u53E5";
+        match.display = type === "typo" ? labels.typo || "\u9519" : labels.grammar || "\u53E5";
         match.markClass = ` tr-annotation-proof tr-annotation-proof-${type}`;
         match.kind = type === "typo" ? "proofread-typo" : "proofread-grammar";
       }
@@ -28541,14 +28541,16 @@
     outline: "border border-tr-border bg-tr-bg text-tr-fg hover:bg-tr-muted",
     ghost: "text-tr-secondary hover:bg-tr-muted hover:text-tr-fg",
     secondary: "bg-tr-muted text-tr-fg hover:bg-tr-surface",
-    destructive: "bg-tr-danger text-white hover:bg-tr-danger/90"
+    destructive: "bg-tr-danger text-white hover:bg-tr-danger/90",
+    link: "text-tr-accent underline-offset-4 hover:underline"
   };
   var BUTTON_SIZES = {
     xs: "h-6 gap-1 px-2 text-[10px]",
     sm: "h-7 gap-1.5 px-2.5 text-[11px]",
     default: "h-8 gap-1.5 px-3 text-xs",
     icon: "h-7 w-7 p-0",
-    "icon-xs": "h-6 w-6 p-0"
+    "icon-xs": "h-6 w-6 p-0",
+    "icon-sm": "h-7 w-7 p-0"
   };
   var BADGE_BASE = "inline-flex items-center justify-center gap-1 rounded-full border px-1.5 py-0.5 text-[9px] font-medium leading-none";
   var BADGE_VARIANTS = {
@@ -28559,7 +28561,7 @@
     warn: "border-tr-warn/20 bg-tr-warn/10 text-tr-warn",
     success: "border-tr-success/20 bg-tr-success/10 text-tr-success"
   };
-  function createUi(h) {
+  function createUi(h, React) {
     function Button({ className, variant = "ghost", size = "sm", type = "button", ...props }) {
       return h("button", {
         "data-slot": "button",
@@ -28580,7 +28582,7 @@
     }
     function Card({ className, ...props }) {
       return h("div", {
-        "data-slot": "card",
+        "data-slot": "plugin-card",
         className: cn("flex min-w-0 flex-col rounded-card border border-tr-border bg-tr-bg text-tr-fg shadow-sm", className),
         ...props
       });
@@ -28604,11 +28606,145 @@
         ...props
       });
     }
+    function Textarea({ className, ...props }) {
+      return h("textarea", {
+        "data-slot": "textarea",
+        className: cn(
+          "min-h-16 w-full rounded-md border border-tr-border bg-tr-bg px-2.5 py-2 text-[11px] leading-relaxed text-tr-fg outline-none transition placeholder:text-tr-tertiary focus:border-tr-accent focus:ring-2 focus:ring-tr-accent/15",
+          className
+        ),
+        ...props
+      });
+    }
     function Separator({ className, ...props }) {
       return h("div", { "data-slot": "separator", className: cn("h-px w-full shrink-0 bg-tr-border", className), ...props });
     }
     function Skeleton({ className, ...props }) {
       return h("div", { "data-slot": "skeleton", className: cn("animate-pulse rounded-md bg-tr-muted", className), ...props });
+    }
+    const SidebarContext = React.createContext(null);
+    function SidebarProvider({ leftOpen = true, rightOpen = true, onLeftChange, onRightChange, className, children, ...props }) {
+      const value = React.useMemo(
+        () => ({
+          leftOpen,
+          rightOpen,
+          isOpen: (side) => side === "left" ? leftOpen : rightOpen,
+          toggle: (side) => {
+            if (side === "left") onLeftChange?.(!leftOpen);
+            else onRightChange?.(!rightOpen);
+          },
+          close: (side) => {
+            if (side === "left") onLeftChange?.(false);
+            else onRightChange?.(false);
+          }
+        }),
+        [leftOpen, rightOpen, onLeftChange, onRightChange]
+      );
+      return h(
+        SidebarContext.Provider,
+        { value },
+        h("div", { ...props, "data-slot": "plugin-sidebar-wrapper", className: cn("tr-root", className) }, children)
+      );
+    }
+    function useSidebar() {
+      const context = React.useContext(SidebarContext);
+      if (!context) throw new Error("Sidebar controls require SidebarProvider");
+      return context;
+    }
+    function Sidebar({ side = "left", label, className, children, ...props }) {
+      const context = React.useContext(SidebarContext);
+      const open = context ? context.isOpen(side) : true;
+      return h(
+        "aside",
+        {
+          ...props,
+          "data-slot": "plugin-sidebar",
+          "data-plugin-sidebar-side": side,
+          "data-state": open ? "expanded" : "collapsed",
+          className: cn(side === "left" ? "tr-nav" : "tr-rail", open && "is-open", className),
+          "aria-label": label
+        },
+        children
+      );
+    }
+    function SidebarInset({ className, ...props }) {
+      return h("main", { ...props, "data-slot": "plugin-sidebar-inset", className: cn("tr-main", className) });
+    }
+    function SidebarHeader({ className, ...props }) {
+      return h("div", { ...props, "data-slot": "plugin-sidebar-header", className: cn("flex shrink-0 flex-col", className) });
+    }
+    function SidebarContent({ className, ...props }) {
+      return h("div", {
+        ...props,
+        "data-slot": "plugin-sidebar-content",
+        className: cn("flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto overscroll-contain", className)
+      });
+    }
+    function SidebarFooter({ className, ...props }) {
+      return h("div", { ...props, "data-slot": "plugin-sidebar-footer", className: cn("flex shrink-0 flex-col", className) });
+    }
+    function SidebarGroup({ className, ...props }) {
+      return h("div", { ...props, "data-slot": "sidebar-group", "data-sidebar": "group", className: cn("relative flex w-full min-w-0 flex-col", className) });
+    }
+    function SidebarMenu({ className, ...props }) {
+      return h("ul", { ...props, "data-slot": "sidebar-menu", "data-sidebar": "menu", className: cn("flex w-full min-w-0 flex-col", className) });
+    }
+    function SidebarMenuItem({ className, ...props }) {
+      return h("li", { ...props, "data-slot": "sidebar-menu-item", "data-sidebar": "menu-item", className: cn("group/menu-item relative", className) });
+    }
+    function SidebarMenuButton({ className, type = "button", ...props }) {
+      return h("button", {
+        ...props,
+        type,
+        "data-slot": "plugin-sidebar-menu-button",
+        className: cn(
+          "flex h-8 w-full min-w-0 items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none transition-colors hover:bg-tr-muted focus-visible:ring-2 focus-visible:ring-tr-accent/30 disabled:pointer-events-none disabled:opacity-50",
+          className
+        )
+      });
+    }
+    function SidebarMenuSub({ className, ...props }) {
+      return h("ul", {
+        ...props,
+        "data-slot": "plugin-sidebar-menu-sub",
+        className: cn("mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-tr-border px-2.5 py-0.5", className)
+      });
+    }
+    function SidebarMenuSubItem({ className, ...props }) {
+      return h("li", { ...props, "data-slot": "sidebar-menu-sub-item", "data-sidebar": "menu-sub-item", className: cn("group/menu-sub-item relative", className) });
+    }
+    function SidebarMenuSubButton({ className, isActive = false, ...props }) {
+      return h("button", {
+        ...props,
+        type: "button",
+        "data-slot": "plugin-sidebar-menu-sub-button",
+        "data-active": isActive,
+        className: cn(
+          "flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sm text-tr-secondary outline-none transition-colors hover:bg-tr-muted hover:text-tr-fg focus-visible:ring-2 focus-visible:ring-tr-accent/30 data-[active=true]:bg-tr-muted data-[active=true]:text-tr-fg",
+          className
+        )
+      });
+    }
+    function SidebarTrigger({ side = "left", label, className, children, onClick, ...props }) {
+      const context = React.useContext(SidebarContext);
+      const open = context ? context.isOpen(side) : true;
+      return h(
+        Button,
+        {
+          ...props,
+          variant: "ghost",
+          size: "icon-sm",
+          "data-slot": "plugin-sidebar-trigger",
+          "aria-expanded": Boolean(open),
+          "aria-label": label,
+          className: cn("relative", className),
+          onClick: (event) => {
+            onClick?.(event);
+            if (!event.defaultPrevented) context?.toggle(side);
+          }
+        },
+        children
+      );
     }
     return {
       cn,
@@ -28619,8 +28755,24 @@
       CardContent,
       CardFooter,
       Input,
+      Textarea,
       Separator,
-      Skeleton
+      Skeleton,
+      SidebarProvider,
+      Sidebar,
+      SidebarInset,
+      SidebarHeader,
+      SidebarContent,
+      SidebarFooter,
+      SidebarGroup,
+      SidebarMenu,
+      SidebarMenuItem,
+      SidebarMenuButton,
+      SidebarMenuSub,
+      SidebarMenuSubItem,
+      SidebarMenuSubButton,
+      SidebarTrigger,
+      useSidebar
     };
   }
 
@@ -28633,6 +28785,8 @@
     --spacing: 0.25rem;
     --text-xs: 0.75rem;
     --text-xs--line-height: calc(1 / 0.75);
+    --text-sm: 0.875rem;
+    --text-sm--line-height: calc(1.25 / 0.875);
     --font-weight-normal: 400;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
@@ -28677,17 +28831,11 @@
   .relative {
     position: relative;
   }
-  .-top-1 {
-    top: calc(var(--spacing) * -1);
-  }
   .top-1 {
     top: var(--spacing);
   }
   .top-1\\/2 {
     top: calc(1 / 2 * 100%);
-  }
-  .-right-1 {
-    right: calc(var(--spacing) * -1);
   }
   .right-1 {
     right: var(--spacing);
@@ -28716,8 +28864,11 @@
   .m-0 {
     margin: 0px;
   }
-  .m-3 {
-    margin: calc(var(--spacing) * 3);
+  .mx-3 {
+    margin-inline: calc(var(--spacing) * 3);
+  }
+  .mx-3\\.5 {
+    margin-inline: calc(var(--spacing) * 3.5);
   }
   .mx-auto {
     margin-inline: auto;
@@ -28733,6 +28884,9 @@
   }
   .mt-2 {
     margin-top: calc(var(--spacing) * 2);
+  }
+  .mt-3 {
+    margin-top: calc(var(--spacing) * 3);
   }
   .mt-4 {
     margin-top: calc(var(--spacing) * 4);
@@ -28763,6 +28917,9 @@
   }
   .grid {
     display: grid;
+  }
+  .hidden {
+    display: none;
   }
   .inline {
     display: inline;
@@ -28799,6 +28956,12 @@
   }
   .h-px {
     height: 1px;
+  }
+  .min-h-0 {
+    min-height: 0px;
+  }
+  .min-h-16 {
+    min-height: calc(var(--spacing) * 16);
   }
   .w-2\\/3 {
     width: calc(2 / 3 * 100%);
@@ -28851,6 +29014,14 @@
   .border-collapse {
     border-collapse: collapse;
   }
+  .-translate-x-px {
+    --tw-translate-x: -1px;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+  .translate-x-px {
+    --tw-translate-x: 1px;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
   .-translate-y-1\\/2 {
     --tw-translate-y: calc(calc(1 / 2 * 100%) * -1);
     translate: var(--tw-translate-x) var(--tw-translate-y);
@@ -28881,6 +29052,9 @@
   }
   .flex-col {
     flex-direction: column;
+  }
+  .flex-row {
+    flex-direction: row;
   }
   .flex-wrap {
     flex-wrap: wrap;
@@ -28933,6 +29107,15 @@
   .overflow-hidden {
     overflow: hidden;
   }
+  .overflow-x-hidden {
+    overflow-x: hidden;
+  }
+  .overflow-y-auto {
+    overflow-y: auto;
+  }
+  .overscroll-contain {
+    overscroll-behavior: contain;
+  }
   .rounded-card {
     border-radius: var(--radius-card);
   }
@@ -28942,12 +29125,19 @@
   .rounded-md {
     border-radius: var(--radius-md);
   }
+  .rounded-none {
+    border-radius: 0;
+  }
   .rounded-sm {
     border-radius: var(--radius-sm);
   }
   .border {
     border-style: var(--tw-border-style);
     border-width: 1px;
+  }
+  .border-0 {
+    border-style: var(--tw-border-style);
+    border-width: 0px;
   }
   .border-t {
     border-top-style: var(--tw-border-style);
@@ -29026,18 +29216,6 @@
   .bg-tr-bg {
     background-color: var(--color-tr-bg);
   }
-  .bg-tr-bg\\/60 {
-    background-color: var(--color-tr-bg);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-tr-bg) 60%, transparent);
-    }
-  }
-  .bg-tr-bg\\/95 {
-    background-color: var(--color-tr-bg);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-tr-bg) 95%, transparent);
-    }
-  }
   .bg-tr-border {
     background-color: var(--color-tr-border);
   }
@@ -29110,11 +29288,17 @@
   .p-1\\.5 {
     padding: calc(var(--spacing) * 1.5);
   }
+  .p-2 {
+    padding: calc(var(--spacing) * 2);
+  }
   .p-2\\.5 {
     padding: calc(var(--spacing) * 2.5);
   }
   .p-3 {
     padding: calc(var(--spacing) * 3);
+  }
+  .px-0 {
+    padding-inline: 0px;
   }
   .px-0\\.5 {
     padding-inline: calc(var(--spacing) * 0.5);
@@ -29161,9 +29345,6 @@
   .py-4 {
     padding-block: calc(var(--spacing) * 4);
   }
-  .py-8 {
-    padding-block: calc(var(--spacing) * 8);
-  }
   .py-10 {
     padding-block: calc(var(--spacing) * 10);
   }
@@ -29179,11 +29360,8 @@
   .pt-3 {
     padding-top: calc(var(--spacing) * 3);
   }
-  .pt-4 {
-    padding-top: calc(var(--spacing) * 4);
-  }
-  .pt-5 {
-    padding-top: calc(var(--spacing) * 5);
+  .pr-2 {
+    padding-right: calc(var(--spacing) * 2);
   }
   .pr-8 {
     padding-right: calc(var(--spacing) * 8);
@@ -29203,14 +29381,14 @@
   .pb-2\\.5 {
     padding-bottom: calc(var(--spacing) * 2.5);
   }
-  .pb-3 {
-    padding-bottom: calc(var(--spacing) * 3);
-  }
   .pl-2 {
     padding-left: calc(var(--spacing) * 2);
   }
   .pl-4 {
     padding-left: calc(var(--spacing) * 4);
+  }
+  .pl-5 {
+    padding-left: calc(var(--spacing) * 5);
   }
   .pl-8 {
     padding-left: calc(var(--spacing) * 8);
@@ -29220,6 +29398,10 @@
   }
   .font-tr {
     font-family: var(--font-tr);
+  }
+  .text-sm {
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
   }
   .text-xs {
     font-size: var(--text-xs);
@@ -29329,8 +29511,15 @@
   .decoration-1 {
     text-decoration-thickness: 1px;
   }
+  .underline-offset-4 {
+    text-underline-offset: 4px;
+  }
   .opacity-80 {
     opacity: 80%;
+  }
+  .shadow-none {
+    --tw-shadow: 0 0 #0000;
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
   .shadow-sm {
     --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)), 0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
@@ -29386,9 +29575,6 @@
     color: var(--color-tr-tertiary);
   }
   @media (hover: hover) {
-    .hover\\:border-tr-border-strong:hover {
-      border-color: var(--color-tr-border-strong);
-    }
     .hover\\:bg-tr-accent\\/90:hover {
       background-color: var(--color-tr-accent);
     }
@@ -29411,11 +29597,20 @@
     .hover\\:bg-tr-surface:hover {
       background-color: var(--color-tr-surface);
     }
+    .hover\\:bg-transparent:hover {
+      background-color: transparent;
+    }
+    .hover\\:text-tr-accent:hover {
+      color: var(--color-tr-accent);
+    }
     .hover\\:text-tr-fg:hover {
       color: var(--color-tr-fg);
     }
     .hover\\:underline:hover {
       text-decoration-line: underline;
+    }
+    .hover\\:opacity-80:hover {
+      opacity: 80%;
     }
   }
   .focus\\:border-tr-accent:focus {
@@ -29431,9 +29626,19 @@
       --tw-ring-color: color-mix(in oklab, var(--color-tr-accent) 15%, transparent);
     }
   }
+  .focus-visible\\:ring-0:focus-visible {
+    --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
   .focus-visible\\:ring-2:focus-visible {
     --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .focus-visible\\:ring-tr-accent\\/20:focus-visible {
+    --tw-ring-color: var(--color-tr-accent);
+    @supports (color: color-mix(in lab, red, red)) {
+      --tw-ring-color: color-mix(in oklab, var(--color-tr-accent) 20%, transparent);
+    }
   }
   .focus-visible\\:ring-tr-accent\\/30:focus-visible {
     --tw-ring-color: var(--color-tr-accent);
@@ -29441,11 +29646,21 @@
       --tw-ring-color: color-mix(in oklab, var(--color-tr-accent) 30%, transparent);
     }
   }
+  .focus-visible\\:outline-none:focus-visible {
+    --tw-outline-style: none;
+    outline-style: none;
+  }
   .disabled\\:pointer-events-none:disabled {
     pointer-events: none;
   }
   .disabled\\:opacity-50:disabled {
     opacity: 50%;
+  }
+  .data-\\[active\\=true\\]\\:bg-tr-muted[data-active="true"] {
+    background-color: var(--color-tr-muted);
+  }
+  .data-\\[active\\=true\\]\\:text-tr-fg[data-active="true"] {
+    color: var(--color-tr-fg);
   }
 }
 @property --tw-translate-x {
@@ -29625,11 +29840,11 @@
   var zh_default = {
     meta: {
       title: "\u6559\u7A0B\u64B0\u5199\u52A9\u624B",
-      description: "\u53EA\u8BFB\u6D4F\u89C8\u6559\u7A0B\uFF0C\u7528 AI \u8F85\u52A9\u4F18\u5316\u8868\u8FBE\u3001\u6269\u5199\u601D\u8DEF\u548C\u67E5\u627E\u76F8\u5173\u94FE\u63A5\uFF1B\u6279\u6CE8\u4E0E\u5EFA\u8BAE\u90FD\u4E0D\u6539\u52A8\u539F\u6587\u3002"
+      description: "\u5728 DSH \u91CC\u76F4\u63A5\u7F16\u8F91 content/zh \u7684 MDX\uFF0C\u7528 / \u5FEB\u901F\u63D2\u5165\u7EC4\u4EF6\uFF0C\u5E76\u6309\u9700\u8FD0\u884C\u6821\u5BF9\u3001\u5185\u94FE\u548C\u5916\u94FE\u5BA1\u9605\uFF1B\u7ED3\u679C\u4FDD\u5B58\u5728\u672C\u5730\u3002"
     },
     panel: "\u64B0\u5199",
     title: "\u6559\u7A0B\u64B0\u5199\u52A9\u624B",
-    subtitle: "\u53EA\u8BFB\u539F\u6587\u3001\u5BA1\u9605\u6279\u6CE8\u4E0E AI \u5199\u4F5C\u5EFA\u8BAE\uFF1B\u539F\u6587\u4E0D\u6539\u52A8\u3002",
+    subtitle: "\u76F4\u63A5\u7F16\u8F91 content/zh \u7684 MDX\u3001\u63D2\u5165\u7EC4\u4EF6\uFF0C\u5E76\u6309\u9700\u751F\u6210\u5BA1\u9605\u5EFA\u8BAE\u3002",
     search: "\u641C\u7D22\u6559\u7A0B",
     refresh: "\u5237\u65B0\u76EE\u5F55",
     refreshing: "\u6B63\u5728\u5237\u65B0",
@@ -29713,18 +29928,132 @@
     reviewEnhanceCount: "{count} \u6761\u5EFA\u8BAE",
     reviewEnhanceAgain: "\u91CD\u65B0\u5BA1\u9605",
     reviewEnhanceUpdated: "\u5DF2\u7F13\u5B58",
-    reviewEnhanceAuto: "\u6253\u5F00\u540E\u81EA\u52A8\u751F\u6210"
+    reviewEnhanceAuto: "\u6253\u5F00\u540E\u81EA\u52A8\u751F\u6210",
+    editor: "\u7F16\u8F91",
+    preview: "\u9884\u89C8",
+    viewMode: "\u89C6\u56FE\u6A21\u5F0F",
+    unsaved: "\u672A\u4FDD\u5B58",
+    saved: "\u5DF2\u4FDD\u5B58",
+    saving: "\u4FDD\u5B58\u4E2D",
+    save: "\u4FDD\u5B58",
+    saveFailed: "\u4FDD\u5B58\u5931\u8D25",
+    saveConflict: "\u6587\u4EF6\u5DF2\u5728\u78C1\u76D8\u4E0A\u88AB\u4FEE\u6539\uFF0C\u8BF7\u5148\u91CD\u65B0\u52A0\u8F7D\u518D\u4FDD\u5B58\u3002",
+    saveFirst: "\u6709\u672A\u4FDD\u5B58\u7684\u4FEE\u6539\uFF0C\u8BF7\u5148\u4FDD\u5B58\u6216\u653E\u5F03\u3002",
+    reload: "\u91CD\u65B0\u52A0\u8F7D",
+    insertComponent: "\u63D2\u5165\u7EC4\u4EF6",
+    editorHint: "\u8F93\u5165 / \u63D2\u5165\u7EC4\u4EF6\uFF0C\u2318S / Ctrl+S \u4FDD\u5B58",
+    editorStats: "{chars} \u5B57 \xB7 {lines} \u884C",
+    slashTitle: "\u63D2\u5165\u7EC4\u4EF6",
+    slashHint: "\u8F93\u5165 / \u9009\u62E9\u7EC4\u4EF6\uFF0C\u2191\u2193 \u9009\u62E9\uFF0CEnter \u63D2\u5165",
+    slashEmpty: "\u6CA1\u6709\u5339\u914D\u7684\u7EC4\u4EF6",
+    slashGroup_embed: "\u5D4C\u5165",
+    slashGroup_chat: "\u5BF9\u8BDD",
+    slashGroup_note: "\u63D0\u793A\u4E0E\u6279\u6CE8",
+    slashGroup_markdown: "Markdown",
+    slashXEmbed: "X \u63A8\u6587\u5D4C\u5165",
+    slashXEmbedDesc: "\u5D4C\u5165\u4E00\u6761 X / Twitter \u5E16\u5B50",
+    slashYouTube: "YouTube \u89C6\u9891",
+    slashYouTubeDesc: "\u5D4C\u5165 YouTube \u64AD\u653E\u5668",
+    slashWebsitePreview: "\u7F51\u7AD9\u9884\u89C8",
+    slashWebsitePreviewDesc: "\u5E26\u6807\u9898\u548C\u622A\u56FE\u7684\u7F51\u7AD9\u5361\u7247",
+    slashChat: "Chat \u5BF9\u8BDD",
+    slashChatDesc: "\u4E00\u95EE\u4E00\u7B54\u7684\u5BF9\u8BDD\u793A\u4F8B",
+    slashChatInput: "Chat \u8F93\u5165\u6846",
+    slashChatInputDesc: "\u53EA\u663E\u793A\u7528\u6237\u8F93\u5165",
+    slashChatMessage: "Chat \u6D88\u606F",
+    slashChatMessageDesc: "\u5355\u6761\u5BF9\u8BDD\u6D88\u606F",
+    slashChatThinking: "Chat \u601D\u8003\u8FC7\u7A0B",
+    slashChatThinkingDesc: "\u53EF\u5C55\u5F00\u7684\u601D\u8003\u5185\u5BB9",
+    slashCallout: "Callout \u63D0\u793A",
+    slashCalloutDesc: "\u4FE1\u606F\u6216\u8B66\u544A\u63D0\u793A\u6846",
+    slashKeyTakeaway: "KeyTakeaway \u8981\u70B9",
+    slashKeyTakeawayDesc: "\u672C\u9875\u6838\u5FC3\u7ED3\u8BBA",
+    slashJimmyNote: "JimmyNote \u65C1\u6CE8",
+    slashJimmyNoteDesc: "\u53F3\u4FA7\u9875\u8FB9\u6279\u6CE8",
+    slashJimmyNoteAnchor: "JimmyNoteAnchor \u951A\u70B9",
+    slashJimmyNoteAnchorDesc: "\u6B63\u6587\u4E2D\u7684\u6279\u6CE8\u951A\u70B9",
+    slashHeading: "\u4E8C\u7EA7\u6807\u9898",
+    slashHeadingDesc: "\u63D2\u5165 ## \u6807\u9898",
+    slashList: "\u65E0\u5E8F\u5217\u8868",
+    slashListDesc: "\u63D2\u5165\u5217\u8868\u9879",
+    slashTable: "\u8868\u683C",
+    slashTableDesc: "\u63D2\u5165\u4E24\u5217\u8868\u683C",
+    slashCode: "\u4EE3\u7801\u5757",
+    slashCodeDesc: "\u63D2\u5165\u5E26\u8BED\u8A00\u6807\u8BB0\u7684\u4EE3\u7801\u5757",
+    slashImage: "\u56FE\u7247",
+    slashImageDesc: "\u63D2\u5165 Markdown \u56FE\u7247",
+    slashLink: "\u94FE\u63A5",
+    slashLinkDesc: "\u63D2\u5165 Markdown \u94FE\u63A5",
+    slashDivider: "\u5206\u9694\u7EBF",
+    slashDividerDesc: "\u63D2\u5165\u6C34\u5E73\u5206\u9694\u7EBF",
+    reviewActions: "\u5BA1\u9605\u64CD\u4F5C",
+    reviewRun: "\u8FD0\u884C{label}",
+    reviewRunAgain: "\u91CD\u65B0\u8FD0\u884C{label}",
+    reviewTriggerHint: "\u70B9\u51FB\u9876\u90E8\u6309\u94AE\u751F\u6210",
+    reviewIdleTitle: "\u8FD8\u6CA1\u6709\u5BA1\u9605\u5EFA\u8BAE",
+    reviewIdleHint: "\u70B9\u51FB\u53F3\u4FA7\u9876\u90E8\u7684\u6821\u5BF9 / \u5185\u94FE / \u5916\u94FE\u6309\u94AE\uFF0C\u7ED3\u679C\u4F1A\u4FDD\u5B58\u5230\u672C\u5730\u3002",
+    unsavedTitle: "\u6709\u672A\u4FDD\u5B58\u7684\u4FEE\u6539",
+    unsavedHint: "\u5207\u6362\u6559\u7A0B\u4F1A\u4E22\u5931\u5F53\u524D\u7F16\u8F91\u3002\u8981\u5148\u4FDD\u5B58\u5417\uFF1F",
+    saveAndSwitch: "\u4FDD\u5B58\u5E76\u5207\u6362",
+    discard: "\u653E\u5F03\u4FEE\u6539",
+    cancel: "\u53D6\u6D88",
+    draftRestored: "\u5DF2\u6062\u590D\u672A\u4FDD\u5B58\u7684\u8349\u7A3F",
+    revert: "\u8FD8\u539F",
+    revertHint: "\u820D\u5F03\u672A\u4FDD\u5B58\u7684\u4FEE\u6539\uFF0C\u6062\u590D\u5230\u78C1\u76D8\u4E0A\u7684\u7248\u672C",
+    slashResults: "{count} \u4E2A\u5339\u914D\u7EC4\u4EF6",
+    overwrite: "\u8986\u76D6\u4FDD\u5B58",
+    reviewSaved: "\u5DF2\u4FDD\u5B58\u5230\u672C\u5730",
+    cacheSaveFailed: "\u5BA1\u9605\u7ED3\u679C\u4FDD\u5B58\u5230\u672C\u5730\u5931\u8D25",
+    noChanges: "\u672A\u4FEE\u6539",
+    badgeTypo: "\u9519",
+    badgeGrammar: "\u53E5",
+    badgeInternal: "\u5185",
+    badgeExternal: "\u5916",
+    diffAria: "\u539F\u6587\u4E0E\u5EFA\u8BAE\u7684\u5DEE\u5F02",
+    savedPartial: "\u5DF2\u4FDD\u5B58\uFF0C\u4F46\u4ECD\u6709\u672A\u4FDD\u5B58\u7684\u4FEE\u6539",
+    collapseSidebar: "\u6536\u8D77\u4FA7\u680F",
+    expandSidebar: "\u5C55\u5F00\u4FA7\u680F",
+    resizeSplit: "\u62D6\u52A8\u8C03\u6574\u7F16\u8F91 / \u9884\u89C8\u5BBD\u5EA6",
+    accept: "\u63A5\u7EB3\u5EFA\u8BAE",
+    accepted: "\u5DF2\u5E94\u7528\u5EFA\u8BAE\uFF0C\u4FDD\u5B58\u540E\u5199\u5165\u6587\u4EF6\u3002",
+    acceptFailed: "\u65E0\u6CD5\u5728\u539F\u6587\u4E2D\u5B9A\u4F4D\u8FD9\u6761\u5EFA\u8BAE\uFF0C\u8BF7\u624B\u52A8\u4FEE\u6539\u3002",
+    sitePreview: "\u771F\u5B9E\u7AD9\u70B9",
+    reviewView: "\u5BA1\u9605\u89C6\u56FE",
+    sitePreviewLoading: "\u6B63\u5728\u52A0\u8F7D\u771F\u5B9E\u7AD9\u70B9\u9884\u89C8\u2026",
+    sitePreviewFailed: "\u65E0\u6CD5\u52A0\u8F7D\u771F\u5B9E\u7AD9\u70B9\u9884\u89C8\uFF0C\u8BF7\u786E\u8BA4\u8BFE\u7A0B\u7AD9\u5DF2\u542F\u52A8\uFF08\u9ED8\u8BA4 http://localhost:3000\uFF09\u3002",
+    useReviewView: "\u4F7F\u7528\u5BA1\u9605\u89C6\u56FE",
+    previewMode: "\u9884\u89C8\u89C6\u56FE",
+    openSitePreview: "\u6253\u5F00\u771F\u5B9E\u7AD9\u70B9",
+    websitePreviewTitle: "\u63D2\u5165\u7F51\u7AD9\u9884\u89C8",
+    websitePreviewHelp: "\u586B\u5199\u9875\u9762 URL\uFF0C\u6216\u76F4\u63A5\u7C98\u8D34/\u9009\u62E9\u4E00\u5F20\u622A\u56FE\u3002URL \u7559\u7A7A\u65F6\u4F7F\u7528 aidevcourse.com\u3002",
+    websitePreviewUrl: "\u9875\u9762 URL",
+    websitePreviewUrlPlaceholder: "https://example.com\uFF08\u7559\u7A7A\u4F7F\u7528 aidevcourse.com\uFF09",
+    websitePreviewName: "\u9875\u9762\u6807\u9898",
+    websitePreviewNamePlaceholder: "\u4F8B\u5982\uFF1ADeepSeek \u5B98\u7F51",
+    websitePreviewImage: "\u9875\u9762\u622A\u56FE",
+    websitePreviewDrop: "\u70B9\u51FB\u9009\u62E9\u56FE\u7247\uFF0C\u6216\u62D6\u62FD\u5230\u8FD9\u91CC",
+    websitePreviewPaste: "\u4E5F\u53EF\u4EE5\u76F4\u63A5\u7C98\u8D34\u56FE\u7247\uFF08\u2318V\uFF09",
+    websitePreviewRemove: "\u79FB\u9664",
+    websitePreviewAuto: "\u4E0D\u6DFB\u52A0\u56FE\u7247\u65F6\u4F1A\u81EA\u52A8\u622A\u56FE",
+    websitePreviewCancel: "\u53D6\u6D88",
+    websitePreviewConfirm: "\u786E\u5B9A",
+    websitePreviewCapturing: "\u6B63\u5728\u622A\u56FE\u2026",
+    websitePreviewUploading: "\u6B63\u5728\u4FDD\u5B58\u56FE\u7247\u2026",
+    websitePreviewFailed: "\u622A\u56FE\u5931\u8D25\uFF0C\u8BF7\u7C98\u8D34\u6216\u9009\u62E9\u56FE\u7247\u540E\u91CD\u8BD5\u3002",
+    websitePreviewInvalidUrl: "\u8BF7\u8F93\u5165\u6709\u6548\u7684 HTTPS URL\u3002",
+    websitePreviewImageTooLarge: "\u56FE\u7247\u4E0D\u80FD\u8D85\u8FC7 5 MB\u3002",
+    websitePreviewBadImage: "\u8BF7\u9009\u62E9 PNG\u3001JPG\u3001WebP \u6216 GIF \u56FE\u7247\u3002"
   };
 
   // locale/en.json
   var en_default = {
     meta: {
-      title: "Tutorial Writing Assistant",
-      description: "Read tutorials, get AI help with wording, expansion, and related links; suggestions never edit the source."
+      title: "Tutorial writing assistant",
+      description: "Edit MDX under content/zh inside DSH, insert components with /, and run proofreading, internal-link, and external-link reviews on demand; results are stored locally."
     },
     panel: "Write",
     title: "Tutorial Writing Assistant",
-    subtitle: "Read-only text, review notes, and AI writing suggestions; the source stays untouched.",
+    subtitle: "Edit MDX under content/zh, insert components, and run review suggestions on demand.",
     search: "Search tutorials",
     refresh: "Refresh",
     refreshing: "Refreshing",
@@ -29808,20 +30137,155 @@
     reviewEnhanceCount: "{count} suggestions",
     reviewEnhanceAgain: "Re-run review",
     reviewEnhanceUpdated: "Cached",
-    reviewEnhanceAuto: "Generated on open"
+    reviewEnhanceAuto: "Generated on open",
+    editor: "Edit",
+    preview: "Preview",
+    viewMode: "View mode",
+    unsaved: "Unsaved",
+    saved: "Saved",
+    saving: "Saving",
+    save: "Save",
+    saveFailed: "Save failed",
+    saveConflict: "The file changed on disk. Reload it before saving.",
+    saveFirst: "Save or discard your changes first.",
+    reload: "Reload",
+    insertComponent: "Insert component",
+    editorHint: "Type / to insert a component. \u2318S / Ctrl+S to save.",
+    editorStats: "{chars} chars \xB7 {lines} lines",
+    slashTitle: "Insert component",
+    slashHint: "Type /, then use \u2191\u2193 to move and Enter to insert",
+    slashEmpty: "No matching component",
+    slashGroup_embed: "Embeds",
+    slashGroup_chat: "Chat",
+    slashGroup_note: "Notes",
+    slashGroup_markdown: "Markdown",
+    slashXEmbed: "X embed",
+    slashXEmbedDesc: "Embed an X / Twitter post",
+    slashYouTube: "YouTube video",
+    slashYouTubeDesc: "Embed a YouTube player",
+    slashWebsitePreview: "Website preview",
+    slashWebsitePreviewDesc: "A website card with a screenshot",
+    slashChat: "Chat exchange",
+    slashChatDesc: "A user and assistant exchange",
+    slashChatInput: "Chat input",
+    slashChatInputDesc: "Show only the user prompt",
+    slashChatMessage: "Chat message",
+    slashChatMessageDesc: "A single chat message",
+    slashChatThinking: "Chat thinking",
+    slashChatThinkingDesc: "Collapsible reasoning content",
+    slashCallout: "Callout",
+    slashCalloutDesc: "An info or warning callout",
+    slashKeyTakeaway: "KeyTakeaway",
+    slashKeyTakeawayDesc: "The key takeaway of a page",
+    slashJimmyNote: "JimmyNote",
+    slashJimmyNoteDesc: "A margin note",
+    slashJimmyNoteAnchor: "JimmyNoteAnchor",
+    slashJimmyNoteAnchorDesc: "An inline note anchor",
+    slashHeading: "Heading",
+    slashHeadingDesc: "Insert a level-2 heading",
+    slashList: "Bullet list",
+    slashListDesc: "Insert a list item",
+    slashTable: "Table",
+    slashTableDesc: "Insert a two-column table",
+    slashCode: "Code block",
+    slashCodeDesc: "Insert a fenced code block",
+    slashImage: "Image",
+    slashImageDesc: "Insert a Markdown image",
+    slashLink: "Link",
+    slashLinkDesc: "Insert a Markdown link",
+    slashDivider: "Divider",
+    slashDividerDesc: "Insert a horizontal rule",
+    reviewActions: "Review actions",
+    reviewRun: "Run {label}",
+    reviewRunAgain: "Run {label} again",
+    reviewTriggerHint: "Run from the buttons above",
+    reviewIdleTitle: "No review suggestions yet",
+    reviewIdleHint: "Use the Proofread, Internal links, or External links buttons at the top of this sidebar; results are saved locally.",
+    unsavedTitle: "Unsaved changes",
+    unsavedHint: "Switching lessons will discard your current edits. Save first?",
+    saveAndSwitch: "Save and switch",
+    discard: "Discard changes",
+    cancel: "Cancel",
+    draftRestored: "Restored the unsaved draft",
+    revert: "Revert",
+    revertHint: "Discard unsaved edits and restore the version on disk",
+    slashResults: "{count} matching components",
+    overwrite: "Overwrite",
+    reviewSaved: "Saved locally",
+    cacheSaveFailed: "Could not save review results locally",
+    noChanges: "No changes",
+    badgeTypo: "T",
+    badgeGrammar: "G",
+    badgeInternal: "In",
+    badgeExternal: "Ex",
+    diffAria: "Difference between the source and the suggestion",
+    savedPartial: "Saved, but newer edits are still unsaved",
+    collapseSidebar: "Collapse sidebar",
+    expandSidebar: "Expand sidebar",
+    resizeSplit: "Drag to resize the editor and preview",
+    accept: "Accept",
+    accepted: "Suggestion applied. Save to write it to disk.",
+    acceptFailed: "Could not locate this suggestion in the source; edit it manually.",
+    sitePreview: "Real site",
+    reviewView: "Review view",
+    sitePreviewLoading: "Loading the real site preview\u2026",
+    sitePreviewFailed: "Could not load the real site preview. Make sure the course site is running (default http://localhost:3000).",
+    useReviewView: "Use review view",
+    previewMode: "Preview view",
+    openSitePreview: "Open real site",
+    websitePreviewTitle: "Insert website preview",
+    websitePreviewHelp: "Enter a page URL, or paste/select a screenshot. Leave the URL empty to use aidevcourse.com.",
+    websitePreviewUrl: "Page URL",
+    websitePreviewUrlPlaceholder: "https://example.com (empty uses aidevcourse.com)",
+    websitePreviewName: "Page title",
+    websitePreviewNamePlaceholder: "e.g. DeepSeek",
+    websitePreviewImage: "Page screenshot",
+    websitePreviewDrop: "Click to choose an image, or drop one here",
+    websitePreviewPaste: "You can also paste an image (\u2318V)",
+    websitePreviewRemove: "Remove",
+    websitePreviewAuto: "A screenshot is taken automatically when no image is added",
+    websitePreviewCancel: "Cancel",
+    websitePreviewConfirm: "Confirm",
+    websitePreviewCapturing: "Taking screenshot\u2026",
+    websitePreviewUploading: "Saving image\u2026",
+    websitePreviewFailed: "Screenshot failed. Paste or choose an image and try again.",
+    websitePreviewInvalidUrl: "Enter a valid HTTPS URL.",
+    websitePreviewImageTooLarge: "The image must be 5 MB or smaller.",
+    websitePreviewBadImage: "Choose a PNG, JPG, WebP, or GIF image."
   };
 
   // src/client.js
   var NS = "tutorialReview";
   var PANEL_ID = "tutorial-review";
   var STORAGE_KEY = "dsh.tutorial-review.lesson";
-  var ENHANCE_CACHE_PREFIX = "dsh.tutorial-review.enhance.v2:";
+  var REVIEW_CACHE_PREFIX = "dsh.tutorial-review.review.v3:";
+  var DRAFT_PREFIX = "dsh.tutorial-review.draft.v1:";
+  var SPLIT_KEY = "dsh.tutorial-review.split";
+  var SIDEBAR_LEFT_KEY = "dsh.tutorial-review.sidebar.left";
+  var SIDEBAR_RIGHT_KEY = "dsh.tutorial-review.sidebar.right";
+  var ASSIST_CACHE_PREFIX = "dsh.tutorial-review.assist.v1:";
+  var REVIEW_KINDS = ["proofread", "internal", "external"];
+  var REVIEW_TASKS = { proofread: "proofread", internal: "internal-links", external: "external-links" };
   var DICTIONARIES = { zh: zh_default, en: en_default };
   function createPlugin(React) {
     const h = React.createElement;
     const { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } = React;
-    const ui = createUi(h);
-    const { Button, Badge, Input, Separator, Skeleton } = ui;
+    const ui = createUi(h, React);
+    const {
+      Button,
+      Badge,
+      Card,
+      Input,
+      Separator,
+      Skeleton,
+      Sidebar,
+      SidebarContent,
+      SidebarFooter,
+      SidebarHeader,
+      SidebarInset,
+      SidebarProvider,
+      SidebarTrigger
+    } = ui;
     function fallbackT(key, vars) {
       const lang = typeof navigator !== "undefined" && String(navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en";
       return interpolate(DICTIONARIES[lang]?.[key] ?? DICTIONARIES.zh[key] ?? key, vars);
@@ -29860,29 +30324,70 @@
       const [collapsed, setCollapsed] = useState(() => /* @__PURE__ */ new Set());
       const [activeId, setActiveId] = useState("");
       const [located, setLocated] = useState([]);
+      const [locatedReady, setLocatedReady] = useState(false);
       const [positions, setPositions] = useState([]);
       const [focusAnn, setFocusAnn] = useState(null);
       const [refreshing, setRefreshing] = useState(false);
       const [refreshedAt, setRefreshedAt] = useState(null);
-      const [railOpen, setRailOpen] = useState(false);
-      const [navOpen, setNavOpen] = useState(false);
+      const [railOpen, setRailOpen] = useState(() => {
+        const wide = typeof window !== "undefined" && window.matchMedia("(min-width: 1181px)").matches;
+        return readSidebarPreference(SIDEBAR_RIGHT_KEY, wide);
+      });
+      const [navOpen, setNavOpen] = useState(() => {
+        const wide = typeof window !== "undefined" && window.matchMedia("(min-width: 821px)").matches;
+        return readSidebarPreference(SIDEBAR_LEFT_KEY, wide);
+      });
       const [assistByLesson, setAssistByLesson] = useState({});
-      const [enhanceByLesson, setEnhanceByLesson] = useState({});
-      const [enhanceNonce, setEnhanceNonce] = useState(0);
+      const [reviewByLesson, setReviewByLesson] = useState({});
       const [selectionMenu, setSelectionMenu] = useState(null);
       const [copiedId, setCopiedId] = useState("");
-      const forceEnhance = useRef(false);
-      const enhanceRequests = useRef(/* @__PURE__ */ new Map());
-      const enhanceSeq = useRef(/* @__PURE__ */ new Map());
+      const [draft, setDraft] = useState("");
+      const [dirty, setDirty] = useState(false);
+      const [saving, setSaving] = useState(false);
+      const [saveNotice, setSaveNotice] = useState("");
+      const [saveFailed, setSaveFailed] = useState(false);
+      const [saveConflict, setSaveConflict] = useState(false);
+      const [reviewCacheError, setReviewCacheError] = useState("");
+      const [splitRatio, setSplitRatio] = useState(readSplitRatio);
+      const [splitDragging, setSplitDragging] = useState(false);
+      const [previewMode, setPreviewMode] = useState("site");
+      const [siteReady, setSiteReady] = useState(false);
+      const [siteBlocked, setSiteBlocked] = useState(false);
+      const [siteNonce, setSiteNonce] = useState(0);
+      const [pendingLesson, setPendingLesson] = useState("");
+      const reviewRequests = useRef(/* @__PURE__ */ new Map());
+      const reviewSeq = useRef(/* @__PURE__ */ new Map());
+      const reviewEpoch = useRef(0);
       const activeSource = useRef("mark");
       const assistSeq = useRef(0);
       const docRequest = useRef(0);
       const cardRefs = useRef(/* @__PURE__ */ new Map());
+      const splitRef = useRef(null);
+      const siteReadyRef = useRef(false);
+      const iframeRef = useRef(null);
       const mounted = useRef(true);
+      const draftRef = useRef("");
+      const draftStateRef = useRef({});
+      const savingRef = useRef(false);
       useEffect(() => {
         mounted.current = true;
         return () => {
           mounted.current = false;
+        };
+      }, []);
+      useEffect(() => {
+        if (typeof window === "undefined") return void 0;
+        const leftQuery = window.matchMedia("(max-width: 820px)");
+        const rightQuery = window.matchMedia("(max-width: 1180px)");
+        const onChange = () => {
+          if (leftQuery.matches) setNavOpen(false);
+          if (rightQuery.matches) setRailOpen(false);
+        };
+        leftQuery.addEventListener("change", onChange);
+        rightQuery.addEventListener("change", onChange);
+        return () => {
+          leftQuery.removeEventListener("change", onChange);
+          rightQuery.removeEventListener("change", onChange);
         };
       }, []);
       const fetchJson = useCallback(async (url) => {
@@ -29908,14 +30413,36 @@
           try {
             const next = await fetchJson(`/api/tutorial-review/doc?path=${encodeURIComponent(lessonId)}&t=${Date.now()}`);
             if (!mounted.current || request !== docRequest.current) return;
+            let restoredDraft = "";
+            try {
+              const raw = localStorage.getItem(draftCacheKey(lessonId));
+              if (raw) {
+                const value = JSON.parse(raw);
+                if (value?.mtime === next.mtime && typeof value.source === "string" && value.source !== next.source) {
+                  restoredDraft = value.source;
+                }
+              }
+            } catch {
+              restoredDraft = "";
+            }
+            const nextDraft = restoredDraft || next.source || "";
+            draftRef.current = nextDraft;
+            draftStateRef.current = { lessonId, mtime: next.mtime, source: nextDraft, dirty: Boolean(restoredDraft) };
             setDoc(next);
             setSelectedId(lessonId);
+            setDraft(nextDraft);
+            setDirty(Boolean(restoredDraft));
+            setSaveFailed(false);
+            setSaveConflict(false);
+            setReviewCacheError("");
+            setSaveNotice(restoredDraft ? t("draftRestored") : "");
             setNotice("");
             if (!options.keepActive) {
               setActiveId("");
               setFocusAnn(null);
             }
             setLocated([]);
+            setLocatedReady(false);
             setPositions([]);
             try {
               localStorage.setItem(STORAGE_KEY, lessonId);
@@ -29929,7 +30456,7 @@
             if (mounted.current && request === docRequest.current) setDocLoading(false);
           }
         },
-        [fetchJson]
+        [fetchJson, t]
       );
       useEffect(() => {
         let cancelled = false;
@@ -29963,27 +30490,30 @@
         };
       }, [fetchJson, loadDoc]);
       const lessons = useMemo(() => flattenLessons(manifest), [manifest]);
-      const cachedEnhanceCounts = useMemo(() => {
+      const cachedReviewCounts = useMemo(() => {
         const counts = {};
         if (!manifest) return counts;
         for (const lesson of lessons) {
-          const cached = readEnhanceCache(`${ENHANCE_CACHE_PREFIX}${lesson.lessonId}`, lesson.mtime);
-          if (cached) counts[lesson.lessonId] = countEnhanceData(cached.data);
+          let count = 0;
+          for (const kind of REVIEW_KINDS) {
+            const cached = readReviewCache(reviewCacheKey(lesson.lessonId, kind), lesson.mtime);
+            if (cached) count += countReviewData(kind, cached.data);
+          }
+          counts[lesson.lessonId] = count;
         }
         return counts;
       }, [manifest, lessons]);
-      const autoCountFor = (lesson) => {
+      const reviewCountFor = (lesson) => {
         if (!lesson) return 0;
-        const entry = enhanceByLesson[lesson.lessonId];
-        if (entry?.data) return countEnhanceData(entry.data);
-        return cachedEnhanceCounts[lesson.lessonId] || 0;
+        const entry = reviewByLesson[lesson.lessonId];
+        return entry ? countReviewEntry(entry) : cachedReviewCounts[lesson.lessonId] || 0;
       };
-      const totalAutoCount = useMemo(
+      const totalReviewCount = useMemo(
         () => lessons.reduce((sum, lesson) => {
-          const entry = enhanceByLesson[lesson.lessonId];
-          return sum + (entry?.data ? countEnhanceData(entry.data) : cachedEnhanceCounts[lesson.lessonId] || 0);
+          const entry = reviewByLesson[lesson.lessonId];
+          return sum + (entry ? countReviewEntry(entry) : cachedReviewCounts[lesson.lessonId] || 0);
         }, 0),
-        [lessons, enhanceByLesson, cachedEnhanceCounts]
+        [lessons, reviewByLesson, cachedReviewCounts]
       );
       const currentIndex = lessons.findIndex((lesson) => lesson.lessonId === selectedId);
       const currentLesson = currentIndex >= 0 ? lessons[currentIndex] : null;
@@ -29991,34 +30521,47 @@
         if (!manifest || !doc) return null;
         return manifest.courses.find((item) => item.id === doc.courseId) || null;
       }, [manifest, doc]);
+      const visibleCourses = useMemo(() => {
+        if (!manifest) return [];
+        return manifest.courses.map((item) => {
+          const sections = item.sections.map((section) => ({
+            ...section,
+            lessons: section.lessons.filter((lesson) => !isCourseIndexLesson(lesson.lessonId))
+          })).filter((section) => section.lessons.length > 0);
+          return { ...item, sections };
+        }).filter((item) => item.sections.some((section) => section.lessons.length > 0));
+      }, [manifest]);
       const filteredCourses = useMemo(() => {
         if (!manifest) return [];
         const term = query.trim().toLowerCase();
-        if (!term) return manifest.courses;
-        return manifest.courses.map((item) => {
+        if (!term) return visibleCourses;
+        return visibleCourses.map((item) => {
           const sections = item.sections.map((section) => ({
             ...section,
             lessons: section.lessons.filter((lesson) => matchesQuery(lesson, item, term))
           })).filter((section) => section.lessons.length > 0);
           return { ...item, sections };
         }).filter((item) => item.sections.length > 0);
-      }, [manifest, query]);
+      }, [manifest, query, visibleCourses]);
       const annotations = useMemo(() => normalizeAnnotations(doc?.annotations || []), [doc]);
       const assistAnnotations = useMemo(
         () => (doc?.lessonId ? assistByLesson[doc.lessonId] || [] : []).map((item) => ({ ...item, kind: "assist", key: item.id })),
         [assistByLesson, doc?.lessonId]
       );
-      const enhanceEntry = useMemo(
-        () => doc?.lessonId ? enhanceByLesson[doc.lessonId] : void 0,
-        [enhanceByLesson, doc?.lessonId]
+      const reviewEntry = useMemo(
+        () => doc?.lessonId ? reviewByLesson[doc.lessonId] : void 0,
+        [reviewByLesson, doc?.lessonId]
       );
-      const enhanceData = enhanceEntry?.data;
+      const proofreadData = reviewEntry?.proofread?.data;
+      const internalData = reviewEntry?.internal?.data;
+      const externalData = reviewEntry?.external?.data;
       const proofreadAnnotations = useMemo(() => {
-        if (!doc?.lessonId || !enhanceData?.issues?.length) return [];
-        return enhanceData.issues.map((issue, index2) => ({
+        if (!doc?.lessonId || !proofreadData?.issues?.length) return [];
+        return proofreadData.issues.map((issue, index2) => ({
           id: `enh-proof-${doc.lessonId}-${index2}`,
           kind: "proofread",
           issueType: issue.type === "typo" ? "typo" : "grammar",
+          issueIndex: index2,
           quote: issue.quote,
           category: issue.type === "typo" ? t("typo") : t("grammar"),
           suggestion: issue.suggestion,
@@ -30026,10 +30569,10 @@
           comment: issue.reason,
           key: `enh-proof-${index2}`
         }));
-      }, [doc?.lessonId, enhanceData, t]);
+      }, [doc?.lessonId, proofreadData, t]);
       const internalLinkAnnotations = useMemo(() => {
-        if (!doc?.lessonId || !enhanceData?.internalLinks?.length) return [];
-        return enhanceData.internalLinks.map((link2, index2) => ({
+        if (!doc?.lessonId || !internalData?.links?.length) return [];
+        return internalData.links.map((link2, index2) => ({
           id: `enh-in-${doc.lessonId}-${index2}`,
           kind: "link",
           linkType: "internal",
@@ -30041,10 +30584,10 @@
           comment: link2.reason,
           key: `enh-in-${index2}`
         }));
-      }, [doc?.lessonId, enhanceData, t]);
+      }, [doc?.lessonId, internalData, t]);
       const externalLinkAnnotations = useMemo(() => {
-        if (!doc?.lessonId || !enhanceData?.externalLinks?.length) return [];
-        return enhanceData.externalLinks.map((link2, index2) => ({
+        if (!doc?.lessonId || !externalData?.links?.length) return [];
+        return externalData.links.map((link2, index2) => ({
           id: `enh-ex-${doc.lessonId}-${index2}`,
           kind: "link",
           linkType: "external",
@@ -30058,7 +30601,7 @@
           comment: link2.reason,
           key: `enh-ex-${index2}`
         }));
-      }, [doc?.lessonId, enhanceData, t]);
+      }, [doc?.lessonId, externalData, t]);
       const reviewEnhanceAnnotations = useMemo(
         () => [...proofreadAnnotations, ...internalLinkAnnotations, ...externalLinkAnnotations],
         [proofreadAnnotations, internalLinkAnnotations, externalLinkAnnotations]
@@ -30083,9 +30626,31 @@
       const locatedOrder = useMemo(() => new Map(located.map((item) => [item.id, item.index])), [located]);
       const rendered = useMemo(() => {
         if (!doc) return { html: "", error: false };
-        return renderTutorial(doc.source, { lessonId: doc.lessonId });
-      }, [doc]);
+        return renderTutorial(draft, { lessonId: doc.lessonId });
+      }, [doc, draft]);
+      const draftMeta = useMemo(() => parseFrontmatterText(draft), [draft]);
+      const sitePreviewUrl = useMemo(() => {
+        if (!doc) return "";
+        const base = (manifest?.siteUrl || "http://localhost:3000").replace(/\/+$/, "");
+        const course2 = doc.courseId || doc.lessonId?.split("/")[0] || "";
+        const slug2 = doc.lessonId?.split("/").pop() || "";
+        const locale = manifest?.locale || "zh";
+        const sitePath = doc.sitePath || (course2 === "blog" ? `${locale === "en" ? "" : `/${locale}`}/blog/${encodeURIComponent(slug2)}` : `/embed/${encodeURIComponent(locale)}/${encodeURIComponent(course2)}/${encodeURIComponent(slug2)}`);
+        if (!sitePath) return "";
+        const stamp = encodeURIComponent(`${doc.mtime}:${siteNonce}`);
+        return `${base}${sitePath}${sitePath.includes("?") ? "&" : "?"}t=${stamp}`;
+      }, [doc, manifest?.siteUrl, manifest?.locale, siteNonce]);
+      const highlightLabels = useMemo(
+        () => ({
+          typo: t("badgeTypo"),
+          grammar: t("badgeGrammar"),
+          internal: t("badgeInternal"),
+          external: t("badgeExternal")
+        }),
+        [t]
+      );
       const handleLocated = useCallback((next) => {
+        setLocatedReady(true);
         setLocated((previous4) => sameLocated(previous4, next) ? previous4 : next);
       }, []);
       const handlePositions = useCallback((next) => {
@@ -30099,6 +30664,7 @@
       const handleRailSelect = useCallback((id) => {
         if (!id) return;
         activeSource.current = "rail";
+        setPreviewMode("review");
         setActiveId(id);
         setFocusAnn({ id, token: Date.now() });
       }, []);
@@ -30107,21 +30673,30 @@
         const card = cardRefs.current.get(activeId);
         if (card) card.scrollIntoView({ block: "nearest", behavior: "smooth" });
       }, [activeId]);
-      useEffect(() => {
-        setRailOpen(false);
-      }, [selectedId]);
+      const performSelect = useCallback(
+        (lessonId) => {
+          if (!lessonId) return;
+          setPendingLesson("");
+          loadDoc(lessonId);
+          if (mediaMatches("(max-width: 820px)")) setNavOpen(false);
+        },
+        [loadDoc]
+      );
       const selectLesson = useCallback(
         (lessonId) => {
           if (!lessonId) return;
           if (lessonId === selectedId) {
-            setRailOpen(false);
-            setNavOpen(false);
+            if (mediaMatches("(max-width: 820px)")) setNavOpen(false);
             return;
           }
-          loadDoc(lessonId);
-          setNavOpen(false);
+          if (dirty) {
+            setPendingLesson(lessonId);
+            if (mediaMatches("(max-width: 820px)")) setNavOpen(false);
+            return;
+          }
+          performSelect(lessonId);
         },
-        [loadDoc, selectedId]
+        [dirty, performSelect, selectedId]
       );
       const refresh = useCallback(async () => {
         if (refreshing) return;
@@ -30133,11 +30708,7 @@
           const available = flattenLessons(nextManifest);
           const preferred = available.find((lesson) => lesson.annotationCount > 0)?.lessonId;
           const target = available.some((lesson) => lesson.lessonId === selectedId) ? selectedId : preferred || available[0]?.lessonId;
-          if (target) {
-            forceEnhance.current = true;
-            await loadDoc(target, { keepActive: true });
-          }
-          setEnhanceNonce((nonce) => nonce + 1);
+          if (target) await loadDoc(target, { keepActive: true });
           setLoadError("");
           setNotice("");
         } catch (error) {
@@ -30159,9 +30730,9 @@
       const goRelative = useCallback(
         (offset2) => {
           const next = lessons[currentIndex + offset2];
-          if (next) loadDoc(next.lessonId);
+          if (next) selectLesson(next.lessonId);
         },
-        [currentIndex, lessons, loadDoc]
+        [currentIndex, lessons, selectLesson]
       );
       const addAssist = useCallback((lessonId, item) => {
         setAssistByLesson((previous4) => ({
@@ -30301,34 +30872,249 @@
         },
         [doc, runAssist, selectionMenu]
       );
-      const runEnhance = useCallback(
-        async (target, force = false) => {
-          const lessonId = target?.lessonId;
-          if (!lessonId) return;
-          const mtime = target.mtime;
-          const key = `${ENHANCE_CACHE_PREFIX}${lessonId}`;
-          if (force) {
+      const handleDraftChange = useCallback(
+        (next) => {
+          draftRef.current = next;
+          setDraft(next);
+          setDirty(next !== (doc?.source || ""));
+          setSaveFailed(false);
+          setSaveConflict(false);
+          setSaveNotice("");
+        },
+        [doc?.source]
+      );
+      useEffect(() => {
+        draftStateRef.current = { lessonId: doc?.lessonId, mtime: doc?.mtime, source: draft, dirty };
+      }, [draft, dirty, doc?.lessonId, doc?.mtime]);
+      useEffect(() => {
+        if (!doc?.lessonId || !dirty) return void 0;
+        const timer = setTimeout(() => {
+          try {
+            localStorage.setItem(
+              draftCacheKey(doc.lessonId),
+              JSON.stringify({ mtime: doc.mtime, source: draft, savedAt: Date.now() })
+            );
+          } catch {
+          }
+        }, 400);
+        return () => clearTimeout(timer);
+      }, [draft, dirty, doc?.lessonId, doc?.mtime]);
+      useEffect(
+        () => () => {
+          const pending = draftStateRef.current;
+          if (!pending?.lessonId || !pending.dirty) return;
+          try {
+            localStorage.setItem(
+              draftCacheKey(pending.lessonId),
+              JSON.stringify({ mtime: pending.mtime, source: pending.source, savedAt: Date.now() })
+            );
+          } catch {
+          }
+        },
+        []
+      );
+      const acceptProofread = useCallback(
+        (annotation) => {
+          if (!doc || !annotation || annotation.kind !== "proofread") return;
+          const range = findQuoteSourceRange(draft, annotation.quote);
+          if (!range) {
+            setSaveFailed(true);
+            setSaveConflict(false);
+            setSaveNotice(t("acceptFailed"));
+            return;
+          }
+          handleDraftChange(draft.slice(0, range.start) + annotation.suggestion + draft.slice(range.end));
+          const entry = reviewEntry;
+          if (entry?.proofread?.data) {
+            const issues = entry.proofread.data.issues.filter((_, index2) => index2 !== annotation.issueIndex);
+            const data2 = { ...entry.proofread.data, issues };
+            const nextEntry = { ...entry, proofread: { ...entry.proofread, data: data2 } };
+            setReviewByLesson((previous4) => ({ ...previous4, [doc.lessonId]: nextEntry }));
             try {
-              localStorage.removeItem(key);
+              localStorage.setItem(
+                reviewCacheKey(doc.lessonId, "proofread"),
+                JSON.stringify({ mtime: entry.mtime, generatedAt: entry.proofread.generatedAt, data: data2 })
+              );
             } catch {
             }
-          } else {
-            const cached = readEnhanceCache(key, mtime);
+          }
+          setSaveFailed(false);
+          setSaveConflict(false);
+          setSaveNotice(t("accepted"));
+          setActiveId("");
+          setFocusAnn(null);
+        },
+        [doc, draft, handleDraftChange, reviewEntry, t]
+      );
+      const saveDoc = useCallback(async (force = false) => {
+        if (!doc || saving || savingRef.current || docLoading) return false;
+        if (!dirty) return true;
+        const lessonId = doc.lessonId;
+        const sourceToSave = draftRef.current;
+        const expectedMtime = force ? "" : doc.mtime;
+        savingRef.current = true;
+        setSaving(true);
+        setSaveFailed(false);
+        setSaveConflict(false);
+        setSaveNotice("");
+        try {
+          const response = await fetch("/api/tutorial-review/save", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ lessonId, source: sourceToSave, expectedMtime })
+          });
+          let payload = null;
+          try {
+            payload = await response.json();
+          } catch {
+            payload = null;
+          }
+          if (!response.ok) {
+            const error = new Error(payload?.message || `HTTP ${response.status}`);
+            error.status = response.status;
+            throw error;
+          }
+          const nextTitle = payload?.title || doc.title;
+          const nextDescription = payload?.description ?? doc.description;
+          const stillDirty = draftRef.current !== sourceToSave;
+          setDoc(
+            (previous4) => previous4 ? { ...previous4, source: sourceToSave, mtime: payload?.mtime || previous4.mtime, bytes: payload?.bytes ?? previous4.bytes, title: nextTitle, description: nextDescription } : previous4
+          );
+          setDirty(stillDirty);
+          draftStateRef.current = { lessonId, mtime: payload?.mtime || doc.mtime, source: sourceToSave, dirty: stillDirty };
+          reviewEpoch.current += 1;
+          setManifest((previous4) => {
+            if (!previous4) return previous4;
+            return {
+              ...previous4,
+              courses: previous4.courses.map((course2) => ({
+                ...course2,
+                sections: course2.sections.map((section) => ({
+                  ...section,
+                  lessons: section.lessons.map(
+                    (lesson) => lesson.lessonId === lessonId ? { ...lesson, title: nextTitle, description: nextDescription, mtime: payload?.mtime || lesson.mtime, bytes: payload?.bytes ?? lesson.bytes } : lesson
+                  )
+                }))
+              }))
+            };
+          });
+          const nextMtime = payload?.mtime || doc.mtime;
+          const cachedEntry = reviewByLesson[lessonId];
+          setReviewByLesson((previous4) => {
+            const entry = previous4[lessonId];
+            if (!entry) return previous4;
+            return { ...previous4, [lessonId]: { ...entry, mtime: nextMtime } };
+          });
+          try {
+            if (cachedEntry) {
+              for (const kind of REVIEW_KINDS) {
+                const task = cachedEntry[kind];
+                if (task?.data) {
+                  localStorage.setItem(
+                    reviewCacheKey(lessonId, kind),
+                    JSON.stringify({ mtime: nextMtime, generatedAt: task.generatedAt || Date.now(), data: task.data })
+                  );
+                }
+              }
+            }
+            if (!stillDirty) localStorage.removeItem(draftCacheKey(lessonId));
+          } catch {
+          }
+          setSaveNotice(stillDirty ? t("savedPartial") : t("saved"));
+          return true;
+        } catch (error) {
+          setSaveFailed(true);
+          setSaveConflict(error?.status === 409);
+          setSaveNotice(error?.status === 409 ? t("saveConflict") : error instanceof Error ? error.message : t("saveFailed"));
+          return false;
+        } finally {
+          savingRef.current = false;
+          if (mounted.current) setSaving(false);
+        }
+      }, [doc, docLoading, dirty, reviewByLesson, saving, t]);
+      const confirmPendingSave = useCallback(async () => {
+        const target = pendingLesson;
+        if (!target) return;
+        const saved = await saveDoc();
+        if (saved) performSelect(target);
+      }, [pendingLesson, performSelect, saveDoc]);
+      const discardPending = useCallback(() => {
+        const target = pendingLesson;
+        if (!target) return;
+        try {
+          if (doc?.lessonId) localStorage.removeItem(draftCacheKey(doc.lessonId));
+        } catch {
+        }
+        handleDraftChange(doc?.source || "");
+        setDirty(false);
+        performSelect(target);
+      }, [doc?.lessonId, doc?.source, handleDraftChange, pendingLesson, performSelect]);
+      useEffect(() => {
+        if (!saveNotice || saveFailed) return void 0;
+        const timer = setTimeout(() => {
+          if (mounted.current) setSaveNotice("");
+        }, 4e3);
+        return () => clearTimeout(timer);
+      }, [saveNotice, saveFailed]);
+      useEffect(() => {
+        if (!dirty) return void 0;
+        const onBeforeUnload = (event) => {
+          event.preventDefault();
+          event.returnValue = "";
+        };
+        window.addEventListener("beforeunload", onBeforeUnload);
+        return () => window.removeEventListener("beforeunload", onBeforeUnload);
+      }, [dirty]);
+      useEffect(() => {
+        const onKeyDown = (event) => {
+          if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== "s") return;
+          if (!doc || !dirty) return;
+          event.preventDefault();
+          saveDoc();
+        };
+        window.addEventListener("keydown", onKeyDown);
+        return () => window.removeEventListener("keydown", onKeyDown);
+      }, [doc, dirty, saveDoc]);
+      useEffect(() => {
+        if (!pendingLesson) return void 0;
+        const onKeyDown = (event) => {
+          if (event.key === "Escape") setPendingLesson("");
+        };
+        window.addEventListener("keydown", onKeyDown);
+        return () => window.removeEventListener("keydown", onKeyDown);
+      }, [pendingLesson]);
+      const runReview = useCallback(
+        async (kind, force = true) => {
+          const lessonId = doc?.lessonId;
+          const task = REVIEW_TASKS[kind];
+          if (!lessonId || !task || dirty || docLoading) return;
+          setRailOpen(true);
+          const mtime = doc.mtime;
+          const key = reviewCacheKey(lessonId, kind);
+          if (!force) {
+            const cached = readReviewCache(key, mtime);
             if (cached) {
-              setEnhanceByLesson((previous4) => ({
+              setReviewByLesson((previous4) => ({
                 ...previous4,
-                [lessonId]: { status: "done", data: cached.data, generatedAt: cached.generatedAt, mtime }
+                [lessonId]: { ...previous4[lessonId] || {}, mtime, [kind]: { status: "done", data: cached.data, generatedAt: cached.generatedAt } }
               }));
               return;
             }
           }
-          if (!force && enhanceRequests.current.get(lessonId) === mtime) return;
-          const seq = (enhanceSeq.current.get(lessonId) || 0) + 1;
-          enhanceSeq.current.set(lessonId, seq);
-          enhanceRequests.current.set(lessonId, mtime);
-          setEnhanceByLesson((previous4) => ({
+          const requestKey = `${lessonId}:${kind}`;
+          if (reviewRequests.current.get(requestKey) === mtime) return;
+          const epoch = reviewEpoch.current;
+          const seq = (reviewSeq.current.get(requestKey) || 0) + 1;
+          reviewSeq.current.set(requestKey, seq);
+          reviewRequests.current.set(requestKey, mtime);
+          setReviewByLesson((previous4) => ({
             ...previous4,
-            [lessonId]: { ...previous4[lessonId] || {}, status: "loading", mtime }
+            [lessonId]: {
+              ...previous4[lessonId] || {},
+              mtime,
+              [kind]: { ...previous4[lessonId]?.[kind] || {}, status: "loading", error: "", mtime }
+            }
           }));
           const controller = new AbortController();
           const timer = setTimeout(() => controller.abort(), 18e4);
@@ -30337,13 +31123,7 @@
               method: "POST",
               credentials: "same-origin",
               headers: { "content-type": "application/json" },
-              body: JSON.stringify({
-                task: "review-enhance",
-                lessonId,
-                selection: target.title,
-                context: "",
-                scope: "lesson"
-              }),
+              body: JSON.stringify({ task, lessonId, selection: doc.title, context: "", scope: "lesson" }),
               signal: controller.signal
             });
             let payload = null;
@@ -30353,47 +31133,61 @@
               payload = null;
             }
             if (!response.ok) throw new Error(payload?.message || `HTTP ${response.status}`);
-            if (!payload || payload.kind !== "review-enhance") throw new Error(t("reviewEnhanceFailed"));
-            if (enhanceSeq.current.get(lessonId) !== seq) return;
-            const data2 = {
-              issues: Array.isArray(payload.issues) ? payload.issues : [],
-              internalLinks: Array.isArray(payload.internalLinks) ? payload.internalLinks : [],
-              externalLinks: Array.isArray(payload.externalLinks) ? payload.externalLinks : [],
-              note: payload.note || "",
-              sourcesNote: payload.sourcesNote || ""
-            };
+            if (!payload || payload.kind !== task) throw new Error(t("reviewEnhanceFailed"));
+            if (reviewEpoch.current !== epoch || reviewSeq.current.get(requestKey) !== seq) return;
+            const data2 = kind === "proofread" ? { issues: Array.isArray(payload.issues) ? payload.issues : [], note: payload.note || "", scope: payload.scope || "lesson" } : { links: Array.isArray(payload.links) ? payload.links : [], fallback: Boolean(payload.fallback), note: payload.note || "" };
             const generatedAt = Date.now();
             try {
               localStorage.setItem(key, JSON.stringify({ mtime, generatedAt, data: data2 }));
+              setReviewCacheError("");
             } catch {
+              setReviewCacheError(t("cacheSaveFailed"));
             }
-            setEnhanceByLesson((previous4) => ({
+            setReviewByLesson((previous4) => ({
               ...previous4,
-              [lessonId]: { status: "done", data: data2, generatedAt, mtime }
+              [lessonId]: { ...previous4[lessonId] || {}, mtime, [kind]: { status: "done", data: data2, generatedAt, error: "" } }
             }));
           } catch (error) {
-            if (enhanceSeq.current.get(lessonId) !== seq) return;
+            if (reviewSeq.current.get(requestKey) !== seq) return;
             const message = error?.name === "AbortError" ? t("assistTimeout") : error instanceof Error ? error.message : String(error);
-            setEnhanceByLesson((previous4) => ({
+            setReviewByLesson((previous4) => ({
               ...previous4,
-              [lessonId]: { ...previous4[lessonId] || {}, status: "error", error: message, mtime }
+              [lessonId]: {
+                ...previous4[lessonId] || {},
+                mtime,
+                [kind]: { ...previous4[lessonId]?.[kind] || {}, status: "error", error: message, mtime }
+              }
             }));
           } finally {
             clearTimeout(timer);
-            if (enhanceSeq.current.get(lessonId) === seq) enhanceRequests.current.delete(lessonId);
+            if (reviewSeq.current.get(requestKey) === seq) reviewRequests.current.delete(requestKey);
           }
         },
-        [t]
+        [doc?.lessonId, doc?.mtime, doc?.title, dirty, docLoading, t]
       );
-      const regenerateEnhance = useCallback(() => {
-        if (doc) runEnhance(doc, true);
-      }, [doc, runEnhance]);
       useEffect(() => {
-        if (!doc) return;
-        const force = forceEnhance.current;
-        forceEnhance.current = false;
-        runEnhance(doc, force);
-      }, [doc?.lessonId, doc?.mtime, enhanceNonce, runEnhance]);
+        const lessonId = doc?.lessonId;
+        if (!lessonId) return;
+        const restored = {};
+        for (const kind of REVIEW_KINDS) {
+          const cached = readReviewCache(reviewCacheKey(lessonId, kind), doc.mtime);
+          if (cached) restored[kind] = { status: "done", data: cached.data, generatedAt: cached.generatedAt };
+        }
+        if (Object.keys(restored).length > 0) setRailOpen(true);
+        setReviewByLesson((previous4) => {
+          const existing = previous4[lessonId];
+          if (Object.keys(restored).length === 0) {
+            if (!existing || existing.mtime === doc.mtime) return previous4;
+            const next = { ...previous4 };
+            delete next[lessonId];
+            return next;
+          }
+          return {
+            ...previous4,
+            [lessonId]: { ...existing || {}, mtime: doc.mtime, ...restored }
+          };
+        });
+      }, [doc?.lessonId, doc?.mtime]);
       useEffect(() => {
         if (!doc) return void 0;
         let frame = 0;
@@ -30455,52 +31249,215 @@
           setSelectionMenu(null);
         };
       }, [doc?.lessonId]);
+      useEffect(() => {
+        try {
+          localStorage.setItem(SPLIT_KEY, String(splitRatio));
+        } catch {
+        }
+      }, [splitRatio]);
+      useEffect(() => {
+        setPreviewMode("site");
+      }, [doc?.lessonId]);
+      useEffect(() => {
+        if (previewMode !== "site") return void 0;
+        siteReadyRef.current = false;
+        setSiteReady(false);
+        setSiteBlocked(false);
+        const timer = setTimeout(() => {
+          if (!siteReadyRef.current && mounted.current) setSiteBlocked(true);
+        }, 8e3);
+        return () => clearTimeout(timer);
+      }, [previewMode, doc?.lessonId, doc?.mtime, siteNonce]);
+      useEffect(() => {
+        try {
+          localStorage.setItem(SIDEBAR_LEFT_KEY, navOpen ? "1" : "0");
+        } catch {
+        }
+      }, [navOpen]);
+      useEffect(() => {
+        try {
+          localStorage.setItem(SIDEBAR_RIGHT_KEY, railOpen ? "1" : "0");
+        } catch {
+        }
+      }, [railOpen]);
+      useEffect(() => {
+        for (const [lessonId, items] of Object.entries(assistByLesson)) {
+          const cacheable = items.filter((item) => item && item.id && item.status !== "loading");
+          try {
+            if (cacheable.length > 0) localStorage.setItem(assistCacheKey(lessonId), JSON.stringify(cacheable));
+            else localStorage.removeItem(assistCacheKey(lessonId));
+          } catch {
+          }
+        }
+      }, [assistByLesson]);
+      useEffect(() => {
+        const lessonId = doc?.lessonId;
+        if (!lessonId) return;
+        try {
+          const raw = localStorage.getItem(assistCacheKey(lessonId));
+          if (!raw) return;
+          const parsed = JSON.parse(raw);
+          if (!Array.isArray(parsed)) return;
+          const items = parsed.filter((item) => item && item.id);
+          if (items.length > 0) setRailOpen(true);
+          setAssistByLesson((previous4) => {
+            if (previous4[lessonId]?.length) return previous4;
+            return { ...previous4, [lessonId]: items };
+          });
+        } catch {
+        }
+      }, [doc?.lessonId]);
+      useEffect(() => {
+        const onMessage = (event) => {
+          if (event.data?.type !== "dsh-tutorial-review-preview-ready") return;
+          if (iframeRef.current && event.source !== iframeRef.current.contentWindow) return;
+          siteReadyRef.current = true;
+          setSiteReady(true);
+          setSiteBlocked(false);
+        };
+        window.addEventListener("message", onMessage);
+        return () => window.removeEventListener("message", onMessage);
+      }, []);
+      useEffect(() => {
+        if (!splitDragging) return void 0;
+        const previousCursor = document.body.style.cursor;
+        const previousSelect = document.body.style.userSelect;
+        document.body.style.cursor = "col-resize";
+        document.body.style.userSelect = "none";
+        return () => {
+          document.body.style.cursor = previousCursor;
+          document.body.style.userSelect = previousSelect;
+        };
+      }, [splitDragging]);
+      const splitFromPointer = useCallback((event) => {
+        const rect = splitRef.current?.getBoundingClientRect();
+        if (!rect || rect.width === 0) return;
+        const next = (event.clientX - rect.left) / rect.width;
+        setSplitRatio(Math.min(0.8, Math.max(0.2, next)));
+      }, []);
+      const onSplitPointerDown = useCallback((event) => {
+        if (event.button !== 0) return;
+        event.preventDefault();
+        event.currentTarget.setPointerCapture?.(event.pointerId);
+        setSplitDragging(true);
+      }, []);
+      const onSplitPointerMove = useCallback(
+        (event) => {
+          if (!splitDragging) return;
+          splitFromPointer(event);
+        },
+        [splitDragging, splitFromPointer]
+      );
+      const onSplitPointerUp = useCallback((event) => {
+        setSplitDragging(false);
+        if (event.currentTarget.hasPointerCapture?.(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+      }, []);
+      const onSplitKeyDown = useCallback((event) => {
+        const step = event.shiftKey ? 0.08 : 0.02;
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          setSplitRatio((value) => Math.max(0.2, value - step));
+        } else if (event.key === "ArrowRight") {
+          event.preventDefault();
+          setSplitRatio((value) => Math.min(0.8, value + step));
+        } else if (event.key === "Home") {
+          event.preventDefault();
+          setSplitRatio(0.2);
+        } else if (event.key === "End") {
+          event.preventDefault();
+          setSplitRatio(0.8);
+        }
+      }, []);
       const assistCount = assistAnnotations.length;
-      const enhanceCount = reviewEnhanceAnnotations.length;
-      const noteCount = annotations.length + enhanceCount;
-      const enhanceLoading = enhanceEntry?.status === "loading";
+      const reviewCount = reviewEnhanceAnnotations.length;
+      const noteCount = annotations.length + reviewCount;
       const searchActive = query.trim().length > 0;
+      const reviewTasks = [
+        { kind: "proofread", label: t("proofread"), count: proofreadAnnotations.length, status: reviewEntry?.proofread?.status || "idle", error: reviewEntry?.proofread?.error || "" },
+        { kind: "internal", label: t("internalLinks"), count: internalLinkAnnotations.length, status: reviewEntry?.internal?.status || "idle", error: reviewEntry?.internal?.error || "" },
+        { kind: "external", label: t("externalLinks"), count: externalLinkAnnotations.length, status: reviewEntry?.external?.status || "idle", error: reviewEntry?.external?.error || "" }
+      ];
+      const reviewLoading = reviewTasks.some((task) => task.status === "loading");
+      const reviewErrors = reviewTasks.filter((task) => task.status === "error");
+      const reviewGeneratedAt = Math.max(
+        reviewEntry?.proofread?.generatedAt || 0,
+        reviewEntry?.internal?.generatedAt || 0,
+        reviewEntry?.external?.generatedAt || 0
+      );
       return h(
-        "div",
-        { className: "tr-root font-tr" },
+        SidebarProvider,
+        {
+          leftOpen: navOpen,
+          rightOpen: railOpen,
+          onLeftChange: setNavOpen,
+          onRightChange: setRailOpen,
+          className: cn("font-tr", !navOpen && "is-left-collapsed", !railOpen && "is-right-collapsed")
+        },
         h("style", null, `@layer components {${STYLES}}`),
         h("style", null, TAILWIND_CSS),
         h(
-          "aside",
-          { className: cn("tr-nav border-r border-tr-border bg-tr-muted/40", navOpen && "is-open"), "aria-label": t("panel") },
+          Sidebar,
+          { side: "left", label: t("panel"), className: "border-r border-tr-border bg-tr-muted/40" },
           h(
-            "div",
-            { className: "flex flex-col gap-1 border-b border-tr-border px-4 pb-3 pt-5" },
-            h("div", { className: "text-[15px] font-semibold tracking-tight text-tr-fg" }, t("title")),
-            h("p", { className: "m-0 text-[11px] leading-relaxed text-tr-tertiary" }, t("subtitle"))
+            SidebarHeader,
+            { className: cn("tr-sidebar-topbar flex-row items-center gap-2", navOpen ? "px-4" : "px-0 justify-center") },
+            h("div", { className: cn("tr-nav-title min-w-0 flex-1 text-[15px] font-semibold tracking-tight text-tr-fg", !navOpen && "hidden") }, t("title")),
+            h(
+              SidebarTrigger,
+              {
+                side: "left",
+                label: navOpen ? t("collapseSidebar") : t("expandSidebar"),
+                title: navOpen ? t("collapseSidebar") : t("expandSidebar"),
+                className: "tr-sidebar-collapse border-0 bg-transparent shadow-none hover:bg-transparent hover:text-tr-fg focus-visible:outline-none focus-visible:ring-0",
+                style: { outline: "none", boxShadow: "none" }
+              },
+              panelIcon("left")
+            )
           ),
           h(
             "div",
-            { className: "relative m-3" },
-            h("span", { className: "pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-tr-tertiary" }, searchIcon()),
-            h(Input, {
-              type: "search",
-              value: query,
-              onChange: (event) => setQuery(event.target.value),
-              placeholder: t("search"),
-              "aria-label": t("search"),
-              className: "pl-8 pr-8"
-            }),
-            query ? h(
+            { className: cn("tr-nav-search mx-3 mt-3 flex items-center gap-2", !navOpen && "hidden") },
+            h(
+              "div",
+              { className: "relative min-w-0 flex-1" },
+              h("span", { className: "pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-tr-tertiary" }, searchIcon()),
+              h(Input, {
+                type: "search",
+                value: query,
+                onChange: (event) => setQuery(event.target.value),
+                placeholder: t("search"),
+                "aria-label": t("search"),
+                className: "pl-8 pr-8"
+              }),
+              query ? h(
+                Button,
+                {
+                  variant: "ghost",
+                  size: "icon-xs",
+                  className: "absolute right-1 top-1 text-tr-tertiary",
+                  onClick: () => setQuery(""),
+                  "aria-label": t("clearSearch")
+                },
+                "\xD7"
+              ) : null
+            ),
+            h(
               Button,
               {
                 variant: "ghost",
-                size: "icon-xs",
-                className: "absolute right-1 top-1 text-tr-tertiary",
-                onClick: () => setQuery(""),
-                "aria-label": t("clearSearch")
+                size: "icon-sm",
+                className: "tr-refresh-icon border-0 bg-transparent shadow-none hover:bg-transparent hover:text-tr-fg focus-visible:outline-none focus-visible:ring-0",
+                onClick: refresh,
+                disabled: refreshing || loading || dirty,
+                title: dirty ? t("saveFirst") : t("refresh"),
+                "aria-label": t("refresh")
               },
-              "\xD7"
-            ) : null
+              h("span", { className: refreshing ? "tr-spin" : "" }, refreshIcon())
+            )
           ),
           h(
-            "div",
-            { className: "tr-nav-scroll px-2 py-2" },
+            SidebarContent,
+            { className: cn("tr-nav-scroll px-2 py-2", !navOpen && "hidden") },
             loading && !manifest ? h(NavSkeleton, { rows: 7 }) : filteredCourses.length === 0 ? h(
               "div",
               { className: "tr-nav-empty" },
@@ -30511,7 +31468,7 @@
               const count = item.sections.reduce((sum, section) => sum + section.lessons.length, 0);
               const notes = item.sections.reduce(
                 (sum, section) => sum + section.lessons.reduce(
-                  (n, lesson) => n + (lesson.annotationCount || 0) + autoCountFor(lesson),
+                  (n, lesson) => n + (lesson.annotationCount || 0) + reviewCountFor(lesson),
                   0
                 ),
                 0
@@ -30523,7 +31480,7 @@
                   "button",
                   {
                     type: "button",
-                    className: "group flex w-full items-center gap-1.5 rounded-md px-1.5 py-1.5 text-left text-[11.5px] font-medium text-tr-fg transition-colors hover:bg-tr-muted",
+                    className: "group flex w-full items-center gap-1.5 border-0 bg-transparent px-1.5 py-1.5 text-left text-[12px] font-semibold text-tr-fg shadow-none outline-none transition-colors hover:bg-transparent hover:text-tr-accent focus-visible:outline-none focus-visible:ring-0",
                     onClick: () => toggleCourse(item.id),
                     "aria-expanded": !isCollapsed
                   },
@@ -30536,16 +31493,16 @@
                   (section, sectionIndex) => h(
                     "div",
                     { className: "tr-section", key: `${item.id}-${section.title || "root"}-${sectionIndex}` },
-                    section.title && (sectionIndex > 0 || item.sections.length > 1) ? h("div", { className: "px-2 pb-1 pt-2 text-[9.5px] font-medium uppercase tracking-wide text-tr-tertiary" }, section.title) : null,
+                    section.title && (sectionIndex > 0 || item.sections.length > 1) ? h("div", { className: "pl-5 pr-2 pb-1 pt-2 text-[9.5px] font-medium uppercase tracking-wide text-tr-tertiary" }, section.title) : null,
                     section.lessons.map((lesson) => {
-                      const notes2 = (lesson.annotationCount || 0) + autoCountFor(lesson);
+                      const notes2 = (lesson.annotationCount || 0) + reviewCountFor(lesson);
                       return h(
                         "button",
                         {
                           type: "button",
                           key: lesson.lessonId,
                           className: cn(
-                            "tr-lesson group flex w-full items-start gap-2 rounded-md px-2 py-1.5 text-left text-[11.5px] leading-snug text-tr-secondary transition-colors hover:bg-tr-muted hover:text-tr-fg",
+                            "tr-lesson group flex w-full items-start gap-2 rounded-md py-1.5 pr-2 text-left text-[11.5px] leading-snug text-tr-secondary outline-none transition-colors hover:bg-tr-muted hover:text-tr-fg focus-visible:ring-2 focus-visible:ring-tr-accent/20",
                             lesson.lessonId === selectedId && "is-active bg-tr-accent/10 font-medium text-tr-fg"
                           ),
                           onClick: () => selectLesson(lesson.lessonId),
@@ -30562,80 +31519,19 @@
             })
           ),
           h(
-            "div",
-            { className: "flex flex-wrap gap-1 border-t border-tr-border px-4 py-2 text-[10px] text-tr-tertiary" },
+            SidebarFooter,
+            { className: cn("tr-nav-footer flex flex-row flex-wrap gap-1 px-4 py-2 text-[10px] text-tr-tertiary", !navOpen && "hidden") },
             h(
               "span",
               null,
-              `${manifest?.totalLessons || 0} ${t("lessons")} \xB7 ${(manifest?.totalAnnotations || 0) + totalAutoCount} ${t("notes")}`
+              `${lessons.length} ${t("lessons")} \xB7 ${(manifest?.totalAnnotations || 0) + totalReviewCount} ${t("notes")}`
             ),
             refreshedAt ? h("span", { className: "tr-foot-time" }, `\xB7 ${formatTime(refreshedAt)}`) : null
           )
         ),
         h(
-          "main",
-          { className: "tr-main" },
-          h(
-            "header",
-            { className: "tr-toolbar border-b border-tr-border bg-tr-bg/95" },
-            h(
-              "div",
-              { className: "flex min-w-0 items-center gap-1.5 text-[11px] text-tr-tertiary" },
-              h(
-                "button",
-                {
-                  type: "button",
-                  className: "tr-crumb-root text-tr-tertiary transition-colors hover:text-tr-fg",
-                  onClick: () => {
-                    setQuery("");
-                  }
-                },
-                t("title")
-              ),
-              course ? h("span", { className: "tr-crumb-sep" }, "/") : null,
-              course ? h("span", { className: "truncate text-tr-secondary" }, course.title) : null
-            ),
-            h(
-              "div",
-              { className: "tr-toolbar-actions" },
-              h(
-                "button",
-                {
-                  type: "button",
-                  className: "tr-icon-btn tr-nav-toggle",
-                  onClick: () => setNavOpen((open) => !open),
-                  "aria-label": t("panel"),
-                  title: t("panel")
-                },
-                listIcon()
-              ),
-              h(
-                "button",
-                {
-                  type: "button",
-                  className: "tr-icon-btn tr-rail-toggle",
-                  onClick: () => setRailOpen((open) => !open),
-                  "aria-label": t("annotations"),
-                  title: t("annotations")
-                },
-                noteIcon(),
-                noteCount > 0 ? h(Badge, { variant: "accent", className: "absolute -right-1 -top-1 px-1 py-0 text-[8px]" }, noteCount) : null
-              ),
-              h(
-                Button,
-                {
-                  variant: "outline",
-                  size: "sm",
-                  className: "tr-refresh",
-                  onClick: refresh,
-                  disabled: refreshing || loading,
-                  title: t("refresh")
-                },
-                h("span", { className: refreshing ? "tr-spin" : "" }, refreshIcon()),
-                h("span", null, refreshing ? t("refreshing") : t("refresh"))
-              )
-            )
-          ),
+          SidebarInset,
+          { className: cn(navOpen && "is-nav-open", railOpen && "is-rail-open") },
           notice ? h(
             "div",
             { className: "tr-notice", role: "status" },
@@ -30671,179 +31567,416 @@
               manifest ? h(
                 "p",
                 { className: "tr-muted" },
-                `${manifest.totalLessons} ${t("lessons")} \xB7 ${manifest.totalAnnotations} ${t("notes")}`
+                `${lessons.length} ${t("lessons")} \xB7 ${manifest.totalAnnotations} ${t("notes")}`
               ) : null
             ) : h(
               "div",
-              { className: "tr-reader" },
-              docLoading && !doc ? h(DocSkeleton) : null,
-              doc ? h(
-                "article",
-                { className: "tr-article", key: doc.lessonId },
-                h(
-                  "header",
-                  { className: "tr-doc-head" },
-                  h(
-                    "div",
-                    { className: "tr-doc-kicker" },
-                    course ? course.title : doc.courseId,
-                    currentLesson?.sectionTitle || doc.section ? h("span", { className: "tr-kicker-sep" }, "\xB7") : null,
-                    currentLesson?.sectionTitle || doc.section ? h("span", null, currentLesson?.sectionTitle || doc.section) : null
-                  ),
-                  h("h1", null, doc.title),
-                  doc.description ? h("p", { className: "tr-doc-desc" }, doc.description) : null,
-                  h(
-                    "div",
-                    { className: "tr-doc-meta" },
-                    currentLesson ? h("span", null, t("readingTime", { minutes: currentLesson.readingMinutes })) : null,
-                    h("span", { className: "tr-meta-dot" }, "\xB7"),
-                    h(
-                      "span",
-                      { className: noteCount > 0 ? "tr-meta-notes" : "tr-meta-muted" },
-                      t("noteCount", { count: noteCount })
-                    ),
-                    doc.mtime ? h("span", { className: "tr-meta-dot" }, "\xB7") : null,
-                    doc.mtime ? h("span", { className: "tr-meta-muted" }, formatDate(doc.mtime)) : null
-                  )
-                ),
-                docError ? h(
+              { className: "tr-split", ref: splitRef },
+              h(
+                "section",
+                { className: "tr-pane tr-pane-editor", style: { flexBasis: `${splitRatio * 100}%` } },
+                h("header", { className: "tr-toolbar tr-editor-toolbar" }, h(
                   "div",
-                  { className: "tr-state tr-state-error tr-inline-state" },
-                  h("p", null, docError),
-                  h(Button, { variant: "default", size: "sm", onClick: () => loadDoc(selectedId) }, t("retry"))
-                ) : null,
-                rendered.error ? h("div", { className: "tr-parse-error", dangerouslySetInnerHTML: { __html: rendered.html } }) : null,
-                docError ? null : h(MemoDocumentBody, {
-                  html: rendered.html,
-                  annotations: allAnnotations,
-                  activeId,
-                  focusAnn,
-                  onSelect: handleMarkSelect,
-                  onLocated: handleLocated,
-                  onPositions: handlePositions
-                }),
-                noteCount === 0 && !docError ? h("div", { className: "tr-no-notes" }, noteIcon(18), h("span", null, t("noAnnotations"))) : null,
-                h(
-                  "footer",
-                  { className: "tr-doc-foot" },
+                  { className: "flex min-w-0 items-center gap-1.5 text-[11px] text-tr-tertiary" },
                   h(
-                    "button",
-                    {
-                      type: "button",
-                      className: "tr-page-btn",
-                      disabled: currentIndex <= 0,
-                      onClick: () => goRelative(-1)
-                    },
-                    arrowIcon("left"),
+                    "span",
+                    { className: cn("tr-nav-toggle", !navOpen && "is-forced") },
                     h(
-                      "span",
-                      null,
-                      h("span", { className: "tr-page-btn-kicker" }, t("previous")),
-                      h("span", { className: "tr-page-btn-title" }, currentIndex > 0 ? lessons[currentIndex - 1].title : "\u2014")
+                      SidebarTrigger,
+                      {
+                        side: "left",
+                        label: navOpen ? t("collapseSidebar") : t("expandSidebar"),
+                        title: navOpen ? t("collapseSidebar") : t("expandSidebar"),
+                        className: "tr-sidebar-collapse border-0 bg-transparent shadow-none hover:bg-transparent hover:text-tr-fg focus-visible:outline-none focus-visible:ring-0",
+                        style: { outline: "none", boxShadow: "none" }
+                      },
+                      panelIcon("left")
                     )
                   ),
                   h(
                     "button",
                     {
                       type: "button",
-                      className: "tr-page-btn tr-page-next",
-                      disabled: currentIndex < 0 || currentIndex >= lessons.length - 1,
-                      onClick: () => goRelative(1)
+                      className: "tr-crumb-root text-tr-tertiary transition-colors hover:text-tr-fg",
+                      onClick: () => {
+                        setQuery("");
+                      }
                     },
+                    t("title")
+                  ),
+                  course ? h("span", { className: "tr-crumb-sep" }, "/") : null,
+                  course ? h("span", { className: "tr-crumb-course truncate text-tr-secondary" }, course.title) : null,
+                  dirty ? h(Badge, { variant: "warn", className: "tr-dirty-badge px-1.5 py-0 text-[9px]" }, t("unsaved")) : null,
+                  h(
+                    Button,
+                    {
+                      variant: "ghost",
+                      size: "sm",
+                      className: "tr-save-btn inline-flex items-center leading-none border-0 bg-transparent text-tr-accent shadow-none hover:bg-transparent hover:opacity-80 focus-visible:outline-none focus-visible:ring-0",
+                      onClick: () => saveDoc(),
+                      disabled: !dirty || saving || docLoading,
+                      title: "\u2318S / Ctrl+S",
+                      style: { outline: "none", boxShadow: "none" }
+                    },
+                    h("span", { className: saving ? "tr-spin inline-flex items-center" : "inline-flex items-center" }, saveIcon()),
+                    h("span", { className: "inline-flex items-center leading-none" }, saving ? t("saving") : t("save"))
+                  )
+                )),
+                saveNotice ? h(
+                  "div",
+                  { className: cn("tr-save-notice", saveFailed && "is-error"), role: "status" },
+                  h("span", { className: "tr-save-notice-text" }, saveNotice),
+                  saveFailed && saveConflict ? h(
+                    "button",
+                    {
+                      type: "button",
+                      className: "tr-save-reload tr-save-overwrite",
+                      onClick: () => saveDoc(true),
+                      disabled: saving
+                    },
+                    t("overwrite")
+                  ) : null,
+                  saveFailed && saveConflict ? h(
+                    "button",
+                    {
+                      type: "button",
+                      className: "tr-save-reload",
+                      onClick: () => {
+                        if (doc) loadDoc(doc.lessonId);
+                      }
+                    },
+                    t("reload")
+                  ) : null,
+                  h(
+                    "button",
+                    {
+                      type: "button",
+                      className: "tr-notice-close",
+                      onClick: () => {
+                        setSaveNotice("");
+                        setSaveFailed(false);
+                      },
+                      "aria-label": t("close")
+                    },
+                    "\xD7"
+                  )
+                ) : null,
+                docLoading ? h(DocSkeleton) : doc ? h(SourceEditor, {
+                  value: draft,
+                  onChange: handleDraftChange,
+                  t
+                }) : null
+              ),
+              h(
+                "div",
+                {
+                  className: cn("tr-split-divider", splitDragging && "is-dragging"),
+                  role: "separator",
+                  "aria-orientation": "vertical",
+                  "aria-valuemin": 20,
+                  "aria-valuemax": 80,
+                  "aria-valuenow": Math.round(splitRatio * 100),
+                  "aria-label": t("resizeSplit"),
+                  title: t("resizeSplit"),
+                  tabIndex: 0,
+                  onPointerDown: onSplitPointerDown,
+                  onPointerMove: onSplitPointerMove,
+                  onPointerUp: onSplitPointerUp,
+                  onPointerCancel: onSplitPointerUp,
+                  onDoubleClick: () => setSplitRatio(0.5),
+                  onKeyDown: onSplitKeyDown
+                },
+                h("span", { className: "tr-split-grip", "aria-hidden": "true" })
+              ),
+              h(
+                "section",
+                { className: "tr-pane tr-pane-preview" },
+                h(
+                  "div",
+                  { className: "tr-preview-tabs" },
+                  h(
+                    "div",
+                    { className: "flex items-center gap-4", role: "tablist", "aria-label": t("previewMode") },
                     h(
-                      "span",
-                      null,
-                      h("span", { className: "tr-page-btn-kicker" }, t("next")),
-                      h(
-                        "span",
-                        { className: "tr-page-btn-title" },
-                        currentIndex >= 0 && currentIndex < lessons.length - 1 ? lessons[currentIndex + 1].title : "\u2014"
-                      )
+                      "button",
+                      {
+                        type: "button",
+                        role: "tab",
+                        "aria-selected": previewMode === "site",
+                        className: cn("tr-preview-tab", previewMode === "site" && "is-active"),
+                        onClick: () => setPreviewMode("site")
+                      },
+                      t("sitePreview")
                     ),
-                    arrowIcon("right")
+                    h(
+                      "button",
+                      {
+                        type: "button",
+                        role: "tab",
+                        "aria-selected": previewMode === "review",
+                        className: cn("tr-preview-tab", previewMode === "review" && "is-active"),
+                        onClick: () => setPreviewMode("review")
+                      },
+                      t("reviewView")
+                    )
+                  ),
+                  h(
+                    "span",
+                    { className: cn("tr-rail-toggle ml-auto", !railOpen && "is-forced") },
+                    h(
+                      SidebarTrigger,
+                      {
+                        side: "right",
+                        label: railOpen ? t("collapseSidebar") : t("expandSidebar"),
+                        title: railOpen ? t("collapseSidebar") : t("expandSidebar"),
+                        className: "tr-sidebar-collapse relative border-0 bg-transparent shadow-none hover:bg-transparent hover:text-tr-fg focus-visible:outline-none focus-visible:ring-0",
+                        style: { outline: "none", boxShadow: "none" }
+                      },
+                      panelIcon("right")
+                    )
+                  )
+                ),
+                h(
+                  "div",
+                  { className: cn("tr-preview-body", previewMode === "site" && "is-site") },
+                  previewMode === "site" ? h(
+                    "div",
+                    { className: "tr-site-preview" },
+                    sitePreviewUrl ? h("iframe", {
+                      key: sitePreviewUrl,
+                      ref: iframeRef,
+                      src: sitePreviewUrl,
+                      className: "tr-site-frame",
+                      title: t("sitePreview"),
+                      onLoad: () => {
+                        siteReadyRef.current = true;
+                        setSiteReady(true);
+                        setSiteBlocked(false);
+                      }
+                    }) : null,
+                    !siteReady || siteBlocked ? h(
+                      "div",
+                      { className: "tr-site-status" },
+                      !siteBlocked ? h("span", { className: "tr-spin" }, refreshIcon()) : null,
+                      h("p", { className: "m-0" }, siteBlocked ? t("sitePreviewFailed") : t("sitePreviewLoading")),
+                      h(
+                        "div",
+                        { className: "tr-site-actions" },
+                        h(
+                          Button,
+                          { variant: "outline", size: "xs", onClick: () => setSiteNonce((value) => value + 1) },
+                          t("retry")
+                        ),
+                        h(
+                          Button,
+                          { variant: "outline", size: "xs", onClick: () => setPreviewMode("review") },
+                          t("useReviewView")
+                        ),
+                        sitePreviewUrl ? h(
+                          Button,
+                          {
+                            variant: "outline",
+                            size: "xs",
+                            onClick: () => window.open(sitePreviewUrl, "_blank", "noopener,noreferrer")
+                          },
+                          t("openSitePreview")
+                        ) : null
+                      )
+                    ) : null
+                  ) : h(
+                    "div",
+                    { className: "tr-reader" },
+                    docLoading && !doc ? h(DocSkeleton) : null,
+                    doc ? h(
+                      "article",
+                      { className: "tr-article", key: doc.lessonId },
+                      h(
+                        "header",
+                        { className: "tr-doc-head" },
+                        h(
+                          "div",
+                          { className: "tr-doc-kicker" },
+                          course ? course.title : doc.courseId,
+                          currentLesson?.sectionTitle || doc.section ? h("span", { className: "tr-kicker-sep" }, "\xB7") : null,
+                          currentLesson?.sectionTitle || doc.section ? h("span", null, currentLesson?.sectionTitle || doc.section) : null
+                        ),
+                        h("h1", null, draftMeta.title || doc.title),
+                        draftMeta.description || doc.description ? h("p", { className: "tr-doc-desc" }, draftMeta.description || doc.description) : null,
+                        h(
+                          "div",
+                          { className: "tr-doc-meta" },
+                          dirty ? h(Badge, { variant: "warn", className: "px-1.5 py-0 text-[8px]" }, t("unsaved")) : null,
+                          currentLesson ? h("span", null, t("readingTime", { minutes: currentLesson.readingMinutes })) : null,
+                          h("span", { className: "tr-meta-dot" }, "\xB7"),
+                          h(
+                            "span",
+                            { className: noteCount > 0 ? "tr-meta-notes" : "tr-meta-muted" },
+                            t("noteCount", { count: noteCount })
+                          ),
+                          doc.mtime ? h("span", { className: "tr-meta-dot" }, "\xB7") : null,
+                          doc.mtime ? h("span", { className: "tr-meta-muted" }, formatDate(doc.mtime)) : null
+                        )
+                      ),
+                      docError ? h(
+                        "div",
+                        { className: "tr-state tr-state-error tr-inline-state" },
+                        h("p", null, docError),
+                        h(Button, { variant: "default", size: "sm", onClick: () => loadDoc(selectedId) }, t("retry"))
+                      ) : null,
+                      rendered.error ? h("div", { className: "tr-parse-error", dangerouslySetInnerHTML: { __html: rendered.html } }) : null,
+                      docError ? null : h(MemoDocumentBody, {
+                        html: rendered.html,
+                        annotations: allAnnotations,
+                        activeId,
+                        focusAnn,
+                        onSelect: handleMarkSelect,
+                        onLocated: handleLocated,
+                        onPositions: handlePositions,
+                        labels: highlightLabels
+                      }),
+                      noteCount === 0 && !docError ? h("div", { className: "tr-no-notes" }, noteIcon(18), h("span", null, t("noAnnotations"))) : null,
+                      h(
+                        "footer",
+                        { className: "tr-doc-foot" },
+                        h(
+                          "button",
+                          {
+                            type: "button",
+                            className: "tr-page-btn",
+                            disabled: currentIndex <= 0,
+                            onClick: () => goRelative(-1)
+                          },
+                          arrowIcon("left"),
+                          h(
+                            "span",
+                            null,
+                            h("span", { className: "tr-page-btn-kicker" }, t("previous")),
+                            h("span", { className: "tr-page-btn-title" }, currentIndex > 0 ? lessons[currentIndex - 1].title : "\u2014")
+                          )
+                        ),
+                        h(
+                          "button",
+                          {
+                            type: "button",
+                            className: "tr-page-btn tr-page-next",
+                            disabled: currentIndex < 0 || currentIndex >= lessons.length - 1,
+                            onClick: () => goRelative(1)
+                          },
+                          h(
+                            "span",
+                            null,
+                            h("span", { className: "tr-page-btn-kicker" }, t("next")),
+                            h(
+                              "span",
+                              { className: "tr-page-btn-title" },
+                              currentIndex >= 0 && currentIndex < lessons.length - 1 ? lessons[currentIndex + 1].title : "\u2014"
+                            )
+                          ),
+                          arrowIcon("right")
+                        )
+                      )
+                    ) : null
                   )
                 )
-              ) : null
+              )
             )
           )
         ),
         h(
-          "aside",
-          { className: cn("tr-rail border-l border-tr-border bg-tr-muted/30", railOpen && "is-open"), "aria-label": t("annotations") },
+          Sidebar,
+          { side: "right", label: t("annotations"), className: "border-l border-tr-border bg-tr-muted/30" },
           h(
-            "div",
-            { className: "flex items-center gap-2 border-b border-tr-border px-4 pb-2 pt-4" },
-            h("h2", { className: "m-0 min-w-0 flex-1 text-[12px] font-semibold tracking-tight" }, t("annotations")),
-            h(Badge, { variant: "muted", className: "px-1.5 py-0 text-[9px]" }, noteCount),
+            SidebarHeader,
+            { className: cn("tr-sidebar-topbar tr-rail-toolbar flex-row items-center border-b border-tr-border", railOpen ? "px-3" : "px-0 justify-center") },
             h(
-              "button",
-              {
-                type: "button",
-                className: "tr-icon-btn tr-rail-close",
-                onClick: () => setRailOpen(false),
-                "aria-label": t("close")
-              },
-              "\xD7"
-            )
-          ),
-          h(
-            "div",
-            { className: "flex items-center gap-2 border-b border-tr-border bg-tr-bg/60 px-3 py-2" },
-            h(
-              "span",
-              { className: "min-w-0 flex-1 truncate text-[9.5px] text-tr-tertiary" },
-              enhanceEntry?.status === "loading" ? t("reviewEnhanceLoadingShort") : enhanceEntry?.status === "error" ? t("reviewEnhanceFailedShort") : enhanceEntry?.generatedAt ? `${t("reviewEnhanceUpdated")} \xB7 ${formatTime(new Date(enhanceEntry.generatedAt))}` : t("reviewEnhanceAuto")
+              "div",
+              { className: cn("tr-rail-actions", !railOpen && "hidden"), role: "group", "aria-label": t("reviewActions") },
+              reviewTasks.map(
+                (task) => h(
+                  Button,
+                  {
+                    key: task.kind,
+                    variant: "outline",
+                    size: "sm",
+                    className: cn("tr-review-btn", `is-${task.status}`),
+                    onClick: () => runReview(task.kind, true),
+                    disabled: task.status === "loading" || saving || dirty || docLoading,
+                    title: dirty ? t("saveFirst") : task.status === "error" ? t("reviewRunAgain", { label: task.label }) : t("reviewRun", { label: task.label }),
+                    "aria-label": t("reviewRun", { label: task.label })
+                  },
+                  h(
+                    "span",
+                    { className: task.status === "loading" ? "tr-spin tr-review-loading" : "tr-review-icon" },
+                    task.status === "loading" ? loadingIcon() : reviewIcon(task.kind)
+                  ),
+                  h("span", { className: "tr-review-label" }, task.label),
+                  task.count > 0 ? h(
+                    Badge,
+                    {
+                      variant: task.kind === "proofread" ? "danger" : "success",
+                      className: "px-1 py-0 text-[8px]"
+                    },
+                    task.count
+                  ) : null,
+                  task.status === "error" ? h("span", { className: "tr-review-dot", "aria-hidden": "true" }) : null
+                )
+              ),
+              h(
+                "span",
+                { className: "tr-rail-close" },
+                h(
+                  Button,
+                  { variant: "ghost", size: "icon-sm", onClick: () => setRailOpen(false), "aria-label": t("close") },
+                  "\xD7"
+                )
+              )
             ),
             h(
-              Button,
+              SidebarTrigger,
               {
-                variant: "outline",
-                size: "xs",
-                className: "tr-rail-rerun",
-                onClick: regenerateEnhance,
-                disabled: !doc || enhanceLoading,
-                title: t("reviewEnhanceAgain")
+                side: "right",
+                label: railOpen ? t("collapseSidebar") : t("expandSidebar"),
+                title: railOpen ? t("collapseSidebar") : t("expandSidebar"),
+                className: "tr-sidebar-collapse border-0 bg-transparent shadow-none hover:bg-transparent hover:text-tr-fg focus-visible:outline-none focus-visible:ring-0",
+                style: { outline: "none", boxShadow: "none" }
               },
-              h("span", { className: enhanceLoading ? "tr-spin" : "" }, refreshIcon()),
-              h("span", null, enhanceLoading ? t("reviewEnhanceLoadingShort") : t("reviewEnhanceAgain"))
+              panelIcon("right")
             )
           ),
           h(
-            "div",
-            { className: "tr-rail-scroll p-2.5" },
-            noteCount === 0 && assistCount === 0 && !enhanceEntry ? h(
-              "div",
-              { className: "flex flex-col gap-2 px-3 py-8 text-[11px] leading-relaxed text-tr-tertiary" },
-              h("p", null, t("noAnnotations")),
-              h("p", { className: "tr-assist-empty-hint" }, t("assistEmpty"))
-            ) : h(
+            SidebarContent,
+            { className: cn("tr-rail-scroll p-2.5", !railOpen && "hidden") },
+            h(
               React.Fragment,
               null,
-              enhanceEntry?.status === "loading" ? h(
+              reviewLoading ? h(
                 "div",
                 {
-                  className: "tr-proof-status is-loading flex items-center gap-2 rounded-md border border-tr-border bg-tr-bg px-3 py-2.5 text-[10.5px] text-tr-tertiary"
+                  className: "tr-proof-status is-loading flex items-center gap-2 px-1 py-2 text-[10.5px] text-tr-tertiary"
                 },
                 h("span", { className: "tr-spin" }, refreshIcon()),
                 h("span", null, t("reviewEnhanceLoading"))
-              ) : enhanceEntry?.status === "error" ? h(
+              ) : reviewErrors.length > 0 ? h(
                 "div",
-                {
-                  className: "tr-proof-status is-error flex flex-col items-start gap-2 rounded-md border border-tr-danger/20 bg-tr-danger/5 px-3 py-2.5 text-[10.5px] text-tr-danger"
-                },
-                h("p", { className: "m-0 leading-relaxed" }, enhanceEntry.error || t("reviewEnhanceFailed")),
-                h(
-                  Button,
-                  { variant: "outline", size: "xs", onClick: regenerateEnhance },
-                  t("retry")
+                { className: "flex flex-col gap-2" },
+                reviewErrors.map(
+                  (task) => h(
+                    "div",
+                    {
+                      key: task.kind,
+                      className: "tr-proof-status is-error flex flex-col items-start gap-2 rounded-md border border-tr-danger/20 bg-tr-danger/5 px-3 py-2.5 text-[10.5px] text-tr-danger"
+                    },
+                    h("p", { className: "m-0 leading-relaxed" }, `${task.label}\uFF1A${task.error || t("reviewEnhanceFailed")}`),
+                    h(Button, { variant: "outline", size: "xs", onClick: () => runReview(task.kind, true) }, t("retry"))
+                  )
                 )
-              ) : enhanceEntry?.status === "done" && enhanceCount === 0 ? h(
+              ) : reviewEntry && reviewCount === 0 ? h(
                 "div",
                 {
                   className: "tr-proof-status is-clean flex items-center gap-2 rounded-md border border-tr-success/20 bg-tr-success/5 px-3 py-2.5 text-[10.5px] text-tr-success"
                 },
                 h("span", { className: "flex h-4 w-4 items-center justify-center rounded-full bg-tr-success/15 text-[10px] font-semibold", "aria-hidden": "true" }, "\u2713"),
-                h("span", null, enhanceData?.note || t("reviewEnhanceClean"))
+                h("span", null, proofreadData?.note || internalData?.note || externalData?.note || t("reviewEnhanceClean"))
               ) : null,
               reviewCards.length > 0 ? h(
                 "ol",
@@ -30851,7 +31984,7 @@
                 reviewCards.map((annotation) => {
                   const isReview = annotation.kind === "review";
                   const index2 = isReview ? locatedOrder.get(annotation.id) : null;
-                  const missing = isReview && !locatedOrder.has(annotation.id);
+                  const missing = locatedReady && !positionById.has(annotation.id);
                   return h(NoteCard, {
                     key: annotation.key,
                     annotation,
@@ -30866,12 +31999,13 @@
                     onNavigate: selectLesson,
                     onRetryAssist: annotation.kind === "assist" ? retryAssist : void 0,
                     onCopy: copyAssist,
+                    onAcceptProofread: acceptProofread,
                     copied: copiedId === annotation.id,
                     t
                   });
                 })
               ) : null,
-              enhanceData?.sourcesNote && enhanceCount > 0 ? h("p", { className: "tr-assist-note tr-sources-note" }, enhanceData.sourcesNote) : null,
+              externalData?.note && externalLinkAnnotations.length > 0 ? h("p", { className: "tr-assist-note tr-sources-note" }, externalData.note) : null,
               assistCount > 0 ? h(
                 "section",
                 { className: "tr-assist-section mt-4 border-t border-tr-border pt-3" },
@@ -30893,15 +32027,24 @@
                       onNavigate: selectLesson,
                       onRetryAssist: retryAssist,
                       onCopy: copyAssist,
+                      onAcceptProofread: acceptProofread,
                       copied: copiedId === annotation.id,
                       t
                     })
                   )
                 )
-              ) : null,
-              noteCount > 0 ? h("p", { className: "mt-4 border-t border-tr-border px-1 pt-3 text-[9.5px] leading-relaxed text-tr-tertiary" }, t("assistDisclaimer")) : null
+              ) : null
             )
-          )
+          ),
+          railOpen && (reviewCacheError || reviewGeneratedAt) ? h(
+            SidebarFooter,
+            { className: "tr-rail-foot flex-row" },
+            h(
+              "span",
+              { className: cn("tr-rail-time", reviewCacheError && "is-error") },
+              reviewCacheError ? reviewCacheError : `${t("reviewSaved")} \xB7 ${formatTime(new Date(reviewGeneratedAt))}`
+            )
+          ) : null
         ),
         selectionMenu ? h(
           "div",
@@ -30935,11 +32078,726 @@
             )
           )
         ) : null,
+        pendingLesson ? h(
+          "div",
+          { className: "tr-modal-backdrop", role: "presentation" },
+          h(
+            "div",
+            {
+              className: "tr-modal",
+              role: "dialog",
+              "aria-modal": "true",
+              "aria-labelledby": "tr-unsaved-title"
+            },
+            h("h2", { id: "tr-unsaved-title" }, t("unsavedTitle")),
+            h("p", null, t("unsavedHint")),
+            saveFailed && saveNotice ? h("p", { className: "tr-modal-error" }, saveNotice) : null,
+            h(
+              "div",
+              { className: "tr-modal-actions" },
+              h(Button, { variant: "ghost", size: "sm", onClick: () => setPendingLesson("") }, t("cancel")),
+              h(Button, { variant: "outline", size: "sm", onClick: discardPending }, t("discard")),
+              h(
+                Button,
+                { variant: "default", size: "sm", onClick: confirmPendingSave, disabled: saving },
+                saving ? t("saving") : t("saveAndSwitch")
+              )
+            )
+          )
+        ) : null,
         navOpen ? h("button", { type: "button", className: "tr-nav-backdrop", onClick: () => setNavOpen(false), "aria-label": t("close") }) : null,
         railOpen ? h("button", { type: "button", className: "tr-rail-backdrop", onClick: () => setRailOpen(false), "aria-label": t("close") }) : null
       );
     }
-    function DocumentBody({ html: html2, annotations, activeId, focusAnn, onSelect, onLocated, onPositions }) {
+    const DEFAULT_WEBSITE_URL = "https://aidevcourse.com";
+    function escapeMdxAttribute(value) {
+      return String(value).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+    function escapeMdxAlt(value) {
+      return String(value).replace(/[\[\]\n]/g, " ").replace(/\s+/g, " ").trim();
+    }
+    const SNIPPET_DEFS = [
+      {
+        key: "xembed",
+        group: "embed",
+        label: "slashXEmbed",
+        desc: "slashXEmbedDesc",
+        terms: "x twitter \u63A8\u6587 embed \u5D4C\u5165\u5361\u7247",
+        insert: '<XEmbed url="https://x.com/username/status/0000000000000000000" />'
+      },
+      {
+        key: "youtube",
+        group: "embed",
+        label: "slashYouTube",
+        desc: "slashYouTubeDesc",
+        terms: "youtube \u89C6\u9891 embed \u5D4C\u5165",
+        insert: '<YouTube url="https://www.youtube.com/watch?v=VIDEO_ID" title="\u89C6\u9891\u6807\u9898" />'
+      },
+      {
+        key: "website-preview",
+        group: "embed",
+        label: "slashWebsitePreview",
+        desc: "slashWebsitePreviewDesc",
+        terms: "website \u7F51\u7AD9 \u9884\u89C8 \u622A\u56FE embed \u5D4C\u5165",
+        insert: '<WebsitePreview url="https://example.com" title="\u9875\u9762\u6807\u9898" height="auto">\n![\u9875\u9762\u622A\u56FE](/images/example.webp)\n</WebsitePreview>'
+      },
+      {
+        key: "chat",
+        group: "chat",
+        label: "slashChat",
+        desc: "slashChatDesc",
+        terms: "chat \u5BF9\u8BDD \u804A\u5929 \u793A\u4F8B",
+        insert: '<Chat>\n  <ChatMessage from="user">\n    $0\n  </ChatMessage>\n\n  <ChatMessage from="assistant">\n    \n  </ChatMessage>\n</Chat>'
+      },
+      {
+        key: "chat-input",
+        group: "chat",
+        label: "slashChatInput",
+        desc: "slashChatInputDesc",
+        terms: "chat \u8F93\u5165\u6846 prompt \u63D0\u95EE",
+        insert: '<Chat input="$0" />'
+      },
+      {
+        key: "chat-message",
+        group: "chat",
+        label: "slashChatMessage",
+        desc: "slashChatMessageDesc",
+        terms: "chat message \u6D88\u606F \u5355\u6761",
+        insert: '<ChatMessage from="user">\n  $0\n</ChatMessage>'
+      },
+      {
+        key: "chat-thinking",
+        group: "chat",
+        label: "slashChatThinking",
+        desc: "slashChatThinkingDesc",
+        terms: "chat thinking \u601D\u8003 reasoning",
+        insert: "<ChatThinking defaultOpen>\n$0\n</ChatThinking>"
+      },
+      {
+        key: "callout",
+        group: "note",
+        label: "slashCallout",
+        desc: "slashCalloutDesc",
+        terms: "callout \u63D0\u793A \u8B66\u544A note",
+        insert: '<Callout title="\u63D0\u793A\u6807\u9898" type="info">\n$0\n</Callout>'
+      },
+      {
+        key: "key-takeaway",
+        group: "note",
+        label: "slashKeyTakeaway",
+        desc: "slashKeyTakeawayDesc",
+        terms: "takeaway \u8981\u70B9 \u603B\u7ED3 note",
+        insert: "<KeyTakeaway>\n$0\n</KeyTakeaway>"
+      },
+      {
+        key: "jimmy-note",
+        group: "note",
+        label: "slashJimmyNote",
+        desc: "slashJimmyNoteDesc",
+        terms: "jimmy note \u6279\u6CE8 \u65C1\u6CE8",
+        insert: '<JimmyNote anchor="001">\n$0\n</JimmyNote>'
+      },
+      {
+        key: "jimmy-anchor",
+        group: "note",
+        label: "slashJimmyNoteAnchor",
+        desc: "slashJimmyNoteAnchorDesc",
+        terms: "jimmy anchor \u951A\u70B9 \u6279\u6CE8",
+        insert: '<JimmyNoteAnchor id="001">$0</JimmyNoteAnchor>'
+      },
+      {
+        key: "heading",
+        group: "markdown",
+        label: "slashHeading",
+        desc: "slashHeadingDesc",
+        terms: "heading title \u6807\u9898 markdown md",
+        insert: "## $0"
+      },
+      {
+        key: "list",
+        group: "markdown",
+        label: "slashList",
+        desc: "slashListDesc",
+        terms: "list bullet \u5217\u8868 markdown md",
+        insert: "- $0"
+      },
+      {
+        key: "table",
+        group: "markdown",
+        label: "slashTable",
+        desc: "slashTableDesc",
+        terms: "table \u8868\u683C markdown md",
+        insert: "| \u5217 1 | \u5217 2 |\n| --- | --- |\n| $0 |  |"
+      },
+      {
+        key: "code",
+        group: "markdown",
+        label: "slashCode",
+        desc: "slashCodeDesc",
+        terms: "code \u4EE3\u7801 \u4EE3\u7801\u5757 markdown md",
+        insert: "```ts\n$0\n```"
+      },
+      {
+        key: "image",
+        group: "markdown",
+        label: "slashImage",
+        desc: "slashImageDesc",
+        terms: "image \u56FE\u7247 \u622A\u56FE markdown md",
+        insert: "![$0](/images/)"
+      },
+      {
+        key: "link",
+        group: "markdown",
+        label: "slashLink",
+        desc: "slashLinkDesc",
+        terms: "link \u94FE\u63A5 url markdown md",
+        insert: "[$0](https://)"
+      },
+      {
+        key: "divider",
+        group: "markdown",
+        label: "slashDivider",
+        desc: "slashDividerDesc",
+        terms: "divider \u5206\u9694\u7EBF \u6A2A\u7EBF markdown md",
+        insert: "\n---\n$0"
+      }
+    ];
+    function caretPoint(textarea, position2) {
+      if (!textarea) return { left: 0, top: 0 };
+      const style = window.getComputedStyle(textarea);
+      const mirror = document.createElement("div");
+      const copied = [
+        "boxSizing",
+        "borderTopWidth",
+        "borderRightWidth",
+        "borderBottomWidth",
+        "borderLeftWidth",
+        "paddingTop",
+        "paddingRight",
+        "paddingBottom",
+        "paddingLeft",
+        "fontStyle",
+        "fontVariant",
+        "fontWeight",
+        "fontStretch",
+        "fontSize",
+        "fontSizeAdjust",
+        "lineHeight",
+        "fontFamily",
+        "textAlign",
+        "textTransform",
+        "textIndent",
+        "textDecoration",
+        "letterSpacing",
+        "wordSpacing",
+        "tabSize",
+        "whiteSpace",
+        "wordBreak",
+        "overflowWrap"
+      ];
+      mirror.style.position = "fixed";
+      mirror.style.top = "0";
+      mirror.style.left = "0";
+      mirror.style.visibility = "hidden";
+      mirror.style.pointerEvents = "none";
+      mirror.style.zIndex = "-1";
+      for (const name2 of copied) mirror.style[name2] = style[name2];
+      mirror.style.width = `${textarea.clientWidth}px`;
+      mirror.style.whiteSpace = "pre-wrap";
+      mirror.style.overflowWrap = "break-word";
+      const before = textarea.value.slice(0, position2);
+      const after = textarea.value.slice(position2);
+      mirror.appendChild(document.createTextNode(before));
+      const marker = document.createElement("span");
+      marker.textContent = "\u200B";
+      mirror.appendChild(marker);
+      mirror.appendChild(document.createTextNode(after));
+      document.body.appendChild(mirror);
+      const mirrorRect = mirror.getBoundingClientRect();
+      const markerRect = marker.getBoundingClientRect();
+      const areaRect = textarea.getBoundingClientRect();
+      const lineHeight = parseFloat(style.lineHeight) || 20;
+      document.body.removeChild(mirror);
+      return {
+        left: areaRect.left + markerRect.left - mirrorRect.left - textarea.scrollLeft,
+        top: areaRect.top + markerRect.top - mirrorRect.top - textarea.scrollTop + lineHeight
+      };
+    }
+    function canOpenSlashMenu(value, position2) {
+      if (position2 <= 0) return true;
+      const previous4 = value[position2 - 1];
+      if (!previous4 || previous4 === "\n" || /\s/.test(previous4)) return true;
+      if (/[:/\\]/.test(previous4)) return false;
+      if (/[A-Za-z0-9_.-]/.test(previous4)) return false;
+      return true;
+    }
+    function SourceEditor({ value, onChange, t }) {
+      const areaRef = useRef(null);
+      const menuRef = useRef(null);
+      const activeItemRef = useRef(null);
+      const [menu, setMenu] = useState(null);
+      const [websiteModal, setWebsiteModal] = useState(null);
+      const websiteRangeRef = useRef(null);
+      const snippets = useMemo(
+        () => SNIPPET_DEFS.map((item) => ({ ...item, labelText: t(item.label), descText: t(item.desc) })),
+        [t]
+      );
+      const filtered = useMemo(() => {
+        const term = (menu?.query || "").trim().toLowerCase();
+        if (!term) return snippets;
+        return snippets.filter((item) => `${item.labelText} ${item.descText} ${item.terms}`.toLowerCase().includes(term));
+      }, [snippets, menu?.query]);
+      const activeIndex = menu ? Math.min(menu.index, Math.max(filtered.length - 1, 0)) : 0;
+      const stats = useMemo(() => ({ chars: Array.from(value).length, lines: value.split("\n").length }), [value]);
+      useEffect(() => {
+        if (!menu) return void 0;
+        const close = () => setMenu(null);
+        const onMouseDown = (event) => {
+          if (menuRef.current?.contains(event.target) || areaRef.current?.contains(event.target)) return;
+          close();
+        };
+        window.addEventListener("resize", close);
+        document.addEventListener("mousedown", onMouseDown);
+        return () => {
+          window.removeEventListener("resize", close);
+          document.removeEventListener("mousedown", onMouseDown);
+        };
+      }, [menu]);
+      useEffect(() => {
+        if (activeItemRef.current) activeItemRef.current.scrollIntoView({ block: "nearest" });
+      }, [activeIndex, menu?.query]);
+      const openMenu = (start2, manual = false) => {
+        const area = areaRef.current;
+        if (!area) return;
+        area.focus();
+        const point3 = caretPoint(area, start2);
+        const width = 320;
+        const left = Math.min(window.innerWidth - width - 8, Math.max(8, point3.left));
+        const top = Math.min(window.innerHeight - 348, Math.max(8, point3.top + 4));
+        setMenu({ start: start2, query: "", index: 0, manual, left, top });
+      };
+      const applyChange = (next) => {
+        onChange(next);
+      };
+      const insertText = (text5) => {
+        const area = areaRef.current;
+        if (!area) return;
+        const start2 = area.selectionStart;
+        const end = area.selectionEnd;
+        applyChange(value.slice(0, start2) + text5 + value.slice(end));
+        requestAnimationFrame(() => {
+          area.focus();
+          const position2 = start2 + text5.length;
+          area.setSelectionRange(position2, position2);
+        });
+      };
+      const readWebsiteImage = (file) => {
+        if (!file) return;
+        if (!/^image\/(png|jpeg|webp|gif)$/i.test(file.type || "")) {
+          setWebsiteModal((current2) => current2 ? { ...current2, error: t("websitePreviewBadImage") } : current2);
+          return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          setWebsiteModal((current2) => current2 ? { ...current2, error: t("websitePreviewImageTooLarge") } : current2);
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          setWebsiteModal(
+            (current2) => current2 ? {
+              ...current2,
+              image: { dataUrl: String(reader.result || ""), name: file.name || "pasted-image" },
+              error: ""
+            } : current2
+          );
+        };
+        reader.onerror = () => {
+          setWebsiteModal((current2) => current2 ? { ...current2, error: t("websitePreviewBadImage") } : current2);
+        };
+        reader.readAsDataURL(file);
+      };
+      const handleWebsitePaste = (event) => {
+        const items = event.clipboardData?.items;
+        if (!items) return;
+        for (const item of items) {
+          if (!item.type?.startsWith("image/")) continue;
+          const file = item.getAsFile();
+          if (!file) continue;
+          event.preventDefault();
+          readWebsiteImage(file);
+          return;
+        }
+      };
+      const handleWebsiteDrop = (event) => {
+        event.preventDefault();
+        const file = event.dataTransfer?.files?.[0];
+        if (file) readWebsiteImage(file);
+      };
+      const closeWebsiteModal = () => {
+        if (websiteModal?.busy) return;
+        setWebsiteModal(null);
+      };
+      const confirmWebsite = async () => {
+        if (!websiteModal || websiteModal.busy) return;
+        const raw = websiteModal.url.trim();
+        let parsed;
+        if (!raw) {
+          parsed = new URL(DEFAULT_WEBSITE_URL);
+        } else {
+          const withScheme = /^[a-z][a-z0-9+.-]*:\/\//i.test(raw) ? raw : `https://${raw}`;
+          try {
+            parsed = new URL(withScheme);
+          } catch {
+            setWebsiteModal((current2) => current2 ? { ...current2, error: t("websitePreviewInvalidUrl") } : current2);
+            return;
+          }
+          if (parsed.protocol === "http:") {
+            parsed = new URL(`https://${withScheme.replace(/^http:\/\//i, "")}`);
+          }
+          if (parsed.protocol !== "https:" || !parsed.hostname || parsed.username || parsed.password) {
+            setWebsiteModal((current2) => current2 ? { ...current2, error: t("websitePreviewInvalidUrl") } : current2);
+            return;
+          }
+        }
+        const url = parsed.toString();
+        const title = websiteModal.title.trim() || parsed.hostname;
+        const range = websiteRangeRef.current || {
+          start: areaRef.current?.selectionStart || 0,
+          end: areaRef.current?.selectionStart || 0
+        };
+        setWebsiteModal((current2) => current2 ? { ...current2, busy: true, error: "" } : current2);
+        try {
+          let path2 = "";
+          if (websiteModal.image) {
+            const response = await fetch("/api/tutorial-review/website-preview", {
+              method: "POST",
+              credentials: "same-origin",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ action: "upload", dataUrl: websiteModal.image.dataUrl, filename: websiteModal.image.name })
+            });
+            const payload = await response.json().catch(() => null);
+            if (!response.ok) throw new Error(payload?.message || `HTTP ${response.status}`);
+            path2 = payload?.path || "";
+          } else {
+            const response = await fetch("/api/tutorial-review/website-preview", {
+              method: "POST",
+              credentials: "same-origin",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({ action: "screenshot", url })
+            });
+            const payload = await response.json().catch(() => null);
+            if (!response.ok) throw new Error(payload?.message || `HTTP ${response.status}`);
+            path2 = payload?.path || "";
+          }
+          if (!path2) throw new Error(t("websitePreviewFailed"));
+          const block = `<WebsitePreview url="${escapeMdxAttribute(url)}" title="${escapeMdxAttribute(title)}" height="auto">
+![${escapeMdxAlt(title)} \u9875\u9762\u622A\u56FE](${path2})
+</WebsitePreview>`;
+          onChange(value.slice(0, range.start) + block + value.slice(range.end));
+          setWebsiteModal(null);
+          requestAnimationFrame(() => {
+            const area = areaRef.current;
+            if (!area) return;
+            area.focus();
+            const position2 = range.start + block.length;
+            area.setSelectionRange(position2, position2);
+          });
+        } catch (error) {
+          setWebsiteModal(
+            (current2) => current2 ? { ...current2, busy: false, error: error instanceof Error ? error.message : t("websitePreviewFailed") } : current2
+          );
+        }
+      };
+      const insertSnippet = (item) => {
+        if (!item || !menu) {
+          setMenu(null);
+          return;
+        }
+        if (item.key === "website-preview") {
+          const area2 = areaRef.current;
+          const start3 = menu.start;
+          websiteRangeRef.current = { start: start3, end: Math.max(area2?.selectionStart ?? start3, start3) };
+          setMenu(null);
+          setWebsiteModal({ url: "", title: "", image: null, busy: false, error: "" });
+          return;
+        }
+        const area = areaRef.current;
+        if (!area) return;
+        const start2 = menu.start;
+        const end = Math.max(area.selectionStart, start2);
+        const marker = item.insert.indexOf("$0");
+        const clean = item.insert.replace(/\$0/g, "");
+        applyChange(value.slice(0, start2) + clean + value.slice(end));
+        setMenu(null);
+        requestAnimationFrame(() => {
+          area.focus();
+          const position2 = start2 + (marker >= 0 ? marker : clean.length);
+          area.setSelectionRange(position2, position2);
+        });
+      };
+      const handleChange = (event) => {
+        const area = event.currentTarget;
+        const next = area.value;
+        const caret = area.selectionStart;
+        applyChange(next);
+        if (!menu && next.length === value.length + 1 && (next[caret - 1] === "/" || next[caret - 1] === "\u3001")) {
+          const at2 = caret - 1;
+          const isInsertion = next.slice(0, at2) === value.slice(0, at2) && next.slice(caret) === value.slice(at2);
+          if (isInsertion && canOpenSlashMenu(next, at2)) {
+            openMenu(at2, false);
+            return;
+          }
+        }
+        if (!menu) return;
+        if (menu.manual) {
+          setMenu(null);
+          return;
+        }
+        const raw = next.slice(menu.start, caret);
+        if (caret <= menu.start || !raw.startsWith("/") && !raw.startsWith("\u3001") || /[\s\n]/.test(raw.slice(1))) {
+          setMenu(null);
+          return;
+        }
+        setMenu((current2) => current2 ? { ...current2, query: raw.slice(1), index: 0 } : current2);
+      };
+      const handleKeyDown = (event) => {
+        if (event.isComposing || event.keyCode === 229) return;
+        if (menu) {
+          if (event.key === "ArrowDown") {
+            event.preventDefault();
+            setMenu(
+              (current2) => current2 ? { ...current2, index: filtered.length ? (current2.index + 1) % filtered.length : 0 } : current2
+            );
+            return;
+          }
+          if (event.key === "ArrowUp") {
+            event.preventDefault();
+            setMenu(
+              (current2) => current2 ? { ...current2, index: filtered.length ? (current2.index - 1 + filtered.length) % filtered.length : 0 } : current2
+            );
+            return;
+          }
+          if (event.key === "Enter" || event.key === "Tab") {
+            event.preventDefault();
+            if (filtered[activeIndex]) insertSnippet(filtered[activeIndex]);
+            else setMenu(null);
+            return;
+          }
+          if (event.key === "Escape") {
+            event.preventDefault();
+            setMenu(null);
+            return;
+          }
+        }
+        if (event.key === "Tab") {
+          event.preventDefault();
+          insertText("  ");
+          return;
+        }
+      };
+      return h(
+        "div",
+        { className: "tr-editor" },
+        h(
+          "div",
+          { className: "tr-editor-body" },
+          h("textarea", {
+            ref: areaRef,
+            className: "tr-editor-area",
+            value,
+            onChange: handleChange,
+            onKeyDown: handleKeyDown,
+            onClick: () => setMenu(null),
+            onWheel: () => setMenu(null),
+            spellCheck: false,
+            role: "combobox",
+            "aria-autocomplete": "list",
+            "aria-expanded": Boolean(menu),
+            "aria-controls": menu ? "tr-slash-listbox" : void 0,
+            "aria-activedescendant": menu && filtered[activeIndex] ? `tr-slash-option-${filtered[activeIndex].key}` : void 0,
+            "aria-label": t("editor")
+          })
+        ),
+        h(
+          "div",
+          { className: "tr-editor-foot" },
+          h("span", { className: "tr-editor-tip" }, t("editorHint")),
+          h("span", { className: "tr-editor-stats" }, t("editorStats", { chars: stats.chars, lines: stats.lines }))
+        ),
+        menu ? h(
+          "div",
+          {
+            ref: menuRef,
+            id: "tr-slash-listbox",
+            className: "tr-slash-menu",
+            style: { left: menu.left, top: menu.top },
+            role: "listbox",
+            "aria-label": t("slashTitle")
+          },
+          h(
+            "div",
+            { className: "tr-slash-head" },
+            h("span", { className: "tr-slash-title" }, t("slashTitle")),
+            h("span", { className: "tr-slash-keys" }, "\u2191\u2193 \xB7 Enter")
+          ),
+          filtered.length === 0 ? h("div", { className: "tr-slash-empty" }, t("slashEmpty")) : filtered.map((item, index2) => {
+            const previousGroup = index2 > 0 ? filtered[index2 - 1].group : "";
+            const showGroup = !menu.query.trim() && item.group !== previousGroup;
+            return h(
+              React.Fragment,
+              { key: item.key },
+              showGroup ? h("div", { className: "tr-slash-group" }, t(`slashGroup_${item.group}`)) : null,
+              h(
+                "button",
+                {
+                  ref: index2 === activeIndex ? activeItemRef : void 0,
+                  id: `tr-slash-option-${item.key}`,
+                  type: "button",
+                  role: "option",
+                  "aria-selected": index2 === activeIndex,
+                  className: cn("tr-slash-item", index2 === activeIndex && "is-active"),
+                  onMouseDown: (event) => event.preventDefault(),
+                  onMouseEnter: () => setMenu((current2) => current2 ? { ...current2, index: index2 } : current2),
+                  onClick: () => insertSnippet(item)
+                },
+                h("span", { className: "tr-slash-item-label" }, item.labelText),
+                h("span", { className: "tr-slash-item-desc" }, item.descText)
+              )
+            );
+          })
+        ) : null,
+        websiteModal ? h(
+          "div",
+          {
+            className: "tr-modal-backdrop",
+            role: "presentation",
+            onMouseDown: (event) => {
+              if (event.target === event.currentTarget) closeWebsiteModal();
+            }
+          },
+          h(
+            "div",
+            {
+              className: "tr-modal tr-website-modal",
+              role: "dialog",
+              "aria-modal": "true",
+              "aria-labelledby": "tr-website-modal-title",
+              onPaste: handleWebsitePaste,
+              onKeyDown: (event) => {
+                if (event.key === "Escape") {
+                  event.preventDefault();
+                  closeWebsiteModal();
+                }
+              }
+            },
+            h("h2", { id: "tr-website-modal-title" }, t("websitePreviewTitle")),
+            h("p", { className: "tr-website-help" }, t("websitePreviewHelp")),
+            h(
+              "label",
+              { className: "tr-website-field" },
+              h("span", null, t("websitePreviewUrl")),
+              h(Input, {
+                value: websiteModal.url,
+                onChange: (event) => setWebsiteModal((current2) => current2 ? { ...current2, url: event.target.value } : current2),
+                placeholder: t("websitePreviewUrlPlaceholder"),
+                autoFocus: true,
+                disabled: websiteModal.busy,
+                onKeyDown: (event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    confirmWebsite();
+                  }
+                }
+              })
+            ),
+            h(
+              "label",
+              { className: "tr-website-field" },
+              h("span", null, t("websitePreviewName")),
+              h(Input, {
+                value: websiteModal.title,
+                onChange: (event) => setWebsiteModal((current2) => current2 ? { ...current2, title: event.target.value } : current2),
+                placeholder: t("websitePreviewNamePlaceholder"),
+                disabled: websiteModal.busy,
+                onKeyDown: (event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    confirmWebsite();
+                  }
+                }
+              })
+            ),
+            h(
+              "div",
+              { className: "tr-website-image" },
+              h(
+                "div",
+                { className: "tr-website-image-head" },
+                h("span", null, t("websitePreviewImage")),
+                websiteModal.image ? h(
+                  Button,
+                  {
+                    variant: "ghost",
+                    size: "xs",
+                    onClick: () => setWebsiteModal((current2) => current2 ? { ...current2, image: null } : current2),
+                    disabled: websiteModal.busy
+                  },
+                  t("websitePreviewRemove")
+                ) : null
+              ),
+              websiteModal.image ? h("img", { className: "tr-website-shot", src: websiteModal.image.dataUrl, alt: "" }) : h(
+                "label",
+                {
+                  className: "tr-website-drop",
+                  onDragOver: (event) => event.preventDefault(),
+                  onDrop: handleWebsiteDrop
+                },
+                h("input", {
+                  type: "file",
+                  accept: "image/png,image/jpeg,image/webp,image/gif",
+                  className: "tr-sr-only",
+                  onChange: (event) => {
+                    const file = event.target.files?.[0];
+                    if (file) readWebsiteImage(file);
+                    event.target.value = "";
+                  }
+                }),
+                h("span", { className: "tr-website-drop-title" }, t("websitePreviewDrop")),
+                h("span", { className: "tr-website-drop-hint" }, t("websitePreviewPaste")),
+                h("span", { className: "tr-website-drop-hint" }, t("websitePreviewAuto"))
+              )
+            ),
+            websiteModal.busy ? h(
+              "p",
+              { className: "tr-website-busy" },
+              h("span", { className: "tr-spin" }, refreshIcon()),
+              h("span", null, websiteModal.image ? t("websitePreviewUploading") : t("websitePreviewCapturing"))
+            ) : null,
+            websiteModal.error ? h("p", { className: "tr-modal-error" }, websiteModal.error) : null,
+            h(
+              "div",
+              { className: "tr-modal-actions" },
+              h(
+                Button,
+                { variant: "ghost", size: "sm", onClick: closeWebsiteModal, disabled: websiteModal.busy },
+                t("websitePreviewCancel")
+              ),
+              h(
+                Button,
+                { variant: "default", size: "sm", onClick: confirmWebsite, disabled: websiteModal.busy },
+                websiteModal.busy ? websiteModal.image ? t("websitePreviewUploading") : t("websitePreviewCapturing") : t("websitePreviewConfirm")
+              )
+            )
+          )
+        ) : null,
+        h(
+          "span",
+          { className: "tr-sr-only", "aria-live": "polite" },
+          menu ? t("slashResults", { count: filtered.length }) : ""
+        )
+      );
+    }
+    function DocumentBody({ html: html2, annotations, activeId, focusAnn, onSelect, onLocated, onPositions, labels }) {
       const containerRef = useRef(null);
       const flashTimer = useRef(null);
       const onSelectRef = useRef(onSelect);
@@ -30947,11 +32805,11 @@
       useLayoutEffect(() => {
         const container = containerRef.current;
         if (!container) return void 0;
-        const cleanup = highlightAnnotations(container, annotations);
+        const cleanup = highlightAnnotations(container, annotations, labels);
         onLocated(readLocatedAnnotations(container, annotations));
         onPositions(readAnnotationPositions(container));
         return cleanup;
-      }, [html2, annotations, onLocated, onPositions]);
+      }, [html2, annotations, onLocated, onPositions, labels]);
       useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
@@ -31005,98 +32863,113 @@
       return h("div", { className: "tr-doc-body", ref: containerRef, dangerouslySetInnerHTML: { __html: html2 } });
     }
     const MemoDocumentBody = React.memo(DocumentBody);
-    function NoteCard({ annotation, index: index2, active, missing, onSelect, onRef, t, onNavigate, onRetryAssist, onCopy, copied }) {
+    function NoteCard({ annotation, index: index2, active, missing, onSelect, onRef, t, onNavigate, onRetryAssist, onCopy, onAcceptProofread, copied }) {
       const assist = annotation.kind === "assist";
       const proof = annotation.kind === "proofread";
       const link2 = annotation.kind === "link";
       const proofType = proof ? annotation.issueType === "typo" ? "typo" : "grammar" : "";
       const linkType = link2 ? annotation.linkType === "external" ? "external" : "internal" : "";
       const badgeVariant = proof ? proofType === "typo" ? "danger" : "warn" : link2 ? linkType === "external" ? "accent" : "success" : assist ? "accent" : "muted";
-      const badgeText = proof ? proofType === "typo" ? "\u9519" : "\u53E5" : link2 ? linkType === "external" ? "\u5916" : "\u5185" : assist ? "\u2726" : index2 ?? "\xB7";
+      const badgeText = proof ? proofType === "typo" ? t("badgeTypo") : t("badgeGrammar") : link2 ? linkType === "external" ? t("badgeExternal") : t("badgeInternal") : assist ? "\u2726" : index2 ?? "\xB7";
       return h(
         "li",
-        {
-          ref: onRef,
-          onClick: () => onSelect(annotation.id),
-          onKeyDown: assist || proof || link2 ? void 0 : (event) => {
-            if (event.target !== event.currentTarget) return;
-            if (event.key === "Enter" || event.key === " ") {
-              event.preventDefault();
-              onSelect(annotation.id);
-            }
-          },
-          role: assist || proof || link2 ? void 0 : "button",
-          tabIndex: assist || proof || link2 ? void 0 : 0,
-          className: cn(
-            "tr-note group relative flex min-w-0 cursor-pointer flex-col rounded-card border border-tr-border bg-tr-bg p-3 text-tr-fg shadow-sm transition-colors",
-            "hover:border-tr-border-strong",
-            active && "border-tr-border-strong ring-2 ring-tr-accent/10",
-            missing && "opacity-80",
-            assist && "tr-note-assist",
-            proof && `tr-note-proof tr-proof-${proofType}`,
-            link2 && `tr-note-link tr-link-${linkType}`
-          )
-        },
+        { ref: onRef, className: "tr-note-item" },
         h(
-          "div",
-          { className: "flex items-center gap-2" },
-          h(
-            Badge,
-            {
-              variant: badgeVariant,
-              className: "h-5 min-w-5 justify-center rounded-md px-1 text-[9px] font-semibold"
-            },
-            badgeText
-          ),
-          h("span", { className: "tr-note-cat min-w-0 flex-1 truncate text-[10px] font-medium text-tr-secondary" }, annotation.category),
-          assist || proof || link2 ? h(Badge, { variant: "outline", className: "ml-auto px-1.5 py-0 text-[8px]" }, "AI") : null,
-          assist && annotation.status === "loading" ? h("span", { className: "text-[9px] text-tr-tertiary" }, t("generatingShort")) : null,
-          missing ? h(Badge, { variant: "outline", className: "px-1.5 py-0 text-[8px]" }, t("unlocated")) : null
-        ),
-        proof ? h(ProofreadDiff, { annotation }) : h(
-          "blockquote",
+          Card,
           {
-            className: "tr-note-quote mb-2 mt-2 overflow-hidden rounded-md border-l-2 border-tr-border-strong bg-tr-muted/60 px-2.5 py-2 text-[11px] leading-relaxed text-tr-secondary [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]"
+            onClick: () => onSelect(annotation.id),
+            onKeyDown: assist || proof || link2 ? void 0 : (event) => {
+              if (event.target !== event.currentTarget) return;
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onSelect(annotation.id);
+              }
+            },
+            role: assist || proof || link2 ? void 0 : "button",
+            tabIndex: assist || proof || link2 ? void 0 : 0,
+            className: cn(
+              "tr-note group relative min-w-0 cursor-pointer rounded-none p-3",
+              active && "border-tr-border-strong ring-2 ring-tr-accent/10",
+              missing && "opacity-80",
+              assist && "tr-note-assist",
+              proof && `tr-note-proof tr-proof-${proofType}`,
+              link2 && `tr-note-link tr-link-${linkType}`
+            )
           },
-          `\u201C${annotation.quote}\u201D`
-        ),
-        proof ? h(ProofreadCardBody, { annotation, t, onCopy, copied }) : link2 ? h(LinkCardBody, { annotation, t, onNavigate, onCopy, copied }) : assist ? h(AssistCardBody, {
-          annotation,
-          t,
-          onNavigate,
-          onRetry: onRetryAssist,
-          onCopy,
-          copied
-        }) : h("p", { className: "m-0 text-[12px] leading-relaxed text-tr-fg" }, annotation.comment)
+          h(
+            "div",
+            { className: "flex items-center gap-2" },
+            h(
+              Badge,
+              {
+                variant: badgeVariant,
+                className: "h-5 min-w-5 justify-center rounded-md px-1 text-[9px] font-semibold"
+              },
+              badgeText
+            ),
+            h("span", { className: "tr-note-cat min-w-0 flex-1 truncate text-[10px] font-medium text-tr-secondary" }, annotation.category),
+            assist && annotation.status === "loading" ? h("span", { className: "text-[9px] text-tr-tertiary" }, t("generatingShort")) : null,
+            missing ? h(Badge, { variant: "outline", className: "px-1.5 py-0 text-[8px]" }, t("unlocated")) : null
+          ),
+          proof ? h(ProofreadDiff, { annotation, t }) : h(
+            "blockquote",
+            {
+              className: "tr-note-quote mb-2 mt-2 overflow-hidden rounded-md border-l-2 border-tr-border-strong bg-tr-muted/60 px-2.5 py-2 text-[11px] leading-relaxed text-tr-secondary [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]"
+            },
+            `\u201C${annotation.quote}\u201D`
+          ),
+          proof ? h(ProofreadCardBody, { annotation, t, onCopy, onAccept: onAcceptProofread, copied }) : link2 ? h(LinkCardBody, { annotation, t, onNavigate, onCopy, copied }) : assist ? h(AssistCardBody, {
+            annotation,
+            t,
+            onNavigate,
+            onRetry: onRetryAssist,
+            onCopy,
+            copied
+          }) : h("p", { className: "m-0 text-[12px] leading-relaxed text-tr-fg" }, annotation.comment)
+        )
       );
     }
-    function ProofreadDiff({ annotation }) {
+    function ProofreadDiff({ annotation, t }) {
       const parts = diffText(annotation.quote, annotation.suggestion);
       return h(
         "div",
         {
           className: "tr-proof-diff mb-2 mt-2 rounded-md border-l-2 border-tr-border-strong bg-tr-muted/60 px-2.5 py-2 text-[11px] leading-relaxed text-tr-fg",
           role: "group",
-          "aria-label": "\u539F\u6587\u4E0E\u5EFA\u8BAE\u7684\u5DEE\u5F02"
+          "aria-label": t("diffAria")
         },
         parts.map(
           (part, index2) => part.type === "del" ? h("del", { key: index2, className: "tr-diff-del rounded-sm bg-tr-danger/10 px-0.5 text-tr-danger line-through decoration-1" }, part.text) : part.type === "ins" ? h("ins", { key: index2, className: "tr-diff-add rounded-sm bg-tr-success/10 px-0.5 text-tr-success no-underline" }, part.text) : h(React.Fragment, { key: index2 }, part.text)
         )
       );
     }
-    function ProofreadCardBody({ annotation, t, onCopy, copied }) {
+    function ProofreadCardBody({ annotation, t, onCopy, onAccept, copied }) {
       return h(
         "div",
         { className: "tr-proof-body" },
         h("p", { className: "m-0 text-[10.5px] leading-relaxed text-tr-secondary" }, annotation.reason),
         h(
           "div",
-          { className: "flex justify-end pt-2" },
+          { className: "flex items-center justify-end gap-2 pt-2" },
           h(
             Button,
             {
               variant: "ghost",
               size: "xs",
+              className: "tr-accept-btn border-0 bg-transparent text-tr-accent shadow-none hover:bg-transparent hover:underline focus-visible:outline-none focus-visible:ring-0",
+              onClick: (event) => {
+                event.stopPropagation();
+                onAccept?.(annotation);
+              }
+            },
+            t("accept")
+          ),
+          h(
+            Button,
+            {
+              variant: "ghost",
+              size: "xs",
+              className: "tr-copy-btn border-0 bg-transparent text-tr-secondary shadow-none hover:bg-transparent hover:text-tr-accent focus-visible:outline-none focus-visible:ring-0",
               onClick: (event) => {
                 event.stopPropagation();
                 onCopy?.(annotation);
@@ -31247,6 +33120,7 @@
             {
               variant: "ghost",
               size: "xs",
+              className: "tr-copy-btn border-0 bg-transparent text-tr-secondary shadow-none hover:bg-transparent hover:text-tr-accent focus-visible:outline-none focus-visible:ring-0",
               onClick: (event) => {
                 event.stopPropagation();
                 onCopy?.(annotation);
@@ -31300,6 +33174,7 @@
             {
               variant: "ghost",
               size: "xs",
+              className: "tr-copy-btn border-0 bg-transparent text-tr-secondary shadow-none hover:bg-transparent hover:text-tr-accent focus-visible:outline-none focus-visible:ring-0",
               onClick: (event) => {
                 event.stopPropagation();
                 onCopy?.(annotation);
@@ -31385,6 +33260,47 @@
         { width: 16, height: 16 }
       );
     }
+    function loadingIcon() {
+      return svg(
+        h("circle", { cx: 12, cy: 12, r: 8, opacity: 0.25 }),
+        h("path", { d: "M20 12a8 8 0 0 0-8-8" }),
+        { width: 15, height: 15 }
+      );
+    }
+    function panelIcon(side) {
+      return svg(
+        h("rect", { x: 3.5, y: 4.5, width: 17, height: 15, rx: 2.5 }),
+        h("path", { d: side === "left" ? "M9.5 4.5v15" : "M14.5 4.5v15" }),
+        { width: 15, height: 15 }
+      );
+    }
+    function internalLinkIcon() {
+      return svg(
+        h("path", { d: "M9.2 14.8 14.8 9.2" }),
+        h("path", { d: "M7.1 17.9 5.6 19.4a3.4 3.4 0 0 1-4.8-4.8l3.4-3.4a3.4 3.4 0 0 1 4.8 0" }),
+        h("path", { d: "M16.9 6.1l1.5-1.5a3.4 3.4 0 0 1 4.8 4.8l-3.4 3.4a3.4 3.4 0 0 1-4.8 0" }),
+        { width: 15, height: 15 }
+      );
+    }
+    function externalLinkIcon() {
+      return svg(
+        h("circle", { cx: 12, cy: 12, r: 8.5 }),
+        h("path", { d: "M3.8 12h16.4M12 3.5c2.4 2.4 3.6 5.3 3.6 8.5s-1.2 6.1-3.6 8.5c-2.4-2.4-3.6-5.3-3.6-8.5S9.6 5.9 12 3.5Z" }),
+        { width: 15, height: 15 }
+      );
+    }
+    function saveIcon() {
+      return svg(
+        h("path", { d: "M5 3.75h11l3.25 3.25V20.25H5a1.5 1.5 0 0 1-1.5-1.5V5.25a1.5 1.5 0 0 1 1.5-1.5Z" }),
+        h("path", { d: "M8 3.9v4.6h6.2V3.9M8 20.1v-6.2h8v6.2" }),
+        { width: 14, height: 14 }
+      );
+    }
+    function reviewIcon(kind) {
+      if (kind === "internal") return internalLinkIcon();
+      if (kind === "external") return externalLinkIcon();
+      return proofIcon();
+    }
     function arrowIcon(direction) {
       return svg(
         h("path", { d: direction === "left" ? "M19 12H5m6-6-6 6 6 6" : "M5 12h14m-6-6 6 6-6 6" }),
@@ -31445,7 +33361,13 @@
       }
     };
   }
-  function readEnhanceCache(key, mtime) {
+  function reviewCacheKey(lessonId, kind) {
+    return `${REVIEW_CACHE_PREFIX}${lessonId}:${kind}`;
+  }
+  function draftCacheKey(lessonId) {
+    return `${DRAFT_PREFIX}${lessonId}`;
+  }
+  function readReviewCache(key, mtime) {
     try {
       const raw = localStorage.getItem(key);
       if (!raw) return null;
@@ -31456,9 +33378,57 @@
       return null;
     }
   }
-  function countEnhanceData(data2) {
+  function countReviewData(kind, data2) {
     if (!data2) return 0;
-    return (data2.issues?.length || 0) + (data2.internalLinks?.length || 0) + (data2.externalLinks?.length || 0);
+    return kind === "proofread" ? data2.issues?.length || 0 : data2.links?.length || 0;
+  }
+  function countReviewEntry(entry) {
+    if (!entry) return 0;
+    return REVIEW_KINDS.reduce((sum, kind) => sum + countReviewData(kind, entry[kind]?.data), 0);
+  }
+  function mediaMatches(query) {
+    return typeof window !== "undefined" && window.matchMedia(query).matches;
+  }
+  function readSidebarPreference(key, fallback) {
+    try {
+      const value = localStorage.getItem(key);
+      if (value === "1") return true;
+      if (value === "0") return false;
+    } catch {
+    }
+    return fallback;
+  }
+  function assistCacheKey(lessonId) {
+    return `${ASSIST_CACHE_PREFIX}${lessonId}`;
+  }
+  function readSplitRatio() {
+    try {
+      const value = Number(localStorage.getItem(SPLIT_KEY));
+      if (Number.isFinite(value)) return Math.min(0.8, Math.max(0.2, value));
+    } catch {
+    }
+    return 0.5;
+  }
+  function parseFrontmatterText(source) {
+    const text5 = String(source || "").replace(/^\uFEFF/, "");
+    if (!text5.startsWith("---")) return {};
+    const end = text5.indexOf("\n---", 3);
+    if (end === -1) return {};
+    const block = text5.slice(3, end).replace(/^\r?\n/, "");
+    const meta = {};
+    for (const line of block.split(/\r?\n/)) {
+      const match = /^([A-Za-z][\w-]*):\s*(.*)$/.exec(line);
+      if (!match) continue;
+      let value = match[2].trim();
+      if (value.startsWith('"') && value.endsWith('"') || value.startsWith("'") && value.endsWith("'")) {
+        value = value.slice(1, -1);
+      }
+      if (value) meta[match[1]] = value;
+    }
+    return meta;
+  }
+  function isCourseIndexLesson(lessonId) {
+    return typeof lessonId === "string" && /(^|\/)index$/.test(lessonId);
   }
   function flattenLessons(manifest) {
     if (!manifest || !Array.isArray(manifest.courses)) return [];
@@ -31466,6 +33436,7 @@
     for (const course of manifest.courses) {
       for (const section of course.sections || []) {
         for (const lesson of section.lessons || []) {
+          if (isCourseIndexLesson(lesson.lessonId)) continue;
           out.push({ ...lesson, courseId: course.id, courseTitle: course.title, sectionTitle: section.title });
         }
       }
@@ -31531,6 +33502,107 @@
     if (b2.length - suffix > prefix) parts.push({ type: "ins", text: b2.slice(prefix, b2.length - suffix).join("") });
     if (suffix > 0) parts.push({ type: "same", text: a.slice(a.length - suffix).join("") });
     return parts;
+  }
+  function projectPlainText(source) {
+    const value = String(source || "").replace(/^\uFEFF/, "");
+    let index2 = 0;
+    if (value.startsWith("---")) {
+      const end2 = value.indexOf("\n---", 3);
+      if (end2 !== -1) {
+        const lineEnd = value.indexOf("\n", end2 + 4);
+        index2 = lineEnd === -1 ? value.length : lineEnd + 1;
+      }
+    }
+    const chars = [];
+    const map3 = [];
+    const push2 = (ch, at2) => {
+      chars.push(ch);
+      map3.push(at2);
+    };
+    let lineStart = true;
+    while (index2 < value.length) {
+      const ch = value[index2];
+      if (lineStart && value.startsWith("```", index2)) {
+        const close = value.indexOf("\n```", index2 + 3);
+        if (close === -1) break;
+        const next = value.indexOf("\n", close + 4);
+        index2 = next === -1 ? value.length : next + 1;
+        lineStart = true;
+        continue;
+      }
+      if (ch === "`") {
+        const close = value.indexOf("`", index2 + 1);
+        index2 = close === -1 ? value.length : close + 1;
+        continue;
+      }
+      if (ch === "<" && /[A-Za-z/]/.test(value[index2 + 1] || "")) {
+        const close = value.indexOf(">", index2 + 1);
+        index2 = close === -1 ? value.length : close + 1;
+        continue;
+      }
+      if (ch === "]" && value[index2 + 1] === "(") {
+        let depth = 0;
+        let cursor = index2 + 1;
+        for (; cursor < value.length; cursor += 1) {
+          if (value[cursor] === "(") depth += 1;
+          else if (value[cursor] === ")" && --depth === 0) {
+            cursor += 1;
+            break;
+          }
+        }
+        index2 = cursor;
+        continue;
+      }
+      if (ch === "(" && /^(?:https?:\/\/|mailto:)/i.test(value.slice(index2 + 1, index2 + 12))) {
+        const close = value.indexOf(")", index2 + 1);
+        index2 = close === -1 ? value.length : close + 1;
+        continue;
+      }
+      if (lineStart) {
+        if ((ch === "-" || ch === "*" || ch === "+") && /\s/.test(value[index2 + 1] || "")) {
+          index2 += 1;
+          continue;
+        }
+        const marker = /^\d+\.\s/.exec(value.slice(index2));
+        if (marker) {
+          index2 += marker[0].length;
+          continue;
+        }
+      }
+      if ("#*_~[]()!>|".includes(ch)) {
+        lineStart = false;
+        index2 += 1;
+        continue;
+      }
+      if (/\s/.test(ch)) {
+        if (chars.length > 0 && chars[chars.length - 1] !== " ") push2(" ", index2);
+        lineStart = ch === "\n";
+        index2 += 1;
+        continue;
+      }
+      push2(ch, index2);
+      lineStart = false;
+      index2 += 1;
+    }
+    let start2 = 0;
+    let end = chars.length;
+    while (start2 < end && chars[start2] === " ") start2 += 1;
+    while (end > start2 && chars[end - 1] === " ") end -= 1;
+    return { text: chars.slice(start2, end).join(""), map: map3.slice(start2, end) };
+  }
+  function findQuoteSourceRange(source, quote) {
+    const raw = String(quote || "").trim();
+    if (!raw) return null;
+    const needle = raw.replace(/\s+/g, " ");
+    const projection = projectPlainText(source);
+    const at2 = projection.text.indexOf(needle);
+    if (at2 >= 0) {
+      const start2 = projection.map[at2];
+      const end = projection.map[at2 + needle.length - 1];
+      if (start2 != null && end != null) return { start: start2, end: end + 1 };
+    }
+    const exact = source.indexOf(raw);
+    return exact >= 0 ? { start: exact, end: exact + raw.length } : null;
   }
   function assistCopyText(annotation, t) {
     if (annotation.kind === "proofread") {
@@ -31655,6 +33727,7 @@ ${link2.reason}`).join("\n\n");
   --tr-warn: var(--dsw-alias-state-warn-primary, #d97706);
   --tr-success: var(--dsw-alias-state-success-primary, #1a7f4b);
   --tr-error: var(--dsw-alias-state-error-primary, #c0392b);
+  --tr-danger: var(--tr-error);
   --tr-highlight: color-mix(in srgb, var(--tr-warn) 20%, transparent);
   --tr-highlight-active: color-mix(in srgb, var(--tr-warn) 34%, transparent);
   --tr-radius: var(--dsw-radius-lg, 12px);
@@ -31662,18 +33735,28 @@ ${link2.reason}`).join("\n\n");
   --tr-font: var(--dsw-font-base-16-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif);
   --tr-font-doc: var(--dsw-font-markdown-base-font-family, var(--tr-font));
   --tr-font-mono: var(--dsw-font-markdown-code-font-family, ui-monospace, SFMono-Regular, Menlo, monospace);
+  --tr-left-width: minmax(220px, 264px);
+  --tr-right-width: minmax(292px, 348px);
   height: 100%;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(220px, 264px) minmax(0, 1fr) minmax(292px, 348px);
+  grid-template-columns: var(--tr-left-width) minmax(0, 1fr) var(--tr-right-width);
   color: var(--tr-text);
   background: var(--tr-bg);
   font-family: var(--tr-font);
   overflow: hidden;
   position: relative;
 }
+.tr-root.is-left-collapsed { --tr-left-width: 0px; }
+.tr-root.is-right-collapsed { --tr-right-width: 0px; }
+.tr-root button:not(:disabled) { cursor: pointer; }
+.tr-root,
+.tr-root *,
+.tr-root *::before,
+.tr-root *::after { box-sizing: border-box; }
 .tr-nav {
   display: flex;
+  grid-column: 1;
   flex-direction: column;
   min-width: 0;
   min-height: 0;
@@ -31728,6 +33811,7 @@ ${link2.reason}`).join("\n\n");
 }
 .tr-nav-scroll { flex: 1; min-height: 0; overflow: auto; padding: 2px 8px 16px; }
 .tr-course { margin-bottom: 6px; }
+
 .tr-course-head {
   width: 100%;
   display: flex;
@@ -31816,7 +33900,7 @@ ${link2.reason}`).join("\n\n");
   flex-wrap: wrap;
 }
 .tr-foot-time { color: var(--tr-text-3); }
-.tr-main { min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--tr-bg); }
+.tr-main { grid-column: 2; min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--tr-bg); }
 .tr-notice {
   flex: none;
   display: flex;
@@ -31830,24 +33914,73 @@ ${link2.reason}`).join("\n\n");
 }
 .tr-notice-detail { color: var(--tr-text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
 .tr-notice-close { border: 0; background: transparent; color: var(--tr-text-3); cursor: pointer; font-size: 16px; line-height: 1; padding: 0 2px; }
+.tr-notice-close:hover { color: var(--tr-text); }
+.tr-sidebar-topbar { flex: none; height: 48px; min-height: 48px; }
+.tr-toolbar.tr-editor-toolbar { padding: 0 14px; }
 .tr-toolbar {
   flex: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 10px 22px;
+  padding: 0 22px;
   min-height: 48px;
   border-bottom: .5px solid var(--tr-border);
 }
-[data-platform="darwin"] .tr-toolbar { padding-top: calc(10px + var(--dsh-frame-top-clearance, 0px)); }
-[data-platform="darwin"] .tr-nav-head,
-[data-platform="darwin"] .tr-rail-head { padding-top: calc(20px + var(--dsh-frame-top-clearance, 0px)); }
 .tr-crumbs { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 11.5px; color: var(--tr-text-3); }
 .tr-crumb-root { border: 0; background: transparent; color: var(--tr-text-3); cursor: pointer; font: inherit; padding: 0; }
 .tr-crumb-root:hover { color: var(--tr-text); }
 .tr-crumb-course { color: var(--tr-text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tr-crumb-sep { color: var(--tr-text-3); }
+.tr-review-actions { display: flex; align-items: center; gap: 4px; padding-right: 6px; margin-right: 2px; border-right: .5px solid var(--tr-border); }
+.tr-review-btn { position: relative; height: 28px; padding: 0 7px; gap: 4px; font-size: 10.5px; }
+.tr-review-btn .tr-review-icon { display: inline-flex; color: var(--tr-text-3); }
+.tr-review-btn.is-done .tr-review-icon { color: var(--tr-accent); }
+.tr-review-btn.is-loading { border-color: color-mix(in srgb, var(--tr-accent) 38%, transparent); }
+.tr-review-btn .tr-review-loading { display: inline-flex; color: var(--tr-accent); }
+.tr-review-btn.is-error { border-color: color-mix(in srgb, var(--tr-danger) 38%, transparent); }
+.tr-review-btn.is-error .tr-review-icon { color: var(--tr-danger); }
+.tr-review-dot {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--tr-danger);
+}
+.tr-pane-editor .tr-save-notice { padding-left: 14px; padding-right: 14px; }
+.tr-save-notice {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 22px;
+  border-bottom: .5px solid color-mix(in srgb, var(--tr-success) 24%, transparent);
+  background: color-mix(in srgb, var(--tr-success) 7%, var(--tr-bg));
+  color: var(--tr-text-2);
+  font-size: 11px;
+}
+.tr-save-notice.is-error {
+  border-bottom-color: color-mix(in srgb, var(--tr-danger) 24%, transparent);
+  background: color-mix(in srgb, var(--tr-danger) 7%, var(--tr-bg));
+  color: var(--tr-error);
+}
+.tr-save-notice-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tr-save-reload {
+  border: .5px solid var(--tr-border-strong);
+  border-radius: 5px;
+  background: var(--tr-bg);
+  color: var(--tr-text-2);
+  padding: 2px 7px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  flex: none;
+}
+.tr-save-reload:hover { color: var(--tr-text); }
+.tr-save-overwrite { border-color: color-mix(in srgb, var(--tr-danger) 38%, transparent); color: var(--tr-danger); }
+.tr-save-overwrite:hover { color: var(--tr-danger); background: color-mix(in srgb, var(--tr-danger) 6%, var(--tr-bg)); }
 .tr-toolbar-actions { display: flex; align-items: center; gap: 6px; flex: none; }
 .tr-refresh {
   display: inline-flex;
@@ -31899,8 +34032,258 @@ ${link2.reason}`).join("\n\n");
 }
 .tr-spin { display: inline-flex; animation: tr-spin .9s linear infinite; }
 @keyframes tr-spin { to { transform: rotate(360deg); } }
-.tr-scroll { flex: 1; min-height: 0; overflow: auto; scroll-behavior: smooth; }
-.tr-reader { max-width: 880px; margin: 0 auto; padding: 34px clamp(22px, 5vw, 52px) 80px; }
+.tr-scroll { flex: 1; min-height: 0; overflow-x: hidden; overflow-y: auto; scroll-behavior: smooth; display: flex; flex-direction: column; }
+.tr-split {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+.tr-pane { min-width: 0; min-height: 0; }
+.tr-pane-editor { display: flex; flex-direction: column; flex: 0 0 auto; overflow: hidden; }
+.tr-pane-preview { position: relative; flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+.tr-preview-tabs {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 48px;
+  padding: 0 14px;
+  border-bottom: .5px solid var(--tr-border);
+  background: transparent;
+}
+.tr-preview-tab {
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--tr-text-3);
+  font: inherit;
+  font-size: 10.5px;
+  cursor: pointer;
+}
+.tr-preview-tab:hover { color: var(--tr-text); }
+.tr-preview-tab.is-active { color: var(--tr-text); font-weight: 600; }
+.tr-preview-body { position: relative; flex: 1; min-height: 0; overflow-y: auto; }
+.tr-preview-body.is-site { overflow: hidden; }
+.tr-site-preview { position: absolute; inset: 0; background: var(--tr-bg); }
+.tr-site-frame { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
+.tr-site-status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  background: color-mix(in srgb, var(--tr-bg) 92%, transparent);
+  color: var(--tr-text-2);
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}
+.tr-site-actions { display: flex; align-items: center; gap: 6px; }
+
+.tr-split-divider {
+  position: relative;
+  flex: 0 0 8px;
+  cursor: col-resize;
+  touch-action: none;
+  user-select: none;
+  outline: none;
+}
+.tr-split-divider::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: var(--tr-border);
+  transition: background .15s ease;
+}
+.tr-split-divider::before {
+  content: '';
+  position: absolute;
+  inset: 0 -4px;
+}
+.tr-split-divider:hover::after,
+.tr-split-divider.is-dragging::after,
+.tr-split-divider:focus-visible::after { background: var(--tr-accent); }
+.tr-split-grip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3px;
+  height: 34px;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: var(--tr-border-strong);
+  opacity: 0;
+  transition: opacity .15s ease, background .15s ease;
+}
+.tr-split-divider:hover .tr-split-grip,
+.tr-split-divider.is-dragging .tr-split-grip,
+.tr-split-divider:focus-visible .tr-split-grip {
+  opacity: 1;
+  background: var(--tr-accent);
+}
+.tr-reader { width: 100%; max-width: min(880px, 100%); min-width: 0; margin: 0 auto; padding: 34px clamp(22px, 5vw, 52px) 80px; }
+.tr-reader-editor { flex: 1; width: 100%; min-height: 0; max-width: none; margin: 0; padding: 0; display: flex; }
+.tr-editor { flex: 1; width: 100%; min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--tr-bg); }
+.tr-editor-body { flex: 1; min-width: 0; min-height: 0; display: flex; }
+.tr-editor-area {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 18px clamp(16px, 3vw, 30px) 28px;
+  border: 0;
+  outline: none;
+  resize: none;
+  background: var(--tr-bg);
+  color: var(--tr-text);
+  font-family: var(--tr-font-mono);
+  font-size: 13px;
+  line-height: 1.85;
+  tab-size: 2;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  caret-color: var(--tr-accent);
+}
+.tr-editor-area::selection { background: color-mix(in srgb, var(--tr-accent) 22%, transparent); }
+.tr-editor-foot {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 14px;
+  border-top: .5px solid var(--tr-border);
+  background: var(--tr-bg-soft);
+  color: var(--tr-text-3);
+  font-size: 9.5px;
+}
+.tr-editor-tip { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tr-editor-stats { flex: none; }
+.tr-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.tr-slash-menu {
+  position: fixed;
+  z-index: 80;
+  width: min(320px, calc(100vw - 16px));
+  max-height: 340px;
+  overflow: auto;
+  padding: 5px;
+  border: .5px solid var(--tr-border-strong);
+  border-radius: 10px;
+  background: var(--tr-bg);
+  box-shadow: 0 18px 48px rgba(0,0,0,.18), 0 2px 8px rgba(0,0,0,.08);
+}
+.tr-slash-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 8px 6px;
+  color: var(--tr-text-3);
+}
+.tr-slash-title { font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.tr-slash-keys { font-size: 9px; opacity: .8; }
+.tr-slash-group {
+  padding: 7px 8px 3px;
+  color: var(--tr-text-3);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.tr-slash-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--tr-text);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+.tr-slash-item.is-active {
+  background: color-mix(in srgb, var(--tr-accent) 10%, var(--tr-bg));
+  box-shadow: inset 2px 0 0 var(--tr-accent);
+}
+.tr-slash-item.is-active .tr-slash-item-label { color: var(--tr-accent); }
+.tr-slash-item-label { flex: none; font-size: 11.5px; font-weight: 500; line-height: 1.5; }
+.tr-slash-item-desc { min-width: 0; color: var(--tr-text-3); font-size: 10px; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tr-slash-empty { padding: 16px 10px; color: var(--tr-text-3); font-size: 11px; text-align: center; }
+.tr-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: color-mix(in srgb, #000 26%, transparent);
+}
+.tr-modal {
+  width: min(420px, 100%);
+  padding: 18px;
+  border: .5px solid var(--tr-border-strong);
+  border-radius: 12px;
+  background: var(--tr-bg);
+  color: var(--tr-text);
+  box-shadow: 0 24px 70px rgba(0,0,0,.24);
+}
+.tr-modal h2 { margin: 0 0 6px; font-size: 14px; font-weight: 600; }
+.tr-modal p { margin: 0; color: var(--tr-text-2); font-size: 11.5px; line-height: 1.7; }
+.tr-modal p.tr-modal-error { margin-top: 8px; color: var(--tr-danger); }
+.tr-modal-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 16px; }
+.tr-website-modal { width: min(540px, 100%); max-height: min(760px, calc(100vh - 40px)); overflow-y: auto; }
+.tr-website-help { margin-top: 0 !important; color: var(--tr-text-3) !important; font-size: 10.5px !important; }
+.tr-website-field { display: flex; flex-direction: column; gap: 5px; margin-top: 12px; color: var(--tr-text-3); font-size: 10.5px; }
+.tr-website-image { margin-top: 14px; }
+.tr-website-image-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; color: var(--tr-text-3); font-size: 10.5px; }
+.tr-website-shot { display: block; width: 100%; max-height: 240px; object-fit: cover; object-position: top; border: .5px solid var(--tr-border); border-radius: 4px; }
+.tr-website-drop {
+  display: flex;
+  min-height: 116px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 14px;
+  border: 1px dashed var(--tr-border-strong);
+  border-radius: 6px;
+  background: var(--tr-bg-soft);
+  color: var(--tr-text-2);
+  text-align: center;
+  cursor: pointer;
+  font-size: 11px;
+}
+.tr-website-drop:hover { border-color: var(--tr-accent); color: var(--tr-text); }
+.tr-website-drop-title { font-weight: 500; }
+.tr-website-drop-hint { color: var(--tr-text-3); font-size: 10px; }
+.tr-website-busy { display: flex; align-items: center; gap: 6px; margin-top: 10px !important; color: var(--tr-text-3) !important; font-size: 10.5px !important; }
 .tr-doc-head { border-bottom: .5px solid var(--tr-border); padding-bottom: 22px; margin-bottom: 30px; }
 .tr-doc-kicker { color: var(--tr-text-3); font-size: 11px; letter-spacing: .02em; text-transform: uppercase; display: flex; gap: 6px; flex-wrap: wrap; }
 .tr-kicker-sep { opacity: .6; }
@@ -31918,6 +34301,8 @@ ${link2.reason}`).join("\n\n");
 .tr-meta-notes { color: var(--tr-warn); font-weight: 500; }
 .tr-meta-muted { color: var(--tr-text-3); }
 .tr-doc-body {
+  min-width: 0;
+  max-width: 100%;
   font-family: var(--tr-font-doc);
   font-size: 16.25px;
   line-height: 1.92;
@@ -32180,6 +34565,7 @@ ${link2.reason}`).join("\n\n");
 .tr-skeleton-gap { height: 18px; }
 @keyframes tr-pulse { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
 .tr-rail {
+  grid-column: 3;
   min-width: 0;
   min-height: 0;
   display: flex;
@@ -32209,19 +34595,64 @@ ${link2.reason}`).join("\n\n");
   font-size: 10px;
   font-weight: 700;
 }
-.tr-rail-close { display: none; font-size: 18px; }
+.tr-rail-close { display: none; }
+.tr-rail-toolbar { flex: none; }
+.tr-rail-actions { display: flex; flex: 1 1 auto; flex-wrap: wrap; align-items: center; gap: 4px; min-width: 0; }
+.tr-rail-actions .tr-review-btn { height: 28px; }
+.tr-rail-actions .tr-review-label { display: inline; }
+.tr-rail-actions .tr-refresh { height: 28px; }
+.tr-rail-actions .tr-rail-close { margin-left: auto; }
+.tr-rail-foot {
+  flex: none;
+  display: flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 12px;
+  border-top: .5px solid var(--tr-border);
+  background: var(--tr-bg);
+}
+.tr-rail-foot .tr-rail-time { flex: none; min-width: 0; text-align: left; }
+
+.tr-rail-tasks {
+  flex: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 7px 10px;
+  border-bottom: .5px solid var(--tr-border);
+  background: var(--tr-bg);
+}
+.tr-rail-task {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+  padding: 0 5px;
+  border: .5px solid var(--tr-border);
+  border-radius: 5px;
+  color: var(--tr-text-3);
+  font-size: 9px;
+  line-height: 20px;
+}
+.tr-rail-task.is-done { color: var(--tr-text-2); }
+.tr-rail-task.is-loading { color: var(--tr-accent); }
+.tr-rail-task.is-error { color: var(--tr-danger); border-color: color-mix(in srgb, var(--tr-danger) 32%, transparent); }
+.tr-rail-task-icon { display: inline-flex; }
+.tr-rail-task-label { white-space: nowrap; }
+.tr-rail-task-count { font-weight: 700; margin-left: 1px; }
+.tr-rail-time { flex: 1; min-width: 90px; text-align: right; color: var(--tr-text-3); font-size: 8.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tr-rail-time.is-error { color: var(--tr-error); }
 .tr-rail-scroll { flex: 1; min-height: 0; overflow: auto; padding: 12px 10px 24px; }
 .tr-rail-empty { padding: 28px 12px; color: var(--tr-text-3); font-size: 12px; line-height: 1.7; }
 .tr-notes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .tr-note {
   border: .5px solid var(--tr-border);
-  border-radius: var(--tr-radius-sm);
+  border-radius: 0;
   background: var(--tr-bg);
   padding: 12px 13px;
   cursor: pointer;
-  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
 }
-.tr-note:hover { border-color: var(--tr-border-strong); }
 .tr-note.is-active {
   border-color: color-mix(in srgb, var(--tr-warn) 55%, transparent);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--tr-warn) 10%, transparent);
@@ -32647,13 +35078,11 @@ ${link2.reason}`).join("\n\n");
   --tr-flash: var(--tr-note-accent);
   position: relative;
   border: .5px solid var(--tr-border);
-  border-radius: 9px;
+  border-radius: 0;
   background: var(--tr-bg);
   padding: 11px 12px 10px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, .025);
-  transition: border-color .15s ease, box-shadow .15s ease;
 }
-.tr-note:hover { border-color: var(--tr-border-strong); box-shadow: 0 2px 8px rgba(0, 0, 0, .05); }
 .tr-note.is-active {
   border-color: var(--tr-border-strong);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--tr-note-accent) 11%, transparent), 0 2px 10px rgba(0, 0, 0, .06);
@@ -32765,6 +35194,7 @@ ${link2.reason}`).join("\n\n");
 .tr-link-reason { margin: 4px 0 0; color: var(--tr-text-2); font-size: 10.5px; line-height: 1.6; }
 .tr-link-snippet { margin: 3px 0 0; color: var(--tr-text-3); font-size: 10px; line-height: 1.55; }
 .tr-proof-actions, .tr-link-actions, .tr-assist-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+.tr-copy-btn, .tr-accept-btn { height: auto; padding: 0; font-size: 10px; }
 .tr-assist-copy, .tr-assist-retry {
   border: .5px solid var(--tr-border);
   border-radius: 6px;
@@ -32874,8 +35304,20 @@ mark.tr-annotation.is-flashing {
 @media (prefers-reduced-motion: reduce) {
   mark.tr-annotation.is-flashing { animation: none; outline: 2px solid var(--tr-flash); outline-offset: 2px; }
 }
+@media (max-width: 1000px) {
+  .tr-split { flex-direction: column; }
+  .tr-pane-editor { flex: 0 0 50% !important; }
+  .tr-pane-preview { border-top: .5px solid var(--tr-border); }
+  .tr-split-divider { display: none; }
+}
+.tr-root.is-left-collapsed .tr-nav { display: none; }
+.tr-root.is-right-collapsed .tr-rail { display: none; }
+.tr-nav-toggle.is-forced, .tr-rail-toggle.is-forced { display: inline-flex; }
 @media (max-width: 1180px) {
-  .tr-root { grid-template-columns: minmax(200px, 236px) minmax(0, 1fr); }
+  .tr-main.is-rail-open { padding-right: min(360px, 88vw); }
+  .tr-review-label { display: none; }
+  .tr-review-btn { padding: 0 6px; }
+  .tr-root { --tr-left-width: minmax(200px, 236px); grid-template-columns: var(--tr-left-width) minmax(0, 1fr); }
   .tr-rail {
     position: absolute;
     top: 0;
@@ -32903,6 +35345,17 @@ mark.tr-annotation.is-flashing {
 }
 @media (max-width: 820px) {
   .tr-root { grid-template-columns: minmax(0, 1fr); }
+  .tr-main { grid-column: 1; }
+  .tr-main.is-nav-open { padding-left: min(286px, 84vw); }
+  .tr-toolbar .tr-crumb-root,
+  .tr-toolbar .tr-crumb-sep { display: none; }
+  .tr-review-actions { border-right: 0; padding-right: 0; margin-right: 0; }
+  .tr-refresh { padding: 0 7px; }
+  .tr-refresh > span:last-child { display: none; }
+  .tr-preview-save { padding: 0 7px; }
+  .tr-preview-save > span:last-child { display: none; }
+  .tr-dirty-badge, .tr-revert-btn { display: none; }
+  .tr-editor-area { font-size: 12.5px; padding: 14px 16px 24px; }
   .tr-nav {
     position: absolute;
     top: 0;
@@ -32928,6 +35381,11 @@ mark.tr-annotation.is-flashing {
   }
   .tr-reader { padding: 24px 20px 60px; }
   .tr-toolbar { padding-left: 14px; padding-right: 14px; }
+}
+@media (max-width: 520px) {
+  .tr-crumb-course { display: none; }
+  .tr-review-btn { padding: 0 5px; }
+  .tr-icon-btn { width: 26px; height: 26px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .tr-spin, .tr-skeleton-bar { animation: none; }

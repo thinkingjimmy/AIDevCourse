@@ -1,5 +1,5 @@
 import publicRedirects from './redirects.json' with { type: 'json' };
-import { assertDeployableContent } from './site-environment.mjs';
+import { assertDeployableContent } from '../site-environment.mjs';
 
 const fixture = process.env.CONTENT_TEST === '1';
 const development = process.env.NODE_ENV === 'development';

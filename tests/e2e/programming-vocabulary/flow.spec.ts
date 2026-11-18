@@ -3,11 +3,12 @@ import { test, expect, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { locales, htmlLanguages } from '../../../src/lib/i18n/config';
 import { localePath } from '../../../src/lib/i18n/routing';
-import { programmingSections } from '../../../src/lib/vocabulary/programming';
+import { programmingCategories, programmingSections } from '../../../src/lib/vocabulary/programming';
 
 const path = '/zh/programming-vocabulary/static-website';
 const dictionary = (locale: string) => JSON.parse(readFileSync(`src/messages/programming-vocabulary/${locale}.json`, 'utf8'));
 const sections = programmingSections['static-website'];
+const articleTerms = programmingCategories.flatMap(category => category.terms.map(([id]) => id)).filter(id => id !== 'static-website');
 
 async function navigateSection(page: Page, width: number, id: typeof sections[number], title: string) {
   if (width < 961) {
@@ -45,7 +46,7 @@ for (const scenario of [
       const dictionaries = page.getByRole('region', { name: '词典', exact: true });
       const card = dictionaries.getByRole('link', { name: copy.title, exact: true });
       await expect(card).toHaveAttribute('href', path);
-      await expect(card.getByText('1 词条', { exact: true })).toBeVisible();
+      await expect(card.getByText('7 词条', { exact: true })).toBeVisible();
       await card.focus();
       await card.press('Enter');
       await expect(page).toHaveURL(path);
@@ -158,6 +159,36 @@ test('all five languages expose the article, redirects, references, and metadata
   await expect(page).toHaveURL('/programming-vocabulary/static-website#misconceptions');
   await expect(page.locator('h2#misconceptions')).toBeInViewport();
   await testInfo.attach('localized-article-evidence', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
+});
+
+test('every glossary term renders a complete article in all five languages', async ({ page, request }, testInfo) => {
+  const evidence = [];
+  for (const locale of locales) {
+    const copy = dictionary(locale);
+    for (const id of articleTerms) {
+      const url = localePath(locale, `/programming-vocabulary/${id}`);
+      await page.goto(url);
+      const term = copy.terms[id];
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(term.title);
+      await expect(page.locator('[data-slot="term-description"]')).toHaveText(term.description);
+      const body = page.locator('[data-slot="programming-article"]');
+      await expect(body).toHaveAttribute('data-programming-term', id);
+      await expect(body.locator('h2')).toHaveText(programmingSections[id].map(section => term.article[section].heading));
+      await expect(body.locator('[data-slot="term-flow"] li')).toHaveCount(4);
+      await expect(body.locator('[data-component="code-block"]')).toHaveCount(1);
+      await expect(body.getByRole('table')).toHaveAccessibleName(term.article.comparison.heading);
+      await expect(body.locator('tbody tr')).toHaveCount(3);
+      await expect(body.locator('h2#references + p + ul a')).toHaveCount(4);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', new RegExp(`${url}$`));
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      evidence.push({ locale, id, url, sections: programmingSections[id].length });
+    }
+  }
+  for (const [category, target] of [['version-control', 'git'], ['runtime-and-framework', 'node-js'], ['deployment-and-cloud', 'vercel']] as const) {
+    const response = await request.get(localePath('zh', `/programming-vocabulary/${category}`));
+    expect(new URL(response.url()).pathname).toBe(`/zh/programming-vocabulary/${target}`);
+  }
+  await testInfo.attach('term-article-evidence', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
 });
 
 test('article prose, code, table, and translated demo fit a narrow phone', async ({ page }, testInfo) => {

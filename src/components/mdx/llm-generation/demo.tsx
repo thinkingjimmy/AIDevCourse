@@ -3,8 +3,8 @@
 import { useEffect, useId, useMemo, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
-import { animateGeneration } from './llm-generation/animation';
-import { createGenerationModel, pendingClass, placeholderClass } from './llm-generation/model';
+import { animateGeneration } from './animation';
+import { createGenerationModel, pendingClass, placeholderClass } from './model';
 
 const rowClass = 'flex h-(--row-height) shrink-0 items-center';
 const panelClass = 'grid w-full grid-cols-[minmax(0,1fr)_calc(var(--candidate-size)*3+var(--candidate-gap)*2)] items-center gap-3 rounded-sm p-3 @max-[600px]/generation:grid-cols-1 @max-[600px]/generation:gap-2';

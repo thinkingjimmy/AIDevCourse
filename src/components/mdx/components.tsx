@@ -8,6 +8,11 @@ import { Table, TableHeader, TableBody, TableFooter, TableRow, TableHead, TableC
 import { cn } from '@/lib/utils';
 import { LocalizedCodeBlock } from './code-block';
 import { MermaidDiagram } from './mermaid-diagram';
+import {
+  AnimationDemo, ChatMessageSequence, FrontendInspectorDemo, FrontendInspectorPractice,
+  FrontendLayersDemo, HoverGardenDemo, LLMGenerationDemo, LLMMultiRoundTrainingDemo,
+  LLMPretrainingOverview, LLMSingleRoundTrainingDemo, MenuComparisonDemo, NewtonSecondLawDemo,
+} from './demos/interactive';
 import { Heading } from './heading';
 import { JimmyNote } from './notes/jimmy-note';
 import { JimmyNoteAnchor } from './notes/note-anchor';
@@ -15,20 +20,8 @@ import { KeyTakeaway } from './notes/key-takeaway';
 import { Chat, ChatMessage, ChatThinking } from './chat/chat-message';
 import { ChatToolCall } from './chat/tool-call';
 import { InlineCitation } from './chat/inline-citation';
-import { LLMGenerationDemo } from './llm-generation-demo';
-import { MenuComparisonDemo } from './menu-comparison-demo';
-import { NewtonSecondLawDemo } from './physics/newton-second-law-demo';
-import { AnimationDemo } from './motion/demo';
-import { FrontendLayersDemo } from './frontend/layers';
-import { FrontendInspectorDemo } from './frontend/inspector';
-import { FrontendInspectorPractice } from './frontend/practice';
-import { HoverGardenDemo } from './hover-garden';
 import { TokenizationDiagram } from './tokenization-diagram';
 import { TokenProbabilityDiagram } from './token-probability-diagram';
-import { LLMSingleRoundTrainingDemo } from './llm-training/single-round';
-import { LLMMultiRoundTrainingDemo } from './llm-training/multi-round';
-import { LLMPretrainingOverview } from './pretraining/overview';
-import { ChatMessageSequence } from './chat-sequence/demo';
 import { LinkPreview } from './link-preview/link-preview';
 import { XEmbed } from './embeds/x-embed';
 import { YouTube } from './embeds/youtube';
@@ -103,7 +96,13 @@ export function getMDXComponents(achievements: readonly AchievementDefinition[] 
   const headingProps = (props: ComponentProps<'h1'>) => scope && props.id
     ? { ...props, id: `${scope.prefix}${props.id}`, 'data-heading-url': `${scope.pageUrl}#${props.id}` } : props;
   return {
-    ...defaults, Steps, Step, Callout, JimmyNote, JimmyNoteAnchor, KeyTakeaway, ResourceDisks, Chat, ChatMessage, ChatThinking, ChatToolCall, InlineCitation, ChatMessageSequence, XEmbed, YouTube, WebsitePreview, XProfile, XProfiles, LLMGenerationDemo, MenuComparisonDemo, NewtonSecondLawDemo, AnimationDemo, FrontendLayersDemo, FrontendInspectorDemo, FrontendInspectorPractice, TokenizationDiagram, TokenProbabilityDiagram, LLMPretrainingOverview, LLMSingleRoundTrainingDemo, LLMMultiRoundTrainingDemo, HoverGardenDemo, MermaidDiagram, ...getAchievementComponents(achievements, scope?.prefix), pre: LocalizedCodeBlock,
+    ...defaults, Steps, Step, Callout, JimmyNote, JimmyNoteAnchor, KeyTakeaway, ResourceDisks,
+    Chat, ChatMessage, ChatThinking, ChatToolCall, InlineCitation, ChatMessageSequence,
+    XEmbed, YouTube, WebsitePreview, XProfile, XProfiles, TokenizationDiagram, TokenProbabilityDiagram, MermaidDiagram,
+    AnimationDemo, FrontendInspectorDemo, FrontendInspectorPractice, FrontendLayersDemo, HoverGardenDemo,
+    LLMGenerationDemo, LLMMultiRoundTrainingDemo, LLMPretrainingOverview, LLMSingleRoundTrainingDemo,
+    MenuComparisonDemo, NewtonSecondLawDemo, ...getAchievementComponents(achievements, scope?.prefix),
+    pre: LocalizedCodeBlock,
     a: scope ? props => <LinkPreview {...props} href={props.href?.startsWith('#') ? `${scope.pageUrl}${props.href}` : props.href} /> : LinkPreview,
     ...(scope ? {
       JimmyNote: (props: ComponentProps<typeof JimmyNote>) => <JimmyNote {...props} anchor={`${scope.prefix}${props.anchor}`} />,

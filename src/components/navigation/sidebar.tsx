@@ -3,7 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useId, useMemo, useR
 import { usePathname } from 'next/navigation';
 import { SidebarSimpleIcon } from '@phosphor-icons/react/dist/ssr/SidebarSimple';
 import { XIcon } from '@phosphor-icons/react/dist/ssr/X';
-import { Slot } from 'radix-ui';
+import * as Slot from 'radix-ui/slot';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/overlays/sheet';
 import { cn } from '@/lib/utils';

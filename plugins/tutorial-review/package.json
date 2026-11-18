@@ -1,9 +1,9 @@
 {
   "name": "@local/dsh-tutorial-review",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "type": "module",
-  "description": "Tutorial writing assistant with read-only review, margin annotations, AI polish/expansion, and link suggestions.",
+  "description": "Tutorial writing assistant with MDX editing, slash component insertion, on-demand review, and local review caching.",
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",

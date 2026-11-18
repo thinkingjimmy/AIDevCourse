@@ -62,14 +62,22 @@ export function ModuleTree({ staticMode = false, showOverview = true }: { static
   const currentModule = groups.find((group) => group.lessons.some(({ lesson }) => lesson.url === pathname))?.module;
   const [open, setOpen] = useOpenModules(course.id);
   useEffect(() => {
-    if (currentModule === undefined) return;
+    if (!currentModule) return;
     setOpen((value) => value[currentModule] === true ? value : { ...value, [currentModule]: true });
   }, [currentModule, setOpen]);
   return <SidebarGroup className={directoryStyles.group}>
     {showOverview && <CourseOverviewLink className="mb-1" />}
     <DirectoryNavigation label={ui('menu')}>
       {groups.map((group, index) => {
-        const expanded = staticMode || (open[group.module] ?? group.module === currentModule);
+        const expanded = !group.module || staticMode || (open[group.module] ?? group.module === currentModule);
+        const links = expanded && group.lessons.map(({ lesson, part }) => (
+          <SidebarMenuSubItem key={lesson.id}>
+            <DirectoryLink href={lesson.url} label={lesson.title} number={part} isActive={pathname === lesson.url}>
+              {Object.hasOwn(learning.completed, lesson.id) && <CheckCircleIcon data-slot="lesson-completed" size={16} weight="fill" role="img" aria-label={ui('completed')} className="ml-auto shrink-0 text-brand" />}
+            </DirectoryLink>
+          </SidebarMenuSubItem>
+        ));
+        if (!group.module) return <SidebarMenu className="gap-0" key={group.module}>{links}</SidebarMenu>;
         const title = <>
           <span className={directoryStyles.categoryNumber}>{String(index + 1).padStart(2, '0')}{' '}</span>
           <span className="min-w-0">{group.title}{!staticMode && <CaretDownIcon size={14} aria-hidden className={cn(directoryStyles.caret, !expanded && '-rotate-90')} />}</span>
@@ -79,16 +87,7 @@ export function ModuleTree({ staticMode = false, showOverview = true }: { static
             {staticMode ? <p className="m-0 flex items-baseline gap-2 p-2 min-[961px]:pl-5 text-sm leading-snug font-medium text-foreground">{title}</p> : <SidebarMenuButton className={directoryStyles.category} aria-expanded={expanded} onClick={() => setOpen((value) => ({ ...value, [group.module]: !expanded }))}>
               {title}
             </SidebarMenuButton>}
-            {expanded && <SidebarMenuSub className={directoryStyles.submenu}>
-              {group.lessons.map(({ lesson, part }) => {
-                const current = pathname === lesson.url;
-                return <SidebarMenuSubItem key={lesson.id}>
-                  <DirectoryLink href={lesson.url} label={lesson.title} number={part} isActive={current}>
-                    {Object.hasOwn(learning.completed, lesson.id) && <CheckCircleIcon data-slot="lesson-completed" size={16} weight="fill" role="img" aria-label={ui('completed')} className="ml-auto shrink-0 text-brand" />}
-                  </DirectoryLink>
-                </SidebarMenuSubItem>;
-              })}
-            </SidebarMenuSub>}
+            {expanded && <SidebarMenuSub className={directoryStyles.submenu}>{links}</SidebarMenuSub>}
           </SidebarMenuItem>
         </SidebarMenu>;
       })}

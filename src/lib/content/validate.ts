@@ -6,7 +6,7 @@ import { localePath, pathLocale, stripLocale } from '../i18n/routing';
 import { vocabularyCollections, vocabularyForPath } from '../vocabulary/collections';
 import { isProgrammingAnchor } from '../vocabulary/programming';
 
-export function publishDocuments(documents: ContentDocument[], order: Map<Locale, string[]>) {
+export function publishDocuments<T extends ContentDocument>(documents: T[], order: Map<Locale, string[]>) {
   const byKey = new Map<string, ContentDocument>();
   const byURL = new Map<string, ContentDocument>();
   const courses = documents.filter((doc) => doc.data.kind === 'course');

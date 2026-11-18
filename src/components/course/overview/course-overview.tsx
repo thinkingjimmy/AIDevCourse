@@ -39,7 +39,7 @@ export async function CourseOverview({ course, reference = false }: { course: Co
       <h2 id={catalogId}>{t('catalog')}</h2>
       {groups.length ? <div className="course-directory-groups">
         {groups.map((group, index) => <section key={group.module} className="course-directory-group">
-          <h3><span>{String(index + 1).padStart(2, '0')}</span>{group.title}</h3>
+          {group.module && <h3><span>{String(index + 1).padStart(2, '0')}</span>{group.title}</h3>}
           <ol>{group.lessons.map(({ lesson, part }) => <li key={lesson.id}>
             <Link href={lesson.url}><span>{part}</span><span>{lesson.title}</span><ArrowRightIcon size={14} aria-hidden /></Link>
           </li>)}</ol>

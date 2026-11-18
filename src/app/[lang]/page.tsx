@@ -38,7 +38,7 @@ export default async function HomePage({ params, searchParams }: Props) {
   const directions = (view: string) => ({ previous: t('previousView', { view }), next: t('nextView', { view }) });
   return <HomeGallery locale={lang} initialView={view === 'resources' ? 'resources' : 'courses'} initialPage={Number(page)}
     startUrl={startingCourse?.url ?? localePath(lang, '/about')} items={items} blog={blog}
-    labels={{ title: t('title'), start: courses.length ? t('start') : course('aboutSite'),
+    labels={{ title: t('title'), home: ui('home'), start: courses.length ? t('start') : course('aboutSite'),
       opening: { courses: t('openingCourse'), resources: t('openingResource') },
       previous: t('previousPage'), next: t('nextPage'), pagination: t('pagination'), views,
       macGroups: { beginner: ui('beginner'), intermediate: ui('intermediate'), dictionaries: t('dictionaries') },

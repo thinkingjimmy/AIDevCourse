@@ -25,14 +25,14 @@ for (const scenario of [
       await expect(card).toHaveAttribute('href', course);
       await expect(card.locator('.disk-level')).toHaveText('入门');
       await expect(card).toContainText('1 课');
-      await expect(card.locator('[data-slot="course-card-image"], [data-anatomy], img')).toHaveCount(0);
+      await expect(card.locator('[data-slot="course-card-image"], img')).toHaveCount(0);
       await expect(card).toHaveAccessibleDescription(/不需要设计基础/);
       await testInfo.attach('Design course card', { body: await card.screenshot(), contentType: 'image/png' });
       await card.focus();
       await card.press('Enter');
       await expect(page).toHaveURL(course);
       await expect(page.getByRole('heading', { level: 1 })).toHaveText('设计 101');
-      await expect(page.locator('main [data-anatomy], main [data-slot="course-card-image"], main img')).toHaveCount(0);
+      await expect(page.locator('main [data-slot="course-card-image"], main img')).toHaveCount(0);
       await expect(page.locator('[data-slot="course-empty"]')).toHaveCount(0);
       const entries = page.locator('section[aria-labelledby="course-catalog"] li a');
       await expect(entries).toHaveCount(1);

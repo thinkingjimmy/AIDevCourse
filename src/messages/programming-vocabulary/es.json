@@ -1,7 +1,10 @@
 {
   "title": "Glosario de programación",
-  "description": "Aprende términos de programación con definiciones claras y ejemplos interactivos. Empieza por cómo se entregan las páginas estáticas.",
+  "description": "Términos de programación habituales, explicados con claridad y ejemplos. El recorrido empieza por los sitios web estáticos y sigue con Git, Node.js, Next.js y los servicios que los publican.",
   "web-foundations": "Fundamentos de la web",
+  "version-control": "Control de versiones",
+  "runtime-and-framework": "Entorno de ejecución y framework",
+  "deployment-and-cloud": "Despliegue y nube",
   "source": "Referencia de términos: MDN",
   "search": "Buscar términos",
   "searchPlaceholder": "Buscar términos o nombres en inglés",
@@ -135,6 +138,642 @@
           "pages": "GitHub Docs: publicación y compilación de páginas estáticas",
           "javascript": "MDN: el papel de JavaScript en la web",
           "caching": "MDN: caché HTTP"
+        }
+      }
+    },
+    "git": {
+      "title": "Git",
+      "description": "Una herramienta de control de versiones que registra cada cambio en el código, de modo que es posible volver a versiones anteriores y trabajar en el mismo proyecto con otras personas.",
+      "article": {
+        "meaning": {
+          "heading": "¿Qué es Git?",
+          "definition": "Git es una <strong>herramienta de control de versiones</strong>. Guarda los archivos del proyecto como una instantánea en cada etapa, junto con quién cambió qué y cuándo. Es como un álbum de fotos que se puede hojear hacia atrás: cada foto es una versión.",
+          "analogy": "Funciona como los puntos de guardado de un videojuego: se guarda en cada nivel y, si algo sale mal después, se carga una partida anterior. Git almacena código y archivos, no el progreso del juego.",
+          "keyPoint": "<strong>Git gestiona el historial de versiones. GitHub es solo un sitio web que aloja repositorios de Git.</strong>"
+        },
+        "how-it-works": {
+          "heading": "¿Qué hace un commit?",
+          "intro": "Conviene empezar por los cuatro pasos que más se usan. Estos comandos se ejecutan en el propio ordenador y no necesitan red.",
+          "steps": {
+            "init": "Ejecutar <code>git init</code> en la carpeta del proyecto. Git crea un repositorio y empieza a registrar los cambios.",
+            "stage": "Usar <code>git add</code> para elegir los cambios de esta instantánea. Lo que se deja fuera queda para la próxima vez.",
+            "commit": "Ejecutar <code>git commit</code>. Git guarda los cambios elegidos como una instantánea con un mensaje, un autor y una hora.",
+            "branch": "Más adelante se puede volver a una versión antigua, o crear una rama, trabajar en una línea aparte y fusionarla de nuevo."
+          },
+          "note": "Los commits ocurren en local. La red solo hace falta para <code>git push</code> o para traer cambios de un remoto."
+        },
+        "example": {
+          "heading": "Un commit real, paso a paso",
+          "intro": "Un caso típico: se acaba de escribir una página de inicio y se quiere registrar en el historial de versiones.",
+          "points": {
+            "repo": "<code>git init</code>: convierte la carpeta actual en un repositorio de Git y añade un directorio oculto <code>.git</code>.",
+            "snapshot": "<code>git add</code> y <code>git commit</code>: primero se eligen los cambios y después se guardan como una instantánea con un mensaje.",
+            "history": "<code>git log</code>: enumera todos los commits, cada uno con su propio identificador llamado hash de commit."
+          },
+          "codeIntro": "Tres comandos: crear el repositorio, elegir los cambios y guardar la instantánea.",
+          "afterCode": "La primera versión de <code>index.html</code> ya está guardada. Con cada cambio posterior y cada commit posterior se añade otra página al historial."
+        },
+        "comparison": {
+          "heading": "¿En qué se diferencia Git de copiar una carpeta?",
+          "intro": "Las copias de seguridad manuales también conservan versiones antiguas, pero el método es muy distinto.",
+          "columns": {
+            "aspect": "Aspecto",
+            "left": "Git",
+            "right": "Copiar una carpeta"
+          },
+          "rows": {
+            "stores": {
+              "label": "Qué se conserva",
+              "left": "El historial completo de cada commit",
+              "right": "Solo la copia actual"
+            },
+            "restore": {
+              "label": "Recuperar una versión antigua",
+              "left": "Cambiar a cualquier commit en cualquier momento",
+              "right": "Buscar en carpetas de copia de seguridad y confiar en acertar con la correcta"
+            },
+            "team": {
+              "label": "Trabajo con otras personas",
+              "left": "Cada persona usa una rama y después la fusiona",
+              "right": "Los cambios se sobrescriben y nadie sabe quién cambió qué"
+            }
+          },
+          "mixed": "Git también funciona con almacenamiento en la nube o con GitHub: se hace el commit en local como siempre y después se sincroniza el repositorio para que otras personas puedan verlo y obtenerlo."
+        },
+        "uses": {
+          "heading": "¿Cuándo conviene usar Git?",
+          "intro": "Todo proyecto que cambia con frecuencia merece un seguimiento, sobre todo cuando varias personas trabajan en él.",
+          "items": {
+            "personal": "Proyectos personales: deshacer un cambio erróneo y probar ideas nuevas en una rama.",
+            "team": "Trabajo en equipo: cada persona modifica su propia rama y después la fusiona con la principal.",
+            "open-source": "Código abierto: hacer un fork de un repositorio, introducir cambios y después abrir una solicitud de fusión."
+          },
+          "benefits": "Las ramas son baratas en Git, así que crear una apenas requiere tiempo. El historial completo permite rastrear cada cambio.",
+          "limits": "Git no es bueno para almacenar archivos binarios grandes y no es una copia de seguridad automática. Si el repositorio se pierde y nunca se sincronizó, su historial también se pierde."
+        },
+        "misconceptions": {
+          "heading": "Confusiones frecuentes",
+          "items": {
+            "github": {
+              "title": "¿Git y GitHub son lo mismo?",
+              "body": "No. Git es una herramienta que se ejecuta en el propio ordenador; GitHub es un sitio web que aloja repositorios de Git. También se puede usar GitLab, Gitea o solo Git en la propia máquina."
+            },
+            "upload": {
+              "title": "¿Un commit significa subir el código?",
+              "body": "No. Un commit guarda los cambios en el repositorio local. Subirlos requiere otro paso, <code>git push</code>, que envía los commits locales a un remoto."
+            },
+            "branch-weight": {
+              "title": "¿Las ramas son costosas?",
+              "body": "No. Una rama de Git es solo una etiqueta que apunta a un commit, así que crearla es casi gratis. Se pueden crear tantas como hagan falta."
+            }
+          }
+        },
+        "recap": {
+          "heading": "Comprueba lo que has entendido",
+          "question": "El código se ha roto, pero antes se hizo un commit. ¿Cómo se vuelve al commit anterior?",
+          "answer": "Se puede volver.",
+          "reason": "El commit anterior sigue completo en el repositorio. Se puede consultar para revisarlo o crear un commit nuevo que devuelva los archivos a ese estado.",
+          "remember": "En resumen: <strong>Git guarda una cadena de commits, no solo el último archivo.</strong>"
+        },
+        "references": {
+          "heading": "Para seguir leyendo",
+          "intro": "Estas referencias son una buena forma de continuar.",
+          "links": {
+            "book": "Pro Git: qué es Git",
+            "docs": "Referencia de comandos de Git",
+            "github": "GitHub Docs: acerca de Git y GitHub",
+            "branching": "Pro Git: qué es una rama"
+          }
+        }
+      }
+    },
+    "node-js": {
+      "title": "Node.js",
+      "description": "Un entorno de ejecución que permite ejecutar JavaScript fuera del navegador; se usa a menudo para backends web, herramientas de línea de comandos y herramientas de desarrollo.",
+      "article": {
+        "meaning": {
+          "heading": "¿Qué es Node.js?",
+          "definition": "Node.js es un <strong>entorno de ejecución de JavaScript</strong>. Antes, JavaScript solo se ejecutaba en navegadores; Node.js permite ejecutarlo en el propio ordenador o en un servidor.",
+          "analogy": "Un navegador es un hogar para JavaScript; Node.js es otro. El lenguaje es el mismo, pero el mobiliario es distinto.",
+          "keyPoint": "<strong>JavaScript es el lenguaje. Node.js es el entorno que lo ejecuta.</strong>"
+        },
+        "how-it-works": {
+          "heading": "¿Cómo se ejecuta un programa?",
+          "intro": "Se escribe JavaScript, se entrega a Node.js y este puede leer archivos, abrir un servidor y mucho más.",
+          "steps": {
+            "write": "Escribir un archivo .js o .mjs con el programa que se quiere ejecutar.",
+            "run": "Ejecutar <code>node filename</code> en la terminal. Node.js lee y ejecuta el archivo.",
+            "capabilities": "El programa puede leer y escribir archivos, hacer solicitudes de red y conectarse a bases de datos, cosas que los navegadores normalmente no pueden hacer.",
+            "serve": "También puede iniciar un servidor que espera solicitudes, como una API de backend de un sitio web."
+          },
+          "note": "Node.js ejecuta JavaScript y ofrece estas capacidades. No impone cómo se organiza el proyecto."
+        },
+        "example": {
+          "heading": "Un pequeño servidor de Node.js",
+          "intro": "Este programa inicia un servidor y responde a cada visita con un mensaje breve.",
+          "points": {
+            "file": "Guardarlo como <code>server.mjs</code>. <code>node:http</code> viene incluido con Node.js, así que no hay nada que instalar.",
+            "run": "Ejecutar <code>node server.mjs</code> en la terminal.",
+            "result": "Al abrir http://localhost:3000 debería aparecer Hello from Node.js."
+          },
+          "codeIntro": "El código solo usa módulos incluidos con Node.js.",
+          "afterCode": "El servidor sigue en ejecución hasta que se pulsa Ctrl+C en la terminal."
+        },
+        "comparison": {
+          "heading": "¿En qué se diferencia Node.js de JavaScript en un navegador?",
+          "intro": "El lenguaje es el mismo, pero cada entorno puede hacer cosas distintas.",
+          "columns": {
+            "aspect": "Aspecto",
+            "left": "Node.js",
+            "right": "Navegador"
+          },
+          "rows": {
+            "where": {
+              "label": "Dónde se ejecuta",
+              "left": "En el ordenador o en un servidor",
+              "right": "En el navegador que muestra la página"
+            },
+            "can": {
+              "label": "Qué puede hacer",
+              "left": "Leer archivos, ejecutar servidores y conectarse a bases de datos",
+              "right": "Actualizar la página, responder a clics y hacer solicitudes de red"
+            },
+            "cannot": {
+              "label": "Qué no puede hacer",
+              "left": "Manipular directamente el DOM de una página",
+              "right": "Leer y escribir archivos libremente en el ordenador del usuario"
+            }
+          },
+          "mixed": "Se puede usar un mismo lenguaje para el frontend y el backend, pero el código se ejecuta en lugares distintos y tiene capacidades distintas."
+        },
+        "uses": {
+          "heading": "¿Cuándo encaja Node.js?",
+          "intro": "Node.js encaja cuando algo debe ocurrir fuera del navegador.",
+          "items": {
+            "backend": "Backends web: recibir solicitudes, consultar una base de datos y devolver datos.",
+            "cli": "Herramientas de línea de comandos: editar archivos por lotes, generar proyectos y ejecutar scripts.",
+            "tooling": "Herramientas de desarrollo: muchas herramientas de compilación y servidores de desarrollo se ejecutan sobre Node.js."
+          },
+          "benefits": "Un solo lenguaje para el frontend y el backend reduce el coste de cambiar de contexto, y npm tiene una enorme colección de paquetes listos para usar.",
+          "limits": "Procesa una cosa a la vez de forma predeterminada, así que un cálculo pesado puede bloquear otras solicitudes. Además, hay que desplegar y mantener el servidor."
+        },
+        "misconceptions": {
+          "heading": "Confusiones frecuentes",
+          "items": {
+            "language": {
+              "title": "¿Node.js es un lenguaje de programación?",
+              "body": "No. El lenguaje es JavaScript; Node.js es el entorno que ejecuta JavaScript."
+            },
+            "browser": {
+              "title": "¿Node.js solo puede ejecutarse en servidores?",
+              "body": "No. También se puede usar en el propio ordenador para scripts y tareas con archivos, sin red y sin despliegue."
+            },
+            "framework": {
+              "title": "¿Node.js es un framework?",
+              "body": "No. No impone rutas, páginas ni una estructura de carpetas. Express y Next.js son frameworks."
+            }
+          }
+        },
+        "recap": {
+          "heading": "Comprueba lo que has entendido",
+          "question": "¿Se puede llamar a document.querySelector en Node.js para manipular una página?",
+          "answer": "No.",
+          "reason": "Node.js no tiene páginas ni un DOM de navegador. En su lugar, trabaja con archivos, redes y servidores.",
+          "remember": "En resumen: <strong>JavaScript es el lenguaje; Node.js permite ejecutarlo fuera del navegador.</strong>"
+        },
+        "references": {
+          "heading": "Para seguir leyendo",
+          "intro": "Estas referencias son una buena forma de continuar.",
+          "links": {
+            "intro": "Node.js: introducción",
+            "about": "Node.js: acerca de",
+            "docs": "Documentación de la API de Node.js",
+            "http": "Node.js: documentación del módulo HTTP"
+          }
+        }
+      }
+    },
+    "next-js": {
+      "title": "Next.js",
+      "description": "Un framework web full-stack construido sobre React que reúne enrutamiento, renderizado, obtención de datos y herramientas de compilación.",
+      "article": {
+        "meaning": {
+          "heading": "¿Qué es Next.js?",
+          "definition": "Next.js es un framework web construido sobre <strong>React</strong>. React convierte una página en componentes; Next.js añade enrutamiento, modos de renderizado, obtención de datos y una compilación de producción.",
+          "analogy": "Si React es una caja de bloques de construcción, Next.js son las instrucciones, la caja de herramientas y la línea de montaje: los mismos bloques, pero una forma coherente de ensamblarlos y publicarlos.",
+          "keyPoint": "<strong>Next.js no es un lenguaje nuevo ni un sustituto de React. Es un conjunto de convenciones sobre React.</strong>"
+        },
+        "how-it-works": {
+          "heading": "De un proyecto nuevo a un sitio en línea",
+          "intro": "Next.js tiene un camino establecido para los pasos habituales desde un proyecto nuevo hasta un sitio en línea.",
+          "steps": {
+            "create": "Crear el proyecto con create-next-app. La estructura de carpetas, la configuración y el servidor de desarrollo quedan listos de inmediato.",
+            "page": "Añadir archivos de página en el directorio app. La ruta del archivo se convierte en la URL.",
+            "render": "Elegir renderizado en el servidor, renderizado en el navegador o una página generada de antemano, según la página.",
+            "build": "Ejecutar el comando de compilación. Next.js empaqueta y optimiza los recursos, y después una plataforma de alojamiento los publica."
+          },
+          "note": "Estas convenciones eliminan mucha configuración, pero el proyecto debe seguir las reglas del framework."
+        },
+        "example": {
+          "heading": "La página más pequeña",
+          "intro": "Una página mínima de Next.js es un archivo que exporta un componente de React.",
+          "points": {
+            "file": "El archivo se coloca en <code>app/page.tsx</code> y exporta un componente predeterminado.",
+            "route": "<code>app/page.tsx</code> es la página de inicio /; al añadir <code>app/about/page.tsx</code> se obtiene /about.",
+            "result": "Iniciar el servidor de desarrollo y abrir la página de inicio para ver el encabezado."
+          },
+          "codeIntro": "El archivo es a la vez la página y la ruta.",
+          "afterCode": "No hay una tabla de rutas aparte: la ubicación del archivo decide la URL."
+        },
+        "comparison": {
+          "heading": "¿En qué se diferencia Next.js de React por sí solo?",
+          "intro": "React se encarga de la interfaz. Next.js convierte esa interfaz en un sitio que se puede publicar.",
+          "columns": {
+            "aspect": "Aspecto",
+            "left": "Next.js",
+            "right": "React por sí solo"
+          },
+          "rows": {
+            "routing": {
+              "label": "Enrutamiento de páginas",
+              "left": "Se genera a partir de las rutas de archivos",
+              "right": "Hay que elegir y configurar un enrutador"
+            },
+            "rendering": {
+              "label": "Renderizado",
+              "left": "Renderizado en el servidor, generación estática o renderizado en el cliente",
+              "right": "Renderizado en el navegador de forma predeterminada"
+            },
+            "build": {
+              "label": "Compilación y despliegue",
+              "left": "Incluye empaquetado, optimización y convenciones de despliegue",
+              "right": "Hay que montar el propio proceso de compilación"
+            }
+          },
+          "mixed": "Con React por sí solo se puede construir un sitio completo, pero el enrutamiento, el renderizado y el empaquetado quedan a cargo de quien lo desarrolla. Next.js toma esas decisiones habituales desde el principio."
+        },
+        "uses": {
+          "heading": "¿Cuándo encaja Next.js?",
+          "intro": "Next.js encaja en sitios que necesitan páginas y endpoints de backend, o que se preocupan por el primer renderizado y la indexación en buscadores.",
+          "items": {
+            "content": "Sitios de contenido: blogs, documentación y cursos cuyas páginas se pueden generar de antemano.",
+            "seo": "Páginas que los buscadores deben leer: el renderizado en el servidor coloca el contenido en el HTML inicial.",
+            "fullstack": "Aplicaciones full-stack para equipos pequeños: las páginas y los endpoints conviven en un mismo proyecto."
+          },
+          "benefits": "Convenciones claras, muchas herramientas ya incluidas y la posibilidad de que páginas estáticas y endpoints dinámicos coexistan.",
+          "limits": "El framework tiene sus propias reglas y cambios de versión. Para unas pocas páginas estáticas, puede resultar pesado."
+        },
+        "misconceptions": {
+          "heading": "Confusiones frecuentes",
+          "items": {
+            "react-replacement": {
+              "title": "¿Next.js sustituye a React?",
+              "body": "No. Next.js usa React internamente, y React sigue siendo necesario para escribir páginas."
+            },
+            "always-fast": {
+              "title": "¿Un sitio de Next.js es siempre rápido?",
+              "body": "No. El tamaño de las imágenes, las solicitudes de datos y las decisiones de renderizado afectan a la velocidad. El framework solo proporciona las herramientas."
+            },
+            "vercel-only": {
+              "title": "¿Next.js solo se puede desplegar en Vercel?",
+              "body": "No. Vercel es la plataforma de la misma empresa y la que menos esfuerzo requiere, pero Next.js también puede ejecutarse en otros entornos de Node.js."
+            }
+          }
+        },
+        "recap": {
+          "heading": "Comprueba lo que has entendido",
+          "question": "¿Qué se suele hacer para añadir una página /about en Next.js?",
+          "answer": "Añadir un archivo.",
+          "reason": "Basta con colocar un archivo que exporte un componente en <code>app/about/page.tsx</code> y la ruta ya existe. No hace falta registrarla aparte.",
+          "remember": "En resumen: <strong>Next.js asigna rutas de archivos a URL y usa convenciones para reducir la configuración.</strong>"
+        },
+        "references": {
+          "heading": "Para seguir leyendo",
+          "intro": "Estas referencias son una buena forma de continuar.",
+          "links": {
+            "docs": "Documentación de Next.js",
+            "learn": "Tutorial oficial de Next.js",
+            "rendering": "Next.js: renderizado",
+            "react": "React: aprender React"
+          }
+        }
+      }
+    },
+    "vercel": {
+      "title": "Vercel",
+      "description": "Una plataforma de alojamiento para frontends y Next.js. Al enviar código a un repositorio de Git, la plataforma compila y publica el sitio en una red global.",
+      "article": {
+        "meaning": {
+          "heading": "¿Qué es Vercel?",
+          "definition": "Vercel es una <strong>plataforma de alojamiento</strong>. El código del sitio se guarda en un repositorio de Git, y Vercel lo compila, lo publica y sirve las páginas desde ubicaciones cercanas a los visitantes.",
+          "analogy": "Es como entregar páginas terminadas a una cadena de reparto: se dejan en el almacén y la cadena las copia y las distribuye a las tiendas locales.",
+          "keyPoint": "<strong>Vercel ejecuta y entrega el sitio. No escribe el código.</strong>"
+        },
+        "how-it-works": {
+          "heading": "¿Qué ocurre al enviar código?",
+          "intro": "La configuración habitual conecta un repositorio de Git para que cada envío se publique automáticamente.",
+          "steps": {
+            "connect": "Conectar un repositorio de Git en Vercel y elegir el proyecto que se va a desplegar.",
+            "push": "Cada envío avisa a Vercel, que inicia una compilación nueva.",
+            "build": "Vercel instala las dependencias y ejecuta el comando de compilación para generar los archivos desplegables.",
+            "serve": "Una compilación correcta se publica, y cada envío obtiene además una URL de vista previa."
+          },
+          "note": "Una compilación fallida no sustituye la versión activa. Se pueden leer los registros y decidir si conviene reintentar."
+        },
+        "example": {
+          "heading": "Publicar desde la línea de comandos",
+          "intro": "También se puede publicar un proyecto manualmente desde la terminal.",
+          "points": {
+            "install": "Instalar primero la herramienta de línea de comandos de Vercel.",
+            "preview": "Ejecutar <code>vercel</code>, iniciar sesión y confirmar la configuración; así se obtiene una URL de vista previa.",
+            "production": "Ejecutar <code>vercel --prod</code> para publicar esta compilación en el dominio de producción."
+          },
+          "codeIntro": "Tres comandos: instalar, previsualizar y publicar en producción.",
+          "afterCode": "La primera ejecución hace algunas preguntas, como el nombre del proyecto y el framework. Después, se puede publicar repetidamente."
+        },
+        "comparison": {
+          "heading": "¿En qué se diferencia Vercel de alquilar un servidor?",
+          "intro": "Ambas opciones ponen un sitio en línea. La diferencia está en quién gestiona las máquinas.",
+          "columns": {
+            "aspect": "Aspecto",
+            "left": "Vercel",
+            "right": "Servidor propio"
+          },
+          "rows": {
+            "deploy": {
+              "label": "Cómo se publica",
+              "left": "Se envía el código y la compilación se despliega sola",
+              "right": "Hay que iniciar sesión, traer el código y reiniciar el servicio"
+            },
+            "ops": {
+              "label": "Quién mantiene la máquina",
+              "left": "La plataforma",
+              "right": "Hay que ocuparse del sistema operativo, la seguridad y el escalado"
+            },
+            "control": {
+              "label": "Cuánto control",
+              "left": "Hay que seguir las reglas de la plataforma: menos trabajo y menos opciones",
+              "right": "Se puede cambiar todo, pero hay que construirlo todo"
+            }
+          },
+          "mixed": "También se puede usar Vercel solo para el frontend y mantener la API y la base de datos en otro lugar. El proyecto completo no tiene que estar en la plataforma."
+        },
+        "uses": {
+          "heading": "¿Cuándo encaja Vercel?",
+          "intro": "Vercel encaja en proyectos con mucho frontend en los que un envío debería bastar para publicar.",
+          "items": {
+            "nextjs": "Proyectos de Next.js: la plataforma y el framework son de la misma empresa, así que la configuración es mínima.",
+            "preview": "Revisión en equipo: cada rama o envío puede generar una URL de vista previa.",
+            "static": "Sitios estáticos y documentación: compilar una vez y distribuir a nodos de todo el mundo."
+          },
+          "benefits": "Las compilaciones automáticas, las URL de vista previa y la entrega global eliminan mucho trabajo de servidor.",
+          "limits": "Las cuotas gratuitas son limitadas y los costes aumentan con el uso. La plataforma tiene sus propios límites, así que los backends complejos suelen ir en otro lugar."
+        },
+        "misconceptions": {
+          "heading": "Confusiones frecuentes",
+          "items": {
+            "next-only": {
+              "title": "¿Vercel solo puede desplegar Next.js?",
+              "body": "No. Admite muchos frameworks de frontend y sitios estáticos, aunque su compatibilidad con Next.js es la más completa."
+            },
+            "git-host": {
+              "title": "¿Vercel es un alojamiento de código como GitHub?",
+              "body": "No. El código sigue viviendo en un repositorio de Git. Vercel lee ese repositorio y se encarga de la compilación y la publicación."
+            },
+            "secrets": {
+              "title": "¿Es seguro incluir claves en el código y desplegar?",
+              "body": "No. Los secretos deben guardarse en variables de entorno. No hay que incluirlos en el repositorio ni exponerlos en el código del navegador."
+            }
+          }
+        },
+        "recap": {
+          "heading": "Comprueba lo que has entendido",
+          "question": "¿Qué hace Vercel cada vez que se envía código al repositorio de Git?",
+          "answer": "Vuelve a compilar y publicar.",
+          "reason": "Recibe el envío, instala las dependencias y ejecuta la compilación. Si todo va bien, publica y crea una URL de vista previa.",
+          "remember": "En resumen: <strong>Vercel convierte un envío de código en una publicación automática.</strong>"
+        },
+        "references": {
+          "heading": "Para seguir leyendo",
+          "intro": "Estas referencias son una buena forma de continuar.",
+          "links": {
+            "docs": "Documentación de Vercel",
+            "deployments": "Vercel: descripción general de los despliegues",
+            "nextjs": "Vercel: desplegar Next.js",
+            "env": "Vercel: variables de entorno"
+          }
+        }
+      }
+    },
+    "cloudflare": {
+      "title": "Cloudflare",
+      "description": "Un servicio de red global para CDN, DNS, protección y computación en el borde que hace que los sitios sean más rápidos y seguros.",
+      "article": {
+        "meaning": {
+          "heading": "¿Qué es Cloudflare?",
+          "definition": "Cloudflare es un <strong>servicio de red global</strong>. Cuando el dominio de un sitio se gestiona con Cloudflare, las solicitudes de los visitantes llegan primero a un nodo cercano de Cloudflare, que devuelve una copia en caché o reenvía la solicitud al servidor.",
+          "analogy": "Es como el guardia y los casilleros de paquetes en la entrada de un edificio: los visitantes se revisan en la puerta y los objetos de uso frecuente se guardan cerca en lugar de traerlos desde lejos.",
+          "keyPoint": "<strong>Cloudflare se sitúa delante del servidor y gestiona la caché, la aceleración y el filtrado.</strong>"
+        },
+        "how-it-works": {
+          "heading": "¿Adónde va una solicitud?",
+          "intro": "Un caso habitual es acelerar un sitio web. Una solicitud pasa por estos pasos.",
+          "steps": {
+            "nameserver": "Apuntar los servidores DNS del dominio a Cloudflare, que pasa a encargarse de la resolución de nombres.",
+            "edge": "La solicitud del visitante llega al nodo de Cloudflare más cercano.",
+            "cache": "Si ese nodo tiene una copia en caché utilizable, responde directamente; si no, la obtiene del origen.",
+            "protect": "Durante el recorrido, Cloudflare filtra el tráfico malicioso, ofrece HTTPS y registra los detalles de la solicitud."
+          },
+          "note": "El origen es el servidor que realmente aloja el sitio. Cloudflare no almacena el código; gestiona las solicitudes que pasan por él."
+        },
+        "example": {
+          "heading": "Leer la caché en una cabecera de respuesta",
+          "intro": "Una cabecera de respuesta indica si Cloudflare gestionó la solicitud.",
+          "points": {
+            "dns": "Primero, confirmar que el dominio está en Cloudflare y que el proxy está activado.",
+            "headers": "Usar curl para inspeccionar las cabeceras de respuesta y encontrar server y cf-cache-status.",
+            "cache": "Un valor HIT en <code>cf-cache-status</code> significa que se usó la copia en caché; MISS significa que se pidió contenido nuevo al origen."
+          },
+          "codeIntro": "Este comando solo envía una solicitud. No cambia nada.",
+          "afterCode": "Las cabeceras varían entre sitios, pero server: cloudflare normalmente significa que la solicitud pasó por Cloudflare."
+        },
+        "comparison": {
+          "heading": "¿En qué se diferencia de conectarse directamente a un servidor?",
+          "intro": "Añadir una capa de red cambia el camino que sigue una solicitud.",
+          "columns": {
+            "aspect": "Aspecto",
+            "left": "A través de Cloudflare",
+            "right": "Directo al origen"
+          },
+          "rows": {
+            "distance": {
+              "label": "Distancia al visitante",
+              "left": "Llega primero al nodo más cercano",
+              "right": "Se conecta al lugar donde esté el origen"
+            },
+            "protection": {
+              "label": "Protección",
+              "left": "Puede bloquear ataques y ocultar la dirección del origen",
+              "right": "El origen queda expuesto y debe protegerse por sí mismo"
+            },
+            "cache": {
+              "label": "Caché",
+              "left": "Los recursos estáticos pueden residir en nodos de todo el mundo",
+              "right": "Todas las solicitudes llegan al origen"
+            }
+          },
+          "mixed": "El contenido dinámico no debería almacenarse en caché durante mucho tiempo. Se pueden almacenar solo imágenes, estilos y scripts mientras las páginas siguen viniendo del origen."
+        },
+        "uses": {
+          "heading": "¿Cuándo encaja Cloudflare?",
+          "intro": "Cloudflare encaja cuando un sitio necesita ser más rápido, más resistente o más seguro.",
+          "items": {
+            "cdn": "Entrega de recursos estáticos: imágenes, estilos y scripts almacenados en caché en nodos de todo el mundo.",
+            "dns": "DNS y HTTPS: gestionar los registros en un solo lugar y emitir certificados automáticamente.",
+            "protection": "Protección: bloquear el tráfico malicioso y los ataques web habituales."
+          },
+          "benefits": "Muchos nodos globales, un plan gratuito utilizable y una incorporación que a menudo solo requiere un cambio de DNS.",
+          "limits": "Las reglas de caché deben ajustarse al contenido, y una regla incorrecta muestra a los visitantes una página antigua. Las solicitudes dinámicas mejoran poco si el origen es lento."
+        },
+        "misconceptions": {
+          "heading": "Confusiones frecuentes",
+          "items": {
+            "hosting": {
+              "title": "¿Cloudflare es un servicio de alojamiento web?",
+              "body": "No exactamente. Se encarga principalmente de DNS, caché, protección y lógica en el borde. Los archivos del sitio suelen permanecer en el servidor propio o en otra plataforma de alojamiento."
+            },
+            "always-fast": {
+              "title": "¿Un sitio es siempre más rápido con Cloudflare?",
+              "body": "No. Los recursos estáticos se aceleran cuando la caché acierta. Si el origen es lento o la caché no está configurada, la mejora puede ser pequeña."
+            },
+            "replace-server": {
+              "title": "¿Cloudflare permite prescindir del servidor?",
+              "body": "Normalmente no. Reenvía las solicitudes al origen, y el origen sigue generando las páginas. Productos como Workers pueden ejecutar código en el borde, pero esa es una tarea aparte."
+            }
+          }
+        },
+        "recap": {
+          "heading": "Comprueba lo que has entendido",
+          "question": "Un visitante solicita una imagen y el nodo de Cloudflare la tiene en caché. ¿Qué ocurre?",
+          "answer": "Se devuelve la copia en caché.",
+          "reason": "La solicitud nunca llega al origen, así que el visitante recibe la imagen antes y el origen trabaja menos.",
+          "remember": "En resumen: <strong>Cloudflare se sitúa delante del origen: primero guarda en caché y comprueba, y después decide si hay que volver a él.</strong>"
+        },
+        "references": {
+          "heading": "Para seguir leyendo",
+          "intro": "Estas referencias son una buena forma de continuar.",
+          "links": {
+            "how": "Cloudflare: cómo funciona",
+            "dns": "Documentación de DNS de Cloudflare",
+            "cache": "Documentación de caché de Cloudflare",
+            "workers": "Documentación de Cloudflare Workers"
+          }
+        }
+      }
+    },
+    "supabase": {
+      "title": "Supabase",
+      "description": "Una plataforma de backend de código abierto construida sobre PostgreSQL que ofrece base de datos, autenticación, almacenamiento de archivos y suscripciones en tiempo real.",
+      "article": {
+        "meaning": {
+          "heading": "¿Qué es Supabase?",
+          "definition": "Supabase es una <strong>plataforma de backend</strong>. Empaqueta una base de datos, autenticación, almacenamiento de archivos y actualizaciones en tiempo real para que un frontend pueda usarlos directamente en lugar de construir un backend desde cero.",
+          "analogy": "Es como una cocina equipada: los fogones, la nevera y la fontanería ya están conectados, así que se puede empezar a cocinar con los propios ingredientes.",
+          "keyPoint": "<strong>PostgreSQL es el núcleo de Supabase. Las demás funciones se construyen alrededor de él.</strong>"
+        },
+        "how-it-works": {
+          "heading": "De un proyecto vacío a datos en vivo",
+          "intro": "Pasar de un proyecto vacío a un frontend que lee y escribe datos suele requerir estos pasos.",
+          "steps": {
+            "project": "Crear un proyecto de Supabase y obtener su URL y una clave de API publicable.",
+            "schema": "Crear tablas en la base de datos y definir qué guarda cada columna.",
+            "query": "El frontend consulta o escribe mediante el SDK oficial, que llama a las API generadas.",
+            "auth": "Activar la autenticación y configurar la seguridad a nivel de fila (RLS) para decidir quién puede leer y escribir."
+          },
+          "note": "La seguridad a nivel de fila es una regla de la base de datos, no un botón oculto del frontend. Ocultar un botón deja la API accesible igualmente."
+        },
+        "example": {
+          "heading": "Consultar la tabla notes",
+          "intro": "Este código lee todas las filas de la tabla notes.",
+          "points": {
+            "client": "Crear un cliente con la URL del proyecto y la clave publicable.",
+            "query": "<code>from('notes').select('*')</code> solicita todas las columnas de la tabla notes.",
+            "result": "data contiene las filas y error contiene cualquier fallo. Hay que gestionar ambos."
+          },
+          "codeIntro": "Esta consulta también se ejecuta en el navegador.",
+          "afterCode": "Con RLS activado, el usuario que ha iniciado sesión y las reglas deciden qué filas se devuelven. La clave puede ser pública, pero las reglas no se pueden omitir."
+        },
+        "comparison": {
+          "heading": "¿En qué se diferencia Supabase de construir un backend?",
+          "intro": "Ambas opciones pueden servir datos. La diferencia está en quién construye la infraestructura.",
+          "columns": {
+            "aspect": "Aspecto",
+            "left": "Supabase",
+            "right": "Backend propio"
+          },
+          "rows": {
+            "database": {
+              "label": "Base de datos",
+              "left": "PostgreSQL viene incluido con el proyecto",
+              "right": "Hay que instalarlo, hacer copias de seguridad y mantenerlo"
+            },
+            "auth": {
+              "label": "Autenticación",
+              "left": "Cuentas, inicio de sesión social y permisos incluidos",
+              "right": "Hay que construirlo o conectar otro servicio"
+            },
+            "ops": {
+              "label": "Operaciones",
+              "left": "La plataforma gestiona las actualizaciones y la disponibilidad",
+              "right": "Hay que vigilar el servidor y escalarlo"
+            }
+          },
+          "mixed": "Supabase también puede autoalojarse. Cuando la lógica de negocio se vuelve compleja, todavía se puede escribir código de servidor propio y conectarlo a la misma base de datos."
+        },
+        "uses": {
+          "heading": "¿Cuándo encaja Supabase?",
+          "intro": "Supabase encaja en aplicaciones que necesitan inicio de sesión y datos almacenados sin construir un backend desde cero.",
+          "items": {
+            "prototype": "Prototipos y MVP: hacer funcionar el flujo principal antes de construir un backend completo.",
+            "team": "Equipos pequeños: base de datos, autenticación y almacenamiento de archivos en una sola configuración.",
+            "realtime": "Colaboración en tiempo real: los cambios pueden llegar a la página que alguien está viendo."
+          },
+          "benefits": "Listo para usar, construido sobre PostgreSQL estándar y con la posibilidad de exportar los datos en cualquier momento.",
+          "limits": "La plataforma oculta algunos detalles, y los permisos complejos y la lógica de negocio siguen siendo responsabilidad de quien desarrolla. Los proyectos gratuitos también tienen recursos limitados."
+        },
+        "misconceptions": {
+          "heading": "Confusiones frecuentes",
+          "items": {
+            "just-database": {
+              "title": "¿Supabase es solo una base de datos?",
+              "body": "No. La base de datos es el núcleo, pero la autenticación, el almacenamiento, el tiempo real y las API vienen incluidos."
+            },
+            "anon-key": {
+              "title": "¿Es seguro incluir la clave de API publicable en una página web?",
+              "body": "La clave en sí puede ser pública, pero debe combinarse con RLS. Sin reglas, algunas personas podrían leer datos que no deberían ver."
+            },
+            "small-only": {
+              "title": "¿Supabase es solo para proyectos pequeños?",
+              "body": "No. Se puede pagar por más capacidad o autoalojar la plataforma, pero a mayor escala sigue siendo necesario entender las bases de datos y los permisos."
+            }
+          }
+        },
+        "recap": {
+          "heading": "Comprueba lo que has entendido",
+          "question": "Si el frontend consulta Supabase directamente, ¿cómo se impide que un usuario vea los datos de otro?",
+          "answer": "Con la seguridad a nivel de fila.",
+          "reason": "Las reglas de la base de datos están ligadas al usuario que ha iniciado sesión, así que una consulta devuelve solo las filas permitidas en lugar de depender de controles ocultos del frontend.",
+          "remember": "En resumen: <strong>Supabase empaqueta el backend, pero las reglas de permisos se siguen definiendo aparte.</strong>"
+        },
+        "references": {
+          "heading": "Para seguir leyendo",
+          "intro": "Estas referencias son una buena forma de continuar.",
+          "links": {
+            "docs": "Documentación de Supabase",
+            "database": "Supabase: base de datos",
+            "auth": "Supabase: autenticación",
+            "rls": "Supabase: seguridad a nivel de fila"
+          }
         }
       }
     }

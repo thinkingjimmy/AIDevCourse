@@ -1,4 +1,10 @@
 {
   "title": "博客",
-  "pages": ["index", "ai-observations"]
+  "pages": [
+    "index",
+    "no-loyalty-to-ai-coding-tools",
+    "enterprise-ai-adoption-roi",
+    "ai-era-saas",
+    "gpt-6-2-vs-opus-5-5"
+  ]
 }

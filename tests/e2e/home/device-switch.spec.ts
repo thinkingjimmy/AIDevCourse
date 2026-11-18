@@ -39,13 +39,13 @@ test('pixel arrows switch devices, theme, and media and return to the selected v
   const blog = page.getByRole('region', { name: '博客', exact: true });
   const article = blog.locator('[data-blog-article="enterprise-ai-adoption-roi"]');
   const disc = article.locator('.optical-disc-surface');
-  await expect(blog.locator('[data-blog-article]')).toHaveCount(2);
+  await expect(blog.locator('[data-blog-article]')).toHaveCount(4);
   await expect(page.getByRole('region', { name: /^(入门|中级|词典)$/ })).toHaveCount(0);
   const discs = await blog.locator('.optical-disc-surface').evaluateAll(elements => elements.map(element => {
     const { width, height } = element.getBoundingClientRect();
     return { width, height, radius: getComputedStyle(element).borderTopLeftRadius };
   }));
-  expect(discs).toEqual(Array.from({ length: 2 }, () => ({ width: 103, height: 103, radius: '50%' })));
+  expect(discs).toEqual(Array.from({ length: 4 }, () => ({ width: 103, height: 103, radius: '50%' })));
   await testInfo.attach('PS2 and blog articles', { body: await page.screenshot(), contentType: 'image/png' });
   await expect(disc).toHaveCSS('animation-play-state', 'paused');
   await article.hover();

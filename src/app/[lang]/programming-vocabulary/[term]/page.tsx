@@ -7,6 +7,7 @@ import { pageMetadata } from '@/lib/metadata';
 import { programmingCategories, programmingCategory, programmingTerm, programmingSections } from '@/lib/vocabulary/programming';
 import { ProgrammingReader } from '@/components/vocabulary/programming/reader';
 import { StaticWebsiteArticle } from '@/components/vocabulary/programming/static-website-article';
+import { TermArticle } from '@/components/vocabulary/programming/term-article';
 
 type Props = { params: Promise<{ lang: string; term: string }> };
 export function generateStaticParams() {
@@ -36,7 +37,9 @@ export default async function ProgrammingDictionaryTerm({ params }: Props) {
   const path = localePath(lang, `/programming-vocabulary/${term.id}`);
   return <NextIntlClientProvider messages={{ ProgrammingVocabulary: { ...copy, terms: summaries }, Ui: messages.Ui, Course: messages.Course }}>
     <ProgrammingReader key={`${lang}-${term.id}`} term={term} title={t(`terms.${term.id}.title`)} outline={outline} outlineLabel={course('onThisPage')}>
-      <StaticWebsiteArticle locale={lang} path={path} outlineLabel={course('onThisPage')} />
+      {term.id === 'static-website'
+        ? <StaticWebsiteArticle locale={lang} path={path} outlineLabel={course('onThisPage')} />
+        : <TermArticle locale={lang} term={term} path={path} outlineLabel={course('onThisPage')} />}
     </ProgrammingReader>
   </NextIntlClientProvider>;
 }

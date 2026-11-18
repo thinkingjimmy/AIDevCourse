@@ -1,7 +1,10 @@
 {
   "title": "编程术语词典",
-  "description": "通过简明解释和交互案例，理解编程中的常见术语。从静态网站开始，弄清网页如何被送到浏览器。",
+  "description": "通过简明解释和交互案例，理解编程中的常见术语。从静态网站开始，再认识 Git、Node.js、Next.js 和常用的部署服务。",
   "web-foundations": "网站基础",
+  "version-control": "版本控制",
+  "runtime-and-framework": "运行时与框架",
+  "deployment-and-cloud": "部署与云服务",
   "source": "术语参考：MDN",
   "search": "搜索词条",
   "searchPlaceholder": "搜索词条，中英文均可",
@@ -135,6 +138,642 @@
           "pages": "GitHub Docs：在 GitHub Pages 上发布静态网页",
           "javascript": "MDN：JavaScript 能给网页做什么",
           "caching": "MDN：浏览器缓存"
+        }
+      }
+    },
+    "git": {
+      "title": "Git",
+      "description": "记录代码每次改动的版本控制工具。有了它，你可以回到过去的版本，也能和别人一起改同一个项目。",
+      "article": {
+        "meaning": {
+          "heading": "Git 是什么？",
+          "definition": "Git 是一个<strong>版本控制工具</strong>。它把项目每个阶段的文件存成一份快照，并记下谁在什么时候改了什么。你可以把它想成一本可以倒着翻的相册：每张照片都是一个版本。",
+          "analogy": "就像游戏里的存档：打到哪一关存一次，后面打坏了，可以读回之前的存档。Git 存的不是游戏进度，而是代码和文件。",
+          "keyPoint": "<strong>Git 管版本历史，GitHub 只是存放 Git 仓库的网站。</strong>"
+        },
+        "how-it-works": {
+          "heading": "一次提交，Git 做了什么？",
+          "intro": "先看最常用的四步。下面的命令在你自己电脑上执行，不需要联网。",
+          "steps": {
+            "init": "在项目文件夹里运行 <code>git init</code>，Git 会建一个仓库，开始记录这个文件夹的改动。",
+            "stage": "用 <code>git add</code> 挑出这次要记录的改动。没挑中的改动先留着，等下一次。",
+            "commit": "运行 <code>git commit</code>，Git 把挑好的改动存成一份快照，并留下说明、作者和时间。",
+            "branch": "以后可以用提交记录回到旧版本，或者开一个分支，在另一条线上改，改好再合并。"
+          },
+          "note": "提交发生在本地。只有执行 <code>git push</code> 或从远端拉取时，才需要网络。"
+        },
+        "example": {
+          "heading": "看一次真实的提交",
+          "intro": "假设你刚写好一个首页，想把它记进版本历史。",
+          "points": {
+            "repo": "<code>git init</code>：把当前文件夹变成 Git 仓库，多出一个隐藏的 <code>.git</code> 目录。",
+            "snapshot": "<code>git add</code> 和 <code>git commit</code>：先挑改动，再存成一份带说明的快照。",
+            "history": "<code>git log</code>：列出所有提交，每条都有自己的编号，叫提交哈希。"
+          },
+          "codeIntro": "三条命令，依次完成建仓库、挑改动、存快照。",
+          "afterCode": "现在 <code>index.html</code> 的第一个版本已经存好了。以后每改一次再提交一次，历史就会一页页长出来。"
+        },
+        "comparison": {
+          "heading": "Git 和「复制文件夹」有什么不同？",
+          "intro": "手工备份也能留下旧版本，但做法和 Git 很不一样。",
+          "columns": {
+            "aspect": "比一比",
+            "left": "Git",
+            "right": "复制文件夹"
+          },
+          "rows": {
+            "stores": {
+              "label": "存什么",
+              "left": "每次提交的完整历史",
+              "right": "只有当前这一份副本"
+            },
+            "restore": {
+              "label": "找回旧版本",
+              "left": "切换到某次提交，随时可回",
+              "right": "翻找备份文件夹，容易弄混"
+            },
+            "team": {
+              "label": "多人一起改",
+              "left": "各开分支，改完再合并",
+              "right": "互相覆盖，很难知道谁改了什么"
+            }
+          },
+          "mixed": "Git 也能和网盘或 GitHub 一起用：本地照常提交，再把仓库同步到远端，别人就能看到和拉取。"
+        },
+        "uses": {
+          "heading": "什么时候该用 Git？",
+          "intro": "只要一个项目会持续修改，尤其是多人一起改，就值得用 Git。",
+          "items": {
+            "personal": "个人项目：改坏了能回退，试新想法可以开分支。",
+            "team": "团队协作：每个人在自己的分支上改，再合并到主分支。",
+            "open-source": "参与开源：把仓库复制一份（fork），改完再发起合并请求。"
+          },
+          "benefits": "Git 的分支很轻，建一个分支几乎不花时间；历史完整，能查清每次改动。",
+          "limits": "它不擅长存很大的二进制文件，也不是自动备份。仓库丢了，没同步到别处的历史也会丢。"
+        },
+        "misconceptions": {
+          "heading": "容易弄错的几件事",
+          "items": {
+            "github": {
+              "title": "Git 和 GitHub 是同一个东西吗？",
+              "body": "不是。Git 是装在你电脑上的工具，GitHub 是放 Git 仓库的网站。你也可以用 GitLab、Gitea，或者只在自己的电脑上用 Git。"
+            },
+            "upload": {
+              "title": "提交（commit）等于上传吗？",
+              "body": "不等于。提交只是把改动存进本地仓库；上传要再执行 <code>git push</code>，把本地提交送到远端。"
+            },
+            "branch-weight": {
+              "title": "开分支会不会很重？",
+              "body": "不会。Git 的分支只是一个指向某次提交的标签，建起来几乎不花时间，所以可以放心多开。"
+            }
+          }
+        },
+        "recap": {
+          "heading": "考考你",
+          "question": "你改坏了代码，但之前已经提交过。现在想回到上一个提交，应该怎么做？",
+          "answer": "能回去。",
+          "reason": "因为上一个提交还完整地留在仓库里。可以切回那次提交查看，或者用新的提交把文件恢复成那时的样子。",
+          "remember": "记住：<strong>Git 保存的是一串提交，不是最后一份文件。</strong>"
+        },
+        "references": {
+          "heading": "想了解更多",
+          "intro": "下面这些资料可以接着看。",
+          "links": {
+            "book": "Pro Git：Git 是什么",
+            "docs": "Git 命令参考",
+            "github": "GitHub Docs：Git 和 GitHub 的关系",
+            "branching": "Pro Git：分支是什么"
+          }
+        }
+      }
+    },
+    "node-js": {
+      "title": "Node.js",
+      "description": "让 JavaScript 能在浏览器之外运行的运行环境，常用来写网站后端、命令行工具和开发工具。",
+      "article": {
+        "meaning": {
+          "heading": "Node.js 是什么？",
+          "definition": "Node.js 是一个 <strong>JavaScript 运行环境</strong>。JavaScript 本来只在浏览器里跑，Node.js 让它也能在你自己的电脑或服务器上跑。",
+          "analogy": "浏览器是 JavaScript 的一个家，Node.js 是另一个家。搬了家，语言还是那门语言，只是能用的家具变了。",
+          "keyPoint": "<strong>JavaScript 是语言，Node.js 是运行它的环境。</strong>"
+        },
+        "how-it-works": {
+          "heading": "一段程序是怎么跑起来的？",
+          "intro": "写一段 JavaScript，交给 Node.js 执行，它就能读写文件、开服务器。",
+          "steps": {
+            "write": "写一个 .js 或 .mjs 文件，里面是要执行的程序。",
+            "run": "在终端运行 <code>node 文件名</code>，Node.js 读取并执行它。",
+            "capabilities": "执行时可以读写文件、发起网络请求、连接数据库，这些在浏览器里通常做不到。",
+            "serve": "也可以启动一个服务器，一直等着接收请求，比如网站后端接口。"
+          },
+          "note": "Node.js 只负责执行 JavaScript，并提供这些能力；它不规定你怎么组织项目。"
+        },
+        "example": {
+          "heading": "用 Node.js 起一个小服务器",
+          "intro": "下面这段程序会启动一个服务器，有人访问时回一句话。",
+          "points": {
+            "file": "保存成 <code>server.mjs</code>。<code>node:http</code> 是 Node.js 自带的模块，不用另外安装。",
+            "run": "在终端运行 <code>node server.mjs</code>。",
+            "result": "打开 http://localhost:3000，就能看到 Hello from Node.js。"
+          },
+          "codeIntro": "这段代码只用了 Node.js 自带的模块。",
+          "afterCode": "服务器启动后会一直运行，直到你在终端按 Ctrl+C 停掉它。"
+        },
+        "comparison": {
+          "heading": "Node.js 和浏览器里的 JavaScript 有什么不同？",
+          "intro": "同一门语言，放在不同环境里，能做的事不一样。",
+          "columns": {
+            "aspect": "比一比",
+            "left": "Node.js",
+            "right": "浏览器"
+          },
+          "rows": {
+            "where": {
+              "label": "运行在哪",
+              "left": "你的电脑或服务器上",
+              "right": "网页所在的浏览器里"
+            },
+            "can": {
+              "label": "能做什么",
+              "left": "读写文件、开服务器、连数据库",
+              "right": "操作页面、响应用户点击、发网络请求"
+            },
+            "cannot": {
+              "label": "不能做什么",
+              "left": "直接操作网页的 DOM",
+              "right": "随意读写用户电脑上的文件"
+            }
+          },
+          "mixed": "写前端和后端可以用同一门语言，但代码运行的位置不同，能用的能力也不同。"
+        },
+        "uses": {
+          "heading": "什么时候适合用 Node.js？",
+          "intro": "需要「在浏览器之外自动做点事」时，Node.js 很合适。",
+          "items": {
+            "backend": "网站后端：接收请求、查数据库、返回数据。",
+            "cli": "命令行工具：批量改文件、生成项目、跑脚本。",
+            "tooling": "开发工具：很多构建工具和开发服务器本身就跑在 Node.js 上。"
+          },
+          "benefits": "前后端用同一门语言，切换成本低；npm 上有大量现成的包。",
+          "limits": "它默认一次只忙一件事，大量计算会卡住其他请求；服务器也要自己部署和维护。"
+        },
+        "misconceptions": {
+          "heading": "容易弄错的几件事",
+          "items": {
+            "language": {
+              "title": "Node.js 是一门编程语言吗？",
+              "body": "不是。语言是 JavaScript，Node.js 是执行 JavaScript 的环境。"
+            },
+            "browser": {
+              "title": "Node.js 是不是只能在服务器上用？",
+              "body": "不是。自己的电脑上也能用来跑脚本、处理文件，不必联网，也不必部署。"
+            },
+            "framework": {
+              "title": "Node.js 是一个框架吗？",
+              "body": "不是。它不规定路由、页面或目录结构；Express、Next.js 这类才是框架。"
+            }
+          }
+        },
+        "recap": {
+          "heading": "考考你",
+          "question": "在 Node.js 里能直接写 document.querySelector 操作网页吗？",
+          "answer": "不能。",
+          "reason": "因为 Node.js 里没有网页，也没有浏览器的 DOM。它擅长的是文件、网络和服务器。",
+          "remember": "记住：<strong>JavaScript 是语言，Node.js 是让它离开浏览器也能跑的环境。</strong>"
+        },
+        "references": {
+          "heading": "想了解更多",
+          "intro": "下面这些资料可以接着看。",
+          "links": {
+            "intro": "Node.js：入门介绍",
+            "about": "Node.js：关于 Node.js",
+            "docs": "Node.js API 文档",
+            "http": "Node.js：HTTP 模块文档"
+          }
+        }
+      }
+    },
+    "next-js": {
+      "title": "Next.js",
+      "description": "基于 React 的全栈 Web 框架，把路由、渲染、数据获取和构建打包在一起。",
+      "article": {
+        "meaning": {
+          "heading": "Next.js 是什么？",
+          "definition": "Next.js 是一个建立在 <strong>React</strong> 之上的 Web 框架。React 负责把界面拆成组件，Next.js 再补上路由、渲染方式、数据获取和打包部署。",
+          "analogy": "如果 React 是积木，Next.js 就是说明书、工具箱和装配线：积木还是那些积木，但拼装和出厂有了统一做法。",
+          "keyPoint": "<strong>Next.js 不是新语言，也不是 React 的替代品，它是 React 之上的一套约定。</strong>"
+        },
+        "how-it-works": {
+          "heading": "从建项目到上线，要经过什么？",
+          "intro": "从建项目到上线，Next.js 把常见步骤都安排好了。",
+          "steps": {
+            "create": "用 create-next-app 建项目，目录、配置和开发服务器一次到位。",
+            "page": "在 app 目录里放页面文件，文件路径就是网址。",
+            "render": "按页面需要选择在服务器渲染、在浏览器渲染，或提前生成静态页面。",
+            "build": "运行构建命令，Next.js 打包并优化资源，再交给托管平台发布。"
+          },
+          "note": "这些约定能省掉很多配置，但也意味着项目要按它的规则组织。"
+        },
+        "example": {
+          "heading": "看一个最小的页面",
+          "intro": "一个最小的 Next.js 页面，就是一个导出 React 组件的文件。",
+          "points": {
+            "file": "文件放在 <code>app/page.tsx</code>，导出一个默认组件。",
+            "route": "<code>app/page.tsx</code> 对应首页 /；再加 <code>app/about/page.tsx</code>，就得到 /about。",
+            "result": "运行开发服务器后打开首页，就能看到这个标题。"
+          },
+          "codeIntro": "这个文件既是页面，也是路由。",
+          "afterCode": "不需要另外写路由表：文件放在哪，网址就在哪。"
+        },
+        "comparison": {
+          "heading": "Next.js 和「只用 React」有什么不同？",
+          "intro": "React 负责界面，Next.js 负责把界面变成能上线的网站。",
+          "columns": {
+            "aspect": "比一比",
+            "left": "Next.js",
+            "right": "只用 React"
+          },
+          "rows": {
+            "routing": {
+              "label": "页面路由",
+              "left": "按文件路径自动生成",
+              "right": "自己选路由库并配置"
+            },
+            "rendering": {
+              "label": "渲染方式",
+              "left": "服务端渲染、静态生成、客户端渲染都能选",
+              "right": "默认在浏览器里渲染"
+            },
+            "build": {
+              "label": "构建与部署",
+              "left": "内置打包、优化和部署约定",
+              "right": "自己搭构建流程"
+            }
+          },
+          "mixed": "只用 React 也能做出完整网站，只是路由、渲染和构建要自己拼；Next.js 把这些常见选择提前做好了。"
+        },
+        "uses": {
+          "heading": "什么时候适合用 Next.js？",
+          "intro": "既要有页面，又要有后端接口，或者很在意首屏和搜索收录时，Next.js 很合适。",
+          "items": {
+            "content": "内容站：博客、文档、课程，页面可以提前生成。",
+            "seo": "需要被搜索引擎读懂的页面：服务端渲染让内容一开始就在 HTML 里。",
+            "fullstack": "小团队的全栈应用：页面和接口放在同一个项目里。"
+          },
+          "benefits": "约定清楚、开箱即用，静态页面和动态接口可以放在一起。",
+          "limits": "框架有自己的规则和版本变化；只有几个静态页面时，可能显得重。"
+        },
+        "misconceptions": {
+          "heading": "容易弄错的几件事",
+          "items": {
+            "react-replacement": {
+              "title": "Next.js 会取代 React 吗？",
+              "body": "不会。Next.js 内部就在用 React，写页面仍然要会 React。"
+            },
+            "always-fast": {
+              "title": "用了 Next.js 就一定快吗？",
+              "body": "不一定。图片大小、数据请求和渲染方式都会影响速度，框架只提供工具。"
+            },
+            "vercel-only": {
+              "title": "Next.js 只能部署到 Vercel 吗？",
+              "body": "不是。Vercel 是同一家公司做的平台，部署起来最省事，但也可以部署到别的 Node.js 环境。"
+            }
+          }
+        },
+        "recap": {
+          "heading": "考考你",
+          "question": "在 Next.js 里新增一个 /about 页面，通常要做什么？",
+          "answer": "加一个文件。",
+          "reason": "在 <code>app/about/page.tsx</code> 放一个导出组件的文件，路由就出现了，不用单独注册。",
+          "remember": "记住：<strong>Next.js 用文件路径决定网址，用约定减少配置。</strong>"
+        },
+        "references": {
+          "heading": "想了解更多",
+          "intro": "下面这些资料可以接着看。",
+          "links": {
+            "docs": "Next.js 文档",
+            "learn": "Next.js 官方教程",
+            "rendering": "Next.js：渲染方式",
+            "react": "React：学习 React"
+          }
+        }
+      }
+    },
+    "vercel": {
+      "title": "Vercel",
+      "description": "面向前端和 Next.js 的托管平台。把代码推到 Git 仓库，它会自动构建并发布到全球网络。",
+      "article": {
+        "meaning": {
+          "heading": "Vercel 是什么？",
+          "definition": "Vercel 是一个<strong>托管平台</strong>。你把网站代码放到 Git 仓库，它负责构建、发布，并把页面送到离访客更近的节点。",
+          "analogy": "像把做好的网页交给一家连锁快递：你只管把货送到总仓，它负责复印、分送到各地门店。",
+          "keyPoint": "<strong>Vercel 负责把网站跑起来、送到访客面前，不负责替你写代码。</strong>"
+        },
+        "how-it-works": {
+          "heading": "推送一次代码，Vercel 做了什么？",
+          "intro": "最常见的用法是连上 Git 仓库，之后每次推送都自动发布。",
+          "steps": {
+            "connect": "在 Vercel 里连接 Git 仓库，选中要部署的项目。",
+            "push": "每次推送代码，Vercel 收到通知，开始一次新的构建。",
+            "build": "它安装依赖、运行构建命令，生成可以发布的文件。",
+            "serve": "构建成功后就发布；每次推送还会得到一个预览地址。"
+          },
+          "note": "构建失败时不会覆盖线上版本，你可以先看日志再决定是否重试。"
+        },
+        "example": {
+          "heading": "用命令行发布一个项目",
+          "intro": "也可以用命令行手动发布一个项目。",
+          "points": {
+            "install": "先安装 Vercel 的命令行工具。",
+            "preview": "运行 <code>vercel</code>，按提示登录并确认设置，会得到一个预览地址。",
+            "production": "运行 <code>vercel --prod</code>，把这次构建发布到正式域名。"
+          },
+          "codeIntro": "三条命令，依次完成安装、预览和正式发布。",
+          "afterCode": "第一次运行会问几个问题，比如项目名和框架；确认后，之后就可以重复发布。"
+        },
+        "comparison": {
+          "heading": "Vercel 和自己租服务器有什么不同？",
+          "intro": "两种方式都能让网站上线，差别在谁来管机器。",
+          "columns": {
+            "aspect": "比一比",
+            "left": "Vercel",
+            "right": "自己租服务器"
+          },
+          "rows": {
+            "deploy": {
+              "label": "怎么发布",
+              "left": "推送代码后自动构建发布",
+              "right": "自己登录服务器，拉代码、重启服务"
+            },
+            "ops": {
+              "label": "谁维护机器",
+              "left": "平台负责",
+              "right": "你自己负责系统、安全和扩容"
+            },
+            "control": {
+              "label": "控制程度",
+              "left": "按平台规则使用，省心但选择少",
+              "right": "什么都能改，但都要自己搭"
+            }
+          },
+          "mixed": "也可以把 Vercel 只当前端，把接口和数据库放在别处；它不要求整个项目都住在平台上。"
+        },
+        "uses": {
+          "heading": "什么时候适合用 Vercel？",
+          "intro": "前端为主、希望推送就能上线时，Vercel 很合适。",
+          "items": {
+            "nextjs": "Next.js 项目：平台和框架来自同一家公司，配置最少。",
+            "preview": "团队评审：每个分支或每次推送都能生成一个预览地址。",
+            "static": "静态站点和文档：构建一次，分发到各地节点。"
+          },
+          "benefits": "自动构建、预览地址、全球分发，省掉很多服务器操作。",
+          "limits": "免费额度有限，用量大时费用会上涨；平台有自己的限制，复杂后端通常要放到别处。"
+        },
+        "misconceptions": {
+          "heading": "容易弄错的几件事",
+          "items": {
+            "next-only": {
+              "title": "Vercel 只能部署 Next.js 吗？",
+              "body": "不是。它也支持很多前端框架和静态站点，只是对 Next.js 的支持最完整。"
+            },
+            "git-host": {
+              "title": "Vercel 是像 GitHub 一样的代码托管吗？",
+              "body": "不是。代码仍然放在 Git 仓库里，Vercel 读取仓库并负责构建发布。"
+            },
+            "secrets": {
+              "title": "把密钥写进代码再部署，安全吗？",
+              "body": "不安全。应该用环境变量保存密钥，不要提交到仓库，也不要在浏览器代码里暴露。"
+            }
+          }
+        },
+        "recap": {
+          "heading": "考考你",
+          "question": "每次把代码推到 Git 仓库，Vercel 都会做什么？",
+          "answer": "重新构建并发布。",
+          "reason": "它收到推送通知后安装依赖、运行构建；成功就发布，并生成一个预览地址。",
+          "remember": "记住：<strong>Vercel 把「推送代码」变成「自动上线」。</strong>"
+        },
+        "references": {
+          "heading": "想了解更多",
+          "intro": "下面这些资料可以接着看。",
+          "links": {
+            "docs": "Vercel 文档",
+            "deployments": "Vercel：部署概览",
+            "nextjs": "Vercel：部署 Next.js",
+            "env": "Vercel：环境变量"
+          }
+        }
+      }
+    },
+    "cloudflare": {
+      "title": "Cloudflare",
+      "description": "提供 CDN、DNS、防护和边缘计算的全球网络服务，让网站更快、更安全。",
+      "article": {
+        "meaning": {
+          "heading": "Cloudflare 是什么？",
+          "definition": "Cloudflare 是一个<strong>全球网络服务</strong>。网站把域名交给它管理后，访客的请求先到附近的 Cloudflare 节点，再决定是直接返回缓存，还是转给你的服务器。",
+          "analogy": "像小区门口的保安和快递柜：先检查来人，再把常用的东西放在门口，住户不用每次都跑到远处去取。",
+          "keyPoint": "<strong>Cloudflare 站在你的服务器前面，负责缓存、加速和拦截。</strong>"
+        },
+        "how-it-works": {
+          "heading": "一个请求会经过哪些地方？",
+          "intro": "以最常见的网站加速为例，请求会经过这几步。",
+          "steps": {
+            "nameserver": "把域名的 DNS 服务器改成 Cloudflare，之后域名解析由它负责。",
+            "edge": "访客请求先到离他最近的 Cloudflare 节点。",
+            "cache": "如果节点上有可用的缓存，就直接返回；没有就向你的源站要一份。",
+            "protect": "沿途还会过滤恶意流量、提供 HTTPS，并记录请求情况。"
+          },
+          "note": "源站就是你自己真正放网站的那台服务器。Cloudflare 不存你的代码，只处理经过它的请求。"
+        },
+        "example": {
+          "heading": "用一个请求头看缓存",
+          "intro": "用一个请求头看看 Cloudflare 有没有接住请求。",
+          "points": {
+            "dns": "先确认域名已经接入 Cloudflare，并且开启了代理。",
+            "headers": "用 curl 查看响应头，找 server 和 cf-cache-status。",
+            "cache": "<code>cf-cache-status</code> 是 HIT，说明这次直接用了缓存；MISS 则表示回源取了新内容。"
+          },
+          "codeIntro": "这条命令只发一个请求，不会修改任何东西。",
+          "afterCode": "不同网站返回的头可能不完全一样，但 server: cloudflare 通常表示请求经过了 Cloudflare。"
+        },
+        "comparison": {
+          "heading": "经过 Cloudflare 和直接连服务器有什么不同？",
+          "intro": "加一层网络服务，会改变请求走的路。",
+          "columns": {
+            "aspect": "比一比",
+            "left": "经过 Cloudflare",
+            "right": "直接连源站"
+          },
+          "rows": {
+            "distance": {
+              "label": "离访客多远",
+              "left": "先到最近的节点，通常更近",
+              "right": "直接连到源站所在的地方"
+            },
+            "protection": {
+              "label": "防护",
+              "left": "可以拦截攻击、隐藏源站地址",
+              "right": "源站直接暴露，要自己防护"
+            },
+            "cache": {
+              "label": "缓存",
+              "left": "静态资源可以存在各地节点",
+              "right": "每次都要向源站要"
+            }
+          },
+          "mixed": "动态内容不适合长时间缓存，也可以只让图片、样式和脚本走缓存，页面本身仍然回源。"
+        },
+        "uses": {
+          "heading": "什么时候适合用 Cloudflare？",
+          "intro": "需要更快、更稳或更安全时，可以加一层 Cloudflare。",
+          "items": {
+            "cdn": "静态资源加速：图片、样式和脚本缓存在各地节点。",
+            "dns": "域名解析与 HTTPS：集中管理 DNS，自动签发证书。",
+            "protection": "防护：挡住恶意流量和常见的 Web 攻击。"
+          },
+          "benefits": "全球节点多、免费套餐够用，接入通常只需改 DNS。",
+          "limits": "缓存规则要按内容配置，配错会让人看到旧页面；动态请求的加速有限，源站该慢还是慢。"
+        },
+        "misconceptions": {
+          "heading": "容易弄错的几件事",
+          "items": {
+            "hosting": {
+              "title": "Cloudflare 是网站托管吗？",
+              "body": "不完全是。它主要处理 DNS、缓存、防护和边缘逻辑；网站文件通常还在你自己的服务器或别的托管平台上。"
+            },
+            "always-fast": {
+              "title": "接入 Cloudflare 就一定快吗？",
+              "body": "不一定。静态资源命中缓存才会明显变快；源站慢或没配缓存时，提升有限。"
+            },
+            "replace-server": {
+              "title": "有了 Cloudflare 就可以不要服务器吗？",
+              "body": "通常不行。它负责把请求转给你，真正生成页面的地方还是源站。Workers 等产品可以在边缘运行代码，但那是另一件事。"
+            }
+          }
+        },
+        "recap": {
+          "heading": "考考你",
+          "question": "访客请求一个图片，Cloudflare 节点上有缓存，会发生什么？",
+          "answer": "直接返回缓存。",
+          "reason": "请求不用再到源站，访客更快拿到图片，源站也少一次负担。",
+          "remember": "记住：<strong>Cloudflare 站在源站前面，先缓存、先检查，再决定要不要回源。</strong>"
+        },
+        "references": {
+          "heading": "想了解更多",
+          "intro": "下面这些资料可以接着看。",
+          "links": {
+            "how": "Cloudflare：它是怎么工作的",
+            "dns": "Cloudflare DNS 文档",
+            "cache": "Cloudflare 缓存文档",
+            "workers": "Cloudflare Workers 文档"
+          }
+        }
+      }
+    },
+    "supabase": {
+      "title": "Supabase",
+      "description": "开源的后端平台，基于 PostgreSQL，提供数据库、登录、文件存储和实时订阅。",
+      "article": {
+        "meaning": {
+          "heading": "Supabase 是什么？",
+          "definition": "Supabase 是一个<strong>后端平台</strong>。它把数据库、登录、文件存储和实时更新打包好，让前端可以直接调用，不必从零搭一套后端。",
+          "analogy": "像一间已经装修好的厨房：灶台、冰箱、水电都接好了，你带着食材就能开火。",
+          "keyPoint": "<strong>Supabase 的核心是 PostgreSQL 数据库，其他功能都围绕它。</strong>"
+        },
+        "how-it-works": {
+          "heading": "从一个空项目到能读写数据",
+          "intro": "从一个空项目到前端能读写数据，通常经过这几步。",
+          "steps": {
+            "project": "在 Supabase 建一个项目，得到项目地址和可公开的 API 密钥。",
+            "schema": "在数据库里建表，写清楚每一列存什么。",
+            "query": "前端用官方 SDK 查询或写入数据，SDK 会调用自动生成的接口。",
+            "auth": "开启登录并设置行级安全（RLS），决定谁能读、谁能写。"
+          },
+          "note": "行级安全是数据库里的规则，不是前端按钮的隐藏。只隐藏按钮，别人仍然可以直接调接口。"
+        },
+        "example": {
+          "heading": "查一次 notes 表",
+          "intro": "下面这段代码从 notes 表里读出所有记录。",
+          "points": {
+            "client": "用项目地址和可公开的密钥创建客户端。",
+            "query": "<code>from('notes').select('*')</code> 表示查询 notes 表的全部列。",
+            "result": "data 是查到的记录，error 是出错时的信息，两样都要处理。"
+          },
+          "codeIntro": "这是浏览器里也能运行的查询代码。",
+          "afterCode": "如果表开了 RLS，返回哪些行由登录用户和规则决定；密钥能公开，但规则不能省。"
+        },
+        "comparison": {
+          "heading": "Supabase 和自己搭后端有什么不同？",
+          "intro": "两种方式都能提供数据，差别在谁来搭基础设施。",
+          "columns": {
+            "aspect": "比一比",
+            "left": "Supabase",
+            "right": "自己搭后端"
+          },
+          "rows": {
+            "database": {
+              "label": "数据库",
+              "left": "建项目就有 PostgreSQL",
+              "right": "自己安装、备份和维护"
+            },
+            "auth": {
+              "label": "登录",
+              "left": "内置账号、第三方登录和权限",
+              "right": "自己实现或接入别的服务"
+            },
+            "ops": {
+              "label": "运维",
+              "left": "平台负责升级和可用性",
+              "right": "自己盯着服务器和扩容"
+            }
+          },
+          "mixed": "Supabase 也可以自托管；需要更复杂的业务逻辑时，仍然可以写自己的服务端代码，再连同一个数据库。"
+        },
+        "uses": {
+          "heading": "什么时候适合用 Supabase？",
+          "intro": "想快速做出能登录、能存数据的应用时，Supabase 很合适。",
+          "items": {
+            "prototype": "原型和 MVP：先把主要功能跑通，不用先搭一整套后端。",
+            "team": "小团队：数据库、登录和文件存储一次配好。",
+            "realtime": "实时协作：数据变化可以推送到正在看的页面。"
+          },
+          "benefits": "开箱即用、基于标准的 PostgreSQL，数据可以随时导出。",
+          "limits": "平台封装了一些细节，复杂权限和业务逻辑仍要自己设计；免费项目的资源也有限。"
+        },
+        "misconceptions": {
+          "heading": "容易弄错的几件事",
+          "items": {
+            "just-database": {
+              "title": "Supabase 只是一个数据库吗？",
+              "body": "不只是。数据库是核心，但登录、存储、实时和接口也一起提供。"
+            },
+            "anon-key": {
+              "title": "把可公开的 API 密钥放在网页里安全吗？",
+              "body": "密钥本身可以公开，但必须配合 RLS。没有规则时，别人可能读到不该读的数据。"
+            },
+            "small-only": {
+              "title": "Supabase 只能做小项目吗？",
+              "body": "不是。可以付费扩容，也可以自托管；但规模大了，仍然需要懂数据库和权限。"
+            }
+          }
+        },
+        "recap": {
+          "heading": "考考你",
+          "question": "前端直接查 Supabase，怎么防止用户看到别人的数据？",
+          "answer": "用行级安全。",
+          "reason": "在数据库里按登录用户写规则，查询只会返回允许的行，而不是靠前端隐藏。",
+          "remember": "记住：<strong>Supabase 把后端打包好，但权限规则仍然要你自己定。</strong>"
+        },
+        "references": {
+          "heading": "想了解更多",
+          "intro": "下面这些资料可以接着看。",
+          "links": {
+            "docs": "Supabase 文档",
+            "database": "Supabase：数据库",
+            "auth": "Supabase：登录与用户管理",
+            "rls": "Supabase：行级安全"
+          }
         }
       }
     }

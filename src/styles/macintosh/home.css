@@ -8,15 +8,16 @@
     margin-right: 0 !important;
   }
   .home-gallery { --page-scroll-margin: 12px; position: relative; flex: 1; width: min(64rem, 100%); margin: 0 auto; padding: 0 28px 64px; }
+  .gallery-masthead { position: sticky; top: 0; z-index: 40; isolation: isolate; }
+  .gallery-masthead::before { content: ''; position: absolute; z-index: -1; inset: 0 calc((100% - 100vw) / 2); background: var(--color-background); }
   .gallery-hero {
     --gallery-art-width: clamp(280px, 52.5svh, 472px);
     --gallery-arrow-size: 44px;
     --gallery-arrow-gap: 5px;
     --site-logo-mark-size: 40px;
     --site-logo-wordmark-height: 27px;
-    position: sticky; top: 0; z-index: 40; isolation: isolate; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 24px; padding: 20px 0;
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 24px; padding: 20px 0;
   }
-  .gallery-hero::before { content: ''; position: absolute; z-index: -1; inset: 0 calc((100% - 100vw) / 2); background: var(--color-background); }
   .gallery-copy {
     grid-column: 1; grid-row: 1; min-width: 0;
     /* Align the visible logo with the device stack after accounting for the logo's tap target. */
@@ -32,6 +33,74 @@
   .disk-catalog { display: grid; }
   .disk-group { grid-area: 1 / 1; min-width: 0; }
   .disk-group[inert] { pointer-events: none; }
+  .course-category-tabs {
+    --category-mini-width: 23px;
+    --category-fan-step: 11px;
+    --category-fan-width: calc(var(--category-mini-width) + 2 * var(--category-fan-step) + 6px);
+    --category-tab-inset: 12px;
+    --category-tab-gap: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-block-end: 6px;
+  }
+  .course-category-tab {
+    @apply font-mono text-caption font-medium text-brand;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    max-width: 100%;
+    padding: 3px var(--category-tab-inset);
+    border: 1px solid var(--color-sidebar-border);
+    border-radius: 3px;
+    text-decoration: none;
+  }
+  .course-category-tab > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+  .course-category-tab:hover { background: var(--color-sidebar); }
+  .course-category-tab[aria-current] {
+    padding-inline-end: calc(var(--category-tab-inset) + var(--category-tab-gap) + var(--category-fan-width));
+    border-color: var(--color-brand);
+    background: var(--color-sidebar);
+  }
+  .course-category-tab:focus-visible { outline-color: var(--color-brand); outline-offset: 1px; }
+  .course-category-fan {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: var(--category-tab-inset);
+    width: var(--category-fan-width);
+    height: 30px;
+    translate: 0 -50%;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .course-category-mini-disk {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: var(--category-mini-width);
+    aspect-ratio: 88 / 94;
+    background: var(--disk-artwork) center / contain no-repeat;
+    image-rendering: pixelated;
+    transform: translate(-50%, -50%);
+  }
+  .course-category-mini-disk:first-child { --fan-offset: calc(-1 * var(--category-fan-step)); --fan-angle: -18deg; }
+  .course-category-mini-disk:last-child { --fan-offset: var(--category-fan-step); --fan-angle: 18deg; }
+  .course-category-tab[aria-current] .course-category-fan { opacity: 1; }
+  .course-category-tab[aria-current] .course-category-mini-disk {
+    transform: translate(calc(-50% + var(--fan-offset, 0px)), -50%) rotate(var(--fan-angle, 0deg));
+  }
+  .course-disk.course-category-flight {
+    position: fixed;
+    z-index: 35;
+    min-height: 0;
+    pointer-events: none;
+    transform-origin: center;
+    transition: none;
+  }
+  .course-disk-link[data-collected]:not(:focus-visible) { pointer-events: none; }
+  .course-disk-link[data-collected]:not(:focus-visible) > .course-disk { opacity: 0; }
   .disk-group > section + section { margin-block-start: clamp(32px, 4vw, 44px); }
   .disk-group-title { @apply font-mono text-caption font-medium text-brand; display: flex; align-items: center; gap: 16px; margin: 0 0 28px; }
   .disk-group-title::after { content: ''; flex: 1; height: 1px; background: color-mix(in srgb, var(--color-brand) 20%, transparent); }
@@ -120,9 +189,11 @@
   .blog-article-link[data-in-drive] .optical-disc { opacity: 0; transition: none; }
   .optical-disc.flying-optical-disc { position: absolute; z-index: 60; pointer-events: none; transition: none; }
   @media (prefers-reduced-motion: no-preference) {
+    .course-category-tab[aria-current] .course-category-fan { transition: opacity 150ms ease-out; }
+    .course-category-mini-disk { transition: transform 180ms cubic-bezier(.32,.72,0,1); }
     :root:has(.home-gallery[data-home-switching]) :is(body, [data-slot='site-window']),
     .home-gallery[data-home-switching] :is([data-slot='hero-primary-face'], .gallery-view-arrow, .disk-group-title),
-    .home-gallery[data-home-switching] .gallery-hero::before { transition: background-color 360ms ease, color 360ms ease; }
+    .home-gallery[data-home-switching] .gallery-masthead::before { transition: background-color 360ms ease, color 360ms ease; }
     .home-gallery[data-home-switching] .gallery-copy h1 { transition: color 360ms ease, text-shadow 360ms ease; }
     .home-gallery[data-home-switching] [data-slot='brand-wordmark'] { transition: filter 360ms ease; }
   }
@@ -139,6 +210,7 @@
     .gallery-actions > [data-slot=hero-primary-action] { flex: 1; min-width: 0; }
     .gallery-actions > [data-slot=author-dialog-trigger] { flex-shrink: 1; white-space: normal; height: auto; }
     .home-courses { padding-top: 16px; }
+    .course-category-tabs { --category-mini-width: 19px; --category-fan-step: 8px; --category-tab-inset: 7px; --category-tab-gap: 5px; }
     .disk-group-title { margin-bottom: 24px; }
     .disk-grid { grid-template-columns: repeat(2,minmax(0,148px)); gap: 24px 16px; }
   }
@@ -156,6 +228,10 @@
   @media (max-height: 600px) and (max-width: 721px) {
     .gallery-hero { grid-template-columns: minmax(0, 1fr) 96px; gap: 8px 12px; padding: 4px 0 12px; }
     .gallery-copy h1 { --gallery-title-size: min(1.625rem, 14cqi); }
+  }
+  @media (scripting: none) {
+    :root:has(.course-category-tabs) { scroll-padding-top: 12px; }
+    .gallery-masthead:has(.course-category-tabs) { position: relative; }
   }
 }
 
