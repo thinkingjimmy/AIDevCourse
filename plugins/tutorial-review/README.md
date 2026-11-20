@@ -74,7 +74,7 @@ Host 侧 `index.js` 注册五个同源接口，每次请求都重新读盘，不
 | 接口 | 作用 |
 | --- | --- |
 | `/api/tutorial-review/manifest` | 按 `content/zh/meta.json` 的顺序扫描课程、章节和教程，并返回 `siteUrl` |
-| `/api/tutorial-review/doc?path=<lesson>` | 返回一篇 `.mdx` 原文、`mtime`、批注和 `sitePath` |
+| `/api/tutorial-review/doc?path=<lesson>` | 返回一篇 `.mdx` 原文、`mtime`、批注和 `sitePath`（文件名 slug 与站点 URL 一致；`index` 指向课程页） |
 | `POST /api/tutorial-review/save` | 保存一篇 `.mdx`；带 `expectedMtime`，版本不一致时返回 409 |
 | `/api/tutorial-review/asset?p=<src>&base=<lesson>` | 返回教程引用的图片（限制在 `public/` 与 `content/` 内） |
 | `POST /api/tutorial-review/assist` | 写作助手与审阅：`proofread`、`internal-links`、`external-links`、`optimize`、`expand` 等任务；外链会尝试 `ctx.web.search()` |

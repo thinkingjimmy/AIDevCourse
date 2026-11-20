@@ -34,7 +34,7 @@ export function validateCodeFolds(tree: Root, file: string, lineOffset = 0) {
       if (folds.length && node.lang === 'mermaid') throw new Error('Code folding is not supported on Mermaid diagrams');
     } catch (error) {
       const start = node.position?.start;
-      throw new Error(`${file}:${(start?.line ?? 1) + lineOffset}:${start?.column ?? 1}: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(`${file}:${(start?.line ?? 1) + lineOffset}:${start?.column ?? 1}: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
     }
   });
 }

@@ -1,4 +1,4 @@
-export type DiskPhase = 'idle' | 'lifting' | 'inserting' | 'navigating';
+export type DiskPhase = 'idle' | 'opening' | 'lifting' | 'inserting' | 'navigating';
 export type DiskEntry = { home: HTMLElement; source: HTMLElement; url: string };
 
 async function move(element: Element, frames: Keyframe[], duration: number, signal: AbortSignal, easing = 'cubic-bezier(.32,.72,0,1)') {
@@ -101,6 +101,19 @@ export async function insertDisk(entry: DiskEntry, signal: AbortSignal, phase: (
   }
 }
 
+async function openPlayStationCase(lid: HTMLElement, signal: AbortSignal) {
+  const { left, width } = lid.getBoundingClientRect();
+  const depth = 520;
+  // Leave space for the lid even when the case is close to the viewport edge.
+  const room = Math.max(0, left - 4);
+  const exposed = Math.min(.82, room * (1 - width / depth) / width);
+  const openAngle = -90 - Math.asin(exposed) * 180 / Math.PI;
+  const pose = (angle: number) => ({ transform: `perspective(${depth}px) rotateY(${angle}deg)` });
+  const hinge = await move(lid, [pose(0), pose(openAngle)], 270, signal, 'cubic-bezier(.4,0,.2,1)');
+  // Keep the case open in the outgoing page snapshot.
+  signal.addEventListener('abort', () => hinge.cancel(), { once: true });
+}
+
 async function insertOpticalDisc(home: HTMLElement, source: HTMLElement, original: HTMLElement, signal: AbortSignal, phase: (value: DiskPhase) => void) {
   const screen = home.querySelector<HTMLElement>('[data-slot="playstation-screen"]');
   const tray = home.querySelector<HTMLElement>('[data-slot="playstation-tray"]');
@@ -108,11 +121,12 @@ async function insertOpticalDisc(home: HTMLElement, source: HTMLElement, origina
   const image = screen?.parentElement?.querySelector('img');
   if (!screen || !tray || !bed || !image?.complete || !image.naturalWidth || !tray.getBoundingClientRect().width || !original.offsetWidth) return null;
 
-  const surface = original.firstElementChild;
-  const rotation = surface && getComputedStyle(surface).transform;
+  const lid = source.querySelector<HTMLElement>('[data-slot="ps2-case-lid"]');
   home.inert = true;
-  phase('lifting');
-  await bringScreenIntoView(screen, tray.getBoundingClientRect(), signal);
+  phase(lid ? 'opening' : 'lifting');
+  const scroll = bringScreenIntoView(screen, tray.getBoundingClientRect(), signal);
+  if (lid) await openPlayStationCase(lid, signal);
+  await scroll;
   signal.throwIfAborted();
   const host = home.getBoundingClientRect();
   const start = original.getBoundingClientRect();
@@ -129,18 +143,18 @@ async function insertOpticalDisc(home: HTMLElement, source: HTMLElement, origina
   const drawerOpen = { transform: 'translateY(0)' };
   const flight = visualClone(original);
   flight.classList.add('flying-optical-disc');
-  if (rotation && flight.firstElementChild instanceof HTMLElement) flight.firstElementChild.style.transform = rotation;
   Object.assign(flight.style, { left: `${start.left - host.left}px`, top: `${start.top - host.top}px`, width: `${diameter}px`, height: `${diameter}px` });
   home.appendChild(flight);
   source.dataset.inDrive = '';
+  phase('lifting');
   try {
     const [lift] = await Promise.all([
       move(flight, [
         { transform: pose(0, 0, 0, 0, 1), offset: 0 },
-        { transform: pose(x * .13, y * .13 - 14, 14, 18, .9), offset: .25 },
-        { transform: pose(x, y - 11, 57, 10, scale * 1.08), offset: .82 },
+        { transform: pose(x * .05, y * .05 - 18, 12, -9, 1.04), offset: .25 },
+        { transform: pose(x, y - 10, 57, 7, scale * 1.06), offset: .84 },
         { transform: pose(x, y, 65, 0, scale), offset: 1 },
-      ], 560, signal, 'cubic-bezier(.24,.68,.24,1)'),
+      ], 470, signal, 'cubic-bezier(.32,.2,.24,1)'),
       move(bed, [drawerClosed, drawerOpen], 270, signal),
     ]);
     // Keep the seated disc on the drawer so the drive lip hides both together.

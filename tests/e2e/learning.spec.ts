@@ -143,7 +143,13 @@ for (const locale of locales) {
     expect(indexes.every((url) => url.includes(`/api/search/${locale}?`))).toBe(true);
     await input.dispatchEvent('compositionstart');
     await input.press('Enter'); await expect(page.getByRole('dialog')).toBeVisible();
+    await input.press('Escape');
+    await expect(input).toBeFocused();
     await input.dispatchEvent('compositionend');
+    await input.dispatchEvent('keydown', { key: 'Escape', isComposing: true });
+    await expect(input).toBeFocused();
+    await input.dispatchEvent('keydown', { key: 'Escape', keyCode: 229 });
+    await expect(input).toBeFocused();
     const resultUrls = await page.locator('.search-result').evaluateAll((links) => links.map((link) => link.getAttribute('href')));
     const headingIndex = resultUrls.findIndex((url) => url?.startsWith(`${path(locale)}#`));
     expect(headingIndex).toBeGreaterThanOrEqual(0);
@@ -196,8 +202,12 @@ test('search retries a failed index request and clears old-language results', as
   let attempts = 0;
   await page.route('**/api/search/en?*', (route) => { if (attempts++ === 0) return route.abort(); return route.continue(); });
   await page.goto('/'); await page.waitForLoadState('networkidle'); await page.keyboard.press('Control+k');
-  await page.getByRole('button', { name: 'Retry search' }).click();
-  await page.getByRole('textbox', { name: 'Search lessons' }).fill('context');
+  const retry = page.getByRole('button', { name: 'Retry search' });
+  await retry.focus();
+  await retry.press('Enter');
+  const input = page.getByRole('textbox', { name: 'Search lessons' });
+  await expect(input).toBeFocused();
+  await input.fill('context');
   await expect(page.locator('.search-result').first()).toBeVisible();
   await page.keyboard.press('Escape');
   await page.locator('.language-picker summary').click(); await page.locator('.language-options a[href="/fr"]').click();

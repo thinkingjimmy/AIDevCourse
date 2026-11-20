@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 344 152">
+  <defs>
+    <linearGradient id="plastic" x2="1" y2="1">
+      <stop stop-color="#364051"/>
+      <stop offset=".43" stop-color="#242c39"/>
+      <stop offset="1" stop-color="#131923"/>
+    </linearGradient>
+    <linearGradient id="rim-light" x2=".75" y2="1">
+      <stop stop-color="#9ba9bd"/>
+      <stop offset=".29" stop-color="#4e5b70"/>
+      <stop offset=".64" stop-color="#222b39"/>
+      <stop offset="1" stop-color="#455164"/>
+    </linearGradient>
+    <linearGradient id="recess" x2=".6" y2="1">
+      <stop stop-color="#171f2c"/>
+      <stop offset="1" stop-color="#262f3d"/>
+    </linearGradient>
+    <linearGradient id="clip" x2=".3" y2="1">
+      <stop stop-color="#536074"/>
+      <stop offset=".38" stop-color="#303a4b"/>
+      <stop offset="1" stop-color="#1b2330"/>
+    </linearGradient>
+    <linearGradient id="disc-bevel" x2=".72" y2="1">
+      <stop stop-color="#8292a8"/>
+      <stop offset=".27" stop-color="#48566b"/>
+      <stop offset=".56" stop-color="#1c2534"/>
+      <stop offset="1" stop-color="#3e495d"/>
+    </linearGradient>
+    <linearGradient id="finger-recess" x2="0" y2="1">
+      <stop stop-color="#111722"/>
+      <stop offset=".7" stop-color="#222b39"/>
+      <stop offset="1" stop-color="#64748b"/>
+    </linearGradient>
+
+    <g id="outer-shell">
+      <rect x=".55" y=".55" width="106.9" height="150.9" rx="5.8" fill="url(#plastic)" stroke="#0a0f17" stroke-width="1.1"/>
+      <rect x="1.65" y="1.65" width="104.7" height="148.7" rx="4.9" fill="none" stroke="url(#rim-light)"/>
+    </g>
+
+    <g id="inner-shell">
+      <use href="#outer-shell"/>
+      <rect x="4.1" y="4.2" width="99.8" height="143.6" rx="3.8" fill="#0b1019" stroke="#3c485b" stroke-width=".8"/>
+      <rect x="6.4" y="6.2" width="95.2" height="139.6" rx="2.5" fill="url(#recess)"/>
+      <path d="M45 3.5h18l-1.5 3.6c-.4 1-1.2 1.5-2.4 1.5H49c-1.2 0-2-.5-2.4-1.5Z" fill="url(#clip)" stroke="#151c28" stroke-width=".8"/>
+      <path d="M45 148.5l1.6-3.5c.4-1 1.2-1.5 2.4-1.5h10.1c1.2 0 2 .5 2.4 1.5l1.5 3.5Z" fill="#384456" stroke="#5c697b" stroke-width=".7"/>
+    </g>
+
+    <g id="hinge-tabs" fill="url(#clip)" stroke="#566375" stroke-width=".55">
+      <rect x="2.4" y="20" width="4.5" height="15" rx="1.1"/>
+      <rect x="2.4" y="117" width="4.5" height="15" rx="1.1"/>
+    </g>
+    <path id="booklet-clip" d="M5.4 18.5h13c5.2 0 8.7 2.7 8.7 6.4s-3.5 6.4-8.7 6.4h-13l2.3-2.4v-8Z"
+      fill="url(#clip)" stroke="url(#rim-light)" stroke-width=".85"/>
+
+    <symbol id="front" viewBox="0 0 108 152">
+      <use href="#outer-shell"/>
+      <path d="M5.6 1.6h3.8v148.8H5.6a4 4 0 0 1-4-4V5.6a4 4 0 0 1 4-4Z" fill="#202a38"/>
+      <path d="M8.2 2.1v147.8M2.3 5.1h5.4M2.3 146.9h5.4" fill="none" stroke="#758399" stroke-opacity=".62" stroke-width=".8"/>
+      <path d="M9.1 1.6v148.8" fill="none" stroke="#070c13" stroke-width="1.2"/>
+      <rect x="10.25" y="5.15" width="93.5" height="141.7" rx="3.5" fill="#151e2c" stroke="#090e16" stroke-width="1.2"/>
+      <rect x="10.85" y="5.85" width="92.3" height="140.3" rx="3" fill="none" stroke="url(#rim-light)" stroke-width=".85"/>
+    </symbol>
+
+    <symbol id="inside" viewBox="0 0 108 152">
+      <use href="#inner-shell"/>
+      <use href="#hinge-tabs" transform="translate(108 0) scale(-1 1)"/>
+      <path d="M10 49h12c5.5 0 9.8 8.8 15.8 8.8h32.4c6 0 10.3-8.8 15.8-8.8h12v88.8H10Z"
+        fill="url(#plastic)" stroke="#101722" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M11 49.5h11c5.5 0 9.8 8.8 15.8 8.8h32.4c6 0 10.3-8.8 15.8-8.8h11"
+        fill="none" stroke="#6b7a90" stroke-opacity=".75" stroke-width=".95" stroke-linecap="round"/>
+      <use href="#booklet-clip"/>
+      <use href="#booklet-clip" y="103"/>
+    </symbol>
+
+    <symbol id="tray" viewBox="0 0 108 152">
+      <use href="#inner-shell"/>
+      <use href="#hinge-tabs"/>
+      <circle cx="54" cy="77" r="49.4" fill="#0c121d"/>
+      <circle cx="54" cy="76" r="48.9" fill="url(#disc-bevel)" stroke="#718097" stroke-opacity=".54" stroke-width=".8"/>
+      <circle cx="54" cy="76" r="46.25" fill="url(#recess)" stroke="#101723" stroke-width="1.1"/>
+      <ellipse cx="86" cy="43.8" rx="10.6" ry="5.8" transform="rotate(44 86 43.8)" fill="url(#finger-recess)" stroke="#536075" stroke-width=".65"/>
+      <ellipse cx="86" cy="108.2" rx="10.6" ry="5.8" transform="rotate(-44 86 108.2)" fill="url(#finger-recess)" stroke="#536075" stroke-width=".65"/>
+      <circle cx="54" cy="76.7" r="10.7" fill="#0b111b" stroke="#455166"/>
+      <circle cx="54" cy="76" r="9.4" fill="url(#disc-bevel)"/>
+      <path d="M54 67v3m0 12v3m-7.8-13.5 2.7 1.6m10.2 5.8 2.7 1.6m-15.6 0 2.7-1.6m10.2-5.8 2.7-1.6"
+        stroke="#172030" stroke-width="1.25"/>
+      <circle cx="54" cy="76" r="5.4" fill="url(#clip)" stroke="#8190a5" stroke-width=".9"/>
+    </symbol>
+  </defs>
+
+  <use href="#front" width="108" height="152"/>
+  <use href="#inside" x="118" width="108" height="152"/>
+  <use href="#tray" x="236" width="108" height="152"/>
+</svg>

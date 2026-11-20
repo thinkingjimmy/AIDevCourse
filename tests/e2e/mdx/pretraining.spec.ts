@@ -53,7 +53,10 @@ test.describe('Pretraining overview', () => {
       await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
       await expect(figure.getByRole('img')).toHaveCount(1);
       await expect(figure.getByRole('img')).toHaveAttribute('alt', /代码库.*去重.*训练文本/);
-      await expect.poll(() => figure.locator('[data-pretraining-illustration] img').evaluateAll((images) =>
+      const illustrations = figure.locator('[data-pretraining-illustration] img');
+      const priorities = await illustrations.evaluateAll(images => images.map(image => image.getAttribute('fetchpriority')));
+      expect(priorities).toEqual([null, 'low', 'low']);
+      await expect.poll(() => illustrations.evaluateAll((images) =>
         images.length === 3 && images.every((image) => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0),
       )).toBe(true);
       await expect(figure.locator('figcaption')).toHaveCount(0);
@@ -104,7 +107,7 @@ test.describe('Pretraining overview', () => {
       await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       expect(errors).toEqual([]);
-      await test.info().attach('pretraining-layout', { body: JSON.stringify({ evidence, sources, errors }, null, 2), contentType: 'application/json' });
+      await test.info().attach('pretraining-layout', { body: JSON.stringify({ evidence, sources, priorities, errors }, null, 2), contentType: 'application/json' });
     });
   }
 
@@ -140,6 +143,7 @@ test.describe('Pretraining overview', () => {
       await expect(figure.getByRole('img')).toHaveCount(3);
       for (const image of await figure.getByRole('img').all()) {
         await expect(image).toBeVisible();
+        expect(await image.getAttribute('fetchpriority')).toBeNull();
         await expect.poll(() => image.evaluate((element) => (element as HTMLImageElement).complete && (element as HTMLImageElement).naturalWidth > 0)).toBe(true);
       }
       expect((await inspectLayout(figure)).images.every((image) => image.loaded && image.insideFrame)).toBe(true);

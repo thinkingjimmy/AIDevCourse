@@ -129,36 +129,31 @@ test('mobile navigation respects reduced transparency and increased contrast', a
   await session.detach();
 });
 
-test('mobile navigation follows course and blog themes at the desktop boundary', async ({ page }) => {
+test('course mobile navigation gives way to the sidebar at the desktop boundary', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  for (const { path, theme, color } of [
-    { path: lesson, theme: 'course', color: 'rgb(49, 86, 75)' },
-    { path: '/zh/blog/no-loyalty-to-ai-coding-tools', theme: 'blog', color: 'rgb(53, 84, 134)' },
-  ]) {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto(path);
-    const navigation = page.locator(navigationSelector);
-    const controls = navigation.locator(':scope > a, :scope > button');
-    await expect(navigation).toBeVisible();
-    await expect(navigation).toHaveCSS('border-color', color);
-    await expect(controls.locator(':scope > svg')).toHaveCount(4);
-    for (const control of await controls.all()) await expect(control).toHaveCSS('color', color);
-    const contents = navigation.locator('[data-section="contents"]');
-    await contents.focus();
-    await expect(contents).toHaveCSS('outline-style', 'solid');
-    const accessibility = await new AxeBuilder({ page }).include(navigationSelector).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-    expect(accessibility.violations).toEqual([]);
-    await capture(page, `window-navigation-${theme}-theme`);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(lesson);
+  const navigation = page.locator(navigationSelector);
+  const controls = navigation.locator(':scope > a, :scope > button');
+  await expect(navigation).toBeVisible();
+  await expect(navigation).toHaveCSS('border-color', 'rgb(49, 86, 75)');
+  await expect(controls.locator(':scope > svg')).toHaveCount(4);
+  for (const control of await controls.all()) await expect(control).toHaveCSS('color', 'rgb(49, 86, 75)');
+  const contents = navigation.locator('[data-section="contents"]');
+  await contents.focus();
+  await expect(contents).toHaveCSS('outline-style', 'solid');
+  const accessibility = await new AxeBuilder({ page }).include(navigationSelector).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+  expect(accessibility.violations).toEqual([]);
+  await capture(page, 'window-navigation-course-theme');
 
-    await contents.press('Enter');
-    await expect(page.locator('[data-mobile="true"]')).toBeVisible();
-    await page.keyboard.press('Escape');
-    await expect(contents).toBeFocused();
-    await page.setViewportSize({ width: 960, height: 844 });
-    await expect(navigation).toBeVisible();
-    await page.setViewportSize({ width: 961, height: 844 });
-    await expect(navigation).toBeHidden();
-    await expect(page.locator('[data-slot="sidebar-container"]')).toBeVisible();
-    await capture(page, `window-navigation-${theme}-desktop`);
-  }
+  await contents.press('Enter');
+  await expect(page.locator('[data-mobile="true"]')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(contents).toBeFocused();
+  await page.setViewportSize({ width: 960, height: 844 });
+  await expect(navigation).toBeVisible();
+  await page.setViewportSize({ width: 961, height: 844 });
+  await expect(navigation).toBeHidden();
+  await expect(page.locator('[data-slot="sidebar-container"]')).toBeVisible();
+  await capture(page, 'window-navigation-course-desktop');
 });

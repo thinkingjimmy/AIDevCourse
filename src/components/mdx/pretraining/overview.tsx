@@ -11,7 +11,7 @@ export function LLMPretrainingOverview() {
   const pretrainingSteps = usePretrainingSteps();
   return <TrainingFrame aria-label={t('label')} data-pretraining-overview>
     <div className="[@media(scripting:none)]:hidden">
-      <Tabs.Root defaultValue="cleaning">
+      <Tabs.Root defaultValue={pretrainingSteps[0].value}>
         <Tabs.List aria-label={t('tabsLabel')} className="grid grid-cols-3 gap-3">
           {pretrainingSteps.map((step, index) => <Tabs.Trigger key={step.value} value={step.value} asChild>
             <Button variant="plain" size="reset" className="min-h-11 min-w-0 cursor-pointer touch-manipulation items-center justify-start gap-1.5 rounded-sm border-b-2 border-border pb-2 text-left text-caption font-medium whitespace-normal text-muted-foreground [overflow-wrap:anywhere] hover:text-foreground active:translate-y-px data-[state=active]:border-foreground data-[state=active]:text-foreground @max-[480px]/training:flex-col @max-[480px]/training:items-start @max-[480px]/training:gap-1">
@@ -19,8 +19,8 @@ export function LLMPretrainingOverview() {
             </Button>
           </Tabs.Trigger>)}
         </Tabs.List>
-        {pretrainingSteps.map((step) => <Tabs.Content key={step.value} value={step.value} forceMount className="pt-4 outline-foreground data-[state=inactive]:hidden">
-          <PretrainingIllustration step={step} />
+        {pretrainingSteps.map((step, index) => <Tabs.Content key={step.value} value={step.value} forceMount className="pt-4 outline-foreground data-[state=inactive]:hidden">
+          <PretrainingIllustration step={step} fetchPriority={index === 0 ? undefined : 'low'} />
         </Tabs.Content>)}
       </Tabs.Root>
     </div>

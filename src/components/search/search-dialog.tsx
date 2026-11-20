@@ -1,5 +1,5 @@
 'use client';
-import { blogRoot, localePath } from '@/lib/i18n/routing';
+import { blogRoot, homePath, localePath } from '@/lib/i18n/routing';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/overlays/dialog';
@@ -26,8 +26,10 @@ export default function SearchDialog({ locale, version, lessons, onClose, onFocu
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [resultQuery, setResultQuery] = useState('');
   const [active, setActive] = useState(0);
+  const searchInput = useRef<HTMLInputElement>(null);
   const composing = useRef(false);
   const links = useRef<(HTMLAnchorElement | null)[]>([]);
+  const isComposing = (event: KeyboardEvent) => composing.current || event.isComposing || event.keyCode === 229;
   const client = useMemo(() => staticClient({ from: `/api/search/${locale}?v=${version}&retry=${attempt}`, initDB: createSearchDatabase }), [locale, version, attempt]);
   useEffect(() => {
     let cancelled = false;
@@ -38,9 +40,10 @@ export default function SearchDialog({ locale, version, lessons, onClose, onFocu
         if (cancelled) return;
         setResultQuery(query.trim());
         const coursePrefix = localePath(locale, '/courses/');
-        const blogPrefix = localePath(locale, blogRoot);
+        const blogPrefix = localePath(locale, `${blogRoot}/`);
+        const blogList = homePath(locale, 'resources');
         setResults(query.trim() ? response.filter(({ url }) =>
-          url.startsWith(coursePrefix) || url === blogPrefix || url.startsWith(`${blogPrefix}/`)).slice(0, 10) : []);
+          url.startsWith(coursePrefix) || url === blogList || url.startsWith(blogPrefix)).slice(0, 10) : []);
         setState('ready');
       } catch { if (!cancelled) { setResultQuery(query.trim()); setResults([]); setState('error'); } }
     }, query ? 100 : 0);
@@ -49,20 +52,25 @@ export default function SearchDialog({ locale, version, lessons, onClose, onFocu
   const status = input.trim() === query.trim() && resultQuery === query.trim() ? state : 'loading';
   const visibleResults = status === 'ready' ? results : [];
   return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-    <DialogContent aria-describedby="search-description" onCloseAutoFocus={(event) => { event.preventDefault(); onFocusReturn(); }}>
+    <DialogContent aria-describedby="search-description"
+      onEscapeKeyDown={(event) => { if (isComposing(event)) event.preventDefault(); }}
+      onCloseAutoFocus={(event) => { event.preventDefault(); onFocusReturn(); }}>
       <DialogTitle className="sr-only">{t('open')}</DialogTitle>
-      <div className="flex min-h-14 items-center gap-3 border-b border-border px-4 text-muted-foreground"><MagnifyingGlassIcon size={20} aria-hidden /><Input className="h-auto min-h-10 w-auto flex-1 rounded-none border-0 bg-transparent p-0 text-base leading-[inherit] text-foreground shadow-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-0 md:text-base" autoComplete="off" value={input} aria-label={t('open')} placeholder={t('placeholder')} aria-controls="search-results"
+      <div className="flex min-h-14 items-center gap-3 border-b border-border px-4 text-muted-foreground"><MagnifyingGlassIcon size={20} aria-hidden /><Input ref={searchInput} className="h-auto min-h-10 w-auto flex-1 rounded-none border-0 bg-transparent p-0 text-base leading-[inherit] text-foreground shadow-none focus-visible:border-0 focus-visible:ring-0 focus-visible:outline-0 md:text-base" autoComplete="off" value={input} aria-label={t('open')} placeholder={t('placeholder')} aria-controls="search-results"
         onCompositionStart={() => { composing.current = true; }} onCompositionEnd={(event) => { composing.current = false; setQuery(event.currentTarget.value); setActive(0); }}
         onChange={(event) => { setInput(event.target.value); setActive(0); if (!composing.current) setQuery(event.target.value); }}
         onKeyDown={(event) => {
-          if (composing.current || event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
+          if (isComposing(event.nativeEvent)) return;
           if (event.key === 'ArrowDown' || event.key === 'ArrowUp') { event.preventDefault(); const next = Math.max(0, Math.min(visibleResults.length - 1, active + (event.key === 'ArrowDown' ? 1 : -1))); setActive(next); if (visibleResults[next]) links.current[next]?.scrollIntoView({ block: 'nearest' }); }
           if (event.key === 'Enter' && visibleResults[active]) { event.preventDefault(); links.current[active]?.click(); }
         }} /><DialogClose asChild><Button variant="keyboard" size="keyboard" aria-label={ui('close')}>Esc</Button></DialogClose></div>
       <DialogDescription id="search-description" className="sr-only">{t('hint')}</DialogDescription>
       <div className="flex max-h-[50vh] flex-col gap-0.5 overflow-auto p-2" id="search-results" aria-label={t('results')}>
         <p role="status" className="px-3 py-2 text-sm text-muted-foreground empty:hidden">{status === 'loading' ? t('loading') : status === 'error' ? t('error') : query && !visibleResults.length ? t('empty') : ''}</p>
-        {status === 'error' && <Button variant="paper" size="paper" onClick={() => setAttempt((value) => value + 1)}>{t('retry')}</Button>}
+        {status === 'error' && <Button variant="paper" size="paper" onClick={() => {
+          searchInput.current?.focus();
+          setAttempt((value) => value + 1);
+        }}>{t('retry')}</Button>}
         {visibleResults.map((result, index) => {
           const meta = lessons[result.url.split('#')[0]];
           const title = result.type === 'page' ? result.content : (meta?.title ?? result.content);

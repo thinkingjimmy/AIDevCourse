@@ -13,6 +13,7 @@ export type GalleryItem = {
 export type BlogArticle = Pick<LessonSummary, 'id' | 'title' | 'description' | 'url'>;
 type DiskLinkProps = Omit<ComponentProps<typeof Link>, 'href' | 'children'>;
 export const opticalDiscArtwork = '/images/home/discs/labels.avif';
+const gameCaseArtwork = '/images/home/discs/game-case.svg';
 const variants = ['ivory', 'forest', 'index', 'smoke', 'cobalt', 'amber', 'plum', 'brick'] as const;
 const materials = new Map<string, typeof variants[number]>([
   ['ai-coding', 'ivory'], ['llm-101', 'forest'], ['coding-101', 'smoke'],
@@ -23,7 +24,16 @@ const discPrints = new Map([
   [blogCourseId, ['0% 0%', '#422436']],
   ['enterprise-ai-adoption-roi', ['0% 0%', '#422436']],
   ['no-loyalty-to-ai-coding-tools', ['100% 100%', '#103846']],
+  ['ai-era-saas', ['100% 0%', '#24473f']],
+  ['gpt-6-2-vs-opus-5-5', ['0% 100%', '#30245d']],
 ]);
+function opticalDiscPrint(id: string) {
+  const [position, color] = discPrints.get(id) ?? [];
+  return {
+    '--disc-print': position ? `${color} url("${opticalDiscArtwork}") ${position} / 200% 200% no-repeat` : undefined,
+    '--disc-print-color': color ?? '#103846',
+  } as CSSProperties;
+}
 export function diskMaterial({ id }: { id: string }): CSSProperties {
   const seed = Array.from(id).reduce((sum, character) => sum + character.codePointAt(0)!, 0);
   const variant = materials.get(id) ?? variants[seed % variants.length];
@@ -46,14 +56,9 @@ export function DiskCover({ id, title, titleId, labels, level, dots, stampId, he
     </div>
   </div>;
 }
-export function OpticalDiscCover({ id, title, titleId }: { id: string; title?: string; titleId?: string }) {
-  const [position, color] = discPrints.get(id) ?? [];
-  const style = {
-    '--disc-print': position ? `${color} url("${opticalDiscArtwork}") ${position} / 200% 200% no-repeat` : undefined,
-    '--disc-print-color': color ?? '#103846',
-  } as CSSProperties;
+function OpticalDiscCover({ id, title, titleId }: { id: string; title?: string; titleId?: string }) {
   const Title = titleId ? 'h3' : 'span';
-  return <div className="optical-disc" data-slot="optical-disc" style={style} aria-hidden={title ? undefined : true}>
+  return <div className="optical-disc" data-slot="optical-disc" style={opticalDiscPrint(id)} aria-hidden={title ? undefined : true}>
     <div className="optical-disc-surface">
       <div className="optical-disc-print">
         {title && <div className="optical-disc-label">
@@ -61,6 +66,26 @@ export function OpticalDiscCover({ id, title, titleId }: { id: string; title?: s
           <span className="optical-disc-brand" aria-hidden>{site.name}</span>
         </div>}
       </div>
+    </div>
+  </div>;
+}
+
+function GameCasePanel({ panel, className }: { panel: 'front' | 'inside' | 'tray'; className?: string }) {
+  return <svg className={cn('ps2-case-panel', className)} viewBox="0 0 108 152" width="108" height="152" focusable="false">
+    <use href={`${gameCaseArtwork}#${panel}`} />
+  </svg>;
+}
+
+function PlayStationCase({ id }: { id: string }) {
+  return <div className="ps2-case" data-slot="ps2-case" aria-hidden>
+    <GameCasePanel panel="tray" className="ps2-case-base" />
+    <OpticalDiscCover id={id} />
+    <div className="ps2-case-lid" data-slot="ps2-case-lid">
+      <div className="ps2-case-front">
+        <GameCasePanel panel="front" />
+        <span className="ps2-case-art" style={opticalDiscPrint(id)} />
+      </div>
+      <GameCasePanel panel="inside" className="ps2-case-inside" />
     </div>
   </div>;
 }
@@ -92,7 +117,7 @@ export function BlogArticleLink({ article, ...props }: { article: BlogArticle } 
   const descriptionId = `${id}-description`;
   return <Link {...props} href={article.url} className="blog-article-link" data-blog-article={article.id}
     aria-labelledby={titleId} aria-describedby={descriptionId}>
-    <OpticalDiscCover id={article.id} />
+    <PlayStationCase id={article.id} />
     <div>
       <h3 id={titleId}>{article.title}</h3>
       <p id={descriptionId}>{article.description}</p>

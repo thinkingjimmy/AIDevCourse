@@ -47,7 +47,7 @@ export function LearnShell({ locale, children }: { locale: Locale; children: Rea
   return <SidebarProvider className="bg-background text-foreground" open={open} onOpenChange={setSidebarOpen}>
     <CourseSidebar />
     <CourseMobileNavigation locale={locale} />
-    <SidebarInset className="@container/reader min-w-0">
+    <SidebarInset className="@container/reader min-w-0 [--lesson-footer-offset:calc(6.5rem+env(safe-area-inset-bottom))]">
       {children}
     </SidebarInset>
   </SidebarProvider>;
@@ -62,7 +62,7 @@ export function LessonRegion({ title, hasToc, children }: { title: string; hasTo
     return () => window.removeEventListener('hashchange', revealFragment);
   }, []);
   return <section ref={pane} data-slot="lesson-region" data-lesson-scroll="" aria-label={title} tabIndex={0} className={cn(
-    '@container/lesson min-h-0 flex-1 overflow-y-auto overscroll-contain px-8 focus-visible:-outline-offset-2 max-[961px]:px-5 max-[961px]:pb-[calc(6.5rem+env(safe-area-inset-bottom))]',
+    '@container/lesson min-h-0 flex-1 overflow-y-auto overscroll-contain px-8 focus-visible:-outline-offset-2 max-[961px]:px-5 max-[961px]:pb-[var(--lesson-footer-offset,0px)]',
     hasToc && 'min-[961px]:pl-20',
   )}>{children}</section>;
 }

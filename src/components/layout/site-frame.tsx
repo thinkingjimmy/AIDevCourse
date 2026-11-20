@@ -2,23 +2,23 @@
 import { createContext, useContext, type ReactNode } from 'react';
 import { SiteShell } from './page-primitives';
 import { usePathname } from 'next/navigation';
-import { canonicalPath, stripLocale, type HomeView } from '@/lib/i18n/routing';
+import { blogRoot, canonicalPath, stripLocale, type HomeView } from '@/lib/i18n/routing';
 import { vocabularyForPath } from '@/lib/vocabulary/collections';
 const ErrorPageContext = createContext<ReactNode>(null);
 const HomeDestinationContext = createContext<HomeView>('courses');
 export function useErrorPage() { return useContext(ErrorPageContext); }
 export function useHomeDestination() { return useContext(HomeDestinationContext); }
-export function SiteFrame({ lessonPaths, blogPath, header, shortcut, footer, errorPage, children }: {
-  lessonPaths: string[]; blogPath?: string; header: ReactNode; shortcut: ReactNode; footer: ReactNode; errorPage: ReactNode; children: ReactNode;
+export function SiteFrame({ lessonPaths, header, shortcut, footer, errorPage, children }: {
+  lessonPaths: string[]; header: ReactNode; shortcut: ReactNode; footer: ReactNode; errorPage: ReactNode; children: ReactNode;
 }) {
   const pathname = canonicalPath(usePathname() ?? '/');
   const lesson = lessonPaths.includes(pathname);
   const page = stripLocale(pathname);
-  const course = /^\/courses\/[^/]+$/.test(page) || pathname === blogPath;
+  const course = /^\/courses\/[^/]+$/.test(page);
   const vocabulary = vocabularyForPath(page);
   const reading = lesson || Boolean(vocabulary);
   const open = page === '/';
-  const blog = blogPath && (pathname === blogPath || (lesson && pathname.startsWith(`${blogPath}/`)));
+  const blog = lesson && page.startsWith(`${blogRoot}/`);
   const ps2Theme = blog || vocabulary;
 
   const recovery = open ? <>{header}{errorPage}</> : reading ? <>{errorPage}{footer}</> : errorPage;

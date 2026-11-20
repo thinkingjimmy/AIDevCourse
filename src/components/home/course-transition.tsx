@@ -23,12 +23,13 @@ export function useCourseTransition() {
   return value;
 }
 
-export function canAnimateNavigation(event: MouseEvent<HTMLAnchorElement>) {
+export function canAnimateNavigation(event: MouseEvent<HTMLAnchorElement>, { requireViewTransition = true } = {}) {
   const click = event.nativeEvent;
   const pointerClick = 'pointerType' in click ? Boolean(click.pointerType) : click.detail > 0;
   return pointerClick && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey
     && !event.defaultPrevented && event.button === 0
-    && typeof document.startViewTransition === 'function' && typeof event.currentTarget.animate === 'function'
+    && (!requireViewTransition || typeof document.startViewTransition === 'function')
+    && typeof event.currentTarget.animate === 'function'
     && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
@@ -66,8 +67,8 @@ export function CourseTransitionProvider({ children }: { children: ReactNode }) 
     try {
       const origin = await insertDisk(entry, transition.controller.signal, setPhase);
       if (active.current !== transition) return;
-      if (origin) {
-        setPhase('navigating');
+      if (origin) setPhase('navigating');
+      if (origin && typeof document.startViewTransition === 'function') {
         await zoomIntoScreen(origin, () => navigate(transition), transition.controller.signal);
       } else {
         await navigate(transition);

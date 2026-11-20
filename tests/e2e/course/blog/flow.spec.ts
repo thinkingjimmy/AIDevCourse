@@ -6,6 +6,7 @@ import AxeBuilder from '@axe-core/playwright';
 test.skip(process.env.CONTENT_TEST === '1', 'Uses the published blog course.');
 
 const course = '/zh/blog';
+const blogList = '/zh?view=resources';
 const lessons = [
   {
     slug: 'no-loyalty-to-ai-coding-tools',
@@ -65,20 +66,23 @@ for (const scenario of [
         await page.screenshot({ path, animations: 'disabled' });
         await testInfo.attach(name, { path, contentType: 'image/png' });
       };
-      await page.goto('/zh?view=resources');
+      await page.goto(blogList);
       const blog = page.getByRole('region', { name: '博客', exact: true });
       const cards = blog.locator('[data-blog-article]');
       const newestFirst = [...catalogSlugs].reverse();
-      await expect(blog).not.toHaveAttribute('data-compact');
       await expect(cards).toHaveCount(newestFirst.length);
+      await expect(blog.getByRole('link')).toHaveCount(newestFirst.length);
       for (const [index, slug] of newestFirst.entries()) {
         const card = cards.nth(index);
         await expect(card).toHaveAttribute('href', `${course}/${slug}`);
         await expect(card.locator('h3')).not.toBeEmpty();
         await expect(card.locator('p')).not.toBeEmpty();
         await expect(card.locator('p')).toHaveCSS('-webkit-line-clamp', '2');
-        await expect(card.locator('.optical-disc-surface')).toHaveCSS('animation-name', 'none');
+        await expect(card.locator('[data-slot="ps2-case-lid"]')).toHaveCSS('transform', 'none');
+        await expect(card.locator('[data-slot="ps2-case"]')).toHaveText('');
       }
+      await expect.poll(() => cards.first().locator('.ps2-case svg use').evaluateAll(elements =>
+        elements.map(element => (element as SVGUseElement).getBBox().width > 0))).toEqual([true, true, true]);
       for (const lesson of lessons) {
         const card = blog.locator(`[data-blog-article="${lesson.slug}"]`);
         await expect(card).toHaveAccessibleName(lesson.title);
@@ -89,22 +93,25 @@ for (const scenario of [
       await expect(comparisonCard).toHaveAccessibleName(comparison.title);
       await expect(comparisonCard).toHaveAccessibleDescription(comparison.description);
       const cardLayout = await cards.evaluateAll(elements => elements.map(card => {
+        const box = card.querySelector('[data-slot="ps2-case"]')!.getBoundingClientRect();
         const disc = card.querySelector('[data-slot="optical-disc"]')!.getBoundingClientRect();
         const title = card.querySelector('h3')!.getBoundingClientRect();
-        return { disc: disc.toJSON(), title: title.toJSON() };
+        return { box: box.toJSON(), disc: disc.toJSON(), title: title.toJSON() };
       }));
-      for (const { disc, title } of cardLayout) {
+      for (const { box, disc, title } of cardLayout) {
+        expect(box.width / box.height).toBeCloseTo(27 / 38, 2);
         expect(disc.height).toBeCloseTo(disc.width, 1);
-        expect(disc.top).toBeCloseTo(title.top, 1);
-        expect(disc.right).toBeLessThan(title.left);
+        expect(disc.width).toBeLessThan(box.width);
+        expect(box.top).toBeCloseTo(title.top, 1);
+        expect(box.right).toBeLessThan(title.left);
       }
       const [newer, older] = cardLayout;
       if (scenario.width > 680) {
         expect(newer.title.top).toBeCloseTo(older.title.top, 1);
-        expect(newer.title.right).toBeLessThan(older.disc.left);
+        expect(newer.title.right).toBeLessThan(older.box.left);
       } else {
-        expect(older.disc.top).toBeGreaterThan(newer.disc.bottom);
-        expect(older.disc.left).toBeCloseTo(newer.disc.left, 1);
+        expect(older.box.top).toBeGreaterThan(newer.box.bottom);
+        expect(older.box.left).toBeCloseTo(newer.box.left, 1);
       }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await capture('blog-on-ps2');
@@ -120,30 +127,15 @@ for (const scenario of [
           return title.top >= screen.top && title.bottom <= screen.bottom;
         })).toBe(true);
       }
-      const more = blog.getByRole('link', { name: 'More · 博客', exact: true });
-      await expect(more).toHaveAttribute('href', course);
-      await expect(blog.locator('.blog-more-row')).toHaveCount(1);
       await expect(page.locator('[data-slot="hero-primary-action"]')).toHaveAttribute('href', '/zh/courses/getting-started');
-      await more.press('Enter');
-      await expect(page).toHaveURL(course);
-      await expect(page.locator('main h1')).toHaveText('博客');
-      const directory = page.locator('section[aria-labelledby="course-catalog"]');
-      await expect(directory.getByRole('heading', { level: 3 })).toHaveCount(0);
-      const entries = directory.locator('ol a');
-      await expect(entries.locator('span:first-child')).toHaveText(catalogSlugs.map((_, i) => String(i + 1)));
-      await expect(entries).toHaveCount(catalogSlugs.length);
-      for (const [index, slug] of catalogSlugs.entries()) {
-        await expect(entries.nth(index)).toHaveAttribute('href', `${course}/${slug}`);
-      }
-      await expect(entries.nth(0)).toContainText(lessons[0].title);
-      await expect(entries.nth(1)).toContainText(lessons[1].title);
-      await expect(entries.nth(3)).toContainText(comparison.title);
-      await capture('blog-directory');
-      await page.getByRole('link', { name: '开始第一课', exact: true }).click();
+      await cards.last().press('Enter');
+      const homeLink = page.getByRole('banner').locator('.site-header-logo');
 
       for (const [index, lesson] of lessons.entries()) {
         await expect(page).toHaveURL(`${course}/${lesson.slug}`);
         await expect(page.locator('article h1')).toHaveText(lesson.title);
+        await expect(page.locator('[data-slot="sidebar-wrapper"], [data-slot="mobile-course-navigation"]')).toHaveCount(0);
+        await expect(homeLink).toHaveAttribute('href', blogList);
         const article = page.locator('article > .prose');
         await expect(article).toContainText(lesson.opening);
         await expect(article.locator('h2')).toHaveCount(5);
@@ -234,17 +226,19 @@ for (const scenario of [
 
         if (scenario.javaScriptEnabled) {
           await page.locator('[data-slot="lesson-completion"] button').click();
-        } else {
-          await page.goto(course);
-          if (index === 0) await entries.nth(1).click();
+        } else if (index === 0) {
+          await homeLink.press('Enter');
+          await expect(page).toHaveURL(blogList);
+          await blog.locator(`[data-blog-article="${lessons[1].slug}"]`).click();
         }
       }
       if (scenario.javaScriptEnabled) await expect(page).toHaveURL(`${course}/ai-era-saas`);
       await page.goto(`${course}/${comparison.slug}`);
       await expect(page.locator('article h1')).toHaveText(comparison.title);
       await expect(page.locator('article > .prose p').first()).not.toBeEmpty();
-      await page.goto(course);
-      await expect(page).toHaveURL(course);
+      await homeLink.press('Enter');
+      await expect(page).toHaveURL(blogList);
+      await expect(blog).toBeVisible();
       expect(context.pages()).toHaveLength(1);
       expect(errors).toEqual([]);
       await testInfo.attach('blog-evidence', { body: JSON.stringify(evidence, null, 2), contentType: 'application/json' });
@@ -252,10 +246,21 @@ for (const scenario of [
   });
 }
 
-test('blog links, redirects, search, and sitemap use the blog route', async ({ page, request, baseURL }, testInfo) => {
-  const paths = [course, ...catalogSlugs.map(slug => `${course}/${slug}`)];
+test('old blog indexes redirect to the PS2 list and articles keep their routes', async ({ page, request, baseURL }, testInfo) => {
+  const paths = catalogSlugs.map(slug => `${course}/${slug}`);
   const sitemap = await (await request.get('/sitemap.xml')).text();
   const evidence = [];
+  for (const path of [course, '/zh/courses/blog']) {
+    const redirect = await request.get(`${path}?from=archive&view=courses`, { maxRedirects: 0 });
+    expect(redirect.status()).toBe(308);
+    const location = new URL(redirect.headers().location, baseURL);
+    expect(location.pathname).toBe('/zh');
+    expect(location.searchParams.getAll('view')).toEqual(['resources']);
+    expect(location.searchParams.get('from')).toBe('archive');
+    evidence.push({ legacyPath: path, path: blogList, redirectStatus: redirect.status() });
+  }
+  expect(sitemap).not.toMatch(/<loc>[^<]*\/zh\/blog<\/loc>/);
+  expect(sitemap).not.toContain(blogList);
   for (const path of paths) {
     const legacyPath = path.replace('/zh/blog', '/zh/courses/blog');
     const redirect = await request.get(`${legacyPath}?from=archive`, { maxRedirects: 0 });
@@ -273,10 +278,14 @@ test('blog links, redirects, search, and sitemap use the blog route', async ({ p
   expect((await request.get('/blog')).status()).toBe(404);
 
   await page.goto(course);
-  await expect(page.locator('[data-slot="site-window"]')).toHaveAttribute('data-variant', 'course');
+  await expect(page).toHaveURL(blogList);
+  await expect(page.getByRole('region', { name: '博客', exact: true })).toBeVisible();
   await page.waitForLoadState('networkidle');
   await page.keyboard.press('Control+k');
-  await page.getByRole('dialog').getByRole('textbox').fill('Pax8');
+  const search = page.getByRole('dialog').getByRole('textbox');
+  await search.fill('博客');
+  await expect(page.locator(`.search-result[href="${blogList}"]`)).toBeVisible();
+  await search.fill('Pax8');
   const articlePath = `${course}/enterprise-ai-adoption-roi`;
   await page.locator(`.search-result[href^="${articlePath}"]`).first().click();
   await expect.poll(() => new URL(page.url()).pathname).toBe(articlePath);

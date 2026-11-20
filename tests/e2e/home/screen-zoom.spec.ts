@@ -86,7 +86,7 @@ for (const action of ['back', 'reduce motion'] as const) {
 test('the blog home link returns through the PlayStation television screen', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await page.goto('/zh/blog');
+  await page.goto('/zh/blog/no-loyalty-to-ai-coding-tools');
   const freeze = await page.addStyleTag({ content: pauseCamera });
   await page.getByRole('banner').locator('.site-header-logo').click();
   await page.waitForFunction(() => document.documentElement.dataset.courseZoom === 'out'

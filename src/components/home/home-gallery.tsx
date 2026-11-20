@@ -18,7 +18,7 @@ export type GalleryLabels = {
   title: string; home: string; start: string; opening: Record<HomeView, string>;
   previous: string; next: string; pagination: string; views: Record<HomeView, string>; switchView: string;
   macGroups: { beginner: string; intermediate: string; dictionaries: string };
-  blogOverview: string; emptyResources: string;
+  emptyResources: string;
   switchTo: Record<HomeView, { previous: string; next: string }>;
 };
 type GallerySwitch = { from: HomeView; to: HomeView; direction: SwitchDirection; fromPage: number };
@@ -30,7 +30,7 @@ const beginnerRank = (id: string) => beginnerOrder.get(id) ?? beginnerOrder.size
 
 export function HomeGallery({ items, blog, locale, initialView, initialPage, labels, startUrl, children }: {
   items: { courses: GalleryItem[]; dictionaries: GalleryItem[] };
-  blog?: { title: string; url: string; articles: BlogArticle[] };
+  blog?: { title: string; articles: BlogArticle[] };
   locale: Locale; initialView: HomeView; initialPage: number;
   labels: GalleryLabels; startUrl: string; children?: ReactNode;
 }) {
@@ -136,7 +136,7 @@ export function HomeGallery({ items, blog, locale, initialView, initialPage, lab
     return {
       onClick: event => {
         const home = root.current;
-        if (!home || !canAnimateNavigation(event)) return;
+        if (!home || !canAnimateNavigation(event, { requireViewTransition: section === 'courses' })) return;
         event.preventDefault();
         finishSwitch();
         setSelected(selection);
@@ -204,24 +204,14 @@ export function HomeGallery({ items, blog, locale, initialView, initialPage, lab
         <div className="disk-group" data-gallery-view="resources"
           hidden={!showResources} inert={coursesActive}>
           {showResources && <section className="home-blog" aria-labelledby="home-blog-title" data-compact={compactBlog ? '' : undefined}>
-            <header className="blog-section-header">
-              <h2 id="home-blog-title" className="disk-group-title">{blog?.title ?? labels.views.resources}</h2>
-              {compactBlog && <Link className="blog-overview-link" href={blog.url}>
-                {labels.blogOverview}<ArrowRightIcon size={14} aria-hidden />
-              </Link>}
-            </header>
-            {blog && blog.articles.length > 0 ? <>
+            <h2 id="home-blog-title" className="disk-group-title">{blog?.title ?? labels.views.resources}</h2>
+            {blog && blog.articles.length > 0 ?
               <ol className="blog-grid" data-slot="blog-grid" role="list">
                 {blog.articles.map(article => <li key={article.id}>
                   <BlogArticleLink article={article} {...mediaLinkEvents(article, 'resources', labels.opening.resources)} />
                 </li>)}
               </ol>
-              {!compactBlog && <div className="blog-more-row">
-                <Link className="blog-more-link" href={blog.url} aria-label={`More · ${blog.title}`}>
-                  <span lang="en">More</span><ArrowRightIcon size={16} aria-hidden />
-                </Link>
-              </div>}
-            </> : <p className="text-sm text-muted-foreground">{labels.emptyResources}</p>}
+              : <p className="text-sm text-muted-foreground">{labels.emptyResources}</p>}
           </section>}
         </div>
       </div>

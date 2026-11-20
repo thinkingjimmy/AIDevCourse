@@ -105,17 +105,6 @@
   .disk-group-title { @apply font-mono text-caption font-medium text-brand; display: flex; align-items: center; gap: 16px; margin: 0 0 28px; }
   .disk-group-title::after { content: ''; flex: 1; height: 1px; background: color-mix(in srgb, var(--color-brand) 20%, transparent); }
   .disk-grid { display: grid; grid-template-columns: repeat(4, 176px); gap: 28px; justify-content: space-between; }
-  .home-blog[data-compact] .blog-section-header { display: flex; align-items: center; gap: 16px; margin-bottom: 7px; }
-  .home-blog[data-compact] .disk-group-title { flex: 1; min-width: 0; margin: 0; }
-  .blog-overview-link {
-    @apply text-caption font-medium text-brand;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 44px;
-    text-decoration: none;
-  }
-  .blog-overview-link:is(:hover, :focus-visible) { text-decoration: underline; text-underline-offset: 3px; }
   .blog-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -128,7 +117,7 @@
   .blog-grid > li:nth-child(n+3) { border-top: 1px solid var(--color-border); }
   .blog-article-link {
     display: grid;
-    grid-template-columns: clamp(80px, 10vw, 103px) minmax(0, 1fr);
+    grid-template-columns: clamp(68px, 8.5vw, 86px) minmax(0, 1fr);
     gap: clamp(12px, 1.8vw, 20px);
     align-items: start;
     min-height: 132px;
@@ -155,24 +144,6 @@
   }
   .home-blog[data-compact] .blog-article-link p { -webkit-line-clamp: 3; }
   .blog-article-link:is(:hover, :focus-visible) h3 { color: var(--color-brand); text-decoration: underline; text-underline-offset: 3px; }
-  .blog-more-row { display: flex; justify-content: flex-end; border-top: 1px solid var(--color-border); margin-top: 3px; padding-top: 11px; }
-  .blog-more-link {
-    @apply font-mono text-ui font-semibold text-brand;
-    display: inline-flex;
-    align-items: center;
-    gap: 15px;
-    min-height: 44px;
-    padding-inline: 13px;
-    border: 1px solid var(--color-border);
-    border-radius: 2px;
-    text-decoration: none;
-  }
-  .blog-more-link:is(:hover, :focus-visible) { border-color: var(--color-brand); background: var(--color-surface); }
-  @keyframes spin-blog-disc { to { transform: rotate(1turn); } }
-  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-    .blog-article-link .optical-disc-surface { animation: spin-blog-disc 2.4s linear infinite paused; }
-    .blog-article-link:hover .optical-disc-surface { animation-play-state: running; }
-  }
   @media (max-width: 680px) {
     .blog-grid { grid-template-columns: minmax(0, 1fr); }
     .blog-grid > li + li { border-top: 1px solid var(--color-border); }
@@ -186,7 +157,6 @@
   .flying-course-disk { position: absolute; z-index: 60; min-height: 0; pointer-events: none; transition: none; will-change: transform; }
   .disk-insertion-pocket { position: absolute; z-index: 60; pointer-events: none; }
   .course-disk-link[data-in-drive] .course-disk { opacity: 0; transition: none; }
-  .blog-article-link[data-in-drive] .optical-disc { opacity: 0; transition: none; }
   .optical-disc.flying-optical-disc { position: absolute; z-index: 60; pointer-events: none; transition: none; }
   @media (prefers-reduced-motion: no-preference) {
     .course-category-tab[aria-current] .course-category-fan { transition: opacity 150ms ease-out; }

@@ -15,7 +15,7 @@ export function validateMath(tree: Root, file: string, lineOffset = 0) {
     } catch (error) {
       const start = node.position?.start;
       const location = `${file}:${(start?.line ?? 1) + lineOffset}:${start?.column ?? 1}`;
-      throw new Error(`${location}: Invalid math: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(`${location}: Invalid math: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
     }
   });
 }

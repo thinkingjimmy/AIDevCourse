@@ -12,7 +12,6 @@ import { AchievementProvider } from '@/components/progress/achievement-provider'
 import { CourseTransitionProvider } from '@/components/home/course-transition';
 import { SearchShortcut } from '@/components/search/search-shortcut';
 import { lessonIndex } from '@/components/search/lessons';
-import { blogCourseId } from '@/lib/site-config';
 import '@/styles/globals.css';
 export function generateStaticParams() { return locales.map((lang) => ({ lang })); }
 export default async function LocaleLayout({ children, params }: { children: ReactNode; params: Promise<{ lang: string }> }) {
@@ -26,14 +25,13 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   const catalog = getCatalog();
   const shortcut = <SearchShortcut locale={lang} version={catalog.version} lessons={lessonIndex(catalog, lang)} />;
   const lessonPaths = courses.flatMap((course) => course.lessons.map((lesson) => lesson.url));
-  const blogPath = courses.find(course => course.id === blogCourseId)?.url;
   // Translation extensions can add root attributes before React hydrates.
   return <html lang={htmlLanguages[lang]} className="light" suppressHydrationWarning><body>
     <Providers locale={lang} messages={clientMessages} translations={fumadocsMessages(messages.Ui as Record<string, string>)}>
       <AchievementProvider courses={getAchievementCourses(lang)}>
         <a href="#main-content" className="fixed -top-[100px] left-4 z-[100] bg-foreground px-[18px] py-3 text-white focus:top-3">{ui('skip')}</a>
         <CourseTransitionProvider>
-          <SiteFrame lessonPaths={lessonPaths} blogPath={blogPath} header={<HomeHeader locale={lang} />} shortcut={shortcut} footer={<HomeFooter locale={lang} />} errorPage={<MissingPage locale={lang} />}>
+          <SiteFrame lessonPaths={lessonPaths} header={<HomeHeader locale={lang} />} shortcut={shortcut} footer={<HomeFooter locale={lang} />} errorPage={<MissingPage locale={lang} />}>
             <noscript><p className="nojs-notice relative z-[2] border-b border-border bg-surface px-6 py-2 text-center text-sm">{ui('noJs')}</p></noscript>
             {children}
           </SiteFrame>

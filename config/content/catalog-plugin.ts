@@ -4,6 +4,7 @@ import type { EmitEntry, Plugin } from 'fumadocs-mdx';
 import type { InspectionCache } from '../../src/lib/content/scan';
 import { locales } from '../../src/lib/i18n/config';
 import { localePath } from '../../src/lib/i18n/routing';
+import { hasDocumentPage } from '../../src/lib/content/model';
 import { vocabularyPaths } from '../../src/lib/vocabulary/collections';
 import { contentMode } from './content-mode.mjs';
 
@@ -26,7 +27,7 @@ export function catalogPlugin(): Plugin {
       const documents = catalog.documents.map(document => ({ ...document, body: undefined }));
       return [
         { path: 'catalog.json', content: JSON.stringify({ ...catalog, documents }) },
-        { path: 'routes.json', content: JSON.stringify([...fixedRoutes, ...documents.map(doc => doc.url)]) },
+        { path: 'routes.json', content: JSON.stringify([...fixedRoutes, ...documents.filter(hasDocumentPage).map(doc => doc.url)]) },
       ];
     } catch (error) {
       if (process.env.NODE_ENV !== 'development') throw error;

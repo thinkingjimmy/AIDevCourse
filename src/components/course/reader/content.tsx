@@ -5,7 +5,7 @@ import { LearningProvider } from '@/components/progress/progress-provider';
 import { LessonVisit } from '@/components/progress/lesson-visit';
 import { getArticle } from '@/lib/content/source/articles';
 import { getCatalog, getCourse } from '@/lib/content/source';
-import type { ContentDocument } from '@/lib/content/model';
+import { hasDocumentPage, type ContentDocument } from '@/lib/content/model';
 import type { Locale } from '@/lib/i18n/config';
 import { site } from '@/lib/site-config';
 import { cn } from '@/lib/utils';
@@ -39,7 +39,8 @@ export async function loadLessonContent(doc: ContentDocument, reference = false)
 
 export async function loadReadingPanes(search: ReadingSearch, source: string, locale: Locale) {
   const catalog = getCatalog();
-  const targets = catalog.documents.filter(doc => doc.locale === locale).map(doc => ({ url: doc.url, title: doc.data.title }));
+  const targets = catalog.documents.filter(doc => doc.locale === locale && hasDocumentPage(doc))
+    .map(doc => ({ url: doc.url, title: doc.data.title }));
   const paths = readingPaths(search.read, source, targets);
   const panes = await Promise.all(paths.map(async (href): Promise<ReadingPane> => {
     const path = href.split('#')[0];

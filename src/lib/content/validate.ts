@@ -101,8 +101,9 @@ export function validateReferences(documents: ContentDocument[], publicRoot: str
       const [path, fragment] = link.url.split('#');
       const targetPath = path || doc.url;
       const target = byURL.get(targetPath);
-      const locale = pathLocale(targetPath);
-      if (targetPath !== localePath(locale, stripLocale(targetPath))) fail('Use the canonical language path');
+      const [pathname] = targetPath.split('?', 1);
+      const locale = pathLocale(pathname);
+      if (pathname !== localePath(locale, stripLocale(pathname))) fail('Use the canonical language path');
       const simplePage = targetPath === localePath(locale) || targetPath === localePath(locale, '/about');
       const dictionary = vocabularyForPath(stripLocale(targetPath));
       const category = dictionary?.categories.find(category => stripLocale(targetPath) === `${dictionary.path}/${category.id}`) ?? dictionary?.categories[0];

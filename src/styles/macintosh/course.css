@@ -26,7 +26,6 @@ body:has([data-slot=site-window]:is([data-variant=course],[data-variant=reading]
 }
 .course-overview { flex: 1; width: min(56rem,100%); margin: 0 auto; padding: 0 32px 64px; }
 .course-overview-hero { display: grid; grid-template-columns: minmax(0,1fr) 176px; align-items: center; gap: 48px; padding: 48px 0 40px; }
-.course-disk-cover:has(.optical-disc) { align-items: center; justify-content: center; }
 .course-overview-hero h1 { @apply font-pixel text-display leading-heading font-normal text-brand; margin: 0 0 16px; text-wrap: balance; }
 .course-overview-meta { @apply font-mono text-xs text-muted-foreground; display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
 .course-overview-description { @apply text-base leading-body text-reading; margin: 0 0 24px; max-width: 36rem; text-wrap: pretty; }

@@ -8,9 +8,14 @@ export function localePath(locale: Locale, path = '/') {
   return locale === defaultLocale ? path : `/${locale}${path === '/' ? '' : path}`;
 }
 
+export function courseRootPath(locale: Locale, course: string) {
+  return localePath(locale, course === blogSlug ? blogRoot : `/courses/${course}`);
+}
+
 export function coursePath(locale: Locale, course: string, article = '') {
-  const root = course === blogSlug ? blogRoot : `/courses/${course}`;
-  return localePath(locale, article ? `${root}/${article}` : root);
+  if (course === blogSlug && !article) return homePath(locale, 'resources');
+  const root = courseRootPath(locale, course);
+  return article ? `${root}/${article}` : root;
 }
 
 export function homePath(locale: Locale, view: HomeView, page = 1) {

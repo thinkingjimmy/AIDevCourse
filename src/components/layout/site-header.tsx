@@ -13,12 +13,12 @@ import { macintoshArtwork } from '@/components/home/macintosh';
 import { playStationArtwork } from '@/components/home/device-stage';
 
 export function SiteHeader({ locale, courses, labels, children }: {
-  locale: Locale; courses: { url: string; title: string }[];
+  locale: Locale; courses: { path: string; title: string }[];
   labels: { home: string; navigation: string; vocabulary: Record<VocabularyKind, string> }; children: ReactNode;
 }) {
   const path = canonicalPath(usePathname());
   const { phase, returnHome } = useCourseTransition();
-  const course = courses.find(item => path === item.url || path.startsWith(`${item.url}/`));
+  const course = courses.find(item => path === item.path || path.startsWith(`${item.path}/`));
   const vocabulary = vocabularyForPath(stripLocale(path));
   const view = useHomeDestination();
   const destination = homePath(locale, view);

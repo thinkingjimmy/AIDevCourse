@@ -27,9 +27,9 @@ export default async function HomePage({ params, searchParams }: Props) {
   const courses = publishedCourses.filter(item => item.id !== blogCourseId);
   const blogCourse = publishedCourses.find(item => item.id === blogCourseId);
   const blog = blogCourse && {
-    title: blogCourse.title, url: blogCourse.url,
+    title: blogCourse.title,
     // Blog metadata lists articles in publication order.
-    articles: blogCourse.lessons.slice(-6).reverse().map(({ id, title, description, url }) => ({ id, title, description, url })),
+    articles: [...blogCourse.lessons].reverse().map(({ id, title, description, url }) => ({ id, title, description, url })),
   };
   const startingCourse = courses.find(item => item.section === 'introduction' && item.lessons.length)
     ?? courses.find(item => item.id === 'llm-101') ?? courses.find(item => item.lessons.length) ?? courses[0];
@@ -42,7 +42,7 @@ export default async function HomePage({ params, searchParams }: Props) {
       opening: { courses: t('openingCourse'), resources: t('openingResource') },
       previous: t('previousPage'), next: t('nextPage'), pagination: t('pagination'), views,
       macGroups: { beginner: ui('beginner'), intermediate: ui('intermediate'), dictionaries: t('dictionaries') },
-      blogOverview: t('blogOverview'), emptyResources: t('emptyResources'),
+      emptyResources: t('emptyResources'),
       switchView: t('switchView'), switchTo: { courses: directions(views.courses), resources: directions(views.resources) },
     }}>{!courses.length && <EmptyCourses locale={lang} />}</HomeGallery>;
 }

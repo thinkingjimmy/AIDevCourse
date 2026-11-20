@@ -1,4 +1,4 @@
-import { localePath } from '@/lib/i18n/routing';
+import { courseRootPath, localePath } from '@/lib/i18n/routing';
 import type { ReactNode } from 'react';
 import { PageContainer, SiteFooter, SiteLogo } from './page-primitives';
 import { getTranslations } from 'next-intl/server';
@@ -23,7 +23,9 @@ export async function HomeHeader({ locale }: { locale: Locale }) {
   const animationVocabulary = await getTranslations({ locale, namespace: 'AnimationVocabulary' });
   const programmingVocabulary = await getTranslations({ locale, namespace: 'ProgrammingVocabulary' });
   const catalog = getCatalog();
-  return <SiteHeader locale={locale} courses={catalog.courses.filter(course => course.locale === locale).map(({ url, title }) => ({ url, title }))}
+  const courses = catalog.courses.filter(course => course.locale === locale)
+    .map(({ slug, title }) => ({ path: courseRootPath(locale, slug), title }));
+  return <SiteHeader locale={locale} courses={courses}
     labels={{ home: ui('home'), navigation: t('navLabel'), vocabulary: { design: vocabulary('title'), animation: animationVocabulary('title'), programming: programmingVocabulary('title') } }}>
     <AuthorDialog />
     <LanguageSwitcher locale={locale} translations={catalog.translations} />

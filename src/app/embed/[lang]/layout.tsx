@@ -24,7 +24,8 @@ export default async function EmbedLayout({ children, params }: { children: Reac
   return (
     <html lang={htmlLanguages[lang]} className="light" suppressHydrationWarning>
       <body className="bg-background text-foreground">
-        <script dangerouslySetInnerHTML={{ __html: "window.parent.postMessage({ type: 'dsh-tutorial-review-preview-ready' }, '*')" }} />
+        {/* The review host needs this signal even when the app bundles cannot load. */}
+        <script src="/embed/preview-ready.js" async fetchPriority="high" />
         <Providers locale={lang} messages={clientMessages} translations={fumadocsMessages(messages.Ui as Record<string, string>)}>
           <AchievementProvider courses={getAchievementCourses(lang)}>{children}</AchievementProvider>
         </Providers>

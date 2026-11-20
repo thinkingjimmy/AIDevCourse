@@ -1,7 +1,11 @@
 [
   {
+    "source": "/zh/blog",
+    "destination": "/zh?view=resources"
+  },
+  {
     "source": "/zh/courses/blog",
-    "destination": "/zh/blog"
+    "destination": "/zh?view=resources"
   },
   {
     "source": "/zh/courses/blog/no-loyalty-to-ai-coding-tools",

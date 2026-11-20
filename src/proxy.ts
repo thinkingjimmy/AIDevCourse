@@ -50,7 +50,7 @@ export async function proxy(request: NextRequest) {
     return new NextResponse(rendered.body, { status: 404, headers: responseHeaders });
   }
   if (pathLocale(path) === defaultLocale && (path === '/about' || path.startsWith('/courses/')
-    || path === blogRoot || path.startsWith(`${blogRoot}/`) || vocabularyForPath(path))) {
+    || path.startsWith(`${blogRoot}/`) || vocabularyForPath(path))) {
     const target = new URL(request.url);
     target.pathname = `/en${path}`;
     return NextResponse.rewrite(target);

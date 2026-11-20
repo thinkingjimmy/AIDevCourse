@@ -79,7 +79,7 @@
   .stage[data-closing] { overflow-x: hidden; }
   .stage[data-open] .primary, .pane { flex-basis: 100%; }
   .pane[data-closing] { width: 100%; }
-  .scroll { padding: 0 20px calc(6.5rem + env(safe-area-inset-bottom)); }
+  .scroll { padding: 0 20px var(--lesson-footer-offset, 0px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

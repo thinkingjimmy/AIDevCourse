@@ -124,11 +124,19 @@ export function apply(ctx, config = {}) {
       const meta = parseFrontmatter(source);
       const annotations = await readAnnotations(annotationRoot, lessonId);
       const courseId = lessonId.split('/')[0] || '';
-      const siteSlug = meta.lessonId || lessonId.split('/').pop() || lessonId;
+      // The site publishes a lesson under its file name, not its frontmatter
+      // `lessonId`, so derive the preview URL from the file to avoid 404s.
+      const siteSlug = basename(file, extname(file));
+      const courseIndex = siteSlug === 'index';
       const localePrefix = locale === 'en' ? '' : `/${locale}`;
+      const homePrefix = locale === 'en' ? '/' : localePrefix;
       const sitePath = courseId === 'blog'
-        ? `${localePrefix}/blog/${encodeURIComponent(siteSlug)}`
-        : `/embed/${encodeURIComponent(locale)}/${encodeURIComponent(courseId)}/${encodeURIComponent(siteSlug)}`;
+        ? (courseIndex
+          ? `${homePrefix}?view=resources`
+          : `${localePrefix}/blog/${encodeURIComponent(siteSlug)}`)
+        : (courseIndex
+          ? `${localePrefix}/courses/${encodeURIComponent(courseId)}`
+          : `/embed/${encodeURIComponent(locale)}/${encodeURIComponent(courseId)}/${encodeURIComponent(siteSlug)}`);
       sendJson(res, 200, {
         lessonId,
         courseId,

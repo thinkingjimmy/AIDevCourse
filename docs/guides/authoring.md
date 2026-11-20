@@ -185,7 +185,7 @@ Thanks to [ian-xiaohei-illustrations](https://github.com/helloianneo/ian-xiaohei
 </KeyTakeaway>
 ```
 
-`ResourceDisks` 复用首页的课程和词典软盘。博客总览入口用一张带标题的光盘。用 `items` 填写逗号分隔的 ID，显示顺序与填写顺序一致。
+`ResourceDisks` 复用首页的课程和词典软盘。博客入口用一张带标题的光盘，打开首页的 PS2 博客列表。用 `items` 填写逗号分隔的 ID，显示顺序与填写顺序一致。
 
 ```mdx
 <ResourceDisks items="llm-101, vocabulary" />
@@ -304,7 +304,7 @@ Token 图解使用各语言实际输入的编码结果，不能只翻译词元�
 
 ## 发布、下架与改 URL
 
-课程文件列入对应 `meta.json` 后即公开。博客文章直接放在 `content/zh/blog/`。在该目录的 `meta.json` 中保留 `index` 作为第一项，然后按从旧到新的顺序列出文章文件名（省略扩展名）。博客总览和文章使用 `/zh/blog` 和 `/zh/blog/{article}`，英文去掉语言前缀。PS2 首页倒序取最近六篇已发布文章，摘要使用各篇的 `description`。检查 meta 完整，执行 check / build / 生产 E2E。请按 [部署指南](./deployment.md) 发布通过检查的提交。
+课程文件列入对应 `meta.json` 后即公开。博客文章直接放在 `content/zh/blog/`。在该目录的 `meta.json` 中保留 `index` 作为第一项，然后按从旧到新的顺序列出文章文件名（省略扩展名）。博客列表位于 `/zh?view=resources`，文章使用 `/zh/blog/{article}`，英文去掉语言前缀。PS2 首页倒序展示所有已发布文章，摘要使用各篇的 `description`。检查 meta 完整，执行 check / build / 生产 E2E。请按 [部署指南](./deployment.md) 发布通过检查的提交。
 
 下架时删除该语言的文件，并同步删除仍引用它的译文；目录中不再保留已删除的条目。原文文件不能在译文仍引用时直接移除。没有课时的课程介绍可以继续公开，并显示内容更新状态。
 

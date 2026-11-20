@@ -1,4 +1,5 @@
 import type { Locale } from '../i18n/config';
+import { blogSlug } from '../i18n/routing';
 import type { DocumentData } from './schema';
 export type AchievementDefinition = {
   id: string; title: string; question: string;
@@ -51,7 +52,12 @@ export function identity(document: ContentDocument) {
   return document.data.kind === 'course' ? document.data.courseId : `${document.data.courseId}:${document.data.lessonId}`;
 }
 
+export function hasDocumentPage(document: ContentDocument) {
+  return document.data.kind !== 'course' || document.courseSlug !== blogSlug;
+}
+
 export function renderedAnchors(document: ContentDocument) {
+  if (!hasDocumentPage(document)) return [];
   return document.data.kind === 'course' ? ['course-catalog'] : document.headings.map((heading) => heading.id);
 }
 

@@ -20,9 +20,12 @@ export function usePretrainingSteps() {
   }));
 }
 
-export function PretrainingIllustration({ step, interactive = true }: { step: ReturnType<typeof usePretrainingSteps>[number]; interactive?: boolean }) {
+export function PretrainingIllustration({ step, interactive = true, fetchPriority }: {
+  step: ReturnType<typeof usePretrainingSteps>[number]; interactive?: boolean; fetchPriority?: 'low';
+}) {
   const t = useTranslations('Pretraining');
-  const image = <Image src={step.image} alt={step.description} loading="eager" sizes="(min-width: 768px) 640px, 100vw" className="block aspect-video h-auto w-full object-contain" />;
+  const image = <Image src={step.image} alt={step.description} loading="eager" fetchPriority={fetchPriority}
+    sizes="(min-width: 768px) 640px, 100vw" className="block aspect-video h-auto w-full object-contain" />;
 
   return <div data-pretraining-illustration={step.value} className="aspect-video w-full rounded-sm bg-white">
     {interactive ? <Dialog>

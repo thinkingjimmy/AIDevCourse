@@ -3,7 +3,6 @@ import { setRequestLocale } from 'next-intl/server';
 import { isLocale } from '@/lib/i18n/config';
 import { blogSlug } from '@/lib/i18n/routing';
 import { getCatalog } from '@/lib/content/source';
-import { LearnShell } from '@/components/course/course-layout';
 import { LessonPage, lessonMetadata } from '@/components/course/reader/lesson-page';
 import type { ReadingSearch } from '@/components/course/reader/model';
 
@@ -23,7 +22,7 @@ export default async function BlogArticlePage({ params, searchParams }: Props) {
   const { lang, article } = await params;
   if (!isLocale(lang)) notFound();
   setRequestLocale(lang);
-  return <LearnShell locale={lang}>
+  return <main className="@container/reader flex min-h-0 min-w-0 flex-1 flex-col">
     <LessonPage locale={lang} course={blogSlug} lesson={[article]} searchParams={searchParams} />
-  </LearnShell>;
+  </main>;
 }

@@ -96,6 +96,60 @@
   .optical-disc-title { @apply m-0 font-pixel text-disc-title font-medium; text-wrap: balance; }
   .optical-disc-brand { @apply font-mono text-disc-brand leading-none; color: #eff5ffbd; }
 
+  .ps2-case {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 27 / 38;
+  }
+  .ps2-case > .optical-disc { width: 84%; }
+  .blog-article-link[data-in-drive] .ps2-case > .optical-disc { opacity: 0; }
+  .ps2-case-panel, .ps2-case-front { position: absolute; inset: 0; }
+  .ps2-case-panel { display: block; width: 100%; height: 100%; }
+  .ps2-case-base { filter: drop-shadow(1px 2px 2px #14213b42); }
+  .ps2-case-lid {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    transform-origin: left center;
+    transform-style: preserve-3d;
+  }
+  .ps2-case-front, .ps2-case-inside { backface-visibility: hidden; }
+  .ps2-case-front {
+    border-radius: 5.5% / 4%;
+    background: #151d29;
+  }
+  .ps2-case-inside { transform: rotateY(180deg); }
+  .ps2-case-art {
+    position: absolute;
+    /* Match the sleeve inset in game-case.svg. */
+    inset: 3.95% 4.63% 3.95% 10.19%;
+    overflow: hidden;
+    border-radius: 3% / 2%;
+    background: var(--disc-print-color);
+  }
+  .ps2-case-art::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    height: 100%;
+    aspect-ratio: 1;
+    transform: translateX(-50%);
+    background: var(--disc-print, radial-gradient(ellipse at top, #b0cdff35, transparent) var(--disc-print-color));
+    image-rendering: pixelated;
+  }
+  .ps2-case-art::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background:
+      linear-gradient(139deg, #e2efff4a, #e2efff04 38%, transparent 54%, #050a164a),
+      linear-gradient(90deg, #090e1c60, transparent 10%);
+    box-shadow: inset 0 0 0 1px #c6d5f248, inset 0 1px 1px #f1f7ff45;
+  }
+
   @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
     .course-disk-link:hover .course-disk { transform: translateY(-6px) rotate(-2deg); }
     .optical-disc-link:hover .optical-disc { transform: translateY(-4px); }
