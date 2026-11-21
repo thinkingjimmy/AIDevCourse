@@ -80,16 +80,14 @@ test('manual scrolling tracks the category on a narrow screen with reduced motio
   await expect(tabs.getByRole('link', { name: '入门', exact: true })).toHaveAttribute('aria-current', 'location');
 });
 
-async function captureCollection(disk: Locator, edge: 'top' | 'bottom') {
-  return disk.evaluate(async (link, edge) => {
+async function captureTopCollection(disk: Locator) {
+  return disk.evaluate(async link => {
     const bar = document.querySelector('.course-category-tabs')!;
     const cover = link.querySelector('.course-disk')!;
     const title = cover.querySelector('.disk-title')!.textContent;
     const tab = bar.querySelector(`[href="#${link.closest('section')!.getAttribute('aria-labelledby')}"]`)!;
-    const viewport = document.documentElement.clientHeight;
-    const bounds = link.getBoundingClientRect();
-    const remaining = edge === 'top' ? bounds.bottom - bar.getBoundingClientRect().bottom : viewport - bounds.top;
-    window.scrollBy({ top: (remaining - 12) * (edge === 'top' ? 1 : -1), behavior: 'instant' });
+    const remaining = link.getBoundingClientRect().bottom - bar.getBoundingClientRect().bottom;
+    window.scrollBy({ top: remaining - 12, behavior: 'instant' });
 
     const nextFrame = () => new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
     const deadline = performance.now() + 1500;
@@ -99,7 +97,7 @@ async function captureCollection(disk: Locator, edge: 'top' | 'bottom') {
       flight = [...document.querySelectorAll<HTMLElement>('.course-category-flight')].find(disk =>
         disk.querySelector('.disk-title')?.textContent === title);
     }
-    if (!flight) throw new Error(`The disk did not leave through the ${edge} edge.`);
+    if (!flight) throw new Error('The disk did not fly into its category tab.');
     const animation = flight.getAnimations()[0];
     const duration = Number(animation.effect!.getTiming().duration);
     animation.pause();
@@ -116,10 +114,10 @@ async function captureCollection(disk: Locator, edge: 'top' | 'bottom') {
     const end = await sample(.98);
     await sample(.2);
     return { start, end, artwork: getComputedStyle(flight).borderImageSource, source: getComputedStyle(cover).borderImageSource };
-  }, edge);
+  });
 }
 
-test('disks leaving either edge shrink into their own tab and return on scroll', async ({ page }, testInfo) => {
+test('disks passing the top of the catalog shrink into their own tab and return on scroll', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/zh');
@@ -128,25 +126,51 @@ test('disks leaving either edge shrink into their own tab and return on scroll',
   await page.waitForFunction(() => document.documentElement.style.getPropertyValue('--home-masthead-height'));
   const disk = page.locator('[data-course-disk="llm-101"]');
   const flights = page.locator('.course-category-flight');
-  const top = await captureCollection(disk, 'top');
+  const top = await captureTopCollection(disk);
   expect(top.end.distance).toBeLessThan(top.start.distance / 4);
   expect(top.end.width).toBeLessThan(top.start.width / 4);
   expect(top.artwork).toBe(top.source);
   await testInfo.attach('Disk collecting into its tab', { body: await page.screenshot(), contentType: 'image/png' });
+  await testInfo.attach('Disk size and distance from its tab', { body: JSON.stringify(top, null, 2), contentType: 'application/json' });
 
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
   await expect(flights).toHaveCount(0);
   await expect(disk).not.toHaveAttribute('data-collected');
   await expect(disk.locator('.course-disk')).toHaveCSS('opacity', '1');
 
-  await page.evaluate(() => window.scrollTo({ top: document.scrollingElement!.scrollHeight, behavior: 'instant' }));
-  await expect(page.locator('.course-category-tab[aria-current]')).toHaveText('词典');
-  const bottom = await captureCollection(page.locator('[data-dictionary-disk="vocabulary"]'), 'bottom');
-  expect(bottom.end.distance).toBeLessThan(bottom.start.distance / 4);
-  expect(bottom.end.width).toBeLessThan(bottom.start.width / 4);
-  expect(bottom.artwork).toBe(bottom.source);
+  await captureTopCollection(disk);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(flights).toHaveCount(0);
   await expect(page.locator('[data-collected]')).toHaveCount(0);
-  await testInfo.attach('Disk size and distance from its tab', { body: JSON.stringify({ top, bottom }, null, 2), contentType: 'application/json' });
+});
+
+test('intermediate disks scroll out through the bottom without flying into a tab', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 540 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/zh');
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForFunction(() => document.documentElement.style.getPropertyValue('--home-masthead-height'));
+  const disk = page.getByRole('region', { name: '中级', exact: true }).locator('[data-course-disk]').first();
+  const currentTab = page.locator('.course-category-tab[aria-current]');
+  const flights = page.locator('.course-category-flight');
+  await disk.evaluate(link => link.scrollIntoView({ block: 'start', behavior: 'instant' }));
+  await expect(currentTab).toHaveText('中级');
+  await expect(disk).toBeInViewport({ ratio: 1 });
+  await expect(flights).toHaveCount(0);
+
+  await disk.evaluate(link => window.scrollBy({
+    top: link.getBoundingClientRect().top - document.documentElement.clientHeight + 12, behavior: 'instant',
+  }));
+  await expect(currentTab).toHaveText('入门');
+  const visibleHeight = await disk.evaluate(link => document.documentElement.clientHeight - link.getBoundingClientRect().top);
+  expect(Math.abs(visibleHeight - 12)).toBeLessThan(1);
+  await expect(disk).not.toHaveAttribute('data-collected');
+  await expect(disk.locator('.course-disk')).toHaveCSS('opacity', '1');
+  expect(await flights.count()).toBe(0);
+  await testInfo.attach('Intermediate disk leaving the bottom of the screen', { body: await page.screenshot(), contentType: 'image/png' });
+
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+  await expect(disk).not.toBeInViewport();
+  await expect(disk).not.toHaveAttribute('data-collected');
+  expect(await flights.count()).toBe(0);
 });
